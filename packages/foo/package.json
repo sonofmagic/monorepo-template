@@ -1,0 +1,28 @@
+{
+  "name": "foo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "unbuild",
+    "test": "vitest run",
+    "test:dev": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "sideEffects": false,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}
