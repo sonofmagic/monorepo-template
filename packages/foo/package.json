@@ -1,11 +1,12 @@
 {
   "name": "@icebreakers/foo",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "scripts": {
     "build": "unbuild",
     "test": "vitest run",
-    "test:dev": "vitest"
+    "test:dev": "vitest",
+    "release": "release-it"
   },
   "keywords": [],
   "author": "",
@@ -24,5 +25,12 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "release-it": {
+    "git": false
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }
