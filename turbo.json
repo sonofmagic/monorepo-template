@@ -15,7 +15,11 @@
     "dev": {
       "cache": false
     },
-    "test": {},
+    "test": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
     "release": {}
   }
 }
