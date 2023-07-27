@@ -6,7 +6,7 @@
     "build": "unbuild",
     "test": "vitest run",
     "test:dev": "vitest",
-    "release": "release-it"
+    "release": "pnpm publish"
   },
   "keywords": [],
   "author": "",
@@ -26,9 +26,6 @@
   "files": [
     "dist"
   ],
-  "release-it": {
-    "git": false
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
