@@ -1,64 +1,73 @@
-name: Bug Report
-description: File a bug report.
-title: "[Bug]: "
-labels: ["bug", "triage"]
-projects: ["octo-org/1", "octo-org/44"]
-assignees:
-  - octocat
+name: "\U0001F41E Bug report"
+description: Create a report to help us improve
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        **Before You Start...**
+
+        This form is only for submitting bug reports. If you have a usage question
+        or are unsure if this is really a bug, make sure to:
+
+        # - Read the [docs](https://vuejs.org/)
+        # - Ask on [GitHub Discussions](https://github.com/vuejs/core/discussions)
+
+        Also try to search for your issue - it may have already been answered or even fixed in the development branch.
+        However, if you find that an old, closed issue still persists in the latest version,
+        you should open a new issue using the form below instead of commenting on the old issue.
   - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
-  - type: textarea
-    id: what-happened
-    attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
-    validations:
-      required: true
-  - type: dropdown
     id: version
     attributes:
-      label: Version
-      description: What version of our software are you running?
-      options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
-      default: 0
+      label: version
     validations:
       required: true
-  - type: dropdown
-    id: browsers
+  - type: input
+    id: reproduction-link
     attributes:
-      label: What browsers are you seeing the problem on?
-      multiple: true
-      options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
+      label: Link to minimal reproduction
+      description: |
+        # The easiest way to provide a reproduction is by showing the bug in [The SFC Playground](https://play.vuejs.org/).
+        # If it cannot be reproduced in the playground and requires a proper build setup, try [StackBlitz](https://vite.new/vue).
+        If neither of these are suitable, you can always provide a GitHub repository.
+
+        The reproduction should be **minimal** - i.e. it should contain only the bare minimum amount of code needed
+        to show the bug. 
+        # See [Bug Reproduction Guidelines](https://github.com/vuejs/core/blob/main/.github/bug-repro-guidelines.md) for more details.
+
+        Please do not just fill in a random link. The issue will be closed if no valid reproduction is provided.
+      placeholder: Reproduction Link
+    validations:
+      required: true
   - type: textarea
-    id: logs
+    id: steps-to-reproduce
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      label: Steps to reproduce
+      description: |
+        What do we need to do after opening your repro in order to make the bug happen? Clear and concise reproduction instructions are important for us to be able to triage your issue in a timely manner. Note that you can use [Markdown](https://guides.github.com/features/mastering-markdown/) to format lists and code.
+      placeholder: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What is expected?
+    validations:
+      required: true
+  - type: textarea
+    id: actually-happening
+    attributes:
+      label: What is actually happening?
+    validations:
+      required: true
+  - type: textarea
+    id: system-info
+    attributes:
+      label: System Info
+      description: Output of `npx envinfo --system --npmPackages --binaries`
       render: shell
-  - type: checkboxes
-    id: terms
+      placeholder: System, Binaries
+  - type: textarea
+    id: additional-comments
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com).
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+      label: Any additional comments?
+      description: e.g. some background/context of how you ran into this bug.
