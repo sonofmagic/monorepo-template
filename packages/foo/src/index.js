@@ -8,6 +8,5 @@ export function foo() {
 // const __dirname = __cjs_path__.dirname(__filename);
 // const require = __cjs_mod__.createRequire(import.meta.url);
 export function getDirname() {
-  return __dirname;;;;
+  return __dirname
 }
-
