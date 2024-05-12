@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "unbuild --sourcemap",
     "build": "unbuild",
+    "build:up": "tsup --format esm,cjs --clean --dts",
     "test": "vitest run",
     "test:dev": "vitest",
     "release": "pnpm publish"
