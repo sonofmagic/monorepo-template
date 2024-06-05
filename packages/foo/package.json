@@ -1,20 +1,12 @@
 {
   "name": "@icebreakers/foo",
+  "type": "commonjs",
   "version": "0.0.0",
   "description": "my foo your bar pkg",
-  "scripts": {
-    "dev": "unbuild --sourcemap",
-    "build": "unbuild",
-    "build:up": "tsup --format esm,cjs --clean --dts",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "release": "pnpm publish"
-  },
-  "keywords": [],
   "author": "",
   "license": "ISC",
+  "keywords": [],
   "sideEffects": false,
-  "type": "commonjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -27,5 +19,13 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "scripts": {
+    "dev": "unbuild --sourcemap",
+    "build": "unbuild",
+    "build:up": "tsup --format esm,cjs --clean --dts",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "release": "pnpm publish"
+  }
 }
