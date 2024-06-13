@@ -1,7 +1,7 @@
-import { foo } from '@/index'
+import { bar } from '@/index'
 
 describe('index', () => {
   it('foo bar', () => {
-    expect(foo()).toBe('bar')
+    expect(bar()).toBe('foo')
   })
 })
