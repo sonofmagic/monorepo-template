@@ -1,6 +1,6 @@
-# pnpm-turbo-monorepo-template
+# monorepo-template
 
-[![codecov](https://codecov.io/gh/sonofmagic/pnpm-turbo-monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/pnpm-turbo-monorepo-template)
+[![codecov](https://codecov.io/gh/sonofmagic/monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/monorepo-template)
 
 use pnpm, turborepo and changeset to manage your monorepo
 
