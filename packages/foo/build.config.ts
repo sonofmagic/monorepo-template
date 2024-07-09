@@ -3,6 +3,7 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   // entries: ['./src/index', './src/cli'],
+  entries: ['./src/index'],
   rollup: {
     // 内联，相当于 nodeResolve
     inlineDependencies: true,
