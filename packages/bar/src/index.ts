@@ -10,3 +10,8 @@ export function bar() {
 export function getDirname() {
   return __dirname
 }
+
+export enum xx {
+  id,
+  dd,
+}
