@@ -182,8 +182,8 @@ importers:
         version: 0.5.3(@types/node@22.1.0)(vite@5.3.5(@types/node@22.1.0))
     devDependencies:
       '@revideo/cli':
-        specifier: 0.5.3
-        version: 0.5.3(@types/node@22.1.0)(typescript@5.5.4)
+        specifier: 0.5.4
+        version: 0.5.4(@types/node@22.1.0)(typescript@5.5.4)
       '@revideo/ui':
         specifier: 0.5.3
         version: 0.5.3
@@ -1602,15 +1602,21 @@ packages:
   '@revideo/2d@0.5.3':
     resolution: {integrity: sha512-297KMW3DTZmcHKgDjq24sr2BQbcGkq5bAy/ZJb72XL0AmzdEoW0bA589OeULlc+ht0kHB57OD7WbqNOEUHwf5Q==}
 
-  '@revideo/cli@0.5.3':
-    resolution: {integrity: sha512-5w88Ktv6U6GaAgQlFcBL3t8lLxAksgHwjOiBysSLcjTM3vt1WUpGEp3aJCCzNIq16pQqVTh4nUdDzrr5IyvkFQ==}
+  '@revideo/cli@0.5.4':
+    resolution: {integrity: sha512-5u3pk0a8jSDZXd428yEy09UVipMvtxTVx48aMfA0zEWmPbUjgJ8yphq+nwa+fZoAlfchpaCgJuJlTI+pqgUF1A==}
     hasBin: true
 
   '@revideo/core@0.5.3':
     resolution: {integrity: sha512-+5n8CUwk0Fiakgxo4hz0AbddR0azAl0o8lDPKBGi+6T+v+3Xm8sHSSqCHYSLzRGS4ExDVQ8aNC592HdgovhNDA==}
 
+  '@revideo/core@0.5.4':
+    resolution: {integrity: sha512-/fA9lD0ahrzII7t/RsPMCBExujttjf/Q1GoPHsb2SavWl5WIAfLFFkLHi10IWTn/q4lKs9Bz/3TffhbuORWDeQ==}
+
   '@revideo/ffmpeg@0.5.3':
     resolution: {integrity: sha512-mPryc6xmHC6HrNGl8NHj2p+DinzTLgbI5s2yBuUQ/zE9XqLH2HR9gLvE/Rd4jhyboaEcK2hDjXF4G449AHvH5g==}
+
+  '@revideo/ffmpeg@0.5.4':
+    resolution: {integrity: sha512-xwoU1yyvOiPEqJoN5WXTsqs4rwqkjsBat2OVMx2rKlwcsMzOb2EQIYRTUJljBLXgAKD0FfFM/hkb0IfWfzQLLA==}
 
   '@revideo/player-react@0.5.3':
     resolution: {integrity: sha512-oyVtIBU0mQLJfpmpalMOMY5h0cCDrdr30mZw/KF4y72pdtEjE6+/v/YPL+XU25BWYpXIonKaE5id5jNWIEq8Lg==}
@@ -1621,8 +1627,16 @@ packages:
   '@revideo/renderer@0.5.3':
     resolution: {integrity: sha512-nRREAmq+VcE79Oz2KOvxAJngAK3Xl4kPH7jFA47cAFJZEen2ZVUfCNMLCUbweb87MDJNZhBYLn68b3fSGUAmaQ==}
 
+  '@revideo/renderer@0.5.4':
+    resolution: {integrity: sha512-RooHHrzjJHB14cSHRMxNkIK0cI8Tt8uS5BzAu8ehdnF4C6L+LChJX78SWG8N0CdOlauVNJa1Y3NrgVa4RoMc4Q==}
+
   '@revideo/telemetry@0.5.3':
     resolution: {integrity: sha512-oz5uIUIDdyWM5wBfsKVPphXSNkNQhorD52+J3GGSDOygdALLx4f3jUp3i6cqM7mXJ+8q6NX1Z2jQFvQySFdXtw==}
+    peerDependencies:
+      '@types/node': 18.14.0
+
+  '@revideo/telemetry@0.5.4':
+    resolution: {integrity: sha512-BNnyhvnBzN9Gz6EBIfoPdIvuyarIHI6jNbie4rNY9C4LhDSAHiG0Uiy5eN+EGQK3ZsHuyMwWL1Ggzac4SCNhYg==}
     peerDependencies:
       '@types/node': 18.14.0
 
@@ -7480,10 +7494,10 @@ snapshots:
       mp4box: 0.5.2
       parse-svg-path: 0.1.2
 
-  '@revideo/cli@0.5.3(@types/node@22.1.0)(typescript@5.5.4)':
+  '@revideo/cli@0.5.4(@types/node@22.1.0)(typescript@5.5.4)':
     dependencies:
-      '@revideo/renderer': 0.5.3(@types/node@22.1.0)(typescript@5.5.4)
-      '@revideo/telemetry': 0.5.3(@types/node@22.1.0)
+      '@revideo/renderer': 0.5.4(@types/node@22.1.0)(typescript@5.5.4)
+      '@revideo/telemetry': 0.5.4(@types/node@22.1.0)
       chokidar: 3.6.0
       commander: 12.1.0
       cors: 2.8.5
@@ -7503,12 +7517,29 @@ snapshots:
       chroma-js: 2.4.2
       mp4-wasm: 1.0.6
 
+  '@revideo/core@0.5.4':
+    dependencies:
+      '@types/chroma-js': 2.4.4
+      chroma-js: 2.4.2
+      mp4-wasm: 1.0.6
+
   '@revideo/ffmpeg@0.5.3(@types/node@22.1.0)':
     dependencies:
       '@ffmpeg-installer/ffmpeg': 1.1.0
       '@ffprobe-installer/ffprobe': 2.1.2
       '@revideo/core': 0.5.3
       '@revideo/telemetry': 0.5.3(@types/node@22.1.0)
+      fluent-ffmpeg: 2.1.3
+    transitivePeerDependencies:
+      - '@types/node'
+      - debug
+
+  '@revideo/ffmpeg@0.5.4(@types/node@22.1.0)':
+    dependencies:
+      '@ffmpeg-installer/ffmpeg': 1.1.0
+      '@ffprobe-installer/ffprobe': 2.1.2
+      '@revideo/core': 0.5.4
+      '@revideo/telemetry': 0.5.4(@types/node@22.1.0)
       fluent-ffmpeg: 2.1.3
     transitivePeerDependencies:
       - '@types/node'
@@ -7533,7 +7564,27 @@ snapshots:
       - typescript
       - utf-8-validate
 
+  '@revideo/renderer@0.5.4(@types/node@22.1.0)(typescript@5.5.4)':
+    dependencies:
+      '@revideo/ffmpeg': 0.5.4(@types/node@22.1.0)
+      puppeteer: 22.15.0(typescript@5.5.4)
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - debug
+      - supports-color
+      - typescript
+      - utf-8-validate
+
   '@revideo/telemetry@0.5.3(@types/node@22.1.0)':
+    dependencies:
+      '@types/node': 22.1.0
+      posthog-node: 4.0.1
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - debug
+
+  '@revideo/telemetry@0.5.4(@types/node@22.1.0)':
     dependencies:
       '@types/node': 22.1.0
       posthog-node: 4.0.1
