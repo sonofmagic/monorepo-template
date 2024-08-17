@@ -25,10 +25,10 @@ async function main() {
         const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
 
         Object.entries(deps).forEach((x) => {
-          set(targetPkgJson, x[0], x[1])
+          set(targetPkgJson, `dependencies.${x[0]}`, x[1])
         })
         Object.entries(devDeps).forEach((x) => {
-          set(targetPkgJson, x[0], x[1])
+          set(targetPkgJson, `devDependencies.${x[0]}`, x[1])
         })
         await fs.writeJson(targetPath, targetPkgJson, {
           spaces: 2,

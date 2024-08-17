@@ -19,3 +19,7 @@ if you push changes into the `main` branch, GitHub action will automatically pub
 use `@changesets/changelog-github` to generate changelog.
 
 remember to update the `"changelog": ["@changesets/changelog-github", { "repo": "<org>/<repo>" }]` in `.changeset/config.json`
+
+## Upgrade
+
+`npx @icebreakers/monorepo@latest`
