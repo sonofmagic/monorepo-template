@@ -17,19 +17,30 @@ const targets = [
   '.gitattributes',
   '.gitignore',
   '.npmrc',
-  'CODE_OF_CONDUCT.md',
   'commitlint.config.ts',
-  'CONTRIBUTING.md',
   'eslint.config.js',
   'LICENSE',
   'lint-staged.config.js',
   'package.json',
+  // pnpm
   'pnpm-workspace.yaml',
+  // renovate
   'renovate.json',
-  'SECURITY.md',
+  // base tsconfig
   'tsconfig.json',
+  // turbo
   'turbo.json',
+  // vitest
   'vitest.workspace.ts',
+  // #region docker
+  'Dockerfile',
+  '.dockerignore',
+  // #endregion
+  // #region markdown
+  'SECURITY.md',
+  'CODE_OF_CONDUCT.md',
+  'CONTRIBUTING.md',
+  // #endregion
 ]
 
 for (const t of targets) {
