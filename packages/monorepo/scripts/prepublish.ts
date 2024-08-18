@@ -10,6 +10,7 @@ const assetsDir = path.join(__dirname, '../dist/assets')
 await fs.ensureDir(assetsDir)
 
 const targets = [
+  '.changeset',
   '.github',
   '.husky',
   '.vscode',
