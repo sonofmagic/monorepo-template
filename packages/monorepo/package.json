@@ -6,13 +6,16 @@
   "author": "sonofmagic",
   "license": "MIT",
   "homepage": "https://github.com/sonofmagic/monorepo-template",
-  "keywords": ["monorepo"],
+  "keywords": [
+    "monorepo"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts"
   },
   "bin": "src/bin.js",
   "files": [
+    "assets",
     "bin",
     "dist"
   ],
@@ -41,6 +44,11 @@
   },
   "dependencies": {
     "fs-extra": "^11.2.0",
-    "pathe": "^1.1.2"
+    "git-url-parse": "^14.1.0",
+    "pathe": "^1.1.2",
+    "simple-git": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/git-url-parse": "^9.0.3"
   }
 }

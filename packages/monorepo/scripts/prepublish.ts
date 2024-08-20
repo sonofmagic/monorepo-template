@@ -5,7 +5,7 @@ import fs from 'fs-extra'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const rootDir = path.join(__dirname, '../../..')
-const assetsDir = path.join(__dirname, '../dist/assets')
+const assetsDir = path.join(__dirname, '../assets')
 
 await fs.ensureDir(assetsDir)
 

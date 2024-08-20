@@ -1,4 +1,6 @@
 import set from 'set-value'
+import path from 'pathe'
+import { main } from '@/index'
 
 describe('index', () => {
   it('foo bar', () => {
@@ -9,5 +11,10 @@ describe('index', () => {
         '@types/node': '1.1.1',
       },
     })
+  })
+
+  it.skip('copy', async () => {
+    const target = path.resolve(__dirname, './fixtures/assets')
+    await main(target)
   })
 })
