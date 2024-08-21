@@ -1,4 +1,4 @@
-// import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import path from 'pathe'
 import fs from 'fs-extra'
@@ -9,7 +9,11 @@ import klaw from 'klaw'
 import { GitClient } from './git'
 import type { CliOpts } from './types'
 
-const assetsDir = path.join(import.meta.dirname, '../assets')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+// import.meta.dirname for Nodejs >= v20.11.0
+// https://nodejs.org/api/esm.html#importmetadirname
+const assetsDir = path.join(__dirname, '../assets')
 const cwd = process.cwd()
 
 export async function main(opts: CliOpts) {
@@ -20,7 +24,12 @@ export async function main(opts: CliOpts) {
   })
   const repoName = await gitClient.getRepoName()
 
-  for await (const file of klaw(assetsDir)) {
+  for await (const file of klaw(assetsDir, {
+    filter() {
+      // path.relative(assetsDir, p).startsWith()
+      return true
+    },
+  })) {
     if (file.stats.isFile()) {
       const relPath = path.relative(assetsDir, file.path)
       const targetPath = path.resolve(absOutDir, relPath)
