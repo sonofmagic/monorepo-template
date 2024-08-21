@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import path from 'pathe'
 import fs from 'fs-extra'
+import { getTargets } from '../src/targets'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -9,40 +10,7 @@ const assetsDir = path.join(__dirname, '../assets')
 
 await fs.ensureDir(assetsDir)
 
-const targets = [
-  '.changeset',
-  '.github',
-  '.husky',
-  '.vscode',
-  '.editorconfig',
-  '.gitattributes',
-  '.gitignore',
-  '.npmrc',
-  'commitlint.config.ts',
-  'eslint.config.js',
-  'LICENSE',
-  'lint-staged.config.js',
-  'package.json',
-  // pnpm
-  'pnpm-workspace.yaml',
-  // renovate
-  'renovate.json',
-  // base tsconfig
-  'tsconfig.json',
-  // turbo
-  'turbo.json',
-  // vitest
-  'vitest.workspace.ts',
-  // #region docker
-  'Dockerfile',
-  '.dockerignore',
-  // #endregion
-  // #region markdown
-  'SECURITY.md',
-  'CODE_OF_CONDUCT.md',
-  'CONTRIBUTING.md',
-  // #endregion
-]
+const targets = getTargets()
 
 for (const t of targets) {
   await fs.copy(path.resolve(rootDir, t), path.resolve(assetsDir, t))

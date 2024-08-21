@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url'
+// import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import path from 'pathe'
 import fs from 'fs-extra'
@@ -7,14 +7,14 @@ import get from 'get-value'
 import set from 'set-value'
 import klaw from 'klaw'
 import { GitClient } from './git'
+import type { CliOpts } from './types'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const assetsDir = path.join(__dirname, '../assets')
+const assetsDir = path.join(import.meta.dirname, '../assets')
 const cwd = process.cwd()
 
-export async function main(outdir: string = '') {
-  const absOutDir = path.isAbsolute(outdir) ? outdir : path.join(cwd, outdir)
+export async function main(opts: CliOpts) {
+  const { outDir = '' } = opts
+  const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
   const gitClient = new GitClient({
     baseDir: cwd,
   })
