@@ -48,7 +48,7 @@ export async function main(outdir: string = '') {
       else if (relPath === '.changeset/config.json' && repoName && await fs.exists(file.path)) {
         const changesetJson = await fs.readJson(file.path)
         set(changesetJson, 'changelog.1.repo', repoName)
-
+        await fs.ensureDir(path.dirname(targetPath))
         await fs.writeJson(targetPath, changesetJson, {
           spaces: 2,
         })

@@ -6,10 +6,14 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "monorepo": "npx @icebreakers/monorepo"
   },
   "dependencies": {
     "@icebreakers/bar": "workspace:*",
     "@icebreakers/foo": "workspace:*"
+  },
+  "devDependencies": {
+    "@icebreakers/monorepo": "workspace:*"
   }
 }
