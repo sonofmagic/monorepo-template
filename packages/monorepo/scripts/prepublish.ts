@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import path from 'pathe'
 import fs from 'fs-extra'
+import { logger } from '../src/logger'
 import { getTargets } from '../src/targets'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -13,7 +14,20 @@ await fs.ensureDir(assetsDir)
 const targets = getTargets()
 
 for (const t of targets) {
-  await fs.copy(path.resolve(rootDir, t), path.resolve(assetsDir, t))
+  const from = path.resolve(rootDir, t)
+  const to = path.resolve(assetsDir, t)
+  if (t === '.husky') {
+    await fs.copy(from, to, {
+      filter(src) {
+        return !/[\\/]_$/.test(src)
+      },
+    })
+  }
+  else {
+    await fs.copy(from, to)
+  }
+
+  logger.success(to)
 }
 
-console.log('prepare ok!')
+logger.success('prepare ok!')

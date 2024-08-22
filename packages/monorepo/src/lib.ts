@@ -6,8 +6,9 @@ import type { PackageJson } from 'pkg-types'
 import get from 'get-value'
 import set from 'set-value'
 import klaw from 'klaw'
-import mm from 'micromatch'
 import PQueue from 'p-queue'
+import { logger } from './logger'
+import { escapeStringRegexp, isMatch } from './utils'
 import { GitClient } from './git'
 import type { CliOpts } from './types'
 import { getTargets } from './targets'
@@ -31,10 +32,13 @@ export async function main(opts: CliOpts) {
   })
   const repoName = await gitClient.getRepoName()
   const targets = getTargets(raw)
+  const regexpArr = targets.map((x) => {
+    return new RegExp(`^${escapeStringRegexp(x)}`)
+  })
   for await (const file of klaw(assetsDir, {
     filter(p) {
       const str = path.relative(assetsDir, p)
-      return mm.isMatch(str, targets)
+      return isMatch(str, regexpArr)
     },
   })) {
     await queue.add(async () => {
@@ -61,6 +65,7 @@ export async function main(opts: CliOpts) {
             await fs.writeJson(targetPath, targetPkgJson, {
               spaces: 2,
             })
+            logger.success(targetPath)
           }
         }
         else if (relPath === '.changeset/config.json' && repoName && await fs.exists(file.path)) {
@@ -70,12 +75,14 @@ export async function main(opts: CliOpts) {
           await fs.writeJson(targetPath, changesetJson, {
             spaces: 2,
           })
+          logger.success(targetPath)
         }
         else {
           await fs.copy(
             file.path,
-            path.resolve(absOutDir, relPath),
+            targetPath,
           )
+          logger.success(targetPath)
         }
       }
     })

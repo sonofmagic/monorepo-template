@@ -145,6 +145,9 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
@@ -154,9 +157,6 @@ importers:
       klaw:
         specifier: ^4.1.0
         version: 4.1.0
-      micromatch:
-        specifier: ^4.0.7
-        version: 4.0.7
       p-queue:
         specifier: ^8.0.1
         version: 8.0.1
@@ -170,9 +170,6 @@ importers:
       '@types/git-url-parse':
         specifier: ^9.0.3
         version: 9.0.3
-      '@types/micromatch':
-        specifier: ^4.0.9
-        version: 4.0.9
 
 packages:
 
@@ -1627,9 +1624,6 @@ packages:
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
 
-  '@types/braces@3.0.4':
-    resolution: {integrity: sha512-0WR3b8eaISjEW7RpZnclONaLFDf7buaowRHdqLp4vLj54AsSAYWfh3DRbfiYJY9XDxMgx1B4sE1Afw2PGpuHOA==}
-
   '@types/concat-stream@2.0.3':
     resolution: {integrity: sha512-3qe4oQAPNwVNwK4C9c8u+VJqv9kez+2MR4qJpoPFfXtgxxif1QbFusvXzK0/Wra2VX07smostI2VMmJNSpZjuQ==}
 
@@ -1692,9 +1686,6 @@ packages:
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
-
-  '@types/micromatch@4.0.9':
-    resolution: {integrity: sha512-7V+8ncr22h4UoYRLnLXSpTxjQrNUXtWHGeMPRJt1nULXI57G9bIcpyrHlmrQ7QK24EyyuXvYcSSWAM8GA9nqCg==}
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
@@ -6548,8 +6539,6 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.5
 
-  '@types/braces@3.0.4': {}
-
   '@types/concat-stream@2.0.3':
     dependencies:
       '@types/node': 22.4.1
@@ -6620,10 +6609,6 @@ snapshots:
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
-
-  '@types/micromatch@4.0.9':
-    dependencies:
-      '@types/braces': 3.0.4
 
   '@types/ms@0.7.34': {}
 

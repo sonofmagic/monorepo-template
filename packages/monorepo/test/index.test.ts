@@ -1,6 +1,8 @@
 import set from 'set-value'
-import path from 'pathe'
-import { main } from '@/index'
+// import path from 'pathe'
+// import mm from 'micromatch'
+// import { main } from '@/index'
+// import { getTargets } from '@/targets'
 
 describe('index', () => {
   it('foo bar', () => {
@@ -13,8 +15,16 @@ describe('index', () => {
     })
   })
 
-  it.skip('copy', async () => {
-    const target = path.resolve(__dirname, './fixtures/assets')
-    await main(target)
-  })
+  // it.skip('copy', async () => {
+  //   const target = path.resolve(__dirname, './fixtures/assets')
+  //   await main(target)
+  // })
+
+  // it('should ', () => {
+  //   const targets = getTargets()
+  //   const res = mm.isMatch('.changeset/config.json', targets, {
+  //     contains: true,
+  //   })
+  //   expect(res).toBe(true)
+  // })
 })
