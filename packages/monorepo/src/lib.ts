@@ -7,6 +7,7 @@ import get from 'get-value'
 import set from 'set-value'
 import klaw from 'klaw'
 import PQueue from 'p-queue'
+import checkbox from '@inquirer/checkbox'
 import { logger } from './logger'
 import { escapeStringRegexp, isMatch } from './utils'
 import { GitClient } from './git'
@@ -25,13 +26,26 @@ const assetsDir = path.join(__dirname, '../assets')
 const cwd = process.cwd()
 
 export async function main(opts: CliOpts) {
-  const { outDir = '', raw } = opts
+  const { outDir = '', raw, interactive } = opts
   const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
   const gitClient = new GitClient({
     baseDir: cwd,
   })
   const repoName = await gitClient.getRepoName()
-  const targets = getTargets(raw)
+  let targets = getTargets(raw)
+
+  if (interactive) {
+    targets = await checkbox({
+      message: '选择你需要的文件',
+      choices: targets.map((x) => {
+        return {
+          value: x,
+          checked: true,
+        }
+      }),
+    })
+  }
+
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
