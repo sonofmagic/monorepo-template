@@ -7,7 +7,9 @@
   "keywords": [],
   "scripts": {
     "start": "tsx src/index.ts",
-    "monorepo": "npx @icebreakers/monorepo --outDir=dist"
+    "mono": "npx @icebreakers/monorepo --outDir=dist/common",
+    "mono:raw": "npx @icebreakers/monorepo --outDir=dist/raw --raw",
+    "mono:i": "npx @icebreakers/monorepo --outDir=dist/interactive"
   },
   "dependencies": {
     "@icebreakers/bar": "workspace:*",
@@ -15,5 +17,6 @@
   },
   "devDependencies": {
     "@icebreakers/monorepo": "workspace:*"
-  }
+  },
+  "//----------": "pnpm monorepo"
 }
