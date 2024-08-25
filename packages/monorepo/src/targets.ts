@@ -26,7 +26,7 @@ export function getTargets(raw?: boolean) {
   ]
   if (!raw) {
     // renovate
-    list.push('.github', 'LICENSE', 'renovate.json', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md')
+    list.push('.github', 'LICENSE', 'renovate.json', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'netlify.toml')
   }
   return list
 }
