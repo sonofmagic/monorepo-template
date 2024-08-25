@@ -36,6 +36,34 @@ layout: doc
 - `Github Action` 自动发布 `npm`, `github release` 包 (`changeset`)
 - 配置文件可控升级 `@icebreakers/monorepo`
 
+## 自动发包
+
+首先你需要做一些配置：
+
+首先你需要安装 `Github App`: [changeset-bot](https://github.com/apps/changeset-bot)
+
+然后，来到你复制这个模板仓库(`repo`), 上方里的 `Settings` Tab 页面
+
+### Github PR 与发包
+
+选择 `Code and automation` > `Actions` > `General`
+
+然后在右侧 `Workflow permissions` 下方选择: `Read and write permissions`
+
+然后选中 `Allow GitHub Actions to create and approve pull requests`
+
+然后保存即可。
+
+这样 `changeset` 就有权限对你进行 `PR` 和代码版本更新了！
+
+### npm 发包
+
+选择 `Security` > `Secrets and variables` > `Actions`
+
+然后在右侧的 `Repository secrets` 设置你的 `NPM_TOKEN` 这个可以在你的 `npmjs.com` 账号中生成获取
+
+(假如你需要单元测试代码覆盖率，你需要设置 `CODECOV_TOKEN`)
+
 ## eslint
 
 引用到的规则参考 `https://eslint.icebreaker.top/`

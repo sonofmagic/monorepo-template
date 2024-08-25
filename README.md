@@ -2,6 +2,8 @@
 
 [![codecov](https://codecov.io/gh/sonofmagic/monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/monorepo-template)
 
+[Documention](https://monorepo.icebreaker.top/)
+
 use pnpm, turborepo and changeset to manage your monorepo
 
 ## How to use ?
