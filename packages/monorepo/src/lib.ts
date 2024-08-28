@@ -91,6 +91,13 @@ export async function main(opts: CliOpts) {
           })
           logger.success(targetPath)
         }
+        else if (relPath === 'Dockerfile' && !(await fs.exists(targetPath))) {
+          await fs.copy(
+            file.path,
+            targetPath,
+          )
+          logger.success(targetPath)
+        }
         else {
           await fs.copy(
             file.path,
