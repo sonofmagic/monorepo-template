@@ -66,9 +66,11 @@ export async function main(opts: CliOpts) {
             const sourcePkgJson = await fs.readJson(sourcePath) as PackageJson
             const targetPkgJson = await fs.readJson(targetPath) as PackageJson
 
+            const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
             const deps = get(sourcePkgJson, 'dependencies', { default: {} })
             const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
 
+            set(targetPkgJson, 'packageManager', packageManager)
             Object.entries(deps).forEach((x) => {
               set(targetPkgJson, `dependencies.${x[0]}`, x[1], { preservePaths: false })
             })
