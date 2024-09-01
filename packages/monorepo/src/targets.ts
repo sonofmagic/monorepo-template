@@ -10,6 +10,7 @@ export function getTargets(raw?: boolean) {
     'commitlint.config.ts',
     'eslint.config.js',
     'lint-staged.config.js',
+    'stylelint.config.js',
     'package.json',
     // pnpm
     'pnpm-workspace.yaml',
