@@ -15,6 +15,14 @@ describe('index', () => {
     })
   })
 
+  it('foo', () => {
+    const obj = {}
+    set(obj, '@pnpm/workspace.find-packages'.replaceAll('.', '\\.'), '1.1.1', { preservePaths: false })
+    expect(obj).toEqual({
+      '@pnpm/workspace.find-packages': '1.1.1',
+    })
+  })
+
   // it.skip('copy', async () => {
   //   const target = path.resolve(__dirname, './fixtures/assets')
   //   await main(target)

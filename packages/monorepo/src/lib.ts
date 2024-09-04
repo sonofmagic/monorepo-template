@@ -72,10 +72,10 @@ export async function main(opts: CliOpts) {
 
             set(targetPkgJson, 'packageManager', packageManager)
             Object.entries(deps).forEach((x) => {
-              set(targetPkgJson, `dependencies.${x[0]}`, x[1], { preservePaths: false })
+              set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
             })
             Object.entries(devDeps).forEach((x) => {
-              set(targetPkgJson, `devDependencies.${x[0]}`, x[1], { preservePaths: false })
+              set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
             })
 
             await fs.writeJson(targetPath, targetPkgJson, {
