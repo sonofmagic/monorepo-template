@@ -1,11 +1,11 @@
+import get from 'get-value'
 import type { SimpleGit, SimpleGitOptions } from 'simple-git'
 import { simpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
-import get from 'get-value'
 
 export class GitClient {
   private client: SimpleGit
-  constructor(options: Partial<SimpleGitOptions>) {
+  constructor(options: Partial<SimpleGitOptions> = {}) {
     this.client = simpleGit(options)
   }
 
@@ -13,11 +13,17 @@ export class GitClient {
     return this.client.listConfig()
   }
 
-  async getRepoName() {
+  async getGitUrl() {
     const listConfig = await this.listConfig()
     const x = get(listConfig.all, 'remote.origin.url')
     if (x) {
-      const url = gitUrlParse(x)
+      return gitUrlParse(x)
+    }
+  }
+
+  async getRepoName() {
+    const url = await this.getGitUrl()
+    if (url) {
       return `${url.owner}/${url.name}`
     }
   }

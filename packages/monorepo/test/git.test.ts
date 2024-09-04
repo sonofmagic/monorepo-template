@@ -1,6 +1,6 @@
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
-import { GitClient } from '@/git'
+import { GitClient } from '../../../scripts/git'
 
 describe('git client', () => {
   const client = new GitClient({
