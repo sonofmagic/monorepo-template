@@ -64,15 +64,15 @@ layout: doc
 
 ## 配置自动发包
 
-[changesets](https://github.com/changesets/changesets)
+本项目使用 [changesets](https://github.com/changesets/changesets) 进行包的发布和 `changelog` 的生成
 
-首先你需要做一些配置：
+在使用的时候，首先你需要做一些配置：
 
-首先你需要安装 `Github App`: [changeset-bot](https://github.com/apps/changeset-bot)
+1. 首先你需要安装 `Github App`: [changeset-bot](https://github.com/apps/changeset-bot)
 
-然后，来到你复制这个模板仓库(`repo`), 上方里的 `Settings` Tab 页面
+2. 然后，来到你复制这个模板仓库(`repo`), 上方里的 `Settings` Tab 页面，进行 2 个操作:
 
-### Github PR 与发包
+### 1. 在 Github 进行 PR 和发包
 
 选择 `Code and automation` > `Actions` > `General`
 
@@ -84,7 +84,7 @@ layout: doc
 
 这样 `changeset` 就有权限对你进行 `PR` 和代码版本更新了！
 
-### npm 发包
+### 2. 在 npm 发包
 
 选择 `Security` > `Secrets and variables` > `Actions`
 
@@ -92,13 +92,13 @@ layout: doc
 
 (假如你需要单元测试代码覆盖率，你需要设置 `CODECOV_TOKEN`)
 
-### eslint + stylelint 校验
+## eslint + stylelint 校验
 
 引用到的规则参考 `https://eslint.icebreaker.top/`
 
 [Github 地址](https://github.com/sonofmagic/eslint-config)
 
-## 自带脚本
+## 内置脚本
 
 - `pnpm script:clean` 删去大部分的初始`repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板
 - `pnpm script:init` 初始化一些 `package.json` 里的字段
@@ -106,7 +106,7 @@ layout: doc
 
 ## 配置同步方式
 
-`npx @icebreakers/monorepo@latest`
+在根目录下执行: `npx @icebreakers/monorepo@latest`
 
 这个命令会把所有的文件从最新版本，对你本地进行覆盖，你可以从 `git` 暂存区把你不想要的文件剔除
 
