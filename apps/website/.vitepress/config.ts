@@ -13,5 +13,9 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/sonofmagic/monorepo-template' },
     ],
+    outline: {
+      label: '目录',
+      level: [2, 3],
+    },
   },
 })

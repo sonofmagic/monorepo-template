@@ -1,5 +1,4 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: doc
 ---
 
@@ -17,6 +16,51 @@ layout: doc
 - 配置文件同步升级 `npx @icebreakers/monorepo@latest`
 
 ## 如何使用？
+
+首先，访问本模板的 [Github 地址](https://github.com/sonofmagic/monorepo-template)，然后按照一下条件:
+
+- 有 `Github` 账号的，可以登录后，点击右上角的 `Use this template` 按钮
+
+- 没有 `Github` 账号的，可以点击 `Code` 按钮，把这个仓库的源码，或 `clone` 或下载到本地
+
+然后在根目录 (`pnpm-workspace.yaml` 所在的位置) 执行 `pnpm i` 去安装依赖
+
+> 没有 `pnpm` 的，可以使用 `npm i -g pnpm` 来进行安装。
+>
+> 什么! 你不会连 [`nodejs`](https://nodejs.org/en) 还没安装吧？
+
+## 清除默认的包(可选)
+
+执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板。
+
+执行完成之后再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交来锁定版本
+
+## 模板包介绍
+
+默认把 `repo` 放在 `packages` 和 `apps` 这 `2` 个目录里面
+
+### packages
+
+- `@icebreakers/bar` - `tsup` 打包的库模板
+- `@icebreakers/foo` - `unbuild` 打包的库模板（不推荐,`unbuild` 很久没有更新了）
+- `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接使用 `npx @icebreakers/monorepo` 执行远端 `cli` 命令
+
+其中 `tsup` 是使用 `esbuild` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
+
+本来笔者是使用 `rollup` 来进行打包的 ([`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss/tree/main/packages/weapp-tailwindcss) 就是 `rollup` 打出来的) ，但是不够傻瓜无脑，所以用了 `tsup`
+
+### apps
+
+- `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 模板
+- `@icebreakers/website` - 文档网站模板，也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
+
+## 更新包的依赖
+
+在根目录中执行 `pnpm up -rLi` 来进行包的交互式更新，下面是解释:
+
+- `-r` : recursive 递归选中所有 `repo`
+- `-L` : latest 更新到最新
+- `-i` : interactive 交互式
 
 ## 配置自动发包
 
@@ -53,6 +97,12 @@ layout: doc
 引用到的规则参考 `https://eslint.icebreaker.top/`
 
 [Github 地址](https://github.com/sonofmagic/eslint-config)
+
+## 自带脚本
+
+- `pnpm script:clean` 删去大部分的初始`repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板
+- `pnpm script:init` 初始化一些 `package.json` 里的字段
+- `pnpm script:sync` 使用 `cnpm sync` 功能，把本地所有的包，同步到 [`npmmirror`](https://www.npmmirror.com/) 上，需要安装 `cnpm`
 
 ## 配置同步方式
 
