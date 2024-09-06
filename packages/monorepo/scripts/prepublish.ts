@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
-import path from 'pathe'
 import fs from 'fs-extra'
+import path from 'pathe'
 import { logger } from '../src/logger'
 import { getTargets } from '../src/targets'
 
