@@ -17,5 +17,6 @@ export default defineConfig({
       label: '目录',
       level: [2, 3],
     },
+    logo: '/logo.jpg',
   },
 })
