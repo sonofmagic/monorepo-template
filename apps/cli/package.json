@@ -1,5 +1,6 @@
 {
   "name": "@icebreakers/cli",
+  "type": "module",
   "version": "0.0.0",
   "description": "icebreaker's demo cli",
   "author": "",
@@ -13,11 +14,22 @@
     "url": "https://github.com/sonofmagic/monorepo-template/issues"
   },
   "keywords": [],
+  "bin": {
+    "ice": "./dev/index.ts"
+  },
   "scripts": {
     "start": "tsx src/index.ts",
     "mono": "npx @icebreakers/monorepo --outDir=dist/common",
     "mono:raw": "npx @icebreakers/monorepo --outDir=dist/raw --raw",
-    "mono:i": "npx @icebreakers/monorepo --outDir=dist/interactive -i"
+    "mono:i": "npx @icebreakers/monorepo --outDir=dist/interactive -i",
+    "dev": "tsup --watch --sourcemap",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "release": "pnpm publish",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublish": "tsx scripts/prepublish.ts"
   },
   "dependencies": {
     "@icebreakers/bar": "workspace:*",
@@ -26,5 +38,10 @@
   "devDependencies": {
     "@icebreakers/monorepo": "workspace:*"
   },
-  "//----------": "pnpm monorepo"
+  "//----------": "pnpm monorepo",
+  "publishConfig": {
+    "bin": {
+      "ice": "./bin/index.js"
+    }
+  }
 }
