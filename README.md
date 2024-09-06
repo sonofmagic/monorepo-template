@@ -10,6 +10,8 @@ use pnpm, turborepo and changeset to manage your monorepo
 
 click use `Use this template` button right side, and add your project.
 
+Then run `npm run script:clean` to remove some pkgs
+
 ## Npm publish
 
 add `secrets.NPM_TOKEN` (created by npm) to your `Github` `Actions secrets and variables` and then
@@ -22,6 +24,8 @@ use `@changesets/changelog-github` to generate changelog.
 
 remember to update the `"changelog": ["@changesets/changelog-github", { "repo": "<org>/<repo>" }]` in `.changeset/config.json`
 
-## Upgrade
+## Upgrade Template
 
-`npx @icebreakers/monorepo@latest`
+run `npx @icebreakers/monorepo@latest`
+
+More Options See [Documention](https://monorepo.icebreaker.top/)

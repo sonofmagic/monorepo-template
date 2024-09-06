@@ -1,42 +1,26 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: doc
-
-# hero:
-#   name: "icebreaker's monorepo"
-#   text: "auto upgrade monorepo"
-#   tagline: My great project tagline
-#   actions:
-#     - theme: brand
-#       text: Markdown Examples
-#       link: /markdown-examples
-#     - theme: alt
-#       text: API Examples
-#       link: /api-examples
-
-# features:
-#   - title: Feature A
-#     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-#   - title: Feature B
-#     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-#   - title: Feature C
-#     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 
 # icebreaker's monorepo 模板
 
 ## 功能特性
 
-- 功能强大的 `monorepo` (`pnpm` + `turborepo`)
+- 强大的 `monorepo` 管理 (`pnpm` + `turborepo`)
 - 单元测试 (`vitest`)
-- 全部都是 `typescript`, 包括 `cli bin`
-- 代码规范与质量 (`eslint` + `@icebreakers/eslint-config`)
+- 包括 `cli bin` 全部都是 `typescript`
+- 代码规范与质量 (`eslint` + `@icebreakers/eslint-config` + `@icebreakers/stylelint-config`)
 - `git` 提交规范 (`husky` + `commitlint` + `lint-staged`)
 - `pnpm` 部署 `Docker` 模板
 - `Github Action` 自动发布 `npm`, `github release` 包 (`changeset`)
-- 配置文件可控升级 `@icebreakers/monorepo`
+- 配置文件同步升级 `npx @icebreakers/monorepo@latest`
 
-## 自动发包
+## 如何使用？
+
+## 配置自动发包
+
+[changesets](https://github.com/changesets/changesets)
 
 首先你需要做一些配置：
 
@@ -64,13 +48,13 @@ layout: doc
 
 (假如你需要单元测试代码覆盖率，你需要设置 `CODECOV_TOKEN`)
 
-## eslint
+### eslint + stylelint 校验
 
 引用到的规则参考 `https://eslint.icebreaker.top/`
 
 [Github 地址](https://github.com/sonofmagic/eslint-config)
 
-## 升级方式
+## 配置同步方式
 
 `npx @icebreakers/monorepo@latest`
 
