@@ -1,10 +1,11 @@
 import get from 'get-value'
-import type { SimpleGit, SimpleGitOptions } from 'simple-git'
-import { simpleGit } from 'simple-git'
 import gitUrlParse from 'git-url-parse'
+import { simpleGit } from 'simple-git'
+import type { ConfigValues, SimpleGit, SimpleGitOptions } from 'simple-git'
 
 export class GitClient {
   private client: SimpleGit
+  #config: ConfigValues | undefined
   constructor(options: Partial<SimpleGitOptions> = {}) {
     this.client = simpleGit(options)
   }
@@ -13,9 +14,24 @@ export class GitClient {
     return this.client.listConfig()
   }
 
-  async getGitUrl() {
+  async init() {
     const listConfig = await this.listConfig()
-    const x = get(listConfig.all, 'remote.origin.url')
+    this.#config = listConfig.all
+    return this.#config
+  }
+
+  async getConfig() {
+    if (this.#config) {
+      return this.#config
+    }
+    else {
+      return await this.init()
+    }
+  }
+
+  async getGitUrl() {
+    const config = await this.getConfig()
+    const x = get(config, 'remote.origin.url')
     if (x) {
       return gitUrlParse(x)
     }
@@ -25,6 +41,16 @@ export class GitClient {
     const url = await this.getGitUrl()
     if (url) {
       return `${url.owner}/${url.name}`
+    }
+  }
+
+  async getUser() {
+    const config = await this.getConfig()
+    const name: string = get(config, 'user.name')
+    const email: string = get(config, 'user.email')
+    return {
+      name,
+      email,
     }
   }
 }

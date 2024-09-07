@@ -21,4 +21,12 @@ describe('git client', () => {
     const y = `${url.owner}/${url.name}`
     expect(y).toBe('sonofmagic/weapp-tailwindcss')
   })
+
+  it('getUser', async () => {
+    const user = await client.getUser()
+    expect(user).toBeTruthy()
+    expect(user.email).toBeTruthy()
+    expect(user.name).toBeTruthy()
+    console.log('[Git getUser]', user)
+  })
 })

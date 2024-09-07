@@ -1,7 +1,7 @@
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
+import fs from 'fs-extra'
 import path from 'pathe'
 import type { PackageJson } from 'pkg-types'
-import fs from 'fs-extra'
 
 export async function getWorkspacePackages(cwd: string) {
   const packages = await findWorkspacePackages(cwd)
@@ -18,7 +18,8 @@ export async function getWorkspacePackages(cwd: string) {
   )
     .filter((x) => {
       return x.status === 'fulfilled'
-    }).map((x) => {
+    })
+    .map((x) => {
       return x.value
     })
 }

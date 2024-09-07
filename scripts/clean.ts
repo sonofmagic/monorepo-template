@@ -1,5 +1,5 @@
-import { rimraf } from 'rimraf'
 import path from 'pathe'
+import { rimraf } from 'rimraf'
 
 const dirs = [
   'packages/monorepo',
