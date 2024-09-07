@@ -24,12 +24,8 @@
     "mono:i": "npx @icebreakers/monorepo --outDir=dist/interactive -i",
     "dev": "tsup --watch --sourcemap",
     "build": "tsup",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "release": "pnpm publish",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepublish": "tsx scripts/prepublish.ts"
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@icebreakers/bar": "workspace:*",
