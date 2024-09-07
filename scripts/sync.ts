@@ -7,9 +7,9 @@ const cwd = process.cwd()
 const packages = await getWorkspacePackages(cwd)
 
 for (const project of packages) {
-  if (project.pkgJson.name) {
+  if (project.manifest.name) {
     await execa({
       stdout: ['pipe', 'inherit'],
-    })`cnpm sync ${project.pkgJson.name}`
+    })`cnpm sync ${project.manifest.name}`
   }
 }

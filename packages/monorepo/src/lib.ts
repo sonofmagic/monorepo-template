@@ -46,6 +46,13 @@ export async function main(opts: CliOpts) {
     })
   }
 
+  const removeDirs = ['scripts']
+  for (const dir of removeDirs) {
+    if (targets.includes(dir)) {
+      await fs.remove(path.resolve(absOutDir, dir))
+    }
+  }
+
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
