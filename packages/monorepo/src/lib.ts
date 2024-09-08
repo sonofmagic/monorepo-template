@@ -25,6 +25,14 @@ const __dirname = path.dirname(__filename)
 const assetsDir = path.join(__dirname, '../assets')
 const cwd = process.cwd()
 
+const scripts = {
+  'script:init': 'tsx scripts/init.ts',
+  'script:sync': 'tsx scripts/sync.ts',
+  'script:clean': 'tsx scripts/clean.ts',
+}
+
+const scriptsEntries = Object.entries(scripts)
+
 export async function main(opts: CliOpts) {
   const { outDir = '', raw, interactive } = opts
   const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
@@ -84,6 +92,9 @@ export async function main(opts: CliOpts) {
             Object.entries(devDeps).forEach((x) => {
               set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
             })
+            for (const [k, v] of scriptsEntries) {
+              set(targetPkgJson, `scripts.${k}`, v)
+            }
 
             await fs.writeJson(targetPath, targetPkgJson, {
               spaces: 2,

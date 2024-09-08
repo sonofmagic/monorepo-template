@@ -4,14 +4,6 @@ import set from 'set-value'
 import type { PackageJson } from 'pkg-types'
 import type { Context } from './context'
 
-const scripts = {
-  'script:init': 'tsx scripts/init.ts',
-  'script:sync': 'tsx scripts/sync.ts',
-  'script:clean': 'tsx scripts/clean.ts',
-}
-
-const scriptsEntries = Object.entries(scripts)
-
 export default async function (ctx: Context) {
   const { git, projects, cwd, workspaceFilepath } = ctx
   const gitUrl = await git.getGitUrl()
@@ -28,11 +20,7 @@ export default async function (ctx: Context) {
       if (directory) {
         repository.directory = directory
       }
-      else {
-        for (const [k, v] of scriptsEntries) {
-          set(pkgJson, `scripts.${k}`, v)
-        }
-      }
+
       set(pkgJson, 'repository', repository)
       if (gitUser) {
         set(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
