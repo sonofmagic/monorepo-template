@@ -26,9 +26,9 @@
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "commit": "commit",
-    "script:init": "tsx scripts/init.ts",
-    "script:sync": "tsx scripts/sync.ts",
-    "script:clean": "tsx scripts/clean.ts"
+    "script:init": "tsx scripts/monorepo/init.ts",
+    "script:sync": "tsx scripts/monorepo/sync.ts",
+    "script:clean": "tsx scripts/monorepo/clean.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",

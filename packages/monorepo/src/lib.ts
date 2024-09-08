@@ -8,7 +8,7 @@ import PQueue from 'p-queue'
 import path from 'pathe'
 import set from 'set-value'
 import type { PackageJson } from 'pkg-types'
-import { GitClient } from '../../../scripts/git'
+import { GitClient } from '../../../scripts/monorepo/git'
 import { logger } from './logger'
 import { getTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
@@ -26,9 +26,9 @@ const assetsDir = path.join(__dirname, '../assets')
 const cwd = process.cwd()
 
 const scripts = {
-  'script:init': 'tsx scripts/init.ts',
-  'script:sync': 'tsx scripts/sync.ts',
-  'script:clean': 'tsx scripts/clean.ts',
+  'script:init': 'tsx scripts/monorepo/init.ts',
+  'script:sync': 'tsx scripts/monorepo/sync.ts',
+  'script:clean': 'tsx scripts/monorepo/clean.ts',
 }
 
 const scriptsEntries = Object.entries(scripts)

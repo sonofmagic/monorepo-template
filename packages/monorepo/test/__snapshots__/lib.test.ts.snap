@@ -4,9 +4,9 @@ exports[`lib > setPkgJson casae 0 1`] = `
 {
   "packageManager": "",
   "scripts": {
-    "script:clean": "tsx scripts/clean.ts",
-    "script:init": "tsx scripts/init.ts",
-    "script:sync": "tsx scripts/sync.ts",
+    "script:clean": "tsx scripts/monorepo/clean.ts",
+    "script:init": "tsx scripts/monorepo/init.ts",
+    "script:sync": "tsx scripts/monorepo/sync.ts",
   },
 }
 `;
@@ -23,9 +23,9 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "prepare": "husky",
     "publish-packages": "turbo run build lint test && changeset version && changeset publish",
     "release": "changeset",
-    "script:clean": "tsx scripts/clean.ts",
-    "script:init": "tsx scripts/init.ts",
-    "script:sync": "tsx scripts/sync.ts",
+    "script:clean": "tsx scripts/monorepo/clean.ts",
+    "script:init": "tsx scripts/monorepo/init.ts",
+    "script:sync": "tsx scripts/monorepo/sync.ts",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
   },

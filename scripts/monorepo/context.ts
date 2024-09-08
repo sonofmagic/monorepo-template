@@ -5,7 +5,7 @@ import { getWorkspacePackages } from './utils'
 
 export async function createContext(cwd = process.cwd()) {
   const git = new GitClient()
-  const workspaceFilepath = path.resolve(import.meta.dirname, '../pnpm-workspace.yaml')
+  const workspaceFilepath = path.resolve(import.meta.dirname, '../../pnpm-workspace.yaml')
   const projects = await getWorkspacePackages(cwd)
   return {
     cwd,
