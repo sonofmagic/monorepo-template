@@ -33,6 +33,22 @@ const scripts = {
 
 const scriptsEntries = Object.entries(scripts)
 
+export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJson) {
+  const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
+  const deps = get(sourcePkgJson, 'dependencies', { default: {} })
+  const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
+  set(targetPkgJson, 'packageManager', packageManager)
+  Object.entries(deps).forEach((x) => {
+    set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+  })
+  Object.entries(devDeps).forEach((x) => {
+    set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+  })
+  for (const [k, v] of scriptsEntries) {
+    set(targetPkgJson, `scripts.${k}`, v)
+  }
+}
+
 export async function main(opts: CliOpts) {
   const { outDir = '', raw, interactive } = opts
   const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
@@ -80,22 +96,7 @@ export async function main(opts: CliOpts) {
           if (await fs.exists(targetPath) && await fs.exists(sourcePath)) {
             const sourcePkgJson = await fs.readJson(sourcePath) as PackageJson
             const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-
-            const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
-            const deps = get(sourcePkgJson, 'dependencies', { default: {} })
-            const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
-
-            set(targetPkgJson, 'packageManager', packageManager)
-            Object.entries(deps).forEach((x) => {
-              set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
-            })
-            Object.entries(devDeps).forEach((x) => {
-              set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
-            })
-            for (const [k, v] of scriptsEntries) {
-              set(targetPkgJson, `scripts.${k}`, v)
-            }
-
+            setPkgJson(sourcePkgJson, targetPkgJson)
             await fs.writeJson(targetPath, targetPkgJson, {
               spaces: 2,
             })
