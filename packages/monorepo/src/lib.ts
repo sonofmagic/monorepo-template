@@ -70,7 +70,7 @@ export async function main(opts: CliOpts) {
     })
   }
 
-  const removeDirs = ['scripts']
+  const removeDirs = ['scripts/monorepo']
   for (const dir of removeDirs) {
     if (targets.includes(dir)) {
       await fs.remove(path.resolve(absOutDir, dir))
