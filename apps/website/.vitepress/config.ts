@@ -9,6 +9,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '主页', link: '/' },
+      { text: '思考', link: '/thinking' },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/sonofmagic/monorepo-template' },

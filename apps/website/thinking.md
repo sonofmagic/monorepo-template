@@ -6,11 +6,11 @@
 
 也对这个模板做了不少的改进，趁这个机会，讲一讲它的一个演变过程，以及我对 `monorepo` 的一些思考。
 
-## 先从由来开始说起
+## 它的由来
 
 为了应对越来越多的发包场景，我创建了 [npm-lib-template](https://github.com/sonofmagic/npm-lib-template) 模板
 
-这是一个单git仓单npm包模板，使用 rollup 进行打包，然后再进行发布
+这是一个 `git` 单仓单 `npm` 包模板，使用 `rollup` 进行打包，然后再发布到 `npm` 和 `github`
 
 随着项目不断地变大，发现在编写包地时候，经常需要去编写对应地文档网站，或者是使用其他包去进行引用，然后再次发包的情况
 
@@ -18,7 +18,7 @@
 
 于是我决定要创建一个 [monorepo-template](https://github.com/sonofmagic/monorepo-template) 项目模板
 
-## 选型
+## 技术选型
 
 ### 管理
 
@@ -48,4 +48,8 @@ tsx 也很好用，非常适合调试
 
 .github 目录下，提供了默认的 CI/CD 流程，还有用户提 issue 时候的模板，只需要少许配置就能自动发 npm 包，打 git tag 和发 github 包
 
-除此之外还有，许多目录下的 md 文档，也是为了 Github
+除此之外还有，许多目录下的 md 文档，也是为了 Github 的显示
+
+## 部署
+
+`netlify.toml` 把文档网站部署到 `netlify`

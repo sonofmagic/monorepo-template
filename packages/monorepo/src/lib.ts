@@ -59,6 +59,7 @@ export async function main(opts: CliOpts) {
   let targets = getTargets(raw)
 
   if (interactive) {
+    // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
     targets = await checkbox({
       message: '选择你需要的文件',
       choices: targets.map((x) => {
