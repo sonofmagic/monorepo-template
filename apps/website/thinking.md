@@ -2,9 +2,9 @@
 
 ## 前言
 
-最近自己新开的项目都用了 [monorepo-template](https://github.com/sonofmagic/monorepo-template) 模板来生成，
+最近在自己的新项目中，我创建并使用了 [monorepo-template](https://github.com/sonofmagic/monorepo-template) 模板，并不断地做了不少改进。
 
-也对这个模板做了不少的改进，趁这个机会，讲一讲它的一个演变过程，以及我对 `monorepo` 的一些思考。
+在此，我想借此机会分享一下这个模板的演变过程，以及我对 `monorepo` 的一些思考。
 
 ## 它的由来
 
@@ -12,58 +12,69 @@
 
 这是一个 `git` 单仓单 `npm` 包模板，使用 `rollup` 进行打包，然后再发布到 `npm` 和 `github`
 
-随着项目不断地变大，发现在编写包地时候，经常需要去编写对应地文档网站，或者是使用其他包去进行引用，然后再次发包的情况
+然而，在后续开发中，我发现单仓库的模式在某些场景下难以应对。
 
-这种时候，[npm-lib-template](https://github.com/sonofmagic/npm-lib-template) 模板就难以满足我的需求
+例如，当需要引用其他自己的包，进行单元测试并再次发包时，这时候往往要在多个项目之间进行来回的切换更改，管理复杂度会迅速上升。
 
-于是我决定要创建一个 [monorepo-template](https://github.com/sonofmagic/monorepo-template) 项目模板
+`git submodule` 也是另外一条路子，但是我对每次都要同步 `hash` 感到深恶痛绝，遂放弃 (不过某些极其特殊场景的实现，还是只能利用这个功能)。
+
+因此，我决定要创建一个 [monorepo 项目模板](https://github.com/sonofmagic/monorepo-template) ，以应对这些需求。
 
 ## 技术选型
 
-### 管理
+### 管理工具
 
-在 monorepo 的管理上，我使用了 `pnpm` + `turborepo` 的方式，原因是因为它们快
+在 `monorepo` 的管理上，我选择了 `pnpm` 和 `turborepo` 这对组合，原因很简单：它们都非常快。
 
-`pnpm` 节省磁盘空间，是为快也， `turborepo` 有缓存，是为快也 too
+- `pnpm` 又可以节省磁盘空间，又能够链接自特定的内容寻址存储库，是为快也
+- `turborepo` 有构建缓存，是为快也`too`.
 
 ### 语言与打包
 
-所有类库项目使用纯 `typescript` 来编写，再使用 `tsup` / `unbuild` 进行打包，默认打出 `cjs` 和 `esm` 格式，再通过 `package.json` 里的字段进行分发
+我选择使用纯 `TypeScript` 来编写所有类库项目，并使用 `tsup` / `unbuild` 进行打包，默认输出格式为 `cjs` 和 `esm`，并利用 `package.json` 中的 `exports` 字段进行分发。
 
-直接调试使用 `tsx`，它非常适合调试 `typescript` 编写的 `cli` 项目
+### 直接调试
 
-### 测试
+在直接调试时，我抛弃了 `dist` + `sourcemap` 的调试方式，使用了 `tsx`，它非常适合调试 `TypeScript` 编写的 `CLI` 项目。
 
-选用了 `vitest`，快的同时对 `cjs` 和 `esm` 还有 `typescript` 支持都很好
+### 测试框架
 
-而且也比较支持 `monorepo`，当然这方面其实你可以利用 `turbo` 来进行单个的 `vitest` 任务，也可以利用 `vitest.workspace` 来进行多 `vitest` 任务
+测试方面，我选择了 `vitest`。
 
-本来使用的 `jest` + `ts-jest`，但是这个支持混合模块不太好
+它不仅速度快，还很好地支持 `cjs`、`esm` 和 `TypeScript`，同时也适合 `monorepo` 项目。你可以利用 `turbo` 来执行单个的 `vitest` 任务，也可以利用 `vitest.workspace` 来进行多任务测试。
 
-### 代码规范与质量
+最初我使用的是 `jest` + `ts-jest`，但它对多格式的混合模块的支持不够理想，最终我选择了 `vitest`。
 
-使用 `eslint` 和 `stylelint` 使用 `@icebreakers/eslint-config` 和 `@icebreakers/stylelint-config` 来进行代码的规范化和格式化
+### 代码规范与质量控制
 
-这个是我自己提炼的代码规范包，添加 `.vscode` 来推荐一些插件，和设置一些编辑器选项
+为了保持代码质量，我使用了 `eslint` 和 `stylelint`，并基于自己的配置包 `@icebreakers/eslint-config` 和 `@icebreakers/stylelint-config` 来进行代码格式化和规范化。
 
-然后再通过 `husky` 添加 `git hook`，
+我还为 `.vscode` 配置了一些推荐插件和编辑器选项。
 
-与 `lint-staged` 配合对提交的代码进行校验，
+此外，通过 `husky` 添加了 `git hook`，配合 `lint-staged` 对提交的代码进行校验。与 `commitlint` 结合使用，以确保 `git` 提交信息符合规范。
 
-与 `commitlint` 结合，对开发者提交的 `git` 信息进行规范化
+### 本地引用与发包替换
 
-### 发包
+利用 `publishConfig` 会在发包的时候替换 `package.json` 字段的方式，在本地包相互引用的时候，都使用 `Typescript` 源文件的方式导出，在 `publishConfig` 里定义的导出为，真正在不同环境中，指向 `dist` 中不同格式的产物地址。
 
-都使用的 `changesets`，它发布 `monorepo` 非常的好用
+通过这种方式，可以大大加速整个 `monorepo` 的开发测试速度，避免反复通过 `watch` 来构建 `dist` 和 `sourcemap`，也避免一构建出产物，对应的 `Typescript` 文件，就报错的问题。
 
-### Github 相关
+### 发包流程
 
-`.github` 目录下，提供了默认的 CI/CD 流程，还有用户提 issue 时候的模板，只需要少许配置就能自动发 `npm` 包，打 `git tag` 和 `github release`
+我采用了 `changesets`，它在 `monorepo` 环境下发布非常方便。功能非常的多，具体可以查看官方文档。
 
-除此之外还有，许多目录下的 `md` 文档，也是为了 `Github` 的管理和显示
+### Github 相关配置
+
+在 `.github` 目录下，我提供了默认的 `CI/CD` 流程配置，以及用户提交 `issue` 时的模板。经过少量配置后，就可以实现自动发布 `npm` 包、创建 `git tag` 以及生成 `GitHub release`。
+
+此外，模板里还有许多为 `GitHub` 显示优化的 `md` 文档。
 
 ## 部署
 
-`netlify.toml` 把文档网站部署到 `netlify`
+文档网站通过 `netlify.toml` 配置部署在 `Netlify` 上。最初我使用的是 `Vercel`，但由于**国内**访问速度的原因，最终迁移到了 `Netlify`。
 
-之前部署到 `vercel` 但是受限于访问速度原因，后迁移到 `netlify`
+## 总结
+
+从单仓到 `monorepo` 的转变不仅仅是对工具的选择，更是对项目管理模式的优化。通过采用合适的工具链，能够更高效地管理多包项目的同时，利用 `CI/CD` 确保代码的质量和发布的顺畅。
+
+希望这些思考对你有所帮助，也欢迎大家提出各种建议和意见。
