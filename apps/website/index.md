@@ -4,6 +4,8 @@ layout: doc
 
 # icebreaker's monorepo 模板
 
+[我对 monorepo 的一些思考](./thinking)
+
 ## 功能特性
 
 - 强大的 `monorepo` 管理 (`pnpm` + `turborepo`)
