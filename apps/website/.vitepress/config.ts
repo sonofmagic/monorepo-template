@@ -19,5 +19,11 @@ export default defineConfig({
       level: [2, 3],
     },
     logo: '/logo.jpg',
+    sidebar: {
+      '/': [
+        { text: '使用手册', link: '/' },
+        { text: '一些思考', link: 'thinking' },
+      ],
+    },
   },
 })

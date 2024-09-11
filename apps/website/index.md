@@ -4,7 +4,7 @@ layout: doc
 
 # icebreaker's monorepo 模板
 
-[我对 monorepo 的一些思考](./thinking)
+<!-- [我对 monorepo 的一些思考](./thinking) -->
 
 ## 功能特性
 
