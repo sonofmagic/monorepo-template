@@ -1,7 +1,5 @@
 # 我对 monorepo 的一些思考
 
-<!-- [使用手册](/) -->
-
 ## 前言
 
 最近在自己的新项目中，我创建并使用了 [monorepo-template](https://github.com/sonofmagic/monorepo-template) 模板，并不断地做了不少改进。
