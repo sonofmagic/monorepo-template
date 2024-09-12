@@ -33,7 +33,7 @@ layout: doc
 
 执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板。
 
-执行完成之后再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交来锁定版本
+执行完成之后再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `lock` 文件来锁定版本
 
 ## 模板包介绍
 
@@ -42,25 +42,23 @@ layout: doc
 ### packages
 
 - `@icebreakers/bar` - `tsup` 打包的库模板
-- `@icebreakers/foo` - `unbuild` 打包的库模板（不推荐,`unbuild` 很久没有更新了）
-- `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接使用 `npx @icebreakers/monorepo` 执行远端 `cli` 命令
+- `@icebreakers/foo` - `unbuild` 打包的库模板（不推荐, `unbuild` 很久没有更新了）
+- `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接使用 `npx @icebreakers/monorepo@latest` 执行远端 `cli` 命令
 
-其中 `tsup` 是使用 `esbuild` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
-
-本来笔者是使用 `rollup` 来进行打包的 ([`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss/tree/main/packages/weapp-tailwindcss) 就是 `rollup` 打出来的) ，但是不够傻瓜无脑，所以用了 `tsup`
+> `tsup` 是使用 `esbuild` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
 
 ### apps
 
-- `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 模板
-- `@icebreakers/website` - 文档网站模板，也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
+- `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 程序模板
+- `@icebreakers/website` - 文档网站模板，使用 `vitepress` ,也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
 
 ## 更新包的依赖
 
 在根目录中执行 `pnpm up -rLi` 来进行包的交互式更新，下面是解释:
 
-- `-r` : recursive 递归选中所有 `repo`
-- `-L` : latest 更新到最新
-- `-i` : interactive 交互式
+- `-r` : `recursive` 递归选中所有 `repo`
+- `-L` : `latest` 更新到最新
+- `-i` : `interactive` 交互式
 
 ## 配置自动发包
 

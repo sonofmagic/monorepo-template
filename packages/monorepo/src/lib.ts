@@ -1,3 +1,5 @@
+import type { PackageJson } from 'pkg-types'
+import type { CliOpts } from './types'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import checkbox from '@inquirer/checkbox'
@@ -7,12 +9,10 @@ import klaw from 'klaw'
 import PQueue from 'p-queue'
 import path from 'pathe'
 import set from 'set-value'
-import type { PackageJson } from 'pkg-types'
 import { GitClient } from '../../../scripts/monorepo/git'
 import { logger } from './logger'
 import { getTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
-import type { CliOpts } from './types'
 
 // const controller = new AbortController()
 
