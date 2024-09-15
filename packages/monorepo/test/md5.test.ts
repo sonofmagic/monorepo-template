@@ -1,4 +1,4 @@
-import { getFileHash, hasFileBufferChanged, hasFileChanged } from '@/md5'
+import { getFileHash, isFileChanged } from '@/md5'
 import fs from 'fs-extra'
 import path from 'pathe'
 
@@ -12,36 +12,45 @@ describe('md5', () => {
     ).toBe('c94e5b2028db1ba639d2fe1593eb6b37')
   })
 
-  it('hasFileBufferChanged case 0', async () => {
+  it('isFileChanged case 0', async () => {
     const str = await fs.readFile(
       testFilePath,
       'utf8',
     )
     expect(
-      hasFileBufferChanged(
+      isFileChanged(
         str,
         `${str}\n`,
       ),
     ).toBe(true)
   })
 
-  it('hasFileBufferChanged case 1', async () => {
+  it('isFileChanged case 1', async () => {
     const str = await fs.readFile(
       testFilePath,
       'utf8',
     )
     expect(
-      hasFileBufferChanged(
+      isFileChanged(
         str,
         str,
       ),
     ).toBe(false)
   })
 
-  it('hasFileChanged case 0', async () => {
-    const expected = await hasFileChanged(testFilePath, testFilePath)
+  it('isFileChanged case 2', async () => {
+    const str = await fs.readFile(
+      testFilePath,
+      'utf8',
+    )
+    const strBuf = await fs.readFile(
+      testFilePath,
+    )
     expect(
-      expected,
+      isFileChanged(
+        str,
+        strBuf,
+      ),
     ).toBe(false)
   })
 })

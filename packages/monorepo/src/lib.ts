@@ -1,3 +1,4 @@
+import type { Buffer } from 'node:buffer'
 import type { PackageJson } from 'pkg-types'
 import type { CliOpts } from './types'
 import process from 'node:process'
@@ -13,7 +14,7 @@ import pc from 'picocolors'
 import set from 'set-value'
 import { GitClient } from '../../../scripts/monorepo/git'
 import { logger } from './logger'
-import { hasFileChanged } from './md5'
+import { isFileChanged } from './md5'
 import { getTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
 // const controller = new AbortController()
@@ -97,37 +98,48 @@ export async function main(opts: CliOpts) {
       if (file.stats.isFile()) {
         const relPath = path.relative(assetsDir, file.path)
         const targetPath = path.resolve(absOutDir, relPath)
-        // const basename = path.basename(file.path)
-        if (relPath === 'package.json') {
-          const sourcePath = file.path
-          if (await fs.exists(targetPath) && await fs.exists(sourcePath)) {
-            const sourcePkgJson = await fs.readJson(sourcePath) as PackageJson
-            const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-            setPkgJson(sourcePkgJson, targetPkgJson)
-            await fs.writeJson(targetPath, targetPkgJson, {
-              spaces: 2,
-            })
-            logger.success(targetPath)
-          }
-        }
-        else if (relPath === '.changeset/config.json' && repoName && await fs.exists(file.path)) {
-          const changesetJson = await fs.readJson(file.path)
-          set(changesetJson, 'changelog.1.repo', repoName)
-          await fs.ensureDir(path.dirname(targetPath))
-          await fs.writeJson(targetPath, changesetJson, {
-            spaces: 2,
-          })
-          logger.success(targetPath)
-        }
-        else {
+        const targetIsExisted = await fs.exists(targetPath)
+
+        async function overwriteOrCopy(target?: string | Buffer) {
           let isOverwrite = true
-          const targetIsExisted = await fs.exists(targetPath)
           if (targetIsExisted) {
-            if (await hasFileChanged(file.path, targetPath)) {
+            const src = await fs.readFile(file.path)
+            const dest = target ?? await fs.readFile(targetPath)
+            if (await isFileChanged(src, dest)) {
               isOverwrite = await confirmOverwrite(relPath)
             }
           }
-          if (isOverwrite) {
+          return isOverwrite
+        }
+        // const basename = path.basename(file.path)
+        if (relPath === 'package.json') {
+          const sourcePath = file.path
+          if (targetIsExisted) {
+            const sourcePkgJson = await fs.readJson(sourcePath) as PackageJson
+            const targetPkgJson = await fs.readJson(targetPath) as PackageJson
+            setPkgJson(sourcePkgJson, targetPkgJson)
+            const data = JSON.stringify(targetPkgJson, undefined, 2)
+            // packageJson
+            if (await overwriteOrCopy(data)) {
+              await fs.writeFile(targetPath, data, 'utf8')
+              logger.success(targetPath)
+            }
+          }
+        }
+        else if (relPath === '.changeset/config.json' && repoName) {
+          const changesetJson = await fs.readJson(file.path)
+          set(changesetJson, 'changelog.1.repo', repoName)
+
+          const data = JSON.stringify(changesetJson, undefined, 2)
+          // changesetJson
+          if (await overwriteOrCopy(data)) {
+            await fs.ensureDir(path.dirname(targetPath))
+            await fs.writeFile(targetPath, data, 'utf8')
+            logger.success(targetPath)
+          }
+        }
+        else {
+          if (await overwriteOrCopy()) {
             await fs.copy(
               file.path,
               targetPath,
