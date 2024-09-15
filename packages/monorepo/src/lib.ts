@@ -120,10 +120,10 @@ export async function main(opts: CliOpts) {
             setPkgJson(sourcePkgJson, targetPkgJson)
             const data = JSON.stringify(targetPkgJson, undefined, 2)
             // packageJson
-            if (await overwriteOrCopy(data)) {
-              await fs.writeFile(targetPath, data, 'utf8')
-              logger.success(targetPath)
-            }
+            // if (await overwriteOrCopy(data)) {
+            await fs.writeFile(targetPath, `${data}\n`, 'utf8')
+            logger.success(targetPath)
+            // }
           }
         }
         else if (relPath === '.changeset/config.json' && repoName) {
@@ -134,7 +134,7 @@ export async function main(opts: CliOpts) {
           // changesetJson
           if (await overwriteOrCopy(data)) {
             await fs.ensureDir(path.dirname(targetPath))
-            await fs.writeFile(targetPath, data, 'utf8')
+            await fs.writeFile(targetPath, `${data}\n`, 'utf8')
             logger.success(targetPath)
           }
         }
