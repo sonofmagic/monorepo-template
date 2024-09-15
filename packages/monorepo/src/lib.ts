@@ -3,17 +3,19 @@ import type { CliOpts } from './types'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import checkbox from '@inquirer/checkbox'
+import confirm from '@inquirer/confirm'
 import fs from 'fs-extra'
 import get from 'get-value'
 import klaw from 'klaw'
 import PQueue from 'p-queue'
 import path from 'pathe'
+import pc from 'picocolors'
 import set from 'set-value'
 import { GitClient } from '../../../scripts/monorepo/git'
 import { logger } from './logger'
+import { hasFileChanged } from './md5'
 import { getTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
-
 // const controller = new AbortController()
 
 const queue = new PQueue({ concurrency: 1 })
@@ -47,6 +49,10 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
   for (const [k, v] of scriptsEntries) {
     set(targetPkgJson, `scripts.${k}`, v)
   }
+}
+
+function confirmOverwrite(filename: string) {
+  return confirm({ message: `${pc.greenBright(filename)} 文件内容发生改变,是否覆盖?`, default: false })
 }
 
 export async function main(opts: CliOpts) {
@@ -113,19 +119,21 @@ export async function main(opts: CliOpts) {
           })
           logger.success(targetPath)
         }
-        else if (relPath === 'Dockerfile' && !(await fs.exists(targetPath))) {
-          await fs.copy(
-            file.path,
-            targetPath,
-          )
-          logger.success(targetPath)
-        }
         else {
-          await fs.copy(
-            file.path,
-            targetPath,
-          )
-          logger.success(targetPath)
+          let isOverwrite = true
+          const targetIsExisted = await fs.exists(targetPath)
+          if (targetIsExisted) {
+            if (await hasFileChanged(file.path, targetPath)) {
+              isOverwrite = await confirmOverwrite(relPath)
+            }
+          }
+          if (isOverwrite) {
+            await fs.copy(
+              file.path,
+              targetPath,
+            )
+            logger.success(targetPath)
+          }
         }
       }
     })
