@@ -15,6 +15,7 @@ import set from 'set-value'
 import { GitClient } from '../../../scripts/monorepo/git'
 import { logger } from './logger'
 import { isFileChanged } from './md5'
+import { scriptsEntries } from './scripts'
 import { getTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
 // const controller = new AbortController()
@@ -27,14 +28,6 @@ const __dirname = path.dirname(__filename)
 // https://nodejs.org/api/esm.html#importmetadirname
 const assetsDir = path.join(__dirname, '../assets')
 const cwd = process.cwd()
-
-const scripts = {
-  'script:init': 'tsx scripts/monorepo/init.ts',
-  'script:sync': 'tsx scripts/monorepo/sync.ts',
-  'script:clean': 'tsx scripts/monorepo/clean.ts',
-}
-
-const scriptsEntries = Object.entries(scripts)
 
 export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJson) {
   const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })

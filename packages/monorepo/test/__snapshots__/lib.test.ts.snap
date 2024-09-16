@@ -6,6 +6,7 @@ exports[`lib > setPkgJson casae 0 1`] = `
   "scripts": {
     "script:clean": "tsx scripts/monorepo/clean.ts",
     "script:init": "tsx scripts/monorepo/init.ts",
+    "script:mirror": "tsx scripts/monorepo/binaryMirror.ts",
     "script:sync": "tsx scripts/monorepo/sync.ts",
   },
 }
@@ -25,6 +26,7 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "release": "changeset",
     "script:clean": "tsx scripts/monorepo/clean.ts",
     "script:init": "tsx scripts/monorepo/init.ts",
+    "script:mirror": "tsx scripts/monorepo/binaryMirror.ts",
     "script:sync": "tsx scripts/monorepo/sync.ts",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
