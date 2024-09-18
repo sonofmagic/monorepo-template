@@ -1,3 +1,4 @@
+import CI from 'ci-info'
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
 import { GitClient } from '../../../scripts/monorepo/git'
@@ -22,7 +23,7 @@ describe('git client', () => {
     expect(y).toBe('sonofmagic/weapp-tailwindcss')
   })
 
-  it('getUser', async () => {
+  it.skipIf(CI.isCI)('getUser', async () => {
     const user = await client.getUser()
     expect(user).toBeTruthy()
     expect(user.email).toBeTruthy()
