@@ -10,6 +10,9 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 env:
   HUSKY: 0
 
+permissions:
+  pull-requests: write
+
 jobs:
   release:
     name: Release
