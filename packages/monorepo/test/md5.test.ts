@@ -8,6 +8,7 @@ describe('md5', () => {
     expect(
       getFileHash(await fs.readFile(
         testFilePath,
+        'binary',
       )),
     ).toBe('c94e5b2028db1ba639d2fe1593eb6b37')
   })
