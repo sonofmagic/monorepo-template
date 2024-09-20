@@ -24,7 +24,6 @@ export function getTargets(raw?: boolean) {
     'Dockerfile',
     '.dockerignore',
     // #endregion
-    'scripts',
   ]
   if (!raw) {
     // renovate
