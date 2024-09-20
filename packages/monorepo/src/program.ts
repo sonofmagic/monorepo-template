@@ -19,20 +19,24 @@ program
     logger.success('upgrade @icebreakers/monorepo ok!')
   })
 
-program.command('init').action(() => {
-  init(cwd)
+program.command('init').action(async () => {
+  await init(cwd)
+  logger.success('init finished!')
 })
 
-program.command('sync').action(() => {
-  syncNpmMirror(cwd)
+program.command('sync').action(async () => {
+  await syncNpmMirror(cwd)
+  logger.success('sync npm mirror finished!')
 })
 
-program.command('clean').action(() => {
-  cleanProjects(cwd)
+program.command('clean').action(async () => {
+  await cleanProjects(cwd)
+  logger.success('clean projects finished!')
 })
 
-program.command('mirror').action(() => {
-  setVscodeBinaryMirror(cwd)
+program.command('mirror').action(async () => {
+  await setVscodeBinaryMirror(cwd)
+  logger.success('set vscode binary mirror finished!')
 })
 
 export default program

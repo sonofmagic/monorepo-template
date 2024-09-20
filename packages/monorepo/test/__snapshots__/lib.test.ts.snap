@@ -4,10 +4,10 @@ exports[`lib > setPkgJson casae 0 1`] = `
 {
   "packageManager": "",
   "scripts": {
-    "script:clean": "@icebreakers/monorepo clean",
-    "script:init": "@icebreakers/monorepo init",
-    "script:mirror": "@icebreakers/monorepo mirror",
-    "script:sync": "@icebreakers/monorepo sync",
+    "script:clean": "monorepo clean",
+    "script:init": "monorepo init",
+    "script:mirror": "monorepo mirror",
+    "script:sync": "monorepo sync",
   },
 }
 `;
@@ -24,10 +24,10 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "prepare": "husky",
     "publish-packages": "turbo run build lint test && changeset version && changeset publish",
     "release": "changeset",
-    "script:clean": "@icebreakers/monorepo clean",
-    "script:init": "@icebreakers/monorepo init",
-    "script:mirror": "@icebreakers/monorepo mirror",
-    "script:sync": "@icebreakers/monorepo sync",
+    "script:clean": "monorepo clean",
+    "script:init": "monorepo init",
+    "script:mirror": "monorepo mirror",
+    "script:sync": "monorepo sync",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
   },

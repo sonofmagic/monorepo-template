@@ -26,10 +26,10 @@
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "commit": "commit",
-    "script:init": "@icebreakers/monorepo init",
-    "script:sync": "@icebreakers/monorepo sync",
-    "script:clean": "@icebreakers/monorepo clean",
-    "script:mirror": "@icebreakers/monorepo mirror"
+    "script:init": "monorepo init",
+    "script:sync": "monorepo sync",
+    "script:clean": "monorepo clean",
+    "script:mirror": "monorepo mirror"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",

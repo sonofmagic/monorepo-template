@@ -12,6 +12,7 @@ import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
+import { version } from '../package.json'
 import { logger } from './logger'
 import { isFileChanged } from './md5'
 import { GitClient } from './monorepo/git'
@@ -38,7 +39,12 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
     set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
   })
   Object.entries(devDeps).forEach((x) => {
-    set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+    if (x[0] === '@icebreakers/monorepo') {
+      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, `^${version}`, { preservePaths: false })
+    }
+    else {
+      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+    }
   })
   for (const [k, v] of scriptsEntries) {
     set(targetPkgJson, `scripts.${k}`, v)
@@ -71,12 +77,12 @@ export async function main(opts: CliOpts) {
     })
   }
 
-  const removeDirs = ['scripts/monorepo']
-  for (const dir of removeDirs) {
-    if (targets.includes(dir)) {
-      await fs.remove(path.resolve(absOutDir, dir))
-    }
-  }
+  // const removeDirs = ['scripts/monorepo']
+  // for (const dir of removeDirs) {
+  //   if (targets.includes(dir)) {
+  //     await fs.remove(path.resolve(absOutDir, dir))
+  //   }
+  // }
 
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
