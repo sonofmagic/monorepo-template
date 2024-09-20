@@ -1,7 +1,7 @@
 {
   "name": "@icebreakers/monorepo",
   "type": "module",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "icebreaker's monorepo config generator",
   "author": "ice breaker <1324318532@qq.com>",
   "license": "MIT",
@@ -54,10 +54,12 @@
   "dependencies": {
     "@inquirer/checkbox": "^3.0.1",
     "@inquirer/confirm": "^4.0.1",
+    "@pnpm/types": "^12.2.0",
     "@pnpm/workspace.find-packages": "^4.0.10",
     "commander": "^12.1.0",
     "comment-json": "^4.2.5",
     "consola": "^3.2.3",
+    "execa": "^9.4.0",
     "fs-extra": "^11.2.0",
     "get-value": "^3.0.1",
     "git-url-parse": "^15.0.0",
@@ -65,11 +67,11 @@
     "p-queue": "^8.0.1",
     "pathe": "^1.1.2",
     "picocolors": "^1.1.0",
+    "rimraf": "^6.0.1",
     "set-value": "^4.1.0",
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
-    "@pnpm/types": "^12.2.0",
     "@types/get-value": "^3.0.5",
     "@types/git-url-parse": "^9.0.3",
     "@types/set-value": "^4.0.3"
