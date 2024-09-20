@@ -1,4 +1,4 @@
-import { setMirror } from '@/mirror'
+import { setMirror } from '@/monorepo/mirror/utils'
 
 describe('mirror', () => {
   it('setMirror', () => {

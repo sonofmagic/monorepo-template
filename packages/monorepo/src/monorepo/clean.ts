@@ -9,6 +9,8 @@ const dirs = [
   'apps',
 ]
 
-await rimraf(dirs.map((x) => {
-  return path.resolve(import.meta.dirname, '../..', x)
-}))
+export async function cleanProjects(cwd: string) {
+  await rimraf(dirs.map((x) => {
+    return path.resolve(cwd, x)
+  }))
+}

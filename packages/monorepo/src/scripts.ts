@@ -1,8 +1,8 @@
 export const scripts = {
-  'script:init': 'tsx scripts/monorepo/init.ts',
-  'script:sync': 'tsx scripts/monorepo/sync.ts',
-  'script:clean': 'tsx scripts/monorepo/clean.ts',
-  'script:mirror': 'tsx scripts/monorepo/binaryMirror.ts',
+  'script:init': '@icebreakers/monorepo init',
+  'script:sync': '@icebreakers/monorepo sync',
+  'script:clean': '@icebreakers/monorepo clean',
+  'script:mirror': '@icebreakers/monorepo mirror',
 }
 
 export const scriptsEntries = Object.entries(scripts)
