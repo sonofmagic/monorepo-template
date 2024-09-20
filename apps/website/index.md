@@ -101,6 +101,7 @@ layout: doc
 - `pnpm script:clean` 删去大部分的初始`repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板
 - `pnpm script:init` 初始化一些 `package.json` 里的字段
 - `pnpm script:sync` 使用 `cnpm sync` 功能，把本地所有的包，同步到 [`npmmirror`](https://www.npmmirror.com/) 上，需要安装 `cnpm`
+- `pnpm script:mirror` 使用 `cnpm` binary mirror 功能，使用国内二进制下载地址 (使用 vscode 环境变量)
 
 ## 配置同步方式
 
