@@ -7,11 +7,11 @@ layout: doc
 ## 功能特性
 
 - 强大的 `monorepo` 管理 (`pnpm` + `turborepo`)
-- 单元测试 (`vitest`)
-- 包括 `cli bin` 全部都是 `typescript`
+- 单元测试框架集成 (`vitest`)
+- 全部都是 `typescript`, 包括 `应用` `类库` 与 `cli` 工具
 - 代码规范与质量 (`eslint` + `@icebreakers/eslint-config` + `@icebreakers/stylelint-config`)
 - `git` 提交规范 (`husky` + `commitlint` + `lint-staged`)
-- `pnpm` 部署 `Docker` 模板
+- `pnpm` `Dockerfile` 部署模板
 - `Github Action` 自动发布 `npm`, `github release` 包 (`changeset`)
 - 配置文件同步升级 `npx @icebreakers/monorepo@latest`
 
@@ -33,24 +33,24 @@ layout: doc
 
 执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板。
 
-执行完成之后再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `lock` 文件来锁定版本
+`clean` 命令执行完成之后，再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `pnpm-lock.yaml` 文件来锁定 `npm` 包的版本。
 
 ## 模板包介绍
 
-默认把 `repo` 放在 `packages` 和 `apps` 这 `2` 个目录里面
+默认模板被放在根目录的 `packages` 和 `apps` 这 `2` 个目录里面
 
 ### packages
 
 - `@icebreakers/bar` - `tsup` 打包的库模板
-- `@icebreakers/foo` - `unbuild` 打包的库模板（不推荐, `unbuild` 很久没有更新了）
-- `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接使用 `npx @icebreakers/monorepo@latest` 执行远端 `cli` 命令
+- `@icebreakers/foo` - `unbuild` 打包的库模板（**不推荐！**, `unbuild` 很久没有更新了）
+- `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接根目录执行 `npx @icebreakers/monorepo@latest` 执行远端 `cli` 命令，进行项目依赖升级同步
 
 > `tsup` 是使用 `esbuild` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
 
 ### apps
 
 - `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 程序模板
-- `@icebreakers/website` - 文档网站模板，使用 `vitepress` ,也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
+- `@icebreakers/website` - 文档网站模板，使用 `vitepress` 搭建，也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
 
 ## 更新包的依赖
 
@@ -78,7 +78,7 @@ layout: doc
 
 然后选中 `Allow GitHub Actions to create and approve pull requests`
 
-然后保存即可。
+最后，点击下方的保存按钮即可。
 
 这样 `changeset` 就有权限对你进行 `PR` 和代码版本更新了！
 
