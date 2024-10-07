@@ -17,7 +17,7 @@ import { logger } from './logger'
 import { isFileChanged } from './md5'
 import { GitClient } from './monorepo/git'
 import { scriptsEntries } from './scripts'
-import { getTargets } from './targets'
+import { getAssetTargets } from './targets'
 import { escapeStringRegexp, isMatch } from './utils'
 // const controller = new AbortController()
 
@@ -28,6 +28,7 @@ const __dirname = path.dirname(__filename)
 // import.meta.dirname for Nodejs >= v20.11.0
 // https://nodejs.org/api/esm.html#importmetadirname
 const assetsDir = path.join(__dirname, '../assets')
+const templatesDir = path.join(__dirname, '../templates')
 const cwd = process.cwd()
 
 export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJson) {
@@ -62,7 +63,7 @@ export async function main(opts: CliOpts) {
     baseDir: cwd,
   })
   const repoName = await gitClient.getRepoName()
-  let targets = getTargets(raw)
+  let targets = getAssetTargets(raw)
 
   if (interactive) {
     // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
@@ -149,4 +150,11 @@ export async function main(opts: CliOpts) {
       }
     })
   }
+}
+
+export async function createNewProject(name?: string) {
+  const defaultTemplate = 'bar'
+  const targetTemplate = name ?? defaultTemplate
+  await fs.copy(path.join(templatesDir, defaultTemplate), path.join(cwd, targetTemplate))
+  logger.success(`${targetTemplate} 项目创建成功！`)
 }

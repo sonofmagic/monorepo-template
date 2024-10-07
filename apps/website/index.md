@@ -103,6 +103,12 @@ layout: doc
 - `pnpm script:sync` 使用 `cnpm sync` 功能，把本地所有的包，同步到 [`npmmirror`](https://www.npmmirror.com/) 上，需要安装 `cnpm`
 - `pnpm script:mirror` 使用 `cnpm` binary mirror 功能，使用国内二进制下载地址 (使用 vscode 环境变量)
 
+## 创建新的项目
+
+在 `monorepo` 的任意位置，打开命令行，然后执行 `npx monorepo new` 即可创建一个空的类库，默认目录为 `bar`
+
+可通过传入 **可选**参数 `path` 进行修改, 比如 `npx monorepo new [path]`, 此时的目录就从 `bar` 变为了 `[path]`
+
 ## 配置同步方式
 
 在根目录下执行: `npx @icebreakers/monorepo@latest`

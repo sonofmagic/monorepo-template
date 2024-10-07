@@ -2,7 +2,7 @@ import type { CliOpts } from './types'
 import process from 'node:process'
 import { program } from 'commander'
 import { name, version } from '../package.json'
-import { main } from './index'
+import { createNewProject, main } from './index'
 import { logger } from './logger'
 import { cleanProjects, init, setVscodeBinaryMirror, syncNpmMirror } from './monorepo'
 
@@ -38,5 +38,12 @@ program.command('mirror').action(async () => {
   await setVscodeBinaryMirror(cwd)
   logger.success('set vscode binary mirror finished!')
 })
+
+program.command('new')
+  .argument('[name]')
+  .action(async (targetPath: string) => {
+    await createNewProject(targetPath)
+    logger.success('create a package')
+  })
 
 export default program

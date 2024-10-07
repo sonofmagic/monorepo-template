@@ -1,13 +1,13 @@
-import { getTargets } from '@/targets'
+import { getAssetTargets } from '@/targets'
 
 describe('targets', () => {
   it('normal', () => {
-    const targets = getTargets()
+    const targets = getAssetTargets()
     expect(targets).toMatchSnapshot()
   })
 
   it('raw', () => {
-    const targets = getTargets(true)
+    const targets = getAssetTargets(true)
     expect(targets).toMatchSnapshot()
   })
 })

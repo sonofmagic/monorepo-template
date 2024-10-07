@@ -11,7 +11,7 @@ describe.skipIf(CI.isCI)('md5', () => {
         testFilePath,
         'binary',
       )),
-    ).toBe('c94e5b2028db1ba639d2fe1593eb6b37')
+    ).toBe('58f5c6d21f1bb0f8f8da62b3d1d76e5c')
   })
 
   it('isFileChanged case 0', async () => {

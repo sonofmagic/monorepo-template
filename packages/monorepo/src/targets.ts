@@ -1,4 +1,4 @@
-export function getTargets(raw?: boolean) {
+export function getAssetTargets(raw?: boolean) {
   const list: string[] = [
     '.changeset',
     '.husky',
@@ -30,4 +30,15 @@ export function getTargets(raw?: boolean) {
     list.push('.github', 'LICENSE', 'renovate.json', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'netlify.toml')
   }
   return list
+}
+
+export function getTemplateTargets() {
+  return [
+    'bar/src',
+    'bar/test',
+    'bar/package.json',
+    'bar/tsconfig.json',
+    'bar/tsup.config.ts',
+    'bar/vitest.config.ts',
+  ]
 }
