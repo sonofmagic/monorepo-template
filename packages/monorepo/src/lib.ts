@@ -1,6 +1,5 @@
 import type { Buffer } from 'node:buffer'
-import type { PackageJson } from 'pkg-types'
-import type { CliOpts } from './types'
+import type { CliOpts, PackageJson } from './types'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import checkbox from '@inquirer/checkbox'
@@ -12,14 +11,12 @@ import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
-import { version } from '../package.json'
+import { version } from './constants'
 import { logger } from './logger'
-import { isFileChanged } from './md5'
 import { GitClient } from './monorepo/git'
 import { scriptsEntries } from './scripts'
 import { getAssetTargets } from './targets'
-import { escapeStringRegexp, isMatch } from './utils'
-// const controller = new AbortController()
+import { escapeStringRegexp, isFileChanged, isMatch } from './utils'
 
 const queue = new PQueue({ concurrency: 1 })
 
@@ -56,7 +53,7 @@ function confirmOverwrite(filename: string) {
   return confirm({ message: `${pc.greenBright(filename)} 文件内容发生改变,是否覆盖?`, default: false })
 }
 
-export async function main(opts: CliOpts) {
+export async function upgradeMonorepo(opts: CliOpts) {
   const { outDir = '', raw, interactive } = opts
   const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
   const gitClient = new GitClient({

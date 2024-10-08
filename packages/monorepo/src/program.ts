@@ -1,8 +1,8 @@
 import type { CliOpts } from './types'
 import process from 'node:process'
 import { program } from 'commander'
-import { name, version } from '../package.json'
-import { createNewProject, main } from './index'
+import { name, version } from './constants'
+import { createNewProject, upgradeMonorepo } from './lib'
 import { logger } from './logger'
 import { cleanProjects, init, setVscodeBinaryMirror, syncNpmMirror } from './monorepo'
 
@@ -15,7 +15,7 @@ program
   .option('--raw', 'raw mode')
   .option('--outDir <dir>', 'Output directory')
   .action(async (opts: CliOpts) => {
-    await main(opts)
+    await upgradeMonorepo(opts)
     logger.success('upgrade @icebreakers/monorepo ok!')
   })
 

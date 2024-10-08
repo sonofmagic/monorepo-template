@@ -1,4 +1,4 @@
-import type { PackageJson } from 'pkg-types'
+import type { PackageJson } from '@/types'
 import type { Context } from './context'
 import fs from 'fs-extra'
 import path from 'pathe'

@@ -1,4 +1,4 @@
-import type { ConfigValues, SimpleGit, SimpleGitOptions } from 'simple-git'
+import type { ConfigValues, SimpleGit, SimpleGitOptions } from '@/types'
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
 import { simpleGit } from 'simple-git'
