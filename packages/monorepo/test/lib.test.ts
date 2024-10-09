@@ -1,10 +1,16 @@
+import type { PackageJson } from 'pkg-types'
+import { version } from '@/constants'
 import { setPkgJson } from '@/lib'
+import get from 'get-value'
 
 describe('lib', () => {
   it('setPkgJson casae 0', () => {
-    const t = {}
-    const o = {}
+    const t: PackageJson = {
+      packageManager: 'pnpm@9.12.1',
+    }
+    const o: PackageJson = {}
     setPkgJson(t, o)
+    expect(o.packageManager).toBe('pnpm@9.12.1')
     expect(o).toMatchSnapshot()
   })
 
@@ -27,6 +33,66 @@ describe('lib', () => {
       },
     }
     setPkgJson(t, o)
+    expect(o).toMatchSnapshot()
+  })
+
+  it('setPkgJson casae 2', () => {
+    const t: PackageJson = {
+      dependencies: {
+        xx: '0.0.0',
+      },
+      devDependencies: {
+        x: '0.0.0',
+      },
+    }
+    const o: PackageJson = {
+      dependencies: {
+        xx: 'workspace:*',
+      },
+      devDependencies: {
+        x: 'workspace:*',
+      },
+    }
+    setPkgJson(t, o)
+    expect(o).toMatchSnapshot()
+  })
+
+  it('setPkgJson casae 3', () => {
+    const t: PackageJson = {
+      dependencies: {
+        xx: '0.0.0',
+      },
+      devDependencies: {
+        x: '0.0.0',
+      },
+    }
+    const o: PackageJson = {
+      dependencies: {
+        xx: '2.2.2',
+      },
+      devDependencies: {
+        x: '1.1.1',
+      },
+    }
+    setPkgJson(t, o)
+    expect(o).toMatchSnapshot()
+  })
+
+  it('setPkgJson casae 4', () => {
+    const t: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '1',
+      },
+    }
+    const o: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '2',
+      },
+    }
+    setPkgJson(t, o)
+    if (o.devDependencies) {
+      expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe(`^${version}`)
+    }
     expect(o).toMatchSnapshot()
   })
 })

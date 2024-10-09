@@ -2,7 +2,7 @@
 
 exports[`lib > setPkgJson casae 0 1`] = `
 {
-  "packageManager": "",
+  "packageManager": "pnpm@9.12.1",
   "scripts": {
     "script:clean": "monorepo clean",
     "script:init": "monorepo init",
@@ -30,6 +30,57 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "script:sync": "monorepo sync",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
+  },
+}
+`;
+
+exports[`lib > setPkgJson casae 2 1`] = `
+{
+  "dependencies": {
+    "xx": "workspace:*",
+  },
+  "devDependencies": {
+    "x": "workspace:*",
+  },
+  "packageManager": "",
+  "scripts": {
+    "script:clean": "monorepo clean",
+    "script:init": "monorepo init",
+    "script:mirror": "monorepo mirror",
+    "script:sync": "monorepo sync",
+  },
+}
+`;
+
+exports[`lib > setPkgJson casae 3 1`] = `
+{
+  "dependencies": {
+    "xx": "0.0.0",
+  },
+  "devDependencies": {
+    "x": "0.0.0",
+  },
+  "packageManager": "",
+  "scripts": {
+    "script:clean": "monorepo clean",
+    "script:init": "monorepo init",
+    "script:mirror": "monorepo mirror",
+    "script:sync": "monorepo sync",
+  },
+}
+`;
+
+exports[`lib > setPkgJson casae 4 1`] = `
+{
+  "devDependencies": {
+    "@icebreakers/monorepo": "^0.6.2",
+  },
+  "packageManager": "",
+  "scripts": {
+    "script:clean": "monorepo clean",
+    "script:init": "monorepo init",
+    "script:mirror": "monorepo mirror",
+    "script:sync": "monorepo sync",
   },
 }
 `;

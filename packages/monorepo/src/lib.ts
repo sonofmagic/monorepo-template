@@ -11,7 +11,7 @@ import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
-import { version } from './constants'
+import { name as pkgName, version as pkgVersion } from './constants'
 import { logger } from './logger'
 import { GitClient } from './monorepo/git'
 import { scriptsEntries } from './scripts'
@@ -28,20 +28,35 @@ const assetsDir = path.join(__dirname, '../assets')
 const templatesDir = path.join(__dirname, '../templates')
 const cwd = process.cwd()
 
+function isWorkspace(version?: string) {
+  if (typeof version === 'string') {
+    return version.startsWith('workspace:')
+  }
+  return false
+}
+
 export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJson) {
   const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
   const deps = get(sourcePkgJson, 'dependencies', { default: {} })
   const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
+
+  const targetDeps = get(targetPkgJson, 'dependencies', { default: {} })
+  const targetDevDeps = get(targetPkgJson, 'devDependencies', { default: {} })
+
   set(targetPkgJson, 'packageManager', packageManager)
   Object.entries(deps).forEach((x) => {
-    set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+    if (!isWorkspace(targetDeps[x[0]])) {
+      set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+    }
   })
   Object.entries(devDeps).forEach((x) => {
-    if (x[0] === '@icebreakers/monorepo') {
-      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, `^${version}`, { preservePaths: false })
+    if (x[0] === pkgName) {
+      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, `^${pkgVersion}`, { preservePaths: false })
     }
     else {
-      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+      if (!isWorkspace(targetDevDeps[x[0]])) {
+        set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+      }
     }
   })
   for (const [k, v] of scriptsEntries) {
@@ -74,13 +89,6 @@ export async function upgradeMonorepo(opts: CliOpts) {
       }),
     })
   }
-
-  // const removeDirs = ['scripts/monorepo']
-  // for (const dir of removeDirs) {
-  //   if (targets.includes(dir)) {
-  //     await fs.remove(path.resolve(absOutDir, dir))
-  //   }
-  // }
 
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
