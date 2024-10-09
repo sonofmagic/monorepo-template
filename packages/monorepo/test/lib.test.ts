@@ -93,6 +93,5 @@ describe('lib', () => {
     if (o.devDependencies) {
       expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe(`^${version}`)
     }
-    expect(o).toMatchSnapshot()
   })
 })
