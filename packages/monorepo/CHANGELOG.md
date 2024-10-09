@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.6.3
+
+### Patch Changes
+
+- [`1b1f95e`](https://github.com/sonofmagic/monorepo-template/commit/1b1f95e6f67666b95c3844187a030a942e514ae1) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: 默认不覆盖 workspace: 注册的包，cnpm sync 的时候，默认跳过 root 的包，只包括那些 workspace
+
 ## 0.5.0
 
 ### Minor Changes
