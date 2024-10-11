@@ -1,5 +1,5 @@
+import fs from 'fs-extra'
 import path from 'pathe'
-import { rimraf } from 'rimraf'
 
 const dirs = [
   'packages/monorepo',
@@ -10,7 +10,9 @@ const dirs = [
 ]
 
 export async function cleanProjects(cwd: string) {
-  await rimraf(dirs.map((x) => {
+  for (const dir of dirs.map((x) => {
     return path.resolve(cwd, x)
-  }))
+  })) {
+    await fs.remove(dir)
+  }
 }
