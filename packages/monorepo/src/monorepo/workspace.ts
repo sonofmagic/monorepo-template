@@ -4,21 +4,29 @@ import path from 'pathe'
 
 export interface GetWorkspacePackagesOptions {
   ignoreRootPackage?: boolean
+  ignorePrivatePackage?: boolean
 }
 
 export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePackagesOptions) {
   const posixCwd = path.normalize(cwd)
-  const { ignoreRootPackage } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
+  const { ignoreRootPackage, ignorePrivatePackage } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
     ignoreRootPackage: true,
+    ignorePrivatePackage: true,
   })
   const packages = await findWorkspacePackages(cwd)
-  let pkgs = packages.map((project) => {
+  let pkgs = packages.filter((x) => {
+    if (ignorePrivatePackage && x.manifest.private) {
+      return false
+    }
+    return true
+  }).map((project) => {
     const pkgJsonPath = path.resolve(project.rootDir, 'package.json')
     return {
       ...project,
       pkgJsonPath,
     }
   })
+
   if (ignoreRootPackage) {
     pkgs = pkgs.filter((x) => {
       return path

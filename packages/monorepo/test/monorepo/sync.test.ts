@@ -1,5 +1,5 @@
 // import { syncNpmMirror } from '@/monorepo/sync'
-import { getWorkspacePackages } from '@/monorepo/utils'
+import { getWorkspacePackages } from '@/monorepo/workspace'
 import path from 'pathe'
 
 describe('sync', () => {
@@ -18,6 +18,7 @@ describe('sync', () => {
       cwd,
       {
         ignoreRootPackage: false,
+        ignorePrivatePackage: false,
       },
     )
 

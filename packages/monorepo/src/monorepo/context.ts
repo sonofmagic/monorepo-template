@@ -1,6 +1,6 @@
 import path from 'pathe'
 import { GitClient } from './git'
-import { getWorkspacePackages } from './utils'
+import { getWorkspacePackages } from './workspace'
 import '@pnpm/types'
 
 export async function createContext(cwd: string) {
