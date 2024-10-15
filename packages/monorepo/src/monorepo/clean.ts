@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import path from 'pathe'
+import set from 'set-value'
 
 const dirs = [
   'packages/monorepo',
@@ -15,4 +16,11 @@ export async function cleanProjects(cwd: string) {
   })) {
     await fs.remove(dir)
   }
+  const name = 'package.json'
+  const pkgJson = await fs.readJson(name)
+  // fix https://github.com/sonofmagic/monorepo-template/issues/76
+  set(pkgJson, 'devDependencies.@icebreakers/monorepo', 'latest', { preservePaths: false })
+  await fs.outputJson(name, pkgJson, {
+    spaces: 2,
+  })
 }
