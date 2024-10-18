@@ -5,9 +5,8 @@ import path from 'pathe'
 import set from 'set-value'
 
 export default async function (ctx: Context) {
-  const { git, projects, cwd, workspaceFilepath } = ctx
-  const gitUrl = await git.getGitUrl()
-  const gitUser = await git.getUser()
+  const { gitUrl, gitUser, projects, cwd, workspaceFilepath } = ctx
+
   if (gitUrl && await fs.exists(workspaceFilepath)) {
     for (const project of projects) {
       const pkgJson = project.manifest
