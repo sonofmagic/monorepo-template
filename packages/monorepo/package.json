@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "tsup --watch --sourcemap",
     "build": "tsup",
-    "test": "vitest run",
+    "test": "pnpm prepublish && vitest run",
     "test:dev": "vitest",
     "release": "pnpm publish",
     "lint": "eslint .",
