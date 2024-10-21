@@ -2,9 +2,10 @@ import type { CliOpts } from './types'
 import process from 'node:process'
 import { program } from 'commander'
 import { name, version } from './constants'
-import { createNewProject, upgradeMonorepo } from './lib'
+import { createNewProject } from './create'
 import { logger } from './logger'
 import { cleanProjects, init, setVscodeBinaryMirror, syncNpmMirror } from './monorepo'
+import { upgradeMonorepo } from './upgrade'
 
 const cwd = process.cwd()
 
@@ -40,9 +41,13 @@ program.command('mirror').action(async () => {
 })
 
 program.command('new')
+  .alias('create')
   .argument('[name]')
-  .action(async (targetPath: string) => {
-    await createNewProject(targetPath)
+  .action(async (name: string) => {
+    await createNewProject({
+      name,
+      cwd,
+    })
     logger.success('create a package')
   })
 

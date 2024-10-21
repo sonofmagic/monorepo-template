@@ -4,6 +4,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
+import defu from 'defu'
 import fs from 'fs-extra'
 import get from 'get-value'
 import klaw from 'klaw'
@@ -25,8 +26,6 @@ const __dirname = path.dirname(__filename)
 // import.meta.dirname for Nodejs >= v20.11.0
 // https://nodejs.org/api/esm.html#importmetadirname
 const assetsDir = path.join(__dirname, '../assets')
-const templatesDir = path.join(__dirname, '../templates')
-const cwd = process.cwd()
 
 function isWorkspace(version?: string) {
   if (typeof version === 'string') {
@@ -69,7 +68,10 @@ function confirmOverwrite(filename: string) {
 }
 
 export async function upgradeMonorepo(opts: CliOpts) {
-  const { outDir = '', raw, interactive } = opts
+  const { outDir, raw, interactive, cwd } = defu<Required<CliOpts>, CliOpts[]>(opts, {
+    cwd: process.cwd(),
+    outDir: '',
+  })
   const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
   const gitClient = new GitClient({
     baseDir: cwd,
@@ -155,11 +157,4 @@ export async function upgradeMonorepo(opts: CliOpts) {
       }
     })
   }
-}
-
-export async function createNewProject(name?: string) {
-  const defaultTemplate = 'bar'
-  const targetTemplate = name ?? defaultTemplate
-  await fs.copy(path.join(templatesDir, defaultTemplate), path.join(cwd, targetTemplate))
-  logger.success(`${targetTemplate} 项目创建成功！`)
 }

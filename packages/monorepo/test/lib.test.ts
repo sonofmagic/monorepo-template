@@ -1,6 +1,6 @@
 import type { PackageJson } from 'pkg-types'
 import { version } from '@/constants'
-import { setPkgJson } from '@/lib'
+import { setPkgJson } from '@/upgrade'
 import get from 'get-value'
 
 describe('lib', () => {
