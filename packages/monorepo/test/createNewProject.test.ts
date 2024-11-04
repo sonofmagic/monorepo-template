@@ -2,6 +2,10 @@ import { createNewProject } from '@/create'
 import path from 'pathe'
 
 describe('createNewProject', () => {
+  beforeAll(async () => {
+    await import('../scripts/prepublish')
+  })
+
   it('createNewProject demo case 0', async () => {
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
