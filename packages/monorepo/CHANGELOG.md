@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.6.14
+
+### Patch Changes
+
+- [`ee96d2f`](https://github.com/sonofmagic/monorepo-template/commit/ee96d2f76f1ea2bc8ff5b899e119f1a045ee8702) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: 添加 command 的 description
+
 ## 0.6.13
 
 ### Patch Changes
