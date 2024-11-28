@@ -185,14 +185,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2(@types/node@22.10.1)
       '@pnpm/logger':
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: ^900.0.0
+        version: 900.0.0
       '@pnpm/types':
         specifier: ^12.2.0
         version: 12.2.0
       '@pnpm/workspace.find-packages':
         specifier: ^4.0.14
-        version: 4.0.14(@pnpm/logger@5.2.0)
+        version: 4.0.14(@pnpm/logger@900.0.0)
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -1547,8 +1547,8 @@ packages:
     resolution: {integrity: sha512-A7vUWktnhDkrIs+WmXm7AdffJVyVYJpQUEouya/DYhB+Y+tQ3BXjZ6CV0KybqLgI/8AZErgCJqFxA0GJH6QDjA==}
     engines: {node: '>=18.12'}
 
-  '@pnpm/logger@5.2.0':
-    resolution: {integrity: sha512-dCdSs2wPCweMkRLdISAKBOKSWeq/9iS9aanWgjoUkFs06KN2o5XGFg53oCXg/KbZhF9AXS3vMHPwTebzCeAEsA==}
+  '@pnpm/logger@900.0.0':
+    resolution: {integrity: sha512-n+mc74+vXXSwV1OvXGHjLbgGkiZB+Z6foQ/oWtWPdjVs64KiT2afuwRjCuCeBxS4oMLDwjHaLajROnEjSEDbEQ==}
     engines: {node: '>=18.12'}
 
   '@pnpm/manifest-utils@6.0.9':
@@ -1759,109 +1759,91 @@ packages:
     resolution: {integrity: sha512-KRSFHyE/RdxQ1CSeOIBVIAxStFC/hnBgVcaiCkQaVC+EYDtTe4X7z5tBkFyRoBgUGtB6Xg6t9t2kulnX6wJc6A==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-gnueabihf@4.27.4':
     resolution: {integrity: sha512-9OwUnK/xKw6DyRlgx8UizeqRFOfi9mf5TYCw1uolDaJSbUmBxP85DE6T4ouCMoN6pXw8ZoTeZCSEfSaYo+/s1w==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.24.3':
     resolution: {integrity: sha512-h6Q8MT+e05zP5BxEKz0vi0DhthLdrNEnspdLzkoFqGwnmOzakEHSlXfVyA4HJ322QtFy7biUAVFPvIDEDQa6rw==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm-musleabihf@4.27.4':
     resolution: {integrity: sha512-Vgdo4fpuphS9V24WOV+KwkCVJ72u7idTgQaBoLRD0UxBAWTF9GWurJO9YD9yh00BzbkhpeXtm6na+MvJU7Z73A==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.24.3':
     resolution: {integrity: sha512-fKElSyXhXIJ9pqiYRqisfirIo2Z5pTTve5K438URf08fsypXrEkVmShkSfM8GJ1aUyvjakT+fn2W7Czlpd/0FQ==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-gnu@4.27.4':
     resolution: {integrity: sha512-pleyNgyd1kkBkw2kOqlBx+0atfIIkkExOTiifoODo6qKDSpnc6WzUY5RhHdmTdIJXBdSnh6JknnYTtmQyobrVg==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.24.3':
     resolution: {integrity: sha512-YlddZSUk8G0px9/+V9PVilVDC6ydMz7WquxozToozSnfFK6wa6ne1ATUjUvjin09jp34p84milxlY5ikueoenw==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-musl@4.27.4':
     resolution: {integrity: sha512-caluiUXvUuVyCHr5DxL8ohaaFFzPGmgmMvwmqAITMpV/Q+tPoaHZ/PWa3t8B2WyoRcIIuu1hkaW5KkeTDNSnMA==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.24.3':
     resolution: {integrity: sha512-yNaWw+GAO8JjVx3s3cMeG5Esz1cKVzz8PkTJSfYzE5u7A+NvGmbVFEHP+BikTIyYWuz0+DX9kaA3pH9Sqxp69g==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.27.4':
     resolution: {integrity: sha512-FScrpHrO60hARyHh7s1zHE97u0KlT/RECzCKAdmI+LEoC1eDh/RDji9JgFqyO+wPDb86Oa/sXkily1+oi4FzJQ==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.24.3':
     resolution: {integrity: sha512-lWKNQfsbpv14ZCtM/HkjCTm4oWTKTfxPmr7iPfp3AHSqyoTz5AgLemYkWLwOBWc+XxBbrU9SCokZP0WlBZM9lA==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.27.4':
     resolution: {integrity: sha512-qyyprhyGb7+RBfMPeww9FlHwKkCXdKHeGgSqmIXw9VSUtvyFZ6WZRtnxgbuz76FK7LyoN8t/eINRbPUcvXB5fw==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-s390x-gnu@4.24.3':
     resolution: {integrity: sha512-HoojGXTC2CgCcq0Woc/dn12wQUlkNyfH0I1ABK4Ni9YXyFQa86Fkt2Q0nqgLfbhkyfQ6003i3qQk9pLh/SpAYw==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-s390x-gnu@4.27.4':
     resolution: {integrity: sha512-PFz+y2kb6tbh7m3A7nA9++eInGcDVZUACulf/KzDtovvdTizHpZaJty7Gp0lFwSQcrnebHOqxF1MaKZd7psVRg==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.24.3':
     resolution: {integrity: sha512-mnEOh4iE4USSccBOtcrjF5nj+5/zm6NcNhbSEfR3Ot0pxBwvEn5QVUXcuOwwPkapDtGZ6pT02xLoPaNv06w7KQ==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.27.4':
     resolution: {integrity: sha512-Ni8mMtfo+o/G7DVtweXXV/Ol2TFf63KYjTtoZ5f078AUgJTmaIJnj4JFU7TK/9SVWTaSJGxPi5zMDgK4w+Ez7Q==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.24.3':
     resolution: {integrity: sha512-rMTzawBPimBQkG9NKpNHvquIUTQPzrnPxPbCY1Xt+mFkW7pshvyIS5kYgcf74goxXOQk0CP3EoOC1zcEezKXhw==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-x64-musl@4.27.4':
     resolution: {integrity: sha512-5AeeAF1PB9TUzD+3cROzFTnAJAcVUGLuR8ng0E0WXGkYhp6RD6L+6szYVX+64Rs0r72019KHZS1ka1q+zU/wUw==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-win32-arm64-msvc@4.24.3':
     resolution: {integrity: sha512-2lg1CE305xNvnH3SyiKwPVsTVLCg4TmNCF1z7PSHX2uZY2VbUpdkgAllVoISD7JO7zu+YynpWNSKAtOrX3AiuA==}
@@ -7820,15 +7802,15 @@ snapshots:
       '@pnpm/types': 12.2.0
       load-json-file: 6.2.0
 
-  '@pnpm/cli-utils@4.0.9(@pnpm/logger@5.2.0)':
+  '@pnpm/cli-utils@4.0.9(@pnpm/logger@900.0.0)':
     dependencies:
       '@pnpm/cli-meta': 6.2.2
-      '@pnpm/config': 21.8.6(@pnpm/logger@5.2.0)
-      '@pnpm/default-reporter': 14.0.6(@pnpm/logger@5.2.0)
+      '@pnpm/config': 21.8.6(@pnpm/logger@900.0.0)
+      '@pnpm/default-reporter': 14.0.6(@pnpm/logger@900.0.0)
       '@pnpm/error': 6.0.2
-      '@pnpm/logger': 5.2.0
-      '@pnpm/manifest-utils': 6.0.9(@pnpm/logger@5.2.0)
-      '@pnpm/package-is-installable': 9.0.12(@pnpm/logger@5.2.0)
+      '@pnpm/logger': 900.0.0
+      '@pnpm/manifest-utils': 6.0.9(@pnpm/logger@900.0.0)
+      '@pnpm/package-is-installable': 9.0.12(@pnpm/logger@900.0.0)
       '@pnpm/read-project-manifest': 6.0.9
       '@pnpm/types': 12.2.0
       chalk: 4.1.2
@@ -7838,7 +7820,7 @@ snapshots:
 
   '@pnpm/config.env-replace@3.0.0': {}
 
-  '@pnpm/config@21.8.6(@pnpm/logger@5.2.0)':
+  '@pnpm/config@21.8.6(@pnpm/logger@900.0.0)':
     dependencies:
       '@pnpm/catalogs.config': 0.1.1
       '@pnpm/catalogs.types': 0.1.0
@@ -7848,7 +7830,7 @@ snapshots:
       '@pnpm/git-utils': 2.0.0
       '@pnpm/matcher': 6.0.0
       '@pnpm/npm-conf': 2.3.1
-      '@pnpm/pnpmfile': 6.0.13(@pnpm/logger@5.2.0)
+      '@pnpm/pnpmfile': 6.0.13(@pnpm/logger@900.0.0)
       '@pnpm/read-project-manifest': 6.0.9
       '@pnpm/types': 12.2.0
       '@pnpm/workspace.read-manifest': 2.2.1
@@ -7870,9 +7852,9 @@ snapshots:
 
   '@pnpm/constants@9.0.0': {}
 
-  '@pnpm/core-loggers@10.0.7(@pnpm/logger@5.2.0)':
+  '@pnpm/core-loggers@10.0.7(@pnpm/logger@900.0.0)':
     dependencies:
-      '@pnpm/logger': 5.2.0
+      '@pnpm/logger': 900.0.0
       '@pnpm/types': 12.2.0
 
   '@pnpm/crypto.base32-hash@3.0.1':
@@ -7890,15 +7872,15 @@ snapshots:
 
   '@pnpm/dedupe.types@2.0.0': {}
 
-  '@pnpm/default-reporter@14.0.6(@pnpm/logger@5.2.0)':
+  '@pnpm/default-reporter@14.0.6(@pnpm/logger@900.0.0)':
     dependencies:
       '@pnpm/cli-meta': 6.2.2
-      '@pnpm/config': 21.8.6(@pnpm/logger@5.2.0)
-      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@5.2.0)
+      '@pnpm/config': 21.8.6(@pnpm/logger@900.0.0)
+      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@900.0.0)
       '@pnpm/dedupe.issues-renderer': 2.0.0
       '@pnpm/dedupe.types': 2.0.0
       '@pnpm/error': 6.0.2
-      '@pnpm/logger': 5.2.0
+      '@pnpm/logger': 900.0.0
       '@pnpm/render-peer-issues': 5.0.10
       '@pnpm/types': 12.2.0
       ansi-diff: 1.2.0
@@ -7956,14 +7938,14 @@ snapshots:
       '@pnpm/patching.types': 1.0.0
       '@pnpm/types': 12.2.0
 
-  '@pnpm/logger@5.2.0':
+  '@pnpm/logger@900.0.0':
     dependencies:
       bole: 5.0.17
       ndjson: 2.0.0
 
-  '@pnpm/manifest-utils@6.0.9(@pnpm/logger@5.2.0)':
+  '@pnpm/manifest-utils@6.0.9(@pnpm/logger@900.0.0)':
     dependencies:
-      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@5.2.0)
+      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@900.0.0)
       '@pnpm/error': 6.0.2
       '@pnpm/types': 12.2.0
     transitivePeerDependencies:
@@ -7983,13 +7965,13 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@pnpm/package-is-installable@9.0.12(@pnpm/logger@5.2.0)':
+  '@pnpm/package-is-installable@9.0.12(@pnpm/logger@900.0.0)':
     dependencies:
       '@pnpm/cli-meta': 6.2.2
-      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@5.2.0)
+      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@900.0.0)
       '@pnpm/env.system-node-version': 1.0.1
       '@pnpm/error': 6.0.2
-      '@pnpm/logger': 5.2.0
+      '@pnpm/logger': 900.0.0
       '@pnpm/types': 12.2.0
       detect-libc: 2.0.3
       execa: safe-execa@0.1.2
@@ -8009,14 +7991,14 @@ snapshots:
 
   '@pnpm/patching.types@1.0.0': {}
 
-  '@pnpm/pnpmfile@6.0.13(@pnpm/logger@5.2.0)':
+  '@pnpm/pnpmfile@6.0.13(@pnpm/logger@900.0.0)':
     dependencies:
-      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@5.2.0)
+      '@pnpm/core-loggers': 10.0.7(@pnpm/logger@900.0.0)
       '@pnpm/crypto.base32-hash': 3.0.1
       '@pnpm/error': 6.0.2
       '@pnpm/hooks.types': 2.0.9
       '@pnpm/lockfile.types': 1.0.3
-      '@pnpm/logger': 5.2.0
+      '@pnpm/logger': 900.0.0
       '@pnpm/store-controller-types': 18.1.6
       '@pnpm/types': 12.2.0
       chalk: 4.1.2
@@ -8074,11 +8056,11 @@ snapshots:
     dependencies:
       isexe: 2.0.0
 
-  '@pnpm/workspace.find-packages@4.0.14(@pnpm/logger@5.2.0)':
+  '@pnpm/workspace.find-packages@4.0.14(@pnpm/logger@900.0.0)':
     dependencies:
-      '@pnpm/cli-utils': 4.0.9(@pnpm/logger@5.2.0)
+      '@pnpm/cli-utils': 4.0.9(@pnpm/logger@900.0.0)
       '@pnpm/fs.find-packages': 4.0.5
-      '@pnpm/logger': 5.2.0
+      '@pnpm/logger': 900.0.0
       '@pnpm/types': 12.2.0
       '@pnpm/util.lex-comparator': 3.0.0
 
