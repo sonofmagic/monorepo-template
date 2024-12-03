@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.6.17
+
+### Patch Changes
+
+- [`a4aa3e9`](https://github.com/sonofmagic/monorepo-template/commit/a4aa3e9e201668bcc116e495f8fb5d90d9e59826) Thanks [@sonofmagic](https://github.com/sonofmagic)! - fix: sonar issue
+
 ## 0.6.14
 
 ### Patch Changes
