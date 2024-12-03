@@ -52,10 +52,8 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
     if (x[0] === pkgName) {
       set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, `^${pkgVersion}`, { preservePaths: false })
     }
-    else {
-      if (!isWorkspace(targetDevDeps[x[0]])) {
-        set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
-      }
+    else if (!isWorkspace(targetDevDeps[x[0]])) {
+      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
     }
   })
   for (const [k, v] of scriptsEntries) {
@@ -145,14 +143,12 @@ export async function upgradeMonorepo(opts: CliOpts) {
             logger.success(targetPath)
           }
         }
-        else {
-          if (await overwriteOrCopy()) {
-            await fs.copy(
-              file.path,
-              targetPath,
-            )
-            logger.success(targetPath)
-          }
+        else if (await overwriteOrCopy()) {
+          await fs.copy(
+            file.path,
+            targetPath,
+          )
+          logger.success(targetPath)
         }
       }
     })

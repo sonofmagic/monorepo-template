@@ -4,7 +4,7 @@ import gitUrlParse from 'git-url-parse'
 import { simpleGit } from 'simple-git'
 
 export class GitClient {
-  private client: SimpleGit
+  private readonly client: SimpleGit
   #config: ConfigValues | undefined
   constructor(options: Partial<SimpleGitOptions> = {}) {
     this.client = simpleGit(options)

@@ -13,7 +13,10 @@ async function getRows(ctx: Context) {
   rows.push('## Projects\n')
   for (const project of projects) {
     const p = path.relative(cwd, project.rootDirRealPath)
-    p && rows.push(`- [${project.manifest.name}](${p}) ${project.manifest.description ? `- ${project.manifest.description}` : ''}`)
+    if (p) {
+      const description = project.manifest.description ? `- ${project.manifest.description}` : ''
+      rows.push(`- [${project.manifest.name}](${p}) ${description}`)
+    }
   }
   // ## Documentation
   // ## Communication
