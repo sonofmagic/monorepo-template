@@ -34,11 +34,19 @@ export function getAssetTargets(raw?: boolean) {
 
 export function getTemplateTargets() {
   return [
+    // tsup
     'bar/src',
     'bar/test',
     'bar/package.json',
     'bar/tsconfig.json',
     'bar/tsup.config.ts',
     'bar/vitest.config.ts',
+    // unbuild
+    'foo/src',
+    'foo/test',
+    'foo/package.json',
+    'foo/tsconfig.json',
+    'foo/build.config.ts',
+    'foo/vitest.config.ts',
   ]
 }

@@ -44,10 +44,14 @@ program.command('new')
   .description('创建一个新的子包')
   .alias('create')
   .argument('[name]')
-  .action(async (name: string) => {
+  .option('--tsup')
+  .option('--unbuild')
+  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean }) => {
+    const type = options.tsup ? 'tsup' : options.unbuild ? 'unbuild' : undefined
     await createNewProject({
       name,
       cwd,
+      type,
     })
     logger.success('create a package')
   })
