@@ -35,23 +35,25 @@ const { secureSignature, secureExpire } = generateSecureSignature(process.env.UP
   expire: Date.now() + 60 * 30 * 1000, // expire in 30 minutes
 })
 
-const file = await fs.readFile(path.resolve(import.meta.dirname, 'Quiz Import Template.xlsx'))
+const targetFile = 'uploadExample.csv'
 
-const envs = ['dev', 'sit', 'prod']
+const file = await fs.readFile(path.resolve(import.meta.dirname, targetFile))
 
-const res = await Promise.all(envs.map((e) => {
+const envs = ['dev']// , 'sit', 'prod']
+
+const res = await Promise.all(envs.map(() => {
   return client.uploadFile(
     file,
     {
       secureSignature,
       secureExpire,
-      fileName: `Quiz Import Template ${e}.xlsx`,
+      fileName: targetFile,
     },
   )
 }))
 
 await fs.writeJSON(
-  path.resolve(import.meta.dirname, 'Quiz Import Template.json'),
+  path.resolve(import.meta.dirname, 'output.json'),
   res.map((x) => {
     return {
       uuid: x.uuid,
