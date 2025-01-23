@@ -18,7 +18,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "test": "vitest run --coverage.enabled",
+    "test": "vitest run",
     "test:dev": "vitest",
     "lint": "turbo run lint",
     "release": "changeset",
@@ -42,7 +42,7 @@
     "@icebreakers/monorepo": "latest",
     "@icebreakers/stylelint-config": "^0.1.4",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.10.8",
     "@vitest/coverage-v8": "~3.0.2",
     "ci-info": "^4.1.0",
     "cross-env": "^7.0.3",
