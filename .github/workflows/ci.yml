@@ -5,6 +5,8 @@ on:
   #   branches: ['main']
   pull_request:
     types: [opened, synchronize]
+    branches-ignore:
+      - 'renovate/**'
   workflow_dispatch:
 
 permissions:
@@ -12,6 +14,7 @@ permissions:
 
 jobs:
   build:
+    if:
     name: Build and Test
     timeout-minutes: 15
     strategy:
