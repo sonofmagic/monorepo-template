@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.7.0
+
+### Minor Changes
+
+- [`33139f4`](https://github.com/sonofmagic/monorepo-template/commit/33139f4da024f87127e4242e2e8b812658235c73) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: confirmOverwrite default true
+
 ## 0.6.23
 
 ### Patch Changes
