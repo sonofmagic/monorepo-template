@@ -62,7 +62,7 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
 }
 
 function confirmOverwrite(filename: string) {
-  return confirm({ message: `${pc.greenBright(filename)} 文件内容发生改变,是否覆盖?`, default: false })
+  return confirm({ message: `${pc.greenBright(filename)} 文件内容发生改变,是否覆盖?`, default: true })
 }
 
 export async function upgradeMonorepo(opts: CliOpts) {
@@ -126,7 +126,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
             const data = JSON.stringify(targetPkgJson, undefined, 2)
             // packageJson
             // if (await overwriteOrCopy(data)) {
-            await fs.writeFile(targetPath, `${data}\n`, 'utf8')
+            await fs.outputFile(targetPath, `${data}\n`, 'utf8')
             logger.success(targetPath)
             // }
           }
@@ -138,8 +138,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
           const data = JSON.stringify(changesetJson, undefined, 2)
           // changesetJson
           if (await overwriteOrCopy(data)) {
-            await fs.ensureDir(path.dirname(targetPath))
-            await fs.writeFile(targetPath, `${data}\n`, 'utf8')
+            await fs.outputFile(targetPath, `${data}\n`, 'utf8')
             logger.success(targetPath)
           }
         }
