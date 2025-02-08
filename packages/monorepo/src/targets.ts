@@ -19,7 +19,8 @@ export function getAssetTargets(raw?: boolean) {
     // turbo
     'turbo.json',
     // vitest
-    'vitest.workspace.ts',
+    'vitest.config.ts',
+    // 'vitest.workspace.ts',
     // #region docker
     'Dockerfile',
     '.dockerignore',
