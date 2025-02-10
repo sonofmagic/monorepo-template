@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.7.2
+
+### Patch Changes
+
+- [`6e613a1`](https://github.com/sonofmagic/monorepo-template/commit/6e613a1eba65014d19855a3eb5da31c356feb767) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat!: upgrade pnpm from 9 -> 10
+
 ## 0.7.1
 
 ### Patch Changes
