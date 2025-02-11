@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.7.3
+
+### Patch Changes
+
+- [`e329a9a`](https://github.com/sonofmagic/monorepo-template/commit/e329a9a649ba60dc7b825920fbce17ec5977dedb) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: add vitest.workspace.ts vitest vscode plugin
+
 ## 0.7.2
 
 ### Patch Changes
