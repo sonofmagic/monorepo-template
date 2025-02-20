@@ -5,15 +5,18 @@ import path from 'pathe'
 export interface GetWorkspacePackagesOptions {
   ignoreRootPackage?: boolean
   ignorePrivatePackage?: boolean
+  patterns?: string[]
 }
 
 export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePackagesOptions) {
   const posixCwd = path.normalize(cwd)
-  const { ignoreRootPackage, ignorePrivatePackage } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
+  const { ignoreRootPackage, ignorePrivatePackage, patterns } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
     ignoreRootPackage: true,
     ignorePrivatePackage: true,
   })
-  const packages = await findWorkspacePackages(cwd)
+  const packages = await findWorkspacePackages(cwd, {
+    patterns,
+  })
   let pkgs = packages.filter((x) => {
     if (ignorePrivatePackage && x.manifest.private) {
       return false
