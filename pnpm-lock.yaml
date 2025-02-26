@@ -153,7 +153,7 @@ importers:
         version: 1000.0.0
       '@pnpm/types':
         specifier: ^1000.1.1
-        version: 1000.1.1
+        version: 1000.2.0
       '@pnpm/workspace.find-packages':
         specifier: ^1000.0.10
         version: 1000.0.10(@pnpm/logger@1000.0.0)
@@ -1510,6 +1510,10 @@ packages:
 
   '@pnpm/types@1000.1.1':
     resolution: {integrity: sha512-5zrv7B+4mW/6iiYS/BrFZWbMqLHjKmaBrMcw+F8LcuMQ7p4SQX4ANoycpr1VIQpn4+xQ0ckyuadfxBttpzicbg==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/types@1000.2.0':
+    resolution: {integrity: sha512-ZNDgxznoPHS3aMKgBox1z559qnX9TkQTS7cC8KS+Af8AjPZ+08q8sUKA4ywjT/EvizwkeUTVHzdfnx98oLhhWA==}
     engines: {node: '>=18.12'}
 
   '@pnpm/util.lex-comparator@3.0.0':
@@ -8020,6 +8024,8 @@ snapshots:
       strip-comments-strings: 1.2.0
 
   '@pnpm/types@1000.1.1': {}
+
+  '@pnpm/types@1000.2.0': {}
 
   '@pnpm/util.lex-comparator@3.0.0': {}
 
