@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { logger } from '../logger'
 
 export function getFileHash(data: crypto.BinaryLike) {
   const hashSum = crypto.createHash('md5')
@@ -13,7 +14,7 @@ export function isFileChanged(src: crypto.BinaryLike, dest: crypto.BinaryLike) {
     return currentHash !== previousHash
   }
   catch (err) {
-    console.error('Error calculating file hash:', err)
+    logger.error('Error calculating file hash:', err)
     return false
   }
 }

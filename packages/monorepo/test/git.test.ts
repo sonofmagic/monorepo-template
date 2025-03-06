@@ -1,3 +1,4 @@
+import { logger } from '@/logger'
 import { GitClient } from '@/monorepo/git'
 import CI from 'ci-info'
 import get from 'get-value'
@@ -13,7 +14,7 @@ describe('git client', () => {
     if (x) {
       const url = gitUrlParse(x)
       const y = `${url.owner}/${url.name}`
-      console.log(y)
+      logger.log(y)
     }
   })
 
@@ -28,6 +29,6 @@ describe('git client', () => {
     expect(user).toBeTruthy()
     expect(user.email).toBeTruthy()
     expect(user.name).toBeTruthy()
-    console.log('[Git getUser]', user)
+    logger.log('[Git getUser]', user)
   })
 })
