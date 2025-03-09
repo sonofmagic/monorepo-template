@@ -41,11 +41,11 @@ layout: doc
 
 ### packages
 
-- `@icebreakers/bar` - `tsup` 打包的库模板
-- `@icebreakers/foo` - `unbuild` 打包的库模板（**不推荐！**, `unbuild` 很久没有更新了）
+- `@icebreakers/bar` - [`tsup`](https://www.npmjs.com/package/tsup) 打包的库模板
+- `@icebreakers/foo` - [`unbuild`](https://www.npmjs.com/package/unbuild) 打包的库模板
 - `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接根目录执行 `npx @icebreakers/monorepo@latest` 执行远端 `cli` 命令，进行项目依赖升级同步
 
-> `tsup` 是使用 `esbuild` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
+> `tsup` 是使用 `esbuild/rollup` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
 
 ### apps
 
