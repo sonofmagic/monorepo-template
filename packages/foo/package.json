@@ -16,13 +16,21 @@
   "keywords": [],
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "unbuild --watch --sourcemap",
+    "dev": "unbuild --stub",
+    "build:watch": "unbuild --watch --sourcemap",
     "build": "unbuild",
     "test": "vitest run",
     "test:dev": "vitest",
@@ -30,16 +38,5 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.cjs"
-      }
-    },
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts"
-  }
+  "publishConfig": {}
 }

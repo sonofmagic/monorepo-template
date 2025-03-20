@@ -5,3 +5,5 @@ export function foo() {
 export function getDirname() {
   return __dirname
 }
+
+export { format } from '@/utils'

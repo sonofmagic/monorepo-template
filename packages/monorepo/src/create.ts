@@ -21,7 +21,7 @@ export interface CreateNewProjectOptions {
   type?: 'tsup' | 'unbuild'
 }
 
-const defaultTemplate = 'tsup'
+const defaultTemplate = 'unbuild'
 
 const fromMap = {
   tsup: 'bar',
