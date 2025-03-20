@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 0.7.9
+
+### Patch Changes
+
+- [`98c85fd`](https://github.com/sonofmagic/monorepo-template/commit/98c85fd3528a0714699411772202b8d7a5aaa195) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: 默认 new 模板更改 unbuild，同时使用 stub 进行多个项目进行链接
+
 ## 0.7.3
 
 ### Patch Changes
