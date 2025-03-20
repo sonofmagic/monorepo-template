@@ -8,6 +8,11 @@ export default defineConfig({
   dts: true,
   // https://github.com/egoist/tsup/pull/1056
   // https://github.com/egoist/tsup/issues?q=cjsInterop
-  // cjsInterop: true,
-  // splitting: true,
+  cjsInterop: true,
+  splitting: true,
+  outExtension({ format }) {
+    return {
+      js: `.${format === 'esm' ? 'mjs' : 'cjs'}`,
+    }
+  },
 })
