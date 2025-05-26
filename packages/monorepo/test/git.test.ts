@@ -1,8 +1,8 @@
-import { logger } from '@/logger'
-import { GitClient } from '@/monorepo/git'
 import CI from 'ci-info'
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
+import { logger } from '@/logger'
+import { GitClient } from '@/monorepo/git'
 
 describe('git client', () => {
   const client = new GitClient({
