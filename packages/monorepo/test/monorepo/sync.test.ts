@@ -1,6 +1,6 @@
+import path from 'pathe'
 // import { syncNpmMirror } from '@/monorepo/sync'
 import { getWorkspacePackages } from '@/monorepo/workspace'
-import path from 'pathe'
 
 describe('sync', () => {
   it('syncNpmMirror case 0', async () => {

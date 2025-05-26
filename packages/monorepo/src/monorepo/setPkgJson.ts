@@ -1,5 +1,5 @@
-import type { PackageJson } from '@/types'
 import type { Context } from './context'
+import type { PackageJson } from '@/types'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'

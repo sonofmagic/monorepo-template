@@ -1,5 +1,5 @@
-import { createNewProject } from '@/create'
 import path from 'pathe'
+import { createNewProject } from '@/create'
 
 describe.skip('createNewProject', () => {
   beforeAll(async () => {

@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.0
+
+### Major Changes
+
+- [`4e4e97d`](https://github.com/sonofmagic/monorepo-template/commit/4e4e97d59f81e32066b31e2737c948db86e2acca) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore!: 提升依赖最低需要 nodejs@20 版本
+
 ## 0.7.9
 
 ### Patch Changes
