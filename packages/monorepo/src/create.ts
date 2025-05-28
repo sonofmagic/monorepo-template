@@ -18,15 +18,15 @@ export interface CreateNewProjectOptions {
   name?: string
   cwd?: string
   renameJson?: boolean
-  type?: 'tsup' | 'unbuild' | 'ui'
+  type?: 'tsup' | 'unbuild' | 'vue-ui'
 }
 
 const defaultTemplate = 'unbuild'
 
 const fromMap = {
-  tsup: 'bar',
-  unbuild: 'foo',
-  ui: 'ui',
+  'tsup': 'bar',
+  'unbuild': 'foo',
+  'vue-ui': 'vue-ui',
 }
 
 export async function createNewProject(options?: CreateNewProjectOptions) {

@@ -1,3 +1,4 @@
+import type { CreateNewProjectOptions } from './create'
 import type { CliOpts } from './types'
 import process from 'node:process'
 import { program } from 'commander'
@@ -44,17 +45,21 @@ program.command('new')
   .description('创建一个新的子包')
   .alias('create')
   .argument('[name]')
-  .option('--tsup')
-  .option('--unbuild')
-  .option('--ui')
-  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean, ui?: boolean }) => {
-    const type = options.tsup
-      ? 'tsup'
-      : options.unbuild
-        ? 'unbuild'
-        : options.ui
-          ? 'ui'
-          : undefined
+  .option('--tsup', 'create a tsup library')
+  .option('--unbuild', 'create a unbuild library')
+  .option('--vue-ui', 'create a vue ui library')
+  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean, vueUi?: boolean }) => {
+    let type: CreateNewProjectOptions['type']
+
+    if (options.tsup) {
+      type = 'tsup'
+    }
+    else if (options.unbuild) {
+      type = 'unbuild'
+    }
+    else if (options.vueUi) {
+      type = 'vue-ui'
+    }
     await createNewProject({
       name,
       cwd,
