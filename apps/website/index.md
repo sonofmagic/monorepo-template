@@ -29,11 +29,15 @@ layout: doc
 >
 > 什么! 你不会连 [`nodejs`](https://nodejs.org/en) 还没安装吧？
 
-## 清除默认的包(可选)
+## 清除不必要的代码
 
-执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/bar` 项目作为发包打包模板。
+执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/foo` 项目作为发包打包模板。
 
 `clean` 命令执行完成之后，再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `pnpm-lock.yaml` 文件来锁定 `npm` 包的版本。
+
+## 初始化文件
+
+执行 `pnpm script:init` 命令，这个命令会批量修改你关联的配置文件，并生成一份新的 `README.md`
 
 ## 模板包介绍
 
@@ -105,9 +109,9 @@ layout: doc
 
 ## 创建新的项目
 
-在 `monorepo` 的任意位置，打开命令行，然后执行 `npx monorepo new` 即可创建一个空的类库，默认目录为 `bar`
+在 `monorepo` 的任意位置，打开命令行，然后执行 `npx monorepo new` 即可创建一个空的类库，默认目录为 `foo`
 
-可通过传入 **可选**参数 `path` 进行修改, 比如 `npx monorepo new [path]`, 此时的目录就从 `bar` 变为了 `[path]`
+可通过传入 **可选**参数 `path` 进行修改, 比如 `npx monorepo new [path]`, 此时的目录就从 `foo` 变为了 `[path]`
 
 ## 配置同步方式
 

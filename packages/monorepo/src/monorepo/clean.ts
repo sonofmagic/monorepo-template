@@ -2,16 +2,18 @@ import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
 
-const dirs = [
+const cleanDirs = [
   'packages/monorepo',
-  'packages/foo',
+  'packages/bar',
+  'packages/ui',
+  // 'packages/foo',
   // 'apps/cli',
   // 'apps/website',
   'apps',
 ]
 
 export async function cleanProjects(cwd: string) {
-  for (const dir of dirs.map((x) => {
+  for (const dir of cleanDirs.map((x) => {
     return path.resolve(cwd, x)
   })) {
     await fs.remove(dir)
