@@ -46,8 +46,15 @@ program.command('new')
   .argument('[name]')
   .option('--tsup')
   .option('--unbuild')
-  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean }) => {
-    const type = options.tsup ? 'tsup' : options.unbuild ? 'unbuild' : undefined
+  .option('--ui')
+  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean, ui?: boolean }) => {
+    const type = options.tsup
+      ? 'tsup'
+      : options.unbuild
+        ? 'unbuild'
+        : options.ui
+          ? 'ui'
+          : undefined
     await createNewProject({
       name,
       cwd,

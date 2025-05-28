@@ -49,5 +49,19 @@ export function getTemplateTargets() {
     'foo/tsconfig.json',
     'foo/build.config.ts',
     'foo/vitest.config.ts',
+    // vite lib mode
+    'ui/lib',
+    'ui/src',
+    'ui/test',
+    'ui/package.json',
+    'ui/tsconfig.json',
+    'ui/vite.shared.config.ts',
+    'ui/vite.config.ts',
+    'ui/vitest.config.ts',
+    'ui/eslint.config.js',
+    'ui/index.html',
+    'ui/tsconfig.app.json',
+    'ui/tsconfig.node.json',
+    'ui/tsconfig.test.json',
   ]
 }
