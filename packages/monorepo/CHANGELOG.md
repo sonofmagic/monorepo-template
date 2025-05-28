@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.1
+
+### Patch Changes
+
+- [`5b0f078`](https://github.com/sonofmagic/monorepo-template/commit/5b0f07808fca25560f36d87b3e0f992e005ac0dc) Thanks [@sonofmagic](https://github.com/sonofmagic)! - fix: add setChangeset for `script:init`
+
 ## 1.0.0
 
 ### Major Changes
