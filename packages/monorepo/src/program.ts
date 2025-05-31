@@ -58,7 +58,7 @@ program.command('new')
       type = 'unbuild'
     }
     else if (options.vueUi) {
-      type = 'vue-ui'
+      type = 'vue-lib'
     }
     await createNewProject({
       name,

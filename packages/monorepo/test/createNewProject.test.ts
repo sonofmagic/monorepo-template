@@ -30,7 +30,7 @@ describe.skipIf(isCI)('createNewProject', () => {
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/case-vue-ui',
       renameJson: true,
-      type: 'vue-ui',
+      type: 'vue-lib',
     })
   })
 
