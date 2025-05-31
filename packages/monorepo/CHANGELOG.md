@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.2
+
+### Patch Changes
+
+- [`2d476ca`](https://github.com/sonofmagic/monorepo-template/commit/2d476ca3ed97a783641bef6c18463adee8f9a6e5) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: rename template
+
 ## 1.0.1
 
 ### Patch Changes
