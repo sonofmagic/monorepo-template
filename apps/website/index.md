@@ -25,13 +25,13 @@ layout: doc
 
 然后在根目录 (`pnpm-workspace.yaml` 所在的位置) 执行 `pnpm i` 去安装依赖
 
-> 没有 `pnpm` 的，可以使用 `npm i -g pnpm` 来进行安装。
+> 要求 `Nodejs` >= 20，没有 `pnpm` 的，可以使用 `npm i -g pnpm` 来进行安装。
 >
-> 什么! 你不会连 [`nodejs`](https://nodejs.org/en) 还没安装吧？
+> 什么! 你不会连 [`Nodejs`](https://nodejs.org/en) 还没安装吧？
 
 ## 清除不必要的代码
 
-执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/foo` 项目作为发包打包模板。
+执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/unbuild-template` 项目作为发包打包模板。
 
 `clean` 命令执行完成之后，再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `pnpm-lock.yaml` 文件来锁定 `npm` 包的版本。
 
@@ -43,18 +43,18 @@ layout: doc
 
 默认模板被放在根目录的 `packages` 和 `apps` 这 `2` 个目录里面
 
-### packages
+### packages 目录
 
-- `@icebreakers/bar` - [`tsup`](https://www.npmjs.com/package/tsup) 打包的库模板
-- `@icebreakers/foo` - [`unbuild`](https://www.npmjs.com/package/unbuild) 打包的库模板
+- `@icebreakers/tsup-template` - [`tsup`](https://www.npmjs.com/package/tsup) 打包的库模板
+- `@icebreakers/unbuild-template` - [`unbuild`](https://www.npmjs.com/package/unbuild) 打包的库模板
 - `@icebreakers/monorepo` - 本仓库的更新配置服务，可直接根目录执行 `npx @icebreakers/monorepo@latest` 执行远端 `cli` 命令，进行项目依赖升级同步
+- `@icebreakers/vue-lib-template` - [`vue3`](https://vuejs.org/) 组件库模板，使用 `vite` 打包
 
-> `tsup` 是使用 `esbuild/rollup` 打包库的，`unbuild` 是使用老版本的 `rollup` 进行打包的
-
-### apps
+### apps 目录
 
 - `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 程序模板
 - `@icebreakers/website` - 文档网站模板，使用 `vitepress` 搭建，也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
+- `@icebreakers/server` - 使用 `hono` 搭建的服务端模板，使用 `typescript` 编写
 
 ## 更新包的依赖
 
@@ -109,9 +109,11 @@ layout: doc
 
 ## 创建新的项目
 
-在 `monorepo` 的任意位置，打开命令行，然后执行 `npx monorepo new` 即可创建一个空的类库，默认目录为 `foo`
+在 `monorepo` 的任意位置，打开命令行，然后执行 `npx monorepo new` 即可进入交互模式创建一个空的类库，
 
 可通过传入 **可选**参数 `path` 进行修改, 比如 `npx monorepo new [path]`, 此时的目录就从 `foo` 变为了 `[path]`
+
+> 命令 `new` 的别名为 `create`, 也可以使用 `npx monorepo create` 来创建新的项目
 
 ## 配置同步方式
 

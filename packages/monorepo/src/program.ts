@@ -1,6 +1,8 @@
 import type { CreateNewProjectOptions } from './create'
 import type { CliOpts } from './types'
 import process from 'node:process'
+import input from '@inquirer/input'
+import select from '@inquirer/select'
 import { program } from 'commander'
 import { name, version } from './constants'
 import { createNewProject } from './create'
@@ -13,6 +15,9 @@ const cwd = process.cwd()
 program.name(name).version(version)
 
 program
+  // .command('upgrade')
+  // .description('升级/同步 monorepo 相关包')
+  // .alias('up')
   .option('-i,--interactive')
   .option('--raw', 'raw mode')
   .option('--outDir <dir>', 'Output directory')
@@ -49,6 +54,12 @@ program.command('new')
   .option('--unbuild', 'create a unbuild library')
   .option('--vue-ui', 'create a vue ui library')
   .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean, vueUi?: boolean }) => {
+    if (!name) {
+      name = await input({
+        message: '请输入包名',
+        default: 'my-package',
+      })
+    }
     let type: CreateNewProjectOptions['type']
 
     if (options.tsup) {
@@ -60,6 +71,16 @@ program.command('new')
     else if (options.vueUi) {
       type = 'vue-lib'
     }
+
+    type ??= await select({
+      message: '请选择模板类型',
+      choices: [
+        { name: 'tsup 打包', value: 'tsup' },
+        { name: 'unbuild 打包', value: 'unbuild' },
+        { name: 'vue 组件', value: 'vue-lib' },
+      ],
+    })
+
     await createNewProject({
       name,
       cwd,

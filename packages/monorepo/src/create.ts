@@ -21,9 +21,9 @@ export interface CreateNewProjectOptions {
   type?: 'tsup' | 'unbuild' | 'vue-lib'
 }
 
-const defaultTemplate = 'unbuild'
+export const defaultTemplate = 'unbuild'
 
-const fromMap = {
+export const fromMap = {
   'tsup': 'tsup-template',
   'unbuild': 'unbuild-template',
   'vue-lib': 'vue-lib-template',

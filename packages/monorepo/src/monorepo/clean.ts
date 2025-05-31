@@ -4,8 +4,8 @@ import set from 'set-value'
 
 const cleanDirs = [
   'packages/monorepo',
-  'packages/bar',
-  'packages/ui',
+  'packages/tsup-template',
+  'packages/vue-lib-template',
   // 'packages/foo',
   // 'apps/cli',
   // 'apps/website',
