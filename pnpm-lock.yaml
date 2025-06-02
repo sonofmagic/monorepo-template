@@ -6746,6 +6746,10 @@ packages:
     resolution: {integrity: sha512-Daqe51STnrCUq/t4dbzCtfNBLElrqVpCtuWK0MuPrzUi6K/13E98y3E8/kzuMZt6IEmghMnF41J0AidrFqjZUA==}
     engines: {node: '>=18'}
 
+  rename-overwrite@6.0.3:
+    resolution: {integrity: sha512-Daqe51STnrCUq/t4dbzCtfNBLElrqVpCtuWK0MuPrzUi6K/13E98y3E8/kzuMZt6IEmghMnF41J0AidrFqjZUA==}
+    engines: {node: '>=18'}
+
   repeat-string@1.6.1:
     resolution: {integrity: sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==}
     engines: {node: '>=0.10'}
@@ -15514,6 +15518,11 @@ snapshots:
       mdast-util-to-markdown: 2.1.2
       unified: 11.0.5
     optional: true
+
+  rename-overwrite@6.0.3:
+    dependencies:
+      '@zkochan/rimraf': 3.0.2
+      fs-extra: 11.3.0
 
   rename-overwrite@6.0.3:
     dependencies:
