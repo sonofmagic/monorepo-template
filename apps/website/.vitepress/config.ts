@@ -23,6 +23,17 @@ export default defineConfig({
       '/': [
         { text: '使用手册', link: '/' },
         { text: '一些思考', link: 'thinking' },
+        {
+          text: '从 0 到 1',
+          items: [
+            { text: '如何复用 js 代码', link: '/why/how-to-reuse-js-code' },
+            { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
+            { text: '如何发布现代 npm 包', link: '/why/publish-modern-npm-package' },
+            { text: '为什么往 monorepo 方向演进', link: '/why/monorepo' },
+            { text: 'monorepo 的管理工具们', link: '/why/turborepo' },
+            { text: 'monorepo 如何发包和生成变更日志', link: '/why/turborepo' },
+          ],
+        },
       ],
     },
   },
