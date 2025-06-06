@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.3
+
+### Patch Changes
+
+- [`89a3797`](https://github.com/sonofmagic/monorepo-template/commit/89a37976c96fb48d205b328e880fec6db1251114) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: sync deps
+
 ## 1.0.2
 
 ### Patch Changes
