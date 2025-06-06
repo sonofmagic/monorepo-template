@@ -2,6 +2,7 @@ import CI from 'ci-info'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { getFileHash, isFileChanged } from '@/utils/md5'
+
 // windows 和 linux/macos 计算不一致，应该是 \r\n 和 \n 导致的
 describe.skipIf(CI.isCI)('md5', () => {
   const testFilePath = path.resolve(import.meta.dirname, '../.gitignore')
