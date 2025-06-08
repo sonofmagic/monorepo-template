@@ -1,8 +1,14 @@
+---
+outline: [2, 4]
+---
+
 # 改进并发布现代 npm 包
 
 ## 提升包的质量
 
-### dts 是什么
+### 添加 dts
+
+#### dts 是什么
 
 你安装使用刚刚自己发的包的时候，有没有注意到，你的 `IDE` 没有出现任何的智能提示
 
@@ -35,24 +41,8 @@
 <div>什么标志都没有的包</div>
 </div>
 
-### 添加 dts
+### 更改为 esm 格式优先
 
-## 更改为 esm 格式优先
+#### 为什么?
 
-在 `esm` 格式中的 `js` 中使用 `require` 会报错
-
-```sh
-ReferenceError: require is not defined in ES module scope, you can use import instead
-```
-
-另外也有一种邪道做法，适用于 `nodejs`:
-
-```js
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.filename)
-
-const { sayHello } = require('icebreaker-npm-basic-package')
-
-sayHello()
-```
+详见 [ESM vs CJS](./esm-vs-cjs.md)
