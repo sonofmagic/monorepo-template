@@ -1,6 +1,6 @@
 # 添加 dts
 
-## dts 是什么
+## `.d.ts` 文件是什么
 
 在 TypeScript 中，`.d.ts` 文件是 **类型声明文件**，全称是 **"declaration file"**。它的主要作用是为 JavaScript 代码或没有类型定义的 TypeScript 代码提供类型信息。
 
@@ -10,13 +10,13 @@
 
 下面这 2 个标志想必大家在 `npmjs` 进行搜索的时候都见到过。
 
-<img width="40" src="./assets/npm-ts.svg" />
+<img width="40" src="../assets/npm-ts.svg" />
 
 这个标志代表这个包发布的时候，本身包里面就自己提供了 `dts`，这个需要在打包生成出 `dts` 之后，在 `package.json` 中，通过 `types` 字段指定了 `dts` 的位置
 
 比如我发的所有包 [weapp-tailwindcss](https://www.npmjs.com/package/weapp-tailwindcss), [weapp-vite](https://www.npmjs.com/package/weapp-vite), [modern-ahocorasick](https://www.npmjs.com/package/modern-ahocorasick) 等等...
 
-<img width="40" src="./assets/npm-dt.svg" />
+<img width="40" src="../assets/npm-dt.svg" />
 
 这个标志代表这个包发布的时候，本身包里面没有 `dts`，但是有好心人给他写了 `dts`，并发布到了 `@types/*` 这个作用域下了，所以这个包等同于也有 `dts`，而且 `vscode` 也在发现你安装了这样的包之后，也会去下载 `@types/*` 这样的包，当然更好的方式是你要显式安装 `@types` 包
 
@@ -29,9 +29,9 @@
 <div class="flex justify-center">
 <div class="flex items-center border p-6">
 
-<img class="w-12" src="./assets/npm-ts.svg" />
+<img class="w-12" src="../assets/npm-ts.svg" />
 <div class="text-5xl mx-5">></div>
-<img class="w-12" src="./assets/npm-dt.svg" />
+<img class="w-12" src="../assets/npm-dt.svg" />
 <div class="text-5xl mx-5">></div>
 <div>什么标志都没有的包</div>
 </div>
@@ -39,7 +39,7 @@
 
 ---
 
-### ✅ `.d.ts` 文件的作用
+### `.d.ts` 文件的作用
 
 - **描述模块或库的类型结构**，使 TypeScript 可以进行类型检查和代码补全。
 - **为 JavaScript 库提供类型支持**，例如 jQuery、Lodash、React 等第三方库。
@@ -47,7 +47,7 @@
 
 ---
 
-### 🧠 举个简单例子
+### 举个简单例子
 
 假设你有一个 JavaScript 文件 `math.js`：
 
@@ -69,7 +69,7 @@ declare function add(a: number, b: number): number
 
 ---
 
-### 🧰 使用场景
+### 使用场景
 
 1. **第三方库没有内置类型定义时**
 
@@ -85,7 +85,7 @@ declare function add(a: number, b: number): number
 
 ---
 
-### 📦 类型声明的获取方式
+### 类型声明的获取方式
 
 - 手动编写 `.d.ts`
 - 自动生成（例如通过 `tsc --declaration`）
@@ -93,5 +93,3 @@ declare function add(a: number, b: number): number
   ```
   npm install --save-dev @types/express
   ```
-
----

@@ -16,6 +16,10 @@ outline: [2, 4]
 
 此代码的演变用例见 [examples](https://github.com/sonofmagic/monorepo-template/tree/main/apps/website/why/examples)
 
+## 确定包的模块入口点
+
+详见 [package-entry-points](./package-entry-points)
+
 ## 添加 DTS
 
 类型提示其实就是最好的文档，为了让使用者，能在IDE里面直接点出来方法，类型和枚举，我们需要添加它
@@ -32,8 +36,20 @@ outline: [2, 4]
 
 既然我们都要使用一份代码，去生成 `cjs` / `esm` / `dts`，那么我们当然可以完全使用 `TypeScript` 进行编写，去生成对应的产物即可
 
+详见 [使用 TypeScript 编写代码](./typescript)
+
 ## 使用打包器
 
-## 写一份可读的 README 或者准备一个文档网站
+`TypeScript` 自带的 `tsc` 功能太弱了，当我们要进行一些前端工程化的改造时候，光使用 `tsc` + `script脚本` 的方式已经满足不了我们的需求
 
-## 添加单元测试
+所有我们这时候需要引入打包器，来和 `TypeScript` 一起协作
+
+详见 [使用打包器](./bundlers)
+
+## 写一份可读的 README
+
+假如你写的 `npm` 包已经复杂到一个 `README.md` 文档无法解决开发者的遇到的问题了，那么就准备一个文档网站
+
+## 添加单元测试(额外)
+
+本模板使用的就是 `vitest`，具体使用方式见 `vitest` 文档
