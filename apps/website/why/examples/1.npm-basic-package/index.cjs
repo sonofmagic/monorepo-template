@@ -1,7 +1,9 @@
 console.log(`cjs load ${__filename}`)
 
 function sayHello() {
-  console.log('hello world cjs')
+  const message = 'hello world cjs'
+  console.log(message)
+  return message
 }
 
 module.exports = {

@@ -35,6 +35,7 @@ export default defineConfig({
               link: '/why/publish-modern-npm-package',
               items: [
                 { text: 'ESM vs CJS', link: '/why/esm-vs-cjs' },
+                { text: 'package entry points 详解', link: '/why/package-entry-points' },
               ],
             },
             { text: '为什么往 monorepo 方向演进', link: '/why/monorepo' },
