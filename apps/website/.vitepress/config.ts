@@ -34,6 +34,7 @@ export default defineConfig({
               text: '改进并发布现代 npm 包',
               link: '/why/publish-modern-npm-package',
               items: [
+                { text: '添加 DTS', link: '/why/dts' },
                 { text: 'ESM vs CJS', link: '/why/esm-vs-cjs' },
                 { text: 'package entry points 详解', link: '/why/package-entry-points' },
               ],
