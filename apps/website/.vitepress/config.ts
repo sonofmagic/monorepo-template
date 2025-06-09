@@ -50,6 +50,10 @@ export default defineConfig({
         },
       ],
     },
+    editLink: {
+      pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/apps/website/:path',
+      text: '为此页提供修改建议',
+    },
   },
   vite: {
     plugins: [
