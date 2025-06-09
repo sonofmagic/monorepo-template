@@ -7,20 +7,22 @@
   "license": "ISC",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "scripts": {},
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build:watch": "tsup --watch --sourcemap",
+    "build": "tsup"
+  },
   "devDependencies": {
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
