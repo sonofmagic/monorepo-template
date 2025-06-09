@@ -32,13 +32,15 @@ outline: [2, 4]
 
 这里就需要提到包的质量判断标准，一般来说呈现下面的趋势:
 
-<div style="display:flex;align-items: center;">
+<div class="flex justify-center">
+<div class="flex items-center border p-6">
 
-<img width="100" src="./assets/npm-ts.svg" />
-<div style="font-size:80px;margin:0px 16px;">></div>
-<img width="100" src="./assets/npm-dt.svg" />
-<div style="font-size:80px;margin:0px 16px;">></div>
+<img class="w-12" src="./assets/npm-ts.svg" />
+<div class="text-5xl mx-5">></div>
+<img class="w-12" src="./assets/npm-dt.svg" />
+<div class="text-5xl mx-5">></div>
 <div>什么标志都没有的包</div>
+</div>
 </div>
 
 ### 更改为 esm 格式优先
@@ -46,3 +48,11 @@ outline: [2, 4]
 #### 为什么?
 
 详见 [ESM vs CJS](./esm-vs-cjs.md)
+
+### 使用 TypeScript 进行编写
+
+### 使用打包器
+
+### 写一份可读的 README 或者准备一个文档网站
+
+### 添加单元测试
