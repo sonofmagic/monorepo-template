@@ -1,0 +1,30 @@
+{
+  "name": "icebreaker-npm-basic-package",
+  "type": "module",
+  "version": "1.0.5",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {},
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "unbuild": "^3.5.0"
+  }
+}

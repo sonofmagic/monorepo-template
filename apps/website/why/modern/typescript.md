@@ -123,12 +123,16 @@ console.log(`load package icebreaker-npm-basic-package`)
     }
   },
   "files": [
-    "dist"
+    "dist" // [!code highlight]
   ]
 }
 ```
 
 给不同的引入方式，设置不同的模块入口，和不同的类型提示。
+
+同时也要注意这里我们添加了 `files` 字段，因为此时 `src` 目录下的源代码是不需要发布到 `npmjs` 上去的
+
+你也可以通过执行 `npm pack --dry-run` 查看当前哪些文件会在发布的时候，被上传到 `npmjs` 上去
 
 ## 调试项目
 

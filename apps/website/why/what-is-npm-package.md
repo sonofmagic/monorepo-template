@@ -51,7 +51,7 @@ my-package/
 
 ---
 
-### npm 包来源
+### npm 包类型
 
 #### **公共包**
 
@@ -120,6 +120,8 @@ registry=https://registry.npmmirror.com/
 详见官方文档 [dependencies详解](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#dependencies)
 
 ---
+
+值得注意的是，这个包的类型只和它的来源还有和当前包的关系有关，也就是说一个包，既可以是公共包，也可以是私有包，也可以是本地包。
 
 ### 使用 npm 包的示例
 
