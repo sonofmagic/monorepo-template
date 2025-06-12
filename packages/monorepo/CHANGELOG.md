@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.4
+
+### Patch Changes
+
+- [`9cee86b`](https://github.com/sonofmagic/monorepo-template/commit/9cee86bc713a00ec604be7472cc4b96cf709c94a) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: bump version
+
 ## 1.0.3
 
 ### Patch Changes
