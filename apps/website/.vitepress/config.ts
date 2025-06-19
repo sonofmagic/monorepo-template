@@ -44,8 +44,8 @@ export default defineConfig({
               ],
             },
             { text: '为什么往 monorepo 方向演进', link: '/monorepo' },
-            { text: '管理 monorepo', link: '/turborepo' },
-            { text: 'monorepo 如何发包和生成变更日志', link: '/changeset' },
+            { text: '如何管理 monorepo', link: '/turborepo' },
+            { text: 'monorepo 发包生成变更日志', link: '/changeset' },
           ],
         },
       ],
@@ -59,5 +59,10 @@ export default defineConfig({
     plugins: [
       Tailwindcss(),
     ],
+    // server: {
+    //   hmr: {
+    //     overlay: false,
+    //   },
+    // },
   },
 })

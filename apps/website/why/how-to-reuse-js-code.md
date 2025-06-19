@@ -4,7 +4,7 @@ outline: [2, 4]
 
 # 如何复用 js 代码
 
-当然我们知道，不论在什么编程语言里，复用代码最简单的方案就是 `复制粘贴`
+我们知道，不论在什么编程语言里，复用代码最简单的方案就是 `复制粘贴`
 
 然而，复制粘贴会导致代码冗余、难以维护，修改一处逻辑时易漏改其它处，增加出错概率，违背“不要重复自己”（DRY）原则。
 
@@ -30,7 +30,7 @@ outline: [2, 4]
 4. **为构建通用库打下基础**
    工具函数库（如 `lodash/es-toolkit`）、业务中间件、配置模块、数据处理逻辑等，都是基于模块化原则设计的。只有当代码被封装为模块，它才可能被提取、封装、共享、发布。
 
-### 模块化让“复用”从被动到主动
+### 模块化让复用从被动到主动
 
 非模块化时代的“复用”往往是：
 
@@ -44,7 +44,7 @@ outline: [2, 4]
 
 这不仅是形式上的进步，更是软件工程层面的范式跃迁。
 
-### 模块化的典型格式
+### js 模块的典型格式
 
 - **ES Modules（现代浏览器/现代 Node.js）**：标准、推荐，使用 `import` / `export`
 - **CommonJS（传统 Node.js）**：使用 `require` / `module.exports`
@@ -57,7 +57,7 @@ outline: [2, 4]
 它最大的特点是，使用 `export` / `import` 将功能函数、类、常量等分别放入独立 `.js` 文件中，动态引入的使用 `import()` 进行引入
 
 ```js
-// utils/math.ts
+// utils/math.js
 export function add(a, b) {
   return a + b
 }
@@ -68,18 +68,18 @@ export function multiply(a, b) {
 ```
 
 ```js
-// main.ts
+// main.js
 import { add, multiply } from './utils/math'
 
 console.log(add(2, 3)) // 5
 console.log(multiply(2, 3)) // 6
 ```
 
-**这是未来的方向**
+**这是目前的主流，也是未来的方向**
 
 注意事项：
 
-- 在浏览器中使用需要 `<script type="module">`
+- 在浏览器中引入，需要使用 `<script type="module">`
 - 在 `Node.js` 中需要 `package.json` 设置 `"type": "module"`
 
 ---
@@ -101,6 +101,7 @@ module.exports = { add }
 ```js
 // app.js
 const { add } = require('./utils/math.js')
+
 console.log(add(5, 10))
 ```
 

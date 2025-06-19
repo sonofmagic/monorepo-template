@@ -1,4 +1,4 @@
-# monorepo 如何发包和生成变更日志
+# monorepo 发包生成变更日志
 
 在 `monorepo` 中发包和生成变更日志是一项关键的工作。推荐的现代做法是使用 [`changesets`](https://github.com/changesets/changesets) 专为 **monorepo 包发布** 设计的开源工具。
 
@@ -103,24 +103,52 @@ pnpm changeset publish
 
 ```yaml
 name: Release
+
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+env:
+  HUSKY: 0
+
+permissions:
+  contents: write # to create release (changesets/action)
+  issues: write # to post issue comments (changesets/action)
+  pull-requests: write # to create pull request (changesets/action)
+  id-token: write # to use OpenID Connect token for provenance (changesets/action)
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
         with:
-          version: 8
-      - run: pnpm install
-      - run: pnpm changeset version
-      - run: pnpm changeset publish
+          node-version: 22
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm publish-packages
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm_config_registry: https://registry.npmjs.org
 ```
 
 ---

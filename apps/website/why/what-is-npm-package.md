@@ -51,7 +51,7 @@ my-package/
 
 ---
 
-### npm 包类型
+### npm 包关系类型
 
 #### **公共包**
 
@@ -119,9 +119,15 @@ registry=https://registry.npmmirror.com/
 
 详见官方文档 [dependencies详解](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#dependencies)
 
----
+### 注意点
 
 值得注意的是，这个包的类型只和它的来源还有和当前包的关系有关，也就是说一个包，既可以是公共包，也可以是私有包，也可以是本地包。
+
+比如在本 `monorepo` 中，`@icebraekers/monorepo` 是公共包，因为它已经发布到了 `https://www.npmjs.com` 上了
+
+同时它也是一个本地包，因为本 `monorepo` 中，其他项目使用 `workspace` 的方式直接使用了这个包。
+
+它也可以是一个私有包，比如你在公司内部网络，快速使用 [verdaccio](https://www.npmjs.com/package/verdaccio) 搭建一个私有源, 然后把 `@icebraekers/monorepo` 发布上去，那它就变成一个内网里的私有包了。
 
 ### 使用 npm 包的示例
 
