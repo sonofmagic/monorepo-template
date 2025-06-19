@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.5
+
+### Patch Changes
+
+- [`50dedac`](https://github.com/sonofmagic/monorepo-template/commit/50dedac2185884cc02601c3c04931341da2f3691) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: bump version
+
 ## 1.0.4
 
 ### Patch Changes
