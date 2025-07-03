@@ -155,7 +155,7 @@ importers:
         version: 4.1.12(@types/node@24.0.8)
       '@inquirer/select':
         specifier: ^4.2.3
-        version: 4.2.3(@types/node@24.0.8)
+        version: 4.2.4(@types/node@24.0.8)
       '@pnpm/logger':
         specifier: ^1001.0.0
         version: 1001.0.0
@@ -1562,9 +1562,14 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/figures@1.0.11':
-    resolution: {integrity: sha512-eOg92lvrn/aRUqbxRyvpEWnrvRuTYRifixHkYVpJiygTgVSBIHDqLh0SrMQXkafvULg3ck11V7xvR+zcgvpHFw==}
+  '@inquirer/core@10.1.14':
+    resolution: {integrity: sha512-Ma+ZpOJPewtIYl6HZHZckeX1STvDnHTCB2GVINNUlSEn2Am6LddWwfPkIGY0IUFVjUUrr/93XlBwTK6mfLjf0A==}
     engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   '@inquirer/figures@1.0.12':
     resolution: {integrity: sha512-MJttijd8rMFcKJC8NYmprWr6hD3r9Gd9qUC0XwPNwoEPWSMVJwA2MlXxF+nhZZNMY+HXsWa+o7KY2emWYIn0jQ==}
@@ -1579,8 +1584,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/select@4.2.3':
-    resolution: {integrity: sha512-OAGhXU0Cvh0PhLz9xTF/kx6g6x+sP+PcyTiLvCrewI99P3BBeexD+VbuwkNDvqGkk3y2h5ZiWLeRP7BFlhkUDg==}
+  '@inquirer/select@4.2.4':
+    resolution: {integrity: sha512-unTppUcTjmnbl/q+h8XeQDhAqIOmwWYWNyiiP2e3orXrg6tOaa5DHXja9PChCSbChOsktyKgOieRZFnajzxoBg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -9231,7 +9236,18 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.0.8
 
-  '@inquirer/figures@1.0.11': {}
+  '@inquirer/core@10.1.14(@types/node@24.0.8)':
+    dependencies:
+      '@inquirer/figures': 1.0.12
+      '@inquirer/type': 3.0.7(@types/node@24.0.8)
+      ansi-escapes: 4.3.2
+      cli-width: 4.1.0
+      mute-stream: 2.0.0
+      signal-exit: 4.1.0
+      wrap-ansi: 6.2.0
+      yoctocolors-cjs: 2.1.2
+    optionalDependencies:
+      '@types/node': 24.0.8
 
   '@inquirer/figures@1.0.12': {}
 
@@ -9242,9 +9258,9 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.0.8
 
-  '@inquirer/select@4.2.3(@types/node@24.0.8)':
+  '@inquirer/select@4.2.4(@types/node@24.0.8)':
     dependencies:
-      '@inquirer/core': 10.1.13(@types/node@24.0.8)
+      '@inquirer/core': 10.1.14(@types/node@24.0.8)
       '@inquirer/figures': 1.0.12
       '@inquirer/type': 3.0.7(@types/node@24.0.8)
       ansi-escapes: 4.3.2
@@ -13333,7 +13349,7 @@ snapshots:
 
   inquirer@9.3.7:
     dependencies:
-      '@inquirer/figures': 1.0.11
+      '@inquirer/figures': 1.0.12
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       external-editor: 3.1.0
