@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.7
+
+### Patch Changes
+
+- [`db3001f`](https://github.com/sonofmagic/monorepo-template/commit/db3001fcb45bd74d00e80d9cd08e6bfd86d8a4a1) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: upgrade version
+
 ## 1.0.6
 
 ### Patch Changes
