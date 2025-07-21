@@ -13,6 +13,8 @@
   "ignoreDeps": [
     "node"
   ],
+  "automerge": true,
+  "automergeType": "pr",
   "packageRules": [
     {
       "matchUpdateTypes": [
@@ -20,14 +22,6 @@
         "patch",
         "pin",
         "digest"
-      ],
-      "automerge": true,
-      "automergeType": "pr",
-      "automergeSchedule": [
-        "after 1am and before 2am"
-      ],
-      "schedule": [
-        "after 2am and before 3am"
       ]
     }
   ]
