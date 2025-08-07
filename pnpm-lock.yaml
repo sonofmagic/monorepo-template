@@ -252,6 +252,12 @@ importers:
 
   packages/vue-lib-template:
     dependencies:
+      '@vee-validate/i18n':
+        specifier: ^4.15.1
+        version: 4.15.1
+      '@vee-validate/rules':
+        specifier: ^4.15.1
+        version: 4.15.1(vue@3.5.18(typescript@5.9.2))
       '@vee-validate/zod':
         specifier: ^4.15.1
         version: 4.15.1(vue@3.5.18(typescript@5.9.2))(zod@4.0.15)
@@ -274,6 +280,9 @@ importers:
       '@vue/tsconfig':
         specifier: ^0.7.0
         version: 0.7.0(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2))
+      flush-promises:
+        specifier: ^1.0.2
+        version: 1.0.2
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
@@ -298,6 +307,9 @@ importers:
       vue-tsc:
         specifier: ^3.0.5
         version: 3.0.5(typescript@5.9.2)
+      wait-for-expect:
+        specifier: ^4.0.0
+        version: 4.0.0
 
 packages:
 
@@ -2733,6 +2745,12 @@ packages:
     resolution: {integrity: sha512-iYbx4ab3aTMrcJSyBoGvwsbUM5BmRQef4rzGOjL312r/0RDZM+i2ikPxcFXpp/9P+Gp22gSXDMlzwY+VfJ2Llw==}
     engines: {node: '>=14'}
 
+  '@vee-validate/i18n@4.15.1':
+    resolution: {integrity: sha512-6ogEyxkoTr7IZk4EAUT0rD3pr34Nw/YEToez/c0DSlI1/cBeOpunSmGmoYPh32pmd3imxFPEawCB7IyFvRJSAw==}
+
+  '@vee-validate/rules@4.15.1':
+    resolution: {integrity: sha512-2TGXq2MYt21nT8ysuxyFY/LBVQDcMPKn1hY0w3uIDmG333vzBkOtXAylmvrS93AsJ7N5coHMJjcCGG4JxCO2hQ==}
+
   '@vee-validate/zod@4.15.1':
     resolution: {integrity: sha512-329Z4TDBE5Vx0FdbA8S4eR9iGCFFUNGbxjpQ20ff5b5wGueScjocUIx9JHPa79LTG06RnlUR4XogQsjN4tecKA==}
     peerDependencies:
@@ -4415,6 +4433,9 @@ packages:
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
+
+  flush-promises@1.0.2:
+    resolution: {integrity: sha512-G0sYfLQERwKz4+4iOZYQEZVpOt9zQrlItIxQAAYAWpfby3gbHrx0osCHz5RLl/XoXevXk0xoN4hDFky/VV9TrA==}
 
   focus-trap@7.6.4:
     resolution: {integrity: sha512-xx560wGBk7seZ6y933idtjJQc1l+ck+pI3sKvhKozdBV1dRZoKhkW5xoCaFv9tQiX5RH1xfSxjuNu6g+lmN/gw==}
@@ -7786,6 +7807,9 @@ packages:
     resolution: {integrity: sha512-o8qghlI8NZHU1lLPrpi2+Uq7abh4GGPpYANlalzWxyWteJOCsr/P+oPBA49TOLu5FTZO4d3F9MnWJfiMo4BkmA==}
     engines: {node: '>=18'}
 
+  wait-for-expect@4.0.0:
+    resolution: {integrity: sha512-mcH2HYUUHhdFGHVJkgwkBxRihZO4VSuPyh6xhYHz7LEnYkcaLbTAEEsTpYiFw4UY45XdTZYYIaquuMucw9wWMw==}
+
   walk-up-path@3.0.1:
     resolution: {integrity: sha512-9YlCL/ynK3CTlrSRrDxZvUauLzAswPCrsaCgilqFevUYpeEW0/3ScEjaa3kbW/T0ghhkEr7mv+fpjqn1Y1YuTA==}
 
@@ -10897,6 +10921,14 @@ snapshots:
       magic-string: 0.30.17
     optional: true
 
+  '@vee-validate/i18n@4.15.1': {}
+
+  '@vee-validate/rules@4.15.1(vue@3.5.18(typescript@5.9.2))':
+    dependencies:
+      vee-validate: 4.15.1(vue@3.5.18(typescript@5.9.2))
+    transitivePeerDependencies:
+      - vue
+
   '@vee-validate/zod@4.15.1(vue@3.5.18(typescript@5.9.2))(zod@4.0.15)':
     dependencies:
       type-fest: 4.41.0
@@ -13001,6 +13033,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.3: {}
+
+  flush-promises@1.0.2: {}
 
   focus-trap@7.6.4:
     dependencies:
@@ -16877,6 +16911,8 @@ snapshots:
   w3c-xmlserializer@5.0.0:
     dependencies:
       xml-name-validator: 5.0.0
+
+  wait-for-expect@4.0.0: {}
 
   walk-up-path@3.0.1:
     optional: true
