@@ -1,11 +1,13 @@
+import Tailwindcss from '@tailwindcss/vite'
 import path from 'pathe'
 import { mergeConfig } from 'vite'
-import dts from 'vite-plugin-dts'
+import Dts from 'vite-plugin-dts'
 import { sharedConfig } from './vite.shared.config'
 
 export default mergeConfig(sharedConfig, {
   plugins: [
-    dts(
+    Tailwindcss(),
+    Dts(
       {
         tsconfigPath: './tsconfig.app.json',
         entryRoot: './lib',

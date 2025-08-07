@@ -2,7 +2,7 @@
 withDefaults(defineProps<{
   msg?: string
 }>(), {
-  msg: 'Hello World',
+  msg: 'Hello 11World',
 })
 </script>
 
