@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/demo': RouteRecordInfo<'/demo', '/demo', Record<never, never>, Record<never, never>>,
+    '/dynamic-form-generator': RouteRecordInfo<'/dynamic-form-generator', '/dynamic-form-generator', Record<never, never>, Record<never, never>>,
   }
 
   /**
@@ -39,6 +40,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/demo.vue': {
       routes: '/demo'
+      views: never
+    }
+    'src/pages/dynamic-form-generator.vue': {
+      routes: '/dynamic-form-generator'
       views: never
     }
   }
