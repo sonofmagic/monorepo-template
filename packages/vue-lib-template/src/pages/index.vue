@@ -104,11 +104,7 @@ function yearsFrom(iso: string | null) {
 }
 
 function isUrl(s: string) {
-  try {
-    new URL(s)
-    return true
-  }
-  catch { return false }
+  return URL.canParse(s)
 }
 
 // Password strength
@@ -159,7 +155,7 @@ const rules = computed<FormRules<FormModel>>(() => ({
     { required: true, message: t('v_required'), trigger: 'blur' },
     { pattern: /^\w{3,16}$/, message: t('v_username'), trigger: 'blur' },
     {
-      validator: async (_r, v) => {
+      asyncValidator: async (_r, v) => {
         if (!v) {
           return Promise.resolve()
         }

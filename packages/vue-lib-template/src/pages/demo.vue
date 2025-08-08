@@ -4,6 +4,7 @@ import { CircleCheck, Delete, InfoFilled, Plus, Promotion, Refresh, UploadFilled
 import { ElMessage } from 'element-plus'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { HeadlessForm, HeadlessFormItem } from '~/index'
 import 'element-plus/theme-chalk/el-message.css'
 
 const { t, locale } = useI18n()
@@ -104,11 +105,7 @@ function yearsFrom(iso: string | null) {
 }
 
 function isUrl(s: string) {
-  try {
-    new URL(s)
-    return true
-  }
-  catch { return false }
+  return URL.canParse(s)
 }
 
 // Password strength
@@ -159,7 +156,7 @@ const rules = computed<FormRules<FormModel>>(() => ({
     { required: true, message: t('v_required'), trigger: 'blur' },
     { pattern: /^\w{3,16}$/, message: t('v_username'), trigger: 'blur' },
     {
-      validator: async (_r, v) => {
+      asyncValidator: async (_r, v) => {
         if (!v) {
           return Promise.resolve()
         }
@@ -418,7 +415,7 @@ function onReset() {
         </div>
       </template>
 
-      <el-form
+      <HeadlessForm
         ref="formRef"
         :model="model"
         :rules="rules"
@@ -429,17 +426,17 @@ function onReset() {
         class="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
         <!-- Username -->
-        <el-form-item prop="username" :label="t('username.label')">
+        <HeadlessFormItem prop="username" :label="t('username.label')">
           <el-input v-model.trim="model.username" clearable :placeholder="t('username.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Email -->
-        <el-form-item prop="email" :label="t('email.label')">
+        <HeadlessFormItem prop="email" :label="t('email.label')">
           <el-input v-model.trim="model.email" clearable :placeholder="t('email.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Password -->
-        <el-form-item prop="password" :label="t('password.label')">
+        <HeadlessFormItem prop="password" :label="t('password.label')">
           <el-input v-model="model.password" type="password" show-password :placeholder="t('password.ph')" />
           <div class="mt-2">
             <div class="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
@@ -454,25 +451,25 @@ function onReset() {
               <span>{{ t('password.rulesHint') }}</span>
             </div>
           </div>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Confirm Password -->
-        <el-form-item prop="confirmPassword" :label="t('confirmPassword.label')">
+        <HeadlessFormItem prop="confirmPassword" :label="t('confirmPassword.label')">
           <el-input v-model="model.confirmPassword" type="password" show-password :placeholder="t('confirmPassword.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Phone -->
-        <el-form-item prop="phone" :label="t('phone.label')">
+        <HeadlessFormItem prop="phone" :label="t('phone.label')">
           <el-input v-model.trim="model.phone" clearable :placeholder="t('phone.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Age -->
-        <el-form-item prop="age" :label="t('age.label')">
+        <HeadlessFormItem prop="age" :label="t('age.label')">
           <el-input-number v-model="model.age" :min="18" :max="100" :step="1" class="w-full" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Gender -->
-        <el-form-item prop="gender" :label="t('gender.label')">
+        <HeadlessFormItem prop="gender" :label="t('gender.label')">
           <el-radio-group v-model="model.gender">
             <el-radio label="male">
               {{ t('gender.male') }}
@@ -484,10 +481,10 @@ function onReset() {
               {{ t('gender.other') }}
             </el-radio>
           </el-radio-group>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Interests -->
-        <el-form-item prop="interests" :label="t('interests.label')">
+        <HeadlessFormItem prop="interests" :label="t('interests.label')">
           <el-checkbox-group v-model="model.interests">
             <el-checkbox label="frontend">
               {{ t('interests.frontend') }}
@@ -502,25 +499,25 @@ function onReset() {
               {{ t('interests.design') }}
             </el-checkbox>
           </el-checkbox-group>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Country / City -->
-        <el-form-item prop="location" :label="t('location.label')">
+        <HeadlessFormItem prop="location" :label="t('location.label')">
           <el-cascader v-model="model.location" class="w-full" :options="cascaderOptions" :props="{ checkStrictly: false }" :placeholder="t('location.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Address -->
-        <el-form-item prop="address" :label="t('address.label')">
+        <HeadlessFormItem prop="address" :label="t('address.label')">
           <el-input v-model="model.address" :placeholder="t('address.ph')" type="textarea" :rows="2" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Website -->
-        <el-form-item prop="website" :label="t('website.label')">
+        <HeadlessFormItem prop="website" :label="t('website.label')">
           <el-input v-model.trim="model.website" :placeholder="t('website.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Date of Birth -->
-        <el-form-item prop="dob" :label="t('dob.label')">
+        <HeadlessFormItem prop="dob" :label="t('dob.label')">
           <el-date-picker
             v-model="model.dob"
             type="date"
@@ -530,10 +527,10 @@ function onReset() {
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
           />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Availability Range -->
-        <el-form-item prop="availability" :label="t('availability.label')">
+        <HeadlessFormItem prop="availability" :label="t('availability.label')">
           <el-date-picker
             v-model="model.availability"
             type="daterange"
@@ -545,45 +542,45 @@ function onReset() {
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
           />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Preferred Time -->
-        <el-form-item prop="time" :label="t('time.label')">
+        <HeadlessFormItem prop="time" :label="t('time.label')">
           <el-time-picker v-model="model.time" class="w-full" :placeholder="t('time.ph')" />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Notifications -->
-        <el-form-item prop="notifications" :label="t('notifications.label')">
+        <HeadlessFormItem prop="notifications" :label="t('notifications.label')">
           <div class="flex items-center gap-3">
             <el-switch v-model="model.notifications" />
             <span class="text-slate-500 text-sm">{{ model.notifications ? t('notifications.on') : t('notifications.off') }}</span>
           </div>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Preferred Color -->
-        <el-form-item prop="color" :label="t('color.label')">
+        <HeadlessFormItem prop="color" :label="t('color.label')">
           <el-color-picker v-model="model.color" show-alpha />
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Salary Expectation -->
-        <el-form-item prop="salary" :label="t('salary.label')">
+        <HeadlessFormItem prop="salary" :label="t('salary.label')">
           <div class="px-2">
             <el-slider v-model="model.salary" :min="0" :max="100" :step="1" show-input />
             <div class="text-xs text-slate-500 mt-1">
               {{ t('salary.help') }}
             </div>
           </div>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Tags (createable) -->
-        <el-form-item prop="tags" :label="t('tags.label')">
+        <HeadlessFormItem prop="tags" :label="t('tags.label')">
           <el-select v-model="model.tags" multiple filterable allow-create default-first-option :placeholder="t('tags.ph')" class="w-full">
             <el-option v-for="opt in presetTags" :key="opt" :label="opt" :value="opt" />
           </el-select>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Avatar Upload -->
-        <el-form-item prop="avatar" :label="t('avatar.label')">
+        <HeadlessFormItem prop="avatar" :label="t('avatar.label')">
           <el-upload
             v-model:file-list="model.avatar"
             list-type="picture-card"
@@ -605,10 +602,10 @@ function onReset() {
           <div class="text-xs text-slate-500">
             {{ t('avatar.tips') }}
           </div>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Resume Upload (drag) -->
-        <el-form-item prop="resume" :label="t('resume.label')">
+        <HeadlessFormItem prop="resume" :label="t('resume.label')">
           <el-upload
             v-model:file-list="model.resume"
             drag
@@ -629,10 +626,10 @@ function onReset() {
               </div>
             </template>
           </el-upload>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Dynamic Skills -->
-        <el-form-item prop="skills" :label="t('skills.label')" class="md:col-span-2">
+        <HeadlessFormItem prop="skills" :label="t('skills.label')" class="md:col-span-2">
           <div class="space-y-3 w-full">
             <div v-for="(skill, idx) in model.skills" :key="skill.id" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
               <div class="md:col-span-5">
@@ -650,15 +647,15 @@ function onReset() {
               {{ t('skills.help') }}
             </div>
           </div>
-        </el-form-item>
+        </HeadlessFormItem>
 
         <!-- Agree Terms -->
-        <el-form-item prop="agree" class="md:col-span-2">
+        <HeadlessFormItem prop="agree" class="md:col-span-2">
           <el-checkbox v-model="model.agree">
             {{ t('agree') }}
           </el-checkbox>
-        </el-form-item>
-      </el-form>
+        </HeadlessFormItem>
+      </HeadlessForm>
 
       <el-divider class="!my-4" />
 
@@ -686,7 +683,7 @@ function onReset() {
 :deep(.el-card__header) {
   @apply bg-gradient-to-r from-sky-50 to-indigo-50;
 }
-:deep(.el-form-item__label) {
+:deep(.HeadlessFormItem__label) {
   @apply text-slate-700 font-medium;
 }
 :deep(.el-input),
