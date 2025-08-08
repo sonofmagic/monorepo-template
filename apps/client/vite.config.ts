@@ -1,7 +1,18 @@
-import vue from '@vitejs/plugin-vue'
+import path from 'node:path'
+import Tailwindcss from '@tailwindcss/vite'
+import Vue from '@vitejs/plugin-vue'
+import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    VueRouter(
+      {
+        dts: path.resolve(import.meta.dirname, 'src/types/typed-router.d.ts'),
+      },
+    ),
+    Vue(),
+    Tailwindcss(),
+  ],
 })

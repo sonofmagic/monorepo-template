@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { HelloWorld } from '@icebreakers/vue-lib-template'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div>
-    <HelloWorld></HelloWorld>
-  </div>
+  <RouterView />
 </template>
 
 <style scoped></style>
