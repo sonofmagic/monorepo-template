@@ -5,4 +5,5 @@ export interface CliOpts {
   raw?: boolean
   outDir?: string
   cwd?: string
+  skipOverwrite?: boolean
 }

@@ -66,7 +66,7 @@ function confirmOverwrite(filename: string) {
 }
 
 export async function upgradeMonorepo(opts: CliOpts) {
-  const { outDir, raw, interactive, cwd } = defu<Required<CliOpts>, CliOpts[]>(opts, {
+  const { outDir, raw, interactive, cwd, skipOverwrite } = defu<Required<CliOpts>, CliOpts[]>(opts, {
     cwd: process.cwd(),
     outDir: '',
   })
@@ -103,6 +103,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       if (file.stats.isFile()) {
         const relPath = path.relative(assetsDir, file.path)
         const targetPath = path.resolve(absOutDir, relPath)
+        // 不存在文件
         const targetIsExisted = await fs.exists(targetPath)
 
         async function overwriteOrCopy(target?: string | Buffer) {
@@ -114,6 +115,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
               isOverwrite = await confirmOverwrite(relPath)
             }
           }
+          else if (skipOverwrite) {
+            isOverwrite = false
+          }
+
           return isOverwrite
         }
         // const basename = path.basename(file.path)

@@ -21,6 +21,7 @@ program
   .option('-i,--interactive')
   .option('--raw', 'raw mode')
   .option('--outDir <dir>', 'Output directory')
+  .option('-s,--skip-overwrite', 'skip overwrite')
   .action(async (opts: CliOpts) => {
     await upgradeMonorepo(opts)
     logger.success('upgrade @icebreakers/monorepo ok!')

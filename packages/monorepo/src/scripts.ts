@@ -3,6 +3,7 @@ export const scripts = {
   'script:sync': 'monorepo sync',
   'script:clean': 'monorepo clean',
   'script:mirror': 'monorepo mirror',
+  'commitlint': 'commitlint --edit',
 }
 
 export const scriptsEntries = Object.entries(scripts)
