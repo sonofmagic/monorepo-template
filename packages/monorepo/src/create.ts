@@ -45,7 +45,14 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
       const sourceJson = await fs.readJson(sourceJsonPath)
       set(sourceJson, 'version', '0.0.0')
       set(sourceJson, 'name', path.basename(targetName))
-      await fs.outputJson(path.resolve(to, renameJson ? 'package.mock.json' : filename), sourceJson, { spaces: 2 })
+      await fs.outputJson(
+        path.resolve(
+          to,
+          renameJson ? 'package.mock.json' : filename,
+        ),
+        sourceJson,
+        { spaces: 2 },
+      )
     }
     else {
       await fs.copy(path.resolve(from, filename), path.resolve(to, filename))

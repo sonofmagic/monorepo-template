@@ -15,9 +15,9 @@ const cwd = process.cwd()
 program.name(name).version(version)
 
 program
-  // .command('upgrade')
-  // .description('升级/同步 monorepo 相关包')
-  // .alias('up')
+  .command('upgrade')
+  .description('升级/同步 monorepo 相关包')
+  .alias('up')
   .option('-i,--interactive')
   .option('--raw', 'raw mode')
   .option('--outDir <dir>', 'Output directory')
