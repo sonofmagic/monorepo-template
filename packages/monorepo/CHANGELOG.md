@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.11
+
+### Patch Changes
+
+- [`05c5606`](https://github.com/sonofmagic/monorepo-template/commit/05c560648e2cd82412fb82c9a2d8279c96a21bcc) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: add skip-overwrite options and commitlint script
+
 ## 1.0.7
 
 ### Patch Changes
