@@ -29,13 +29,15 @@ layout: doc
 >
 > 什么! 你不会连 [`Nodejs`](https://nodejs.org/en) 还没安装吧？
 
-## 清除不必要的代码
+## 使用步骤
+
+### 1. 清除不必要的代码
 
 执行 `pnpm script:clean` 命令，可以删去大部分的初始 `repo`，只保留一个 `@icebreakers/unbuild-template` 项目作为发包打包模板。
 
 `clean` 命令执行完成之后，再去执行 `pnpm i` 来更新 `pnpm-lock.yaml`, 并提交 `pnpm-lock.yaml` 文件来锁定 `npm` 包的版本。
 
-## 初始化文件
+### 2. 初始化文件
 
 执行 `pnpm script:init` 命令，这个命令会批量修改你关联的配置文件，并生成一份新的 `README.md`
 
@@ -55,6 +57,7 @@ layout: doc
 - `@icebreakers/cli` - 使用 `typescript` 编写的 `cli` 程序模板
 - `@icebreakers/website` - 文档网站模板，使用 `vitepress` 搭建，也是 [monorepo.icebreaker.top](https://monorepo.icebreaker.top/) 的源代码
 - `@icebreakers/server` - 使用 `hono` 搭建的服务端模板，使用 `typescript` 编写
+- `@icebreakers/client` - `vue` 客户端模板
 
 ## 更新包的依赖
 
@@ -67,6 +70,8 @@ layout: doc
 ## 配置自动发包
 
 本项目使用 [changesets](https://github.com/changesets/changesets) 进行包的发布和 `changelog` 的生成
+
+> [changesets](https://github.com/changesets/changesets) 的具体使用方式见它的文档
 
 在使用的时候，首先你需要做一些配置：
 
@@ -117,20 +122,30 @@ layout: doc
 
 ## 配置同步方式
 
-在根目录下执行: `npx @icebreakers/monorepo@latest`
+更新 `@icebreakers/monorepo` 到最新版本，然后
+
+在根目录下执行: `npx monorepo up`
+
+> 假如你想直接从远端获取，可以 `npx @icebreakers/monorepo@latest up`
 
 这个命令会把所有的文件从最新版本，对你本地进行覆盖，你可以从 `git` 暂存区把你不想要的文件剔除
 
 ### 参数
 
-`npx @icebreakers/monorepo@latest --raw`
+`npx monorepo up --raw`
 
 这个命令会从全部文件中去除 `Github` 相关的文件
 
-`npx @icebreakers/monorepo@latest -i`
+`npx monorepo up -i`
 
 这个命令会进行命令行选择模式，你可以在这里对想要复制的文件进行筛选
 
-当然你可以同时使用这 `2` 个命令
+`npx monorepo up -s`
 
-`npx @icebreakers/monorepo@latest -i --raw`
+跳过文件的新增，只保留文件的修改
+
+---
+
+当然你可以同时使用这多个命令
+
+`npx monorepo up -i --raw`
