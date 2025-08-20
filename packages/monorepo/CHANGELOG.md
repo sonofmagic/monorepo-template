@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.12
+
+### Patch Changes
+
+- [`8da3534`](https://github.com/sonofmagic/monorepo-template/commit/8da3534256ef4733194d9bb94c0d4970426d53d2) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: 更新 vue 模板
+
 ## 1.0.11
 
 ### Patch Changes
