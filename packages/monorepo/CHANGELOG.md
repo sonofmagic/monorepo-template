@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.14
+
+### Patch Changes
+
+- [`547cbef`](https://github.com/sonofmagic/monorepo-template/commit/547cbef27ce7b11776cd7aae1542aa8d296487b2) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore(vue-lib-template): add tailwindcss
+
 ## 1.0.12
 
 ### Patch Changes
