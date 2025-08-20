@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HelloWorld } from '../../lib'
+import { HelloWorld } from '~/index'
 </script>
 
 <template>
