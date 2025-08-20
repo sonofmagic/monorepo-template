@@ -7,8 +7,10 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div>
-    {{ msg }}
+  <div class="p-2">
+    <div class="border p-2 rounded-2xl">
+      {{ msg }}
+    </div>
   </div>
 </template>
 

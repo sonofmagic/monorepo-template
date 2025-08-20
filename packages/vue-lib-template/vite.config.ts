@@ -1,4 +1,5 @@
 import type { UserConfig } from 'vite'
+import Tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
 import VueRouter from 'unplugin-vue-router/vite'
@@ -20,6 +21,7 @@ export default mergeConfig(sharedConfig, {
         entryRoot: './lib',
       },
     ),
+    Tailwindcss(),
   ],
   // https://vite.dev/guide/build.html#library-mode
   build: {
