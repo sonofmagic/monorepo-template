@@ -1,11 +1,20 @@
+import type { UserConfig } from 'vite'
+import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
+import VueRouter from 'unplugin-vue-router/vite'
 import { mergeConfig } from 'vite'
-import dts from 'vite-plugin-dts'
+import DTS from 'vite-plugin-dts'
 import { sharedConfig } from './vite.shared.config'
 
 export default mergeConfig(sharedConfig, {
   plugins: [
-    dts(
+    VueRouter(
+      {
+        dts: path.relative(import.meta.dirname, './types/typed-router.d.ts'),
+      },
+    ),
+    Vue(),
+    DTS(
       {
         tsconfigPath: './tsconfig.app.json',
         entryRoot: './lib',
@@ -33,4 +42,4 @@ export default mergeConfig(sharedConfig, {
       },
     },
   },
-})
+} satisfies UserConfig)

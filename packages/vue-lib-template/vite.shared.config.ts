@@ -1,6 +1,5 @@
-import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
-import VueRouter from 'unplugin-vue-router/vite'
+
 // https://vite.dev/guide/build.html#library-mode
 import { defineConfig } from 'vite'
 
@@ -11,8 +10,4 @@ export const sharedConfig = defineConfig({
       '~': path.resolve(import.meta.dirname, 'lib'),
     },
   },
-  plugins: [
-    VueRouter(),
-    Vue(),
-  ],
 })

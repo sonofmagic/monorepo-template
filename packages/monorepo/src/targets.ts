@@ -63,5 +63,6 @@ export function getTemplateTargets() {
     'vue-lib-template/tsconfig.app.json',
     'vue-lib-template/tsconfig.node.json',
     'vue-lib-template/tsconfig.test.json',
+    'vue-lib-template/.gitignore',
   ]
 }
