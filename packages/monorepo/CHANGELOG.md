@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.15
+
+### Patch Changes
+
+- [`f612395`](https://github.com/sonofmagic/monorepo-template/commit/f6123958f4236bad3296f7bf8cb5c952fb04bd48) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore(deps): upgrade
+
 ## 1.0.14
 
 ### Patch Changes
