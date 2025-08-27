@@ -1,8 +1,9 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
   - '!**/test/**'
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
+  - better-sqlite3
   - esbuild
