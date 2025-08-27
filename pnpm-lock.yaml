@@ -199,6 +199,9 @@ importers:
       '@inquirer/select':
         specifier: ^4.3.2
         version: 4.3.2(@types/node@24.3.0)
+      '@pnpm/find-workspace-dir':
+        specifier: ^1000.1.2
+        version: 1000.1.2
       '@pnpm/logger':
         specifier: ^1001.0.0
         version: 1001.0.0
@@ -211,6 +214,9 @@ importers:
       '@pnpm/workspace.find-packages':
         specifier: ^1000.0.33
         version: 1000.0.33(@pnpm/logger@1001.0.0)(@pnpm/worker@1000.1.11(@pnpm/logger@1001.0.0)(@types/node@24.3.0))(typanion@3.14.0)
+      '@pnpm/workspace.read-manifest':
+        specifier: ^1000.2.2
+        version: 1000.2.2
       commander:
         specifier: ^14.0.0
         version: 14.0.0
@@ -1650,6 +1656,10 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       '@pnpm/worker': ^1000.1.11
+
+  '@pnpm/find-workspace-dir@1000.1.2':
+    resolution: {integrity: sha512-QU7LqV0T5lCuHwNoNT5YeArsrIYo4qcCEHz4F21tu42n6d1km3CGnpL6/7LMT0fgHL6cN55YyRU14imN/5b7vg==}
+    engines: {node: '>=18.12'}
 
   '@pnpm/fs.find-packages@1000.0.13':
     resolution: {integrity: sha512-YxQRYJ/xvcMhTz9ubLFgdweT5lXDuSFrU4VCxU8i0usmCI4P7s+MwjEsgGPxh2pluYrlEhVrz9DHmhp/JN7gmA==}
@@ -9748,6 +9758,11 @@ snapshots:
       tempy: 1.0.1
     transitivePeerDependencies:
       - domexception
+
+  '@pnpm/find-workspace-dir@1000.1.2':
+    dependencies:
+      '@pnpm/error': 1000.0.4
+      find-up: 5.0.0
 
   '@pnpm/fs.find-packages@1000.0.13(@pnpm/logger@1001.0.0)':
     dependencies:

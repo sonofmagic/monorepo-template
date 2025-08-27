@@ -1,4 +1,6 @@
+import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
+import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
 import { defu } from 'defu'
 import path from 'pathe'
 
@@ -9,13 +11,14 @@ export interface GetWorkspacePackagesOptions {
 }
 
 export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePackagesOptions) {
-  const posixCwd = path.normalize(cwd)
   const { ignoreRootPackage, ignorePrivatePackage, patterns } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
     ignoreRootPackage: true,
     ignorePrivatePackage: true,
   })
-  const packages = await findWorkspacePackages(cwd, {
-    patterns,
+  const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
+  const manifest = await readWorkspaceManifest(workspaceDir)
+  const packages = await findWorkspacePackages(workspaceDir, {
+    patterns: patterns ?? manifest?.packages,
   })
   let pkgs = packages.filter((x) => {
     if (ignorePrivatePackage && x.manifest.private) {
@@ -32,10 +35,7 @@ export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePa
 
   if (ignoreRootPackage) {
     pkgs = pkgs.filter((x) => {
-      return path
-        .normalize(
-          x.rootDir,
-        ) !== posixCwd
+      return x.rootDir !== workspaceDir
     })
   }
   return pkgs
