@@ -1,42 +1,40 @@
-import os from 'node:os'
+import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import Database from 'better-sqlite3'
-import boxen from 'boxen'
 import ExcelJS from 'exceljs'
+import { logMemoryUsage, logWorksheets } from './utils'
 
-export function logMemoryUsage() {
-  const memoryUsage = process.memoryUsage()
-  const arr = [
-    'Memory Usage (in MB):',
-    `RSS: ${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`,
-    `Heap Total: ${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
-    `Heap Used: ${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`,
-    `External: ${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`,
-  ]
-  console.log(boxen(arr.join('\n'), { padding: 1 }))
-}
+const args = process.argv.slice(2)
+const usage = args[0]
 
-export function logCpuUsage() {
-  const arr = [
-    'System Info:',
-    `Total Memory: ${(os.totalmem() / 1024 / 1024).toFixed(2)} MB`,
-    `Free Memory: ${(os.freemem() / 1024 / 1024).toFixed(2)} MB`,
-    `CPU Cores: ${os.cpus().length}`,
-    `System Architecture: ${os.arch()}`,
-  ]
-  console.log(boxen(arr.join('\n'), { padding: 1 }))
-}
 logMemoryUsage()
 const workbook = new ExcelJS.Workbook()
-
-await workbook.xlsx.readFile(
-  path.resolve(
-    import.meta.dirname,
-    './fixtures/test.xlsx',
-  ),
+const targetFile = path.resolve(
+  import.meta.dirname,
+  './fixtures/test.xlsx',
 )
+console.time('readFile')
+
+if (usage === 'stream') {
+  const stream = fs.createReadStream(targetFile, {
+    // 设定每次读取的块大小（例如：10MB = 10 * 1024 * 1024 字节）
+    highWaterMark: 10 * 1024 * 1024,
+  })
+
+  await workbook.xlsx.read(stream)
+}
+else {
+  await workbook.xlsx.readFile(
+    targetFile,
+  )
+}
+
 logMemoryUsage()
+
+console.timeEnd('readFile')
+
+logWorksheets(workbook.worksheets)
 
 const db = new Database(
   path.resolve(
