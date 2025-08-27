@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.0.17
+
+### Patch Changes
+
+- [`23ae5a0`](https://github.com/sonofmagic/monorepo-template/commit/23ae5a094904e2cb149f8861bf040091e61cb59e) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: 增强 clean 命令
+
 ## 1.0.15
 
 ### Patch Changes
