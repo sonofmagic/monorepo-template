@@ -1,7 +1,7 @@
 import { parse, stringify } from 'comment-json'
 import fs from 'fs-extra'
 import path from 'pathe'
-import { setMirror } from './mirror'
+import { setMirror } from './utils'
 
 export async function setVscodeBinaryMirror(cwd: string) {
   const targetJsonPath = path.resolve(cwd, '.vscode/settings.json')

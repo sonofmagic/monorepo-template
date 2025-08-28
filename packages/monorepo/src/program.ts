@@ -37,7 +37,7 @@ program.command('sync').description('向 npmmirror 同步所有子包').action(a
   logger.success('sync npm mirror finished!')
 })
 
-program.command('clean').description('清除所有默认包').action(async () => {
+program.command('clean').description('清除选中的包').action(async () => {
   await cleanProjects(cwd)
   logger.success('clean projects finished!')
 })

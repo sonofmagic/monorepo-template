@@ -10,12 +10,12 @@ export interface GetWorkspacePackagesOptions {
   patterns?: string[]
 }
 
-export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePackagesOptions) {
+export async function getWorkspacePackages(workspaceDir: string, options?: GetWorkspacePackagesOptions) {
   const { ignoreRootPackage, ignorePrivatePackage, patterns } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
     ignoreRootPackage: true,
     ignorePrivatePackage: true,
   })
-  const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
+
   const manifest = await readWorkspaceManifest(workspaceDir)
   const packages = await findWorkspacePackages(workspaceDir, {
     patterns: patterns ?? manifest?.packages,
@@ -39,4 +39,14 @@ export async function getWorkspacePackages(cwd: string, options?: GetWorkspacePa
     })
   }
   return pkgs
+}
+
+export async function getWorkspaceData(cwd: string, options?: GetWorkspacePackagesOptions) {
+  const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
+  const packages = await getWorkspacePackages(workspaceDir, options)
+  return {
+    cwd,
+    workspaceDir,
+    packages,
+  }
 }

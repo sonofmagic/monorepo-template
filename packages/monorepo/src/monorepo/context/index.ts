@@ -1,12 +1,12 @@
 import path from 'pathe'
-import { GitClient } from './git'
-import { getWorkspacePackages } from './workspace'
+import { GitClient } from '../git'
+import { getWorkspaceData } from '../workspace'
 import '@pnpm/types'
 
 export async function createContext(cwd: string) {
   const git = new GitClient()
-  const workspaceFilepath = path.resolve(cwd, 'pnpm-workspace.yaml')
-  const projects = await getWorkspacePackages(cwd)
+  const { packages, workspaceDir } = await getWorkspaceData(cwd)
+  const workspaceFilepath = path.resolve(workspaceDir, 'pnpm-workspace.yaml')
   const gitUrl = await git.getGitUrl()
   const gitUser = await git.getUser()
   return {
@@ -14,8 +14,9 @@ export async function createContext(cwd: string) {
     git,
     gitUrl,
     gitUser,
+    workspaceDir,
     workspaceFilepath,
-    projects,
+    packages,
   }
 }
 

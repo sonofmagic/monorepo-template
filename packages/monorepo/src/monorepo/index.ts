@@ -1,8 +1,8 @@
 import type { GetWorkspacePackagesOptions } from './workspace'
-import { setVscodeBinaryMirror } from './binaryMirror'
 import { cleanProjects } from './clean'
 import { GitClient } from './git'
 import { init } from './init'
+import { setVscodeBinaryMirror } from './mirror'
 import { syncNpmMirror } from './sync'
 import { getWorkspacePackages } from './workspace'
 

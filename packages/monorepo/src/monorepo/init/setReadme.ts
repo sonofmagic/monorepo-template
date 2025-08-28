@@ -1,21 +1,21 @@
-import type { Context } from './context'
+import type { Context } from '../context'
 import fs from 'fs-extra'
 import path from 'pathe'
 
 async function getRows(ctx: Context) {
-  const { projects, git, cwd } = ctx
+  const { packages, git, cwd } = ctx
   const gitUrl = await git.getGitUrl()
   const gitUser = await git.getUser()
   const rows: string[] = []
   if (gitUrl) {
     rows.push(`# ${gitUrl.name}\n`)
   }
-  rows.push('## Projects\n')
-  for (const project of projects) {
-    const p = path.relative(cwd, project.rootDirRealPath)
+  rows.push('## Packages\n')
+  for (const pkg of packages) {
+    const p = path.relative(cwd, pkg.rootDirRealPath)
     if (p) {
-      const description = project.manifest.description ? `- ${project.manifest.description}` : ''
-      rows.push(`- [${project.manifest.name}](${p}) ${description}`)
+      const description = pkg.manifest.description ? `- ${pkg.manifest.description}` : ''
+      rows.push(`- [${pkg.manifest.name}](${p}) ${description}`)
     }
   }
   // ## Documentation

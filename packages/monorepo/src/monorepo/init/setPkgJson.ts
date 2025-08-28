@@ -1,16 +1,16 @@
-import type { Context } from './context'
+import type { Context } from '../context'
 import type { PackageJson } from '@/types'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
 
 export default async function (ctx: Context) {
-  const { gitUrl, gitUser, projects, cwd, workspaceFilepath } = ctx
+  const { gitUrl, gitUser, packages, cwd, workspaceFilepath } = ctx
 
   if (gitUrl && await fs.exists(workspaceFilepath)) {
-    for (const project of projects) {
-      const pkgJson = project.manifest
-      const directory = path.relative(cwd, project.rootDir)
+    for (const pkg of packages) {
+      const pkgJson = pkg.manifest
+      const directory = path.relative(cwd, pkg.rootDir)
       set(pkgJson, 'bugs.url', `https://github.com/${gitUrl.full_name}/issues`)
       const repository: PackageJson['repository'] = {
         type: 'git',
@@ -28,7 +28,7 @@ export default async function (ctx: Context) {
       // "maintainers": [
       //   "xxx <xxx@gmail.com> (url)",
       // ],
-      await fs.writeJSON(project.pkgJsonPath, pkgJson, {
+      await fs.writeJSON(pkg.pkgJsonPath, pkgJson, {
         spaces: 2,
       })
     }

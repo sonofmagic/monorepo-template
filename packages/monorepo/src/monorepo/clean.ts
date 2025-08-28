@@ -1,15 +1,11 @@
 import checkbox from '@inquirer/checkbox'
-import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
-import { getWorkspacePackages } from './workspace'
+import { getWorkspaceData } from './workspace'
 
 export async function cleanProjects(cwd: string) {
-  const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
-  const packages = await getWorkspacePackages(workspaceDir, {
-    ignorePrivatePackage: false,
-  })
+  const { packages, workspaceDir } = await getWorkspaceData(cwd)
 
   const cleanDirs = await checkbox<string>({
     message: '请选择需要清理的目录',
@@ -26,7 +22,7 @@ export async function cleanProjects(cwd: string) {
   for (const dir of cleanDirs) {
     await fs.remove(dir)
   }
-  const name = 'package.json'
+  const name = path.resolve(workspaceDir, 'package.json')
   const pkgJson = await fs.readJson(name)
   // fix https://github.com/sonofmagic/monorepo-template/issues/76
   set(pkgJson, 'devDependencies.@icebreakers/monorepo', 'latest', { preservePaths: false })

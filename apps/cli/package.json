@@ -32,14 +32,12 @@
     "new3": "monorepo create t/yyy/zzz --unbuild",
     "new4": "monorepo create t/yyy/zzz --tsup",
     "up": "monorepo up -s",
-    "upp": "monorepo up --skip-overwrite"
+    "upp": "monorepo up --skip-overwrite",
+    "clean": "monorepo clean"
   },
   "dependencies": {
     "@icebreakers/tsup-template": "workspace:*",
     "@icebreakers/unbuild-template": "workspace:*"
-  },
-  "devDependencies": {
-    "@icebreakers/monorepo": "workspace:*"
   },
   "//----------": "pnpm monorepo",
   "publishConfig": {
