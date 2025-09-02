@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.1.2
+
+### Patch Changes
+
+- [`2a13f92`](https://github.com/sonofmagic/monorepo-template/commit/2a13f9202c5af268ca22a57f81321c8f275819ae) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: 升级 pnpm 版本
+
 ## 1.1.1
 
 ### Patch Changes
