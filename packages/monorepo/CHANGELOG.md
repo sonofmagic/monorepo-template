@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.1.4
+
+### Patch Changes
+
+- [`0acee04`](https://github.com/sonofmagic/monorepo-template/commit/0acee046bcab6c6799e03a08809e033ef9a3b287) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: 升级 `@icebreakers/eslint-config` 到 `1.4.0`, 添加 `tailwindcss@4` 支持
+
 ## 1.1.3
 
 ### Patch Changes
