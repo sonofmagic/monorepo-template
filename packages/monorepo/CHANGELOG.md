@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.1.3
+
+### Patch Changes
+
+- [`f3c12f7`](https://github.com/sonofmagic/monorepo-template/commit/f3c12f7f45b25a8afb189bf29b15ae0fe77862af) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: upgrade setup-node from 4 to 5
+
 ## 1.1.2
 
 ### Patch Changes
