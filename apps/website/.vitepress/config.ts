@@ -25,7 +25,7 @@ export default defineConfig({
         { text: '使用手册', link: '/' },
         { text: '一些思考', link: 'thinking' },
         {
-          text: '从 0 到 1',
+          text: '从 0 到 1 发包',
           base: '/why/',
           items: [
             { text: '如何复用 js 代码', link: '/how-to-reuse-js-code' },
@@ -43,7 +43,16 @@ export default defineConfig({
                 { text: '使用打包器', link: '/bundlers' },
               ],
             },
-            { text: '为什么往 monorepo 方向演进', link: '/monorepo' },
+            // { text: '为什么往 monorepo 方向演进', link: '/monorepo' },
+            // { text: '如何管理 monorepo', link: '/turborepo' },
+            // { text: 'monorepo 发包生成变更日志', link: '/changeset' },
+          ],
+        },
+        {
+          text: 'Monorepo',
+          base: '/monorepo/',
+          items: [
+            { text: '为什么往 monorepo 方向演进', link: '/' },
             { text: '如何管理 monorepo', link: '/turborepo' },
             { text: 'monorepo 发包生成变更日志', link: '/changeset' },
           ],
