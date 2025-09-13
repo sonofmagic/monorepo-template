@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { HelloWorld } from '@icebreakers/vue-lib-template'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { client } from '../trpc'
 
 const { t, locale } = useI18n()
 
@@ -11,21 +13,55 @@ function changeLocale(lang: 'en' | 'zh') {
 function toggleLocale() {
   changeLocale(locale.value === 'en' ? 'zh' : 'en')
 }
+
+const fetchData = ref<any>()
+
+async function getFetchData() {
+  const result = await client.hello.query('icebreakers')
+  fetchData.value = result
+}
+
+onMounted(() => {
+  getFetchData()
+  // client.sayHello.query({ name: '2' })
+})
 </script>
 
 <template>
   <div>
-    <div class="bg-black min-h-screen flex items-center justify-center bg-gradient-to-br from-iosGradientStart to-iosGradientEnd p-4">
-      <div class="backdrop-blur-md bg-white/20 rounded-2xl p-8 max-w-sm text-center space-y-6">
-        <h1 class="text-4xl font-semibold text-white font-ios animate-pulse">
+    <div
+      class="
+        flex min-h-screen items-center justify-center bg-black bg-gradient-to-br
+        p-4
+      "
+    >
+      <div
+        class="
+          max-w-sm space-y-6 rounded-2xl bg-white/20 p-8 text-center
+          backdrop-blur-md
+        "
+      >
+        <h1 class="animate-pulse text-4xl font-semibold text-white">
           {{ t('hello') }}
         </h1>
         <button
-          class="px-5 py-2 bg-white/30 backdrop-blur-sm text-white rounded-full transition transform hover:scale-105"
+          class="
+            transform rounded-full bg-white/30 px-5 py-2 text-white
+            backdrop-blur-sm transition
+            hover:scale-105
+          "
           @click="toggleLocale"
         >
-          <HelloWorld :msg="t('hello')" />
+          <HelloWorld :msg="t('toggleLocale')" />
         </button>
+        <div class="rounded border border-white p-2">
+          <pre class="text-left text-white">
+{{ fetchData }}
+        </pre>
+          <button class="rounded bg-white/30 px-5 py-2 text-white" @click="getFetchData">
+            refetch
+          </button>
+        </div>
       </div>
     </div>
   </div>

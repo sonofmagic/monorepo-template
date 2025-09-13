@@ -1,4 +1,3 @@
-// import { app } from '@/app'
 import { Hono } from 'hono'
 import { testClient } from 'hono/testing'
 

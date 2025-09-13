@@ -8,7 +8,7 @@ withDefaults(defineProps<{
 
 <template>
   <div class="p-2">
-    <div class="rounded-2xl border p-2">
+    <div class="rounded-2xl p-2">
       {{ msg }}
     </div>
   </div>

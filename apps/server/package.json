@@ -16,7 +16,8 @@
   "keywords": [],
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./router": "./src/trpc-router.ts"
   },
   "files": [
     "dist"
@@ -43,6 +44,13 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/trpc-server": "^0.4.0",
+    "@trpc/server": "^11.5.1",
+    "trpc-to-openapi": "^3.0.1",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@hono/node-server": "^1.19.1",
