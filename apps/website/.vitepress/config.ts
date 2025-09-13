@@ -1,8 +1,8 @@
 import Tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
-
+import { withMermaid } from 'vitepress-plugin-mermaid'
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid(defineConfig({
   outDir: '../../dist',
   title: 'icebreaker\'s monorepo',
   description: 'icebreaker\'s monorepo. upgrade your monorepo',
@@ -43,9 +43,6 @@ export default defineConfig({
                 { text: '使用打包器', link: '/bundlers' },
               ],
             },
-            // { text: '为什么往 monorepo 方向演进', link: '/monorepo' },
-            // { text: '如何管理 monorepo', link: '/turborepo' },
-            // { text: 'monorepo 发包生成变更日志', link: '/changeset' },
           ],
         },
         {
@@ -53,8 +50,20 @@ export default defineConfig({
           base: '/monorepo/',
           items: [
             { text: '为什么往 monorepo 方向演进', link: '/' },
-            { text: '如何管理 monorepo', link: '/turborepo' },
-            { text: 'monorepo 发包生成变更日志', link: '/changeset' },
+            { text: '如何管理 monorepo', link: '/manage' },
+            { text: 'monorepo 发包生成变更日志', link: '/publish' },
+          ],
+        },
+        {
+          text: '相关的工具',
+          base: '/tools/',
+          items: [
+            { text: 'pnpm', link: '/pnpm' },
+            { text: 'turborepo', link: '/turborepo' },
+            { text: 'changeset', link: '/changeset' },
+            { text: 'husky', link: '/husky' },
+            { text: 'lint-staged', link: '/lint-staged' },
+            { text: 'renovate', link: '/renovate' },
           ],
         },
       ],
@@ -66,6 +75,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [
+      // @ts-ignore
       Tailwindcss(),
     ],
     // server: {
@@ -74,4 +84,8 @@ export default defineConfig({
     //   },
     // },
   },
-})
+  mermaid: {
+
+  },
+}),
+)
