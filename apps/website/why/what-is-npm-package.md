@@ -47,9 +47,7 @@ my-package/
 - `dependencies`：依赖的其他 npm 包
 - `files`: 哪些文件应该被上传，用于忽略掉不需要的文件类型
 
-> 更多册字段，可以查看 [`configuring-npm/package-json`](https://docs.npmjs.com/cli/v11/configuring-npm/package-json)
-
----
+> 更多字段，可以查看 [`configuring-npm/package-json`](https://docs.npmjs.com/cli/v11/configuring-npm/package-json)
 
 ### npm 包关系类型
 

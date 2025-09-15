@@ -171,9 +171,6 @@ importers:
 
   apps/server:
     devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^4.20250913.0
-        version: 4.20250913.0
       '@hono/node-server':
         specifier: ^1.19.2
         version: 1.19.2(hono@4.9.7)
@@ -8949,7 +8946,8 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20250906.0':
     optional: true
 
-  '@cloudflare/workers-types@4.20250913.0': {}
+  '@cloudflare/workers-types@4.20250913.0':
+    optional: true
 
   '@commitlint/cli@19.8.1(@types/node@24.4.0)(typescript@5.9.2)':
     dependencies:
