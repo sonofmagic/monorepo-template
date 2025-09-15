@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "monorepo-service",
+  "compatibility_date": "2025-09-15",
+  "main": "./src/fetch-enrty.ts",
+  "assets": {
+    "directory": "../client/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "sls.monorepo.icebreaker.top"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -23,7 +23,7 @@ async function getFetchData() {
 
 onMounted(() => {
   getFetchData()
-  // client.sayHello.query({ name: '2' })
+  client.sayHello.query({ name: '2' })
 })
 </script>
 

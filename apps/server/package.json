@@ -31,7 +31,11 @@
     "test:dev": "vitest",
     "release": "pnpm publish",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "build:client": "cd ../client && pnpm build",
+    "deploy": "pnpm build:client && wrangler deploy",
+    "types": "wrangler types",
+    "worker:dev": "wrangler dev"
   },
   "publishConfig": {
     "exports": {
@@ -45,15 +49,13 @@
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "dependencies": {
-    "@hono/swagger-ui": "^0.5.2",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250913.0",
+    "@hono/node-server": "^1.19.2",
     "@hono/trpc-server": "^0.4.0",
     "@trpc/server": "^11.5.1",
-    "trpc-to-openapi": "^3.0.1",
+    "hono": "^4.9.7",
+    "wrangler": "^4.37.0",
     "zod": "^4.1.8"
-  },
-  "devDependencies": {
-    "@hono/node-server": "^1.19.2",
-    "hono": "^4.9.7"
   }
 }
