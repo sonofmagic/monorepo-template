@@ -1,7 +1,6 @@
 import { serve } from '@hono/node-server'
 import { app } from './app'
-
-const port = 10086
+import { port } from './config'
 
 serve({
   fetch: app.fetch,

@@ -8,15 +8,16 @@ const app = new Hono()
 app.use(logger())
 app.use(cors())
 
-app.get('/', (c) => {
+app.get('/api', (c) => {
   return c.json({
     message: 'Hello World',
   })
 })
 
 app.use(
-  '/trpc/*',
+  '/api/trpc/*',
   trpcServer({
+    endpoint: '/api/trpc',
     router: appRouter,
   }),
 )

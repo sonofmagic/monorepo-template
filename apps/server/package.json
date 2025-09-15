@@ -17,14 +17,15 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./router": "./src/trpc-router.ts"
+    "./router": "./src/trpc-router.ts",
+    "./config": "./src/config.ts"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "tsx watch src/node-entry.ts",
+    "start": "node dist/node-entry.js",
     "build:watch": "tsup --watch --sourcemap",
     "build": "tsup",
     "test": "vitest run",
