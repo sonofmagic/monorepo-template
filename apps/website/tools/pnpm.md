@@ -1,4 +1,4 @@
-# pnpm？
+# pnpm
 
 ## 1. 什么是 pnpm？
 
