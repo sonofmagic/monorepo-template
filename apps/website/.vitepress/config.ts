@@ -29,6 +29,7 @@ export default withMermaid(defineConfig({
           base: '/why/',
           items: [
             { text: '如何复用 js 代码', link: '/how-to-reuse-js-code' },
+            { text: 'js 文件的各种后缀', link: '/js-cjs-mjs' },
             { text: '什么是 npm 包', link: '/what-is-npm-package' },
             { text: '如何发布 npm 包', link: '/publish-basic-npm-package' },
             {
