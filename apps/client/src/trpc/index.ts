@@ -1,4 +1,4 @@
-import type { AppRouter } from '@icebreakers/server/router'
+import type { AppRouter } from '~/worker/trpc-router'
 import { createTRPCProxyClient, httpLink } from '@trpc/client'
 
 export const client = createTRPCProxyClient<AppRouter>({

@@ -1,11 +1,9 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "monorepo-service",
+  "name": "monorepo-client",
   "compatibility_date": "2025-09-13",
-  "main": "./src/fetch-entry.ts",
+  "main": "./worker/fetch-entry.ts",
   "assets": {
-    "directory": "../client/dist",
-    "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   },
   "dev": {
@@ -14,7 +12,7 @@
   "routes": [
     {
       "custom_domain": true,
-      "pattern": "sls.monorepo.icebreaker.top"
+      "pattern": "client.monorepo.icebreaker.top"
     }
   ],
   "observability": {
