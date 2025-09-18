@@ -7,9 +7,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@worker": [
-        "./worker/*"
-      ],
       "~/*": [
         "./*"
       ]
@@ -23,6 +20,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
+    "./worker-configuration.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue"

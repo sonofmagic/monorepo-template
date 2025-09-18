@@ -2,11 +2,17 @@ import path from 'node:path'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import Tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
+import VueJsx from '@vitejs/plugin-vue-jsx'
 import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(import.meta.dirname, 'src'),
+      '~': import.meta.dirname,
+    },
+  },
   plugins: [
     VueRouter(
       {
@@ -14,15 +20,11 @@ export default defineConfig({
       },
     ),
     Vue(),
+    // @ts-ignore
+    VueJsx(),
     Tailwindcss(),
     // @ts-ignore
     cloudflare(),
-    // @ts-ignore
-    tsconfigPaths(
-      {
-        root: import.meta.dirname,
-      },
-    ),
   ],
   server: {
     // proxy: {

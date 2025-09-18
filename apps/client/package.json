@@ -11,7 +11,11 @@
     "types": "wrangler types"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@icebreakers/vue-lib-template": "workspace:*",
+    "@tanstack/vue-query": "^5.89.0",
+    "@tanstack/vue-table": "^8.21.3",
+    "@tanstack/vue-virtual": "^3.13.12",
     "@trpc/client": "^11.5.1",
     "pinia": "^3.0.3",
     "vue": "^3.5.21",
@@ -19,12 +23,13 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.13.2",
+    "@cloudflare/vite-plugin": "^1.13.3",
     "@hono/node-server": "^1.19.3",
     "@hono/trpc-server": "^0.4.0",
     "@tailwindcss/vite": "^4.1.13",
     "@trpc/server": "^11.5.1",
     "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue-jsx": "^5.1.1",
     "@vue/tsconfig": "^0.8.1",
     "hono": "^4.9.8",
     "tailwindcss": "^4.1.13",
@@ -33,7 +38,7 @@
     "vite": "^7.1.6",
     "vite-tsconfig-paths": "^5.1.4",
     "vue-tsc": "3.0.7",
-    "wrangler": "^4.37.1",
+    "wrangler": "^4.38.0",
     "zod": "^4.1.9"
   }
 }

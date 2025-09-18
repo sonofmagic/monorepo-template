@@ -3,9 +3,11 @@ import { HelloWorld } from '@icebreakers/vue-lib-template'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { client } from '../trpc'
+// import { useWebSocket } from '../ws/index'
 
+// const { init } = useWebSocket()
 const { t, locale } = useI18n()
-
+const text = ref('Hello World')
 function changeLocale(lang: 'en' | 'zh') {
   locale.value = lang
 }
@@ -24,6 +26,7 @@ async function getFetchData() {
 onMounted(() => {
   getFetchData()
   client.sayHello.query({ name: '2' })
+  // init()
 })
 </script>
 
@@ -37,8 +40,7 @@ onMounted(() => {
     >
       <div
         class="
-          max-w-sm space-y-6 rounded-2xl bg-white/20 p-8 text-center
-          backdrop-blur-md
+          space-y-6 rounded-2xl bg-white/20 p-8 text-center backdrop-blur-md
         "
       >
         <h1 class="animate-pulse text-4xl font-semibold text-white">
@@ -54,6 +56,7 @@ onMounted(() => {
         >
           <HelloWorld :msg="t('toggleLocale')" />
         </button>
+
         <div class="rounded border border-white p-2">
           <pre class="text-left text-white">
 {{ fetchData }}
@@ -63,8 +66,7 @@ onMounted(() => {
           </button>
         </div>
       </div>
+      <textarea v-model="text" rows="20" class="w-100 border text-white" />
     </div>
   </div>
 </template>
-
-<style scoped></style>
