@@ -3,11 +3,6 @@
   "name": "monorepo-service",
   "compatibility_date": "2025-09-13",
   "main": "./src/fetch-entry.ts",
-  "assets": {
-    "directory": "../client/dist",
-    "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
-  },
   "dev": {
     "port": 8787
   },
@@ -15,6 +10,10 @@
     {
       "custom_domain": true,
       "pattern": "sls.monorepo.icebreaker.top"
+    },
+    {
+      "zone_name": "geo.monorepo.icebreaker.top",
+      "pattern": "*"
     }
   ],
   "observability": {

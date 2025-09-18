@@ -33,8 +33,7 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build:client": "cd ../client && pnpm build",
-    "deploy": "pnpm build:client && wrangler deploy",
+    "deploy": "wrangler deploy",
     "types": "wrangler types",
     "worker:dev": "wrangler dev"
   },
@@ -52,8 +51,6 @@
   },
   "devDependencies": {
     "@hono/node-server": "^1.19.3",
-    "@hono/trpc-server": "^0.4.0",
-    "@trpc/server": "^11.5.1",
     "hono": "^4.9.8",
     "wrangler": "^4.37.1",
     "zod": "^4.1.9"
