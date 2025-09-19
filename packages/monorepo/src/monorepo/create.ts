@@ -38,8 +38,8 @@ interface Choice<Value> {
 }
 
 export const createChoices: (Choice<CreateNewProjectType>)[] = [
-  { name: 'tsup 打包', value: 'tsup' },
   { name: 'unbuild 打包', value: 'unbuild' },
+  { name: 'tsup 打包', value: 'tsup' },
   { name: 'vue 组件', value: 'vue-lib' },
   { name: 'vue hono 全栈', value: 'vue-hono' },
   { name: 'hono 模板', value: 'hono-server' },

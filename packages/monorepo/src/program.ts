@@ -7,7 +7,7 @@ import { program } from 'commander'
 import { name, version } from './constants'
 import { logger } from './logger'
 import { cleanProjects, createNewProject, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from './monorepo'
-import { createChoices } from './monorepo/create'
+import { createChoices, defaultTemplate } from './monorepo/create'
 
 const cwd = process.cwd()
 
@@ -60,7 +60,7 @@ program.command('new')
     const type: CreateNewProjectOptions['type'] = await select({
       message: '请选择模板类型',
       choices: createChoices,
-      default: 'unbuild',
+      default: defaultTemplate,
     })
 
     await createNewProject({
