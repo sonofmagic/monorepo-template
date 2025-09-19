@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.2.0
+
+### Minor Changes
+
+- [`35f403a`](https://github.com/sonofmagic/monorepo-template/commit/35f403a366f8a1c6eb20c1baee352bdcc36789b0) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: 添加 server , client, cli 模板
+
 ## 1.1.8
 
 ### Patch Changes
