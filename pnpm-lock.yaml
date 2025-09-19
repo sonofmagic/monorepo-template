@@ -96,8 +96,8 @@ importers:
         specifier: ^2.5.6
         version: 2.5.6
       type-fest:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^5.0.1
+        version: 5.0.1
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -125,9 +125,6 @@ importers:
       '@faker-js/faker':
         specifier: ^10.0.0
         version: 10.0.0
-      '@icebreakers/vue-lib-template':
-        specifier: workspace:*
-        version: link:../../packages/vue-lib-template
       '@tanstack/vue-query':
         specifier: ^5.89.0
         version: 5.89.0(vue@3.5.21(typescript@5.9.2))
@@ -328,6 +325,12 @@ importers:
       '@types/set-value':
         specifier: ^4.0.3
         version: 4.0.3
+      fast-glob:
+        specifier: ^3.3.3
+        version: 3.3.3
+      fdir:
+        specifier: ^6.5.0
+        version: 6.5.0(picomatch@4.0.3)
       get-value:
         specifier: ^4.0.1
         version: 4.0.1
@@ -8432,8 +8435,8 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
-  type-fest@5.0.0:
-    resolution: {integrity: sha512-GeJop7+u7BYlQ6yQCAY1nBQiRSHR+6OdCEtd8Bwp9a3NK3+fWAVjOaPKJDteB9f6cIJ0wt4IfnScjLG450EpXA==}
+  type-fest@5.0.1:
+    resolution: {integrity: sha512-9MpwAI52m8H6ssA542UxSLnSiSD2dsC3/L85g6hVubLSXd82wdI80eZwTWhdOfN67NlA+D+oipAs1MlcTcu3KA==}
     engines: {node: '>=20'}
 
   typed-array-buffer@1.0.3:
@@ -18518,7 +18521,7 @@ snapshots:
   type-fest@3.13.1:
     optional: true
 
-  type-fest@5.0.0:
+  type-fest@5.0.1:
     dependencies:
       tagged-tag: 1.0.0
 

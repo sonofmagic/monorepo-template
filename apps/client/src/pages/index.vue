@@ -1,13 +1,9 @@
-<script setup lang="ts">
-import { HelloWorld } from '@icebreakers/vue-lib-template'
+<script setup lang="tsx">
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { client } from '../trpc'
-// import { useWebSocket } from '../ws/index'
 
-// const { init } = useWebSocket()
 const { t, locale } = useI18n()
-const text = ref('Hello World')
 function changeLocale(lang: 'en' | 'zh') {
   locale.value = lang
 }
@@ -54,7 +50,7 @@ onMounted(() => {
           "
           @click="toggleLocale"
         >
-          <HelloWorld :msg="t('toggleLocale')" />
+          <div>{{ t('toggleLocale') }}</div>
         </button>
 
         <div class="rounded border border-white p-2">
@@ -66,7 +62,6 @@ onMounted(() => {
           </button>
         </div>
       </div>
-      <textarea v-model="text" rows="20" class="w-100 border text-white" />
     </div>
   </div>
 </template>

@@ -1,6 +1,13 @@
 import { isCI } from 'ci-info'
+import { fdir as Fdir } from 'fdir'
 import path from 'pathe'
-import { createNewProject } from '@/create'
+import { createNewProject } from '@/monorepo'
+
+async function scanFiles(root: string) {
+  const api = new Fdir().withRelativePaths()
+
+  return (await api.crawl(root).withPromise()).sort((a, b) => a.localeCompare(b))
+}
 
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
@@ -14,6 +21,8 @@ describe.skipIf(isCI)('createNewProject', () => {
       renameJson: true,
       type: 'unbuild',
     })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-unbuild'))
+    expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo tsup case', async () => {
@@ -23,6 +32,8 @@ describe.skipIf(isCI)('createNewProject', () => {
       renameJson: true,
       type: 'tsup',
     })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-tsup'))
+    expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo vue-ui case', async () => {
@@ -32,6 +43,8 @@ describe.skipIf(isCI)('createNewProject', () => {
       renameJson: true,
       type: 'vue-lib',
     })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-vue-ui'))
+    expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo default case', async () => {
@@ -40,5 +53,7 @@ describe.skipIf(isCI)('createNewProject', () => {
       name: 'demo/case-default',
       renameJson: true,
     })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-default'))
+    expect(files).toMatchSnapshot()
   })
 })

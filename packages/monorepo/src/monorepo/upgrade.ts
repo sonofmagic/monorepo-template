@@ -1,7 +1,6 @@
 import type { Buffer } from 'node:buffer'
-import type { CliOpts, PackageJson } from './types'
+import type { CliOpts, PackageJson } from '../types'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
 import defu from 'defu'
@@ -12,20 +11,14 @@ import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
-import { name as pkgName, version as pkgVersion } from './constants'
-import { logger } from './logger'
-import { GitClient } from './monorepo/git'
-import { scriptsEntries } from './scripts'
-import { getAssetTargets } from './targets'
-import { escapeStringRegexp, isFileChanged, isMatch } from './utils'
+import { assetsDir, name as pkgName, version as pkgVersion } from '../constants'
+import { logger } from '../logger'
+import { scriptsEntries } from '../scripts'
+import { getAssetTargets } from '../targets'
+import { escapeStringRegexp, isFileChanged, isMatch } from '../utils'
+import { GitClient } from './git'
 
 const queue = new PQueue({ concurrency: 1 })
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-// import.meta.dirname for Nodejs >= v20.11.0
-// https://nodejs.org/api/esm.html#importmetadirname
-const assetsDir = path.join(__dirname, '../assets')
 
 function isWorkspace(version?: string) {
   if (typeof version === 'string') {

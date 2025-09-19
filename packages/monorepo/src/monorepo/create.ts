@@ -1,18 +1,11 @@
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
 import defu from 'defu'
 import fs from 'fs-extra'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
-import { logger } from './logger'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-// import.meta.dirname for Nodejs >= v20.11.0
-// https://nodejs.org/api/esm.html#importmetadirname
-
-const templatesDir = path.join(__dirname, '../templates')
+import { templatesDir } from '../constants'
+import { logger } from '../logger'
 
 export interface CreateNewProjectOptions {
   name?: string
@@ -55,7 +48,10 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
       )
     }
     else {
-      await fs.copy(path.resolve(from, filename), path.resolve(to, filename))
+      await fs.copy(
+        path.resolve(from, filename),
+        path.resolve(to, filename),
+      )
     }
   }
 
