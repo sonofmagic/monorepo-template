@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.2.1
+
+### Patch Changes
+
+- [`7498c4a`](https://github.com/sonofmagic/monorepo-template/commit/7498c4a52d2cd3f98284814d6fad35eb1b17c201) Thanks [@sonofmagic](https://github.com/sonofmagic)! - fix: template copy to files
+
 ## 1.2.0
 
 ### Minor Changes
