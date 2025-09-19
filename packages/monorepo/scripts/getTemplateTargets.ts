@@ -4,7 +4,6 @@ import { rootDir } from '../src/constants'
 import { fromMap } from '../src/monorepo/create'
 
 const git = simpleGit(rootDir)
-
 async function getTrackedFilesInDir(dir: string) {
   const result = await git.raw([
     'ls-files',
@@ -14,7 +13,7 @@ async function getTrackedFilesInDir(dir: string) {
 }
 export async function getTemplateTargets() {
   return Promise.all(
-    Object.keys(fromMap).map((x) => {
+    Object.values(fromMap).map((x) => {
       return getTrackedFilesInDir(path.resolve(rootDir, x))
     }),
   ).then(x => x.flat(1))
