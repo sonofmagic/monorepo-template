@@ -56,4 +56,48 @@ describe.skipIf(isCI)('createNewProject', () => {
     const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-default'))
     expect(files).toMatchSnapshot()
   })
+
+  it('createNewProject demo cli case', async () => {
+    await createNewProject({
+      cwd: path.resolve(__dirname, './fixtures'),
+      name: 'demo/cli',
+      renameJson: true,
+      type: 'cli',
+    })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/cli'))
+    expect(files).toMatchSnapshot()
+  })
+
+  it('createNewProject demo client case', async () => {
+    await createNewProject({
+      cwd: path.resolve(__dirname, './fixtures'),
+      name: 'demo/client',
+      renameJson: true,
+      type: 'vue-hono',
+    })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/client'))
+    expect(files).toMatchSnapshot()
+  })
+
+  it('createNewProject demo server case', async () => {
+    await createNewProject({
+      cwd: path.resolve(__dirname, './fixtures'),
+      name: 'demo/server',
+      renameJson: true,
+      type: 'hono-server',
+    })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/server'))
+    expect(files).toMatchSnapshot()
+  })
+
+  it('createNewProject demo website case', async () => {
+    await createNewProject({
+      cwd: path.resolve(__dirname, './fixtures'),
+      name: 'demo/website',
+      renameJson: true,
+      type: 'vitepress',
+    })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/website'))
+    expect(files).toMatchSnapshot()
+  })
 })

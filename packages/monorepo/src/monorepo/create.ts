@@ -7,20 +7,45 @@ import set from 'set-value'
 import { templatesDir } from '../constants'
 import { logger } from '../logger'
 
+export type CreateNewProjectType = 'tsup' | 'unbuild' | 'vue-lib' | 'vitepress' | 'hono-server' | 'vue-hono' | 'cli'
+
 export interface CreateNewProjectOptions {
   name?: string
   cwd?: string
   renameJson?: boolean
-  type?: 'tsup' | 'unbuild' | 'vue-lib'
+  type?: CreateNewProjectType
 }
 
 export const defaultTemplate = 'unbuild'
 
-export const fromMap = {
-  'tsup': 'tsup-template',
-  'unbuild': 'unbuild-template',
-  'vue-lib': 'vue-lib-template',
+export const fromMap: Record<CreateNewProjectType, string> = {
+  'tsup': 'packages/tsup-template',
+  'unbuild': 'packages/unbuild-template',
+  'vue-lib': 'packages/vue-lib-template',
+  'hono-server': 'apps/server',
+  'vue-hono': 'apps/client',
+  'vitepress': 'apps/website',
+  'cli': 'apps/cli',
 }
+
+interface Choice<Value> {
+  value: Value
+  name?: string
+  description?: string
+  short?: string
+  disabled?: boolean | string
+  type?: never
+}
+
+export const createChoices: (Choice<CreateNewProjectType>)[] = [
+  { name: 'tsup 打包', value: 'tsup' },
+  { name: 'unbuild 打包', value: 'unbuild' },
+  { name: 'vue 组件', value: 'vue-lib' },
+  { name: 'vue hono 全栈', value: 'vue-hono' },
+  { name: 'hono 模板', value: 'hono-server' },
+  { name: 'vitepress 文档', value: 'vitepress' },
+  { name: 'cli 模板', value: 'cli' },
+]
 
 export async function createNewProject(options?: CreateNewProjectOptions) {
   const { name: targetName, renameJson, cwd, type } = defu<Required<CreateNewProjectOptions>, CreateNewProjectOptions[]>(options, {

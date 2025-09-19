@@ -1,5 +1,59 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`createNewProject > createNewProject demo cli case 1`] = `
+[
+  ".gitignore",
+  "bin/index.js",
+  "build.config.ts",
+  "dev/index.ts",
+  "package.mock.json",
+  "src/cli.ts",
+  "src/index.ts",
+  "src/utils.ts",
+  "test/index.test.ts",
+  "tsconfig.json",
+  "tsup.config.ts",
+  "vitest.config.ts",
+]
+`;
+
+exports[`createNewProject > createNewProject demo client case 1`] = `
+[
+  ".gitignore",
+  "build.config.ts",
+  "eslint.config.js",
+  "index.html",
+  "package.mock.json",
+  "public/vite.svg",
+  "src/App.vue",
+  "src/index.ts",
+  "src/main.ts",
+  "src/pages/index.vue",
+  "src/router/index.ts",
+  "src/stores/i18n.ts",
+  "src/stores/index.ts",
+  "src/style.css",
+  "src/trpc/index.ts",
+  "src/types/typed-router.d.ts",
+  "src/utils.ts",
+  "src/vite-env.d.ts",
+  "test/index.test.ts",
+  "tsconfig.app.json",
+  "tsconfig.json",
+  "tsconfig.node.json",
+  "tsconfig.worker.json",
+  "vite.config.ts",
+  "vitest.config.ts",
+  "worker-configuration.d.ts",
+  "worker/app.ts",
+  "worker/config.ts",
+  "worker/fetch-entry.ts",
+  "worker/node-entry.ts",
+  "worker/trpc-router.ts",
+  "wrangler.jsonc",
+]
+`;
+
 exports[`createNewProject > createNewProject demo default case 1`] = `
 [
   "build.config.ts",
@@ -12,8 +66,29 @@ exports[`createNewProject > createNewProject demo default case 1`] = `
 ]
 `;
 
+exports[`createNewProject > createNewProject demo server case 1`] = `
+[
+  ".gitignore",
+  "build.config.ts",
+  "package.mock.json",
+  "src/app.ts",
+  "src/config.ts",
+  "src/fetch-entry.ts",
+  "src/index.ts",
+  "src/node-entry.ts",
+  "src/utils.ts",
+  "test/index.test.ts",
+  "tsconfig.json",
+  "tsup.config.ts",
+  "vitest.config.ts",
+  "worker-configuration.d.ts",
+  "wrangler.jsonc",
+]
+`;
+
 exports[`createNewProject > createNewProject demo tsup case 1`] = `
 [
+  "build.config.ts",
   "package.mock.json",
   "src/index.ts",
   "test/index.test.ts",
@@ -57,5 +132,79 @@ exports[`createNewProject > createNewProject demo vue-ui case 1`] = `
   "vite.config.ts",
   "vite.shared.config.ts",
   "vitest.config.ts",
+]
+`;
+
+exports[`createNewProject > createNewProject demo website case 1`] = `
+[
+  ".gitignore",
+  ".vitepress/config.ts",
+  ".vitepress/theme/index.ts",
+  ".vitepress/theme/tailwind.css",
+  "build.config.ts",
+  "index.md",
+  "monorepo/index.md",
+  "monorepo/manage.md",
+  "monorepo/publish.md",
+  "package.mock.json",
+  "public/logo.jpg",
+  "src/index.ts",
+  "src/utils.ts",
+  "test/index.test.ts",
+  "thinking.md",
+  "tools/changeset.md",
+  "tools/husky.md",
+  "tools/lint-staged.md",
+  "tools/pnpm.md",
+  "tools/renovate.md",
+  "tools/turborepo.md",
+  "tsconfig.json",
+  "vitest.config.ts",
+  "why/assets/npm-dt.svg",
+  "why/assets/npm-ts.svg",
+  "why/examples/0.npm-basic-package/index.js",
+  "why/examples/0.npm-basic-package/package.json",
+  "why/examples/1.npm-basic-package/index.cjs",
+  "why/examples/1.npm-basic-package/index.d.ts",
+  "why/examples/1.npm-basic-package/index.js",
+  "why/examples/1.npm-basic-package/package.json",
+  "why/examples/2.npm-basic-package/package-lock.json",
+  "why/examples/2.npm-basic-package/package.json",
+  "why/examples/2.npm-basic-package/README.md",
+  "why/examples/2.npm-basic-package/rename-ext.js",
+  "why/examples/2.npm-basic-package/src/index.ts",
+  "why/examples/2.npm-basic-package/tsconfig.cjs.json",
+  "why/examples/2.npm-basic-package/tsconfig.esm.json",
+  "why/examples/2.npm-basic-package/tsconfig.json",
+  "why/examples/3.npm-basic-package/build.config.ts",
+  "why/examples/3.npm-basic-package/package-lock.json",
+  "why/examples/3.npm-basic-package/package.json",
+  "why/examples/3.npm-basic-package/README.md",
+  "why/examples/3.npm-basic-package/src/index.ts",
+  "why/examples/3.npm-basic-package/tsconfig.json",
+  "why/examples/3.npm-basic-package/tsup.config.ts",
+  "why/examples/usage-cjs/cjs.cjs",
+  "why/examples/usage-cjs/esm.mjs",
+  "why/examples/usage-cjs/index.js",
+  "why/examples/usage-cjs/package-lock.json",
+  "why/examples/usage-cjs/package.json",
+  "why/examples/usage-esm/cjs.cjs",
+  "why/examples/usage-esm/createRequire.js",
+  "why/examples/usage-esm/esm.mjs",
+  "why/examples/usage-esm/index.js",
+  "why/examples/usage-esm/package-lock.json",
+  "why/examples/usage-esm/package.json",
+  "why/how-to-reuse-js-code.md",
+  "why/index.md",
+  "why/js-cjs-mjs.md",
+  "why/js-keywords.md",
+  "why/modern/bundlers.md",
+  "why/modern/dts.md",
+  "why/modern/esm-vs-cjs.md",
+  "why/modern/index.md",
+  "why/modern/package-entry-points.md",
+  "why/modern/typescript.md",
+  "why/publish-basic-npm-package.md",
+  "why/what-is-npm-package.md",
 ]
 `;

@@ -7,6 +7,7 @@ import { program } from 'commander'
 import { name, version } from './constants'
 import { logger } from './logger'
 import { cleanProjects, createNewProject, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from './monorepo'
+import { createChoices } from './monorepo/create'
 
 const cwd = process.cwd()
 
@@ -49,35 +50,17 @@ program.command('new')
   .description('创建一个新的子包')
   .alias('create')
   .argument('[name]')
-  .option('--tsup', 'create a tsup library')
-  .option('--unbuild', 'create a unbuild library')
-  .option('--vue-ui', 'create a vue ui library')
-  .action(async (name: string, options: { tsup?: boolean, unbuild?: boolean, vueUi?: boolean }) => {
+  .action(async (name: string) => {
     if (!name) {
       name = await input({
         message: '请输入包名',
         default: 'my-package',
       })
     }
-    let type: CreateNewProjectOptions['type']
-
-    if (options.tsup) {
-      type = 'tsup'
-    }
-    else if (options.unbuild) {
-      type = 'unbuild'
-    }
-    else if (options.vueUi) {
-      type = 'vue-lib'
-    }
-
-    type ??= await select({
+    const type: CreateNewProjectOptions['type'] = await select({
       message: '请选择模板类型',
-      choices: [
-        { name: 'tsup 打包', value: 'tsup' },
-        { name: 'unbuild 打包', value: 'unbuild' },
-        { name: 'vue 组件', value: 'vue-lib' },
-      ],
+      choices: createChoices,
+      default: 'unbuild',
     })
 
     await createNewProject({

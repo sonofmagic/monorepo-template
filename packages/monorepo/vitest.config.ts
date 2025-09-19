@@ -12,9 +12,10 @@ export default defineProject({
     globals: true,
     testTimeout: 60_000,
     setupFiles: ['./vitest.setup.ts'],
-    exclude: ['templates', './test/fixtures/**/*'],
+    exclude: ['templates/**/*', './test/fixtures/**/*'],
     // @ts-ignore
     forceRerunTriggers: ['**/vitest.config.*/**', '**/vite.config.*/**'],
+
   },
   server: {
     watch: {

@@ -15,3 +15,5 @@ const __dirname = path.dirname(__filename)
 export const templatesDir = path.join(__dirname, '../templates')
 
 export const assetsDir = path.join(__dirname, '../assets')
+
+export const rootDir = path.join(__dirname, '../../..')
