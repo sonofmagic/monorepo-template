@@ -35,7 +35,8 @@
     "lint:fix": "eslint . --fix",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
-    "worker:dev": "wrangler dev"
+    "worker:dev": "wrangler dev",
+    "postinstall": "pnpm cf-typegen"
   },
   "publishConfig": {
     "exports": {
