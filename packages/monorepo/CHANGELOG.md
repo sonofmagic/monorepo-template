@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.2.2
+
+### Patch Changes
+
+- [`d1550ae`](https://github.com/sonofmagic/monorepo-template/commit/d1550ae5cdf73dbe06adcd47a61ce3dbce3d5acb) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: upgrade eslint
+
 ## 1.2.1
 
 ### Patch Changes
