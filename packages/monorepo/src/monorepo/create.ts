@@ -75,7 +75,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     else {
       await fs.copy(
         path.resolve(from, filename),
-        path.resolve(to, filename),
+        path.resolve(to, filename === 'gitignore' ? '.gitignore' : filename),
       )
     }
   }

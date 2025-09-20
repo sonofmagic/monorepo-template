@@ -1,7 +1,8 @@
 import { isCI } from 'ci-info'
 import { fdir as Fdir } from 'fdir'
+import fs from 'fs-extra'
 import path from 'pathe'
-import { createNewProject } from '@/monorepo'
+import { createNewProject, upgradeMonorepo } from '@/monorepo'
 
 async function scanFiles(root: string) {
   const api = new Fdir().withRelativePaths()
@@ -12,6 +13,20 @@ async function scanFiles(root: string) {
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
     await import('../scripts/prepublish')
+    await fs.remove(path.resolve(__dirname, './fixtures/demo'))
+  })
+
+  it('assets', async () => {
+    const files = await scanFiles(path.resolve(__dirname, '../assets'))
+    expect(files).toMatchSnapshot()
+  })
+
+  it('upgradeMonorepo', async () => {
+    await upgradeMonorepo({
+      outDir: path.resolve(__dirname, './fixtures/demo/upgrade'),
+    })
+    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/upgrade'))
+    expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo unbuild case', async () => {

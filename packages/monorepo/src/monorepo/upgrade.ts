@@ -94,7 +94,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
   })) {
     await queue.add(async () => {
       if (file.stats.isFile()) {
-        const relPath = path.relative(assetsDir, file.path)
+        let relPath = path.relative(assetsDir, file.path)
+        if (relPath === 'gitignore') {
+          relPath = '.gitignore'
+        }
         const targetPath = path.resolve(absOutDir, relPath)
         // 不存在文件
         const targetIsExisted = await fs.exists(targetPath)
@@ -114,7 +117,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
 
           return isOverwrite
         }
-        // const basename = path.basename(file.path)
+
         if (relPath === 'package.json') {
           const sourcePath = file.path
           if (targetIsExisted) {
