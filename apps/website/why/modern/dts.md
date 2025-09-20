@@ -72,12 +72,10 @@ declare function add(a: number, b: number): number
 ### 使用场景
 
 1. **第三方库没有内置类型定义时**
-
    - 可以使用 DefinitelyTyped 的类型库（安装例如 `@types/lodash`）；
    - 或者自己写 `.d.ts` 文件。
 
 2. **为已有的 JS 代码添加类型支持**
-
    - 特别是在从 JS 项目逐步迁移到 TS 时。
 
 3. **定义公共 API 接口或模块类型**
