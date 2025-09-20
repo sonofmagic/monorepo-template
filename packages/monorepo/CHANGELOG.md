@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 1.2.3
+
+### Patch Changes
+
+- [`91c6377`](https://github.com/sonofmagic/monorepo-template/commit/91c637727429b22968cf69457737ce5bded7c9b4) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: remove big dts file
+
 ## 1.2.2
 
 ### Patch Changes
