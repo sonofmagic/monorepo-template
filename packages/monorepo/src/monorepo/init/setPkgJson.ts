@@ -11,7 +11,7 @@ export default async function (ctx: Context) {
     for (const pkg of packages) {
       const pkgJson = pkg.manifest
       const directory = path.relative(cwd, pkg.rootDir)
-      set(pkgJson, 'bugs.url', `https://github.com/${gitUrl.full_name}/issues`)
+      set(pkgJson, ['bugs', 'url'], `https://github.com/${gitUrl.full_name}/issues`)
       const repository: PackageJson['repository'] = {
         type: 'git',
         url: `git+https://github.com/${gitUrl.full_name}.git`,

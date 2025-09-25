@@ -15,13 +15,19 @@ export async function syncNpmMirror(cwd: string, options?: GetWorkspacePackagesO
   logger.info(`[即将同步的包]:\n${Array.from(set).map(x => `- ${pc.green(x)}`).join('\n')}\n`)
   const concurrency = Math.max(os.cpus().length, 1)
   const queue = new PQueue({ concurrency })
+  const tasks: Array<Promise<unknown>> = []
+
   for (const pkgName of set) {
-    if (pkgName) {
-      await queue.add(async () => {
-        return execa({
-          stdout: ['pipe', 'inherit'],
-        })`cnpm sync ${pkgName}`
-      })
+    if (!pkgName) {
+      continue
     }
+
+    tasks.push(queue.add(async () => {
+      return execa({
+        stdout: ['pipe', 'inherit'],
+      })`cnpm sync ${pkgName}`
+    }))
   }
+
+  await Promise.all(tasks)
 }

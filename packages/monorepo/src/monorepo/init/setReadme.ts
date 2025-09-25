@@ -3,15 +3,19 @@ import fs from 'fs-extra'
 import path from 'pathe'
 
 async function getRows(ctx: Context) {
-  const { packages, git, cwd } = ctx
-  const gitUrl = await git.getGitUrl()
-  const gitUser = await git.getUser()
+  const { packages, gitUrl, gitUser, cwd } = ctx
   const rows: string[] = []
   if (gitUrl) {
     rows.push(`# ${gitUrl.name}\n`)
   }
   rows.push('## Packages\n')
-  for (const pkg of packages) {
+  const sortedPackages = [...packages].sort((a, b) => {
+    const left = a.manifest.name ?? ''
+    const right = b.manifest.name ?? ''
+    return left.localeCompare(right)
+  })
+
+  for (const pkg of sortedPackages) {
     const p = path.relative(cwd, pkg.rootDirRealPath)
     if (p) {
       const description = pkg.manifest.description ? `- ${pkg.manifest.description}` : ''
@@ -40,7 +44,9 @@ async function getRows(ctx: Context) {
   // ## Authors
 
   rows.push('\n## Authors\n')
-  rows.push(`${gitUser.name} <${gitUser.email}>`)
+  if (gitUser?.name && gitUser?.email) {
+    rows.push(`${gitUser.name} <${gitUser.email}>`)
+  }
 
   // ## License
 

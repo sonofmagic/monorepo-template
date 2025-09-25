@@ -1,6 +1,7 @@
 import CI from 'ci-info'
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
+import { vi } from 'vitest'
 import { logger } from '@/logger'
 import { GitClient } from '@/monorepo/git'
 
@@ -22,6 +23,20 @@ describe('git client', () => {
     const url = gitUrlParse('git@github.com:sonofmagic/weapp-tailwindcss.git')
     const y = `${url.owner}/${url.name}`
     expect(y).toBe('sonofmagic/weapp-tailwindcss')
+  })
+
+  it('getRepoName returns undefined when origin is missing', async () => {
+    const spy = vi.spyOn(client, 'getConfig').mockResolvedValue({})
+    expect(await client.getRepoName()).toBeUndefined()
+    spy.mockRestore()
+  })
+
+  it('getRepoName resolves owner/name when remote exists', async () => {
+    const spy = vi.spyOn(client, 'getConfig').mockResolvedValue({
+      'remote.origin.url': 'git@github.com:ice/awesome.git',
+    })
+    expect(await client.getRepoName()).toBe('ice/awesome')
+    spy.mockRestore()
   })
 
   it.skipIf(CI.isCI)('getUser', async () => {

@@ -1,5 +1,5 @@
-import type { Buffer } from 'node:buffer'
 import type { CliOpts, PackageJson } from '../types'
+import { Buffer } from 'node:buffer'
 import process from 'node:process'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
@@ -7,7 +7,6 @@ import defu from 'defu'
 import fs from 'fs-extra'
 import get from 'get-value'
 import klaw from 'klaw'
-import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
@@ -17,8 +16,6 @@ import { scriptsEntries } from '../scripts'
 import { getAssetTargets } from '../targets'
 import { escapeStringRegexp, isFileChanged, isMatch } from '../utils'
 import { GitClient } from './git'
-
-const queue = new PQueue({ concurrency: 1 })
 
 function isWorkspace(version?: string) {
   if (typeof version === 'string') {
@@ -36,26 +33,57 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
   const targetDevDeps = get(targetPkgJson, 'devDependencies', { default: {} })
 
   set(targetPkgJson, 'packageManager', packageManager)
-  Object.entries(deps).forEach((x) => {
-    if (!isWorkspace(targetDeps[x[0]])) {
-      set(targetPkgJson, `dependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+  for (const [depName, depVersion] of Object.entries(deps)) {
+    if (!isWorkspace(targetDeps[depName])) {
+      set(targetPkgJson, ['dependencies', depName], depVersion, { preservePaths: false })
     }
-  })
-  Object.entries(devDeps).forEach((x) => {
-    if (x[0] === pkgName) {
-      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, `^${pkgVersion}`, { preservePaths: false })
+  }
+  for (const [depName, depVersion] of Object.entries(devDeps)) {
+    if (depName === pkgName) {
+      set(targetPkgJson, ['devDependencies', depName], `^${pkgVersion}`, { preservePaths: false })
     }
-    else if (!isWorkspace(targetDevDeps[x[0]])) {
-      set(targetPkgJson, `devDependencies.${x[0].replaceAll('.', '\\.')}`, x[1], { preservePaths: false })
+    else if (!isWorkspace(targetDevDeps[depName])) {
+      set(targetPkgJson, ['devDependencies', depName], depVersion, { preservePaths: false })
     }
-  })
-  for (const [k, v] of scriptsEntries) {
-    set(targetPkgJson, `scripts.${k}`, v)
+  }
+  for (const [scriptName, scriptCmd] of scriptsEntries) {
+    set(targetPkgJson, ['scripts', scriptName], scriptCmd)
   }
 }
 
 function confirmOverwrite(filename: string) {
   return confirm({ message: `${pc.greenBright(filename)} 文件内容发生改变,是否覆盖?`, default: true })
+}
+
+function asBuffer(data: Buffer | string) {
+  return typeof data === 'string' ? Buffer.from(data) : data
+}
+
+async function shouldWriteFile(
+  targetPath: string,
+  options: {
+    skipOverwrite?: boolean
+    source: Buffer | string
+    promptLabel: string
+  },
+) {
+  const { skipOverwrite, source, promptLabel } = options
+  const exists = await fs.pathExists(targetPath)
+  if (!exists) {
+    return true
+  }
+
+  if (skipOverwrite) {
+    return false
+  }
+
+  const src = asBuffer(source)
+  const dest = await fs.readFile(targetPath)
+  if (!isFileChanged(src, dest)) {
+    return false
+  }
+
+  return confirmOverwrite(promptLabel)
 }
 
 export async function upgradeMonorepo(opts: CliOpts) {
@@ -92,65 +120,46 @@ export async function upgradeMonorepo(opts: CliOpts) {
       return isMatch(str, regexpArr)
     },
   })) {
-    await queue.add(async () => {
-      if (file.stats.isFile()) {
-        let relPath = path.relative(assetsDir, file.path)
-        if (relPath === 'gitignore') {
-          relPath = '.gitignore'
-        }
-        const targetPath = path.resolve(absOutDir, relPath)
-        // 不存在文件
-        const targetIsExisted = await fs.exists(targetPath)
+    if (!file.stats.isFile()) {
+      continue
+    }
 
-        async function overwriteOrCopy(target?: string | Buffer) {
-          let isOverwrite = true
-          if (targetIsExisted) {
-            const src = await fs.readFile(file.path)
-            const dest = target ?? await fs.readFile(targetPath)
-            if (await isFileChanged(src, dest)) {
-              isOverwrite = await confirmOverwrite(relPath)
-            }
-          }
-          else if (skipOverwrite) {
-            isOverwrite = false
-          }
+    let relPath = path.relative(assetsDir, file.path)
+    if (relPath === 'gitignore') {
+      relPath = '.gitignore'
+    }
+    const targetPath = path.resolve(absOutDir, relPath)
 
-          return isOverwrite
-        }
-
-        if (relPath === 'package.json') {
-          const sourcePath = file.path
-          if (targetIsExisted) {
-            const sourcePkgJson = await fs.readJson(sourcePath) as PackageJson
-            const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-            setPkgJson(sourcePkgJson, targetPkgJson)
-            const data = JSON.stringify(targetPkgJson, undefined, 2)
-            // packageJson
-            // if (await overwriteOrCopy(data)) {
-            await fs.outputFile(targetPath, `${data}\n`, 'utf8')
-            logger.success(targetPath)
-            // }
-          }
-        }
-        else if (relPath === '.changeset/config.json' && repoName) {
-          const changesetJson = await fs.readJson(file.path)
-          set(changesetJson, 'changelog.1.repo', repoName)
-
-          const data = JSON.stringify(changesetJson, undefined, 2)
-          // changesetJson
-          if (await overwriteOrCopy(data)) {
-            await fs.outputFile(targetPath, `${data}\n`, 'utf8')
-            logger.success(targetPath)
-          }
-        }
-        else if (await overwriteOrCopy()) {
-          await fs.copy(
-            file.path,
-            targetPath,
-          )
-          logger.success(targetPath)
-        }
+    if (relPath === 'package.json') {
+      if (!await fs.pathExists(targetPath)) {
+        continue
       }
-    })
+
+      const sourcePkgJson = await fs.readJson(file.path) as PackageJson
+      const targetPkgJson = await fs.readJson(targetPath) as PackageJson
+      setPkgJson(sourcePkgJson, targetPkgJson)
+      const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
+      if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
+        await fs.outputFile(targetPath, data, 'utf8')
+        logger.success(targetPath)
+      }
+      continue
+    }
+
+    if (relPath === '.changeset/config.json' && repoName) {
+      const changesetJson = await fs.readJson(file.path)
+      set(changesetJson, 'changelog.1.repo', repoName)
+      const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
+      if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
+        await fs.outputFile(targetPath, data, 'utf8')
+        logger.success(targetPath)
+      }
+      continue
+    }
+
+    if (await shouldWriteFile(targetPath, { skipOverwrite, source: await fs.readFile(file.path), promptLabel: relPath })) {
+      await fs.copy(file.path, targetPath)
+      logger.success(targetPath)
+    }
   }
 }

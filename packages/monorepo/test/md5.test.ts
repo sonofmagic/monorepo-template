@@ -1,6 +1,9 @@
+import crypto from 'node:crypto'
 import CI from 'ci-info'
 import fs from 'fs-extra'
 import path from 'pathe'
+import { vi } from 'vitest'
+import { logger } from '@/logger'
 import { getFileHash, isFileChanged } from '@/utils/md5'
 
 // windows 和 linux/macos 计算不一致，应该是 \r\n 和 \n 导致的
@@ -55,5 +58,20 @@ describe.skipIf(CI.isCI)('md5', () => {
         strBuf,
       ),
     ).toBe(false)
+  })
+})
+
+describe('md5 error handling', () => {
+  it('isFileChanged logs and returns false on hashing errors', () => {
+    const createHashSpy = vi.spyOn(crypto, 'createHash').mockImplementation(() => {
+      throw new Error('hash failure')
+    })
+    const errorSpy = vi.spyOn(logger, 'error').mockImplementation(() => undefined)
+
+    expect(isFileChanged('a', 'b')).toBe(false)
+    expect(errorSpy).toHaveBeenCalled()
+
+    createHashSpy.mockRestore()
+    errorSpy.mockRestore()
   })
 })
