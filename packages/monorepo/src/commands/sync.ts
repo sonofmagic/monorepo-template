@@ -1,6 +1,5 @@
 import type { GetWorkspacePackagesOptions } from '../core/workspace'
 import os from 'node:os'
-import defu from 'defu'
 import { execaCommand } from 'execa'
 import PQueue from 'p-queue'
 import path from 'pathe'
@@ -15,23 +14,34 @@ function renderCommand(template: string, pkgName: string) {
 
 export async function syncNpmMirror(cwd: string, options?: GetWorkspacePackagesOptions) {
   const syncConfig = await resolveCommandConfig('sync', cwd)
-  const workspaceOptions = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options ?? {}, [syncConfig ?? {}])
+  const {
+    concurrency: configConcurrency,
+    command: configCommand,
+    packages: packageFilter,
+    ...workspaceOverrides
+  } = syncConfig ?? {}
+
+  const workspaceOptions = {
+    ...workspaceOverrides,
+    ...(options ?? {}),
+  }
+
   const { packages, workspaceDir } = await getWorkspaceData(cwd, workspaceOptions)
 
   logger.info(`[当前工作区Repo]:\n${packages.map(x => `- ${pc.green(x.manifest.name)} : ${path.relative(workspaceDir, x.rootDir)}`).join('\n')}\n`)
   const set = new Set(packages.map(x => x.manifest.name))
-  if (syncConfig?.packages?.length) {
+  if (packageFilter?.length) {
     for (const name of Array.from(set)) {
-      if (!name || !syncConfig.packages.includes(name)) {
+      if (!name || !packageFilter.includes(name)) {
         set.delete(name)
       }
     }
   }
   logger.info(`[即将同步的包]:\n${Array.from(set).map(x => `- ${pc.green(x ?? '')}`).join('\n')}\n`)
 
-  const concurrency = syncConfig?.concurrency ?? Math.max(os.cpus().length, 1)
+  const concurrency = configConcurrency ?? Math.max(os.cpus().length, 1)
   const queue = new PQueue({ concurrency })
-  const template = syncConfig?.command ?? 'cnpm sync {name}'
+  const template = configCommand ?? 'cnpm sync {name}'
 
   const tasks: Array<Promise<unknown>> = []
 

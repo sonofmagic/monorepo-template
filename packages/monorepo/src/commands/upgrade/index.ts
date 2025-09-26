@@ -8,7 +8,6 @@ import get from 'get-value'
 import klaw from 'klaw'
 import path from 'pathe'
 import pc from 'picocolors'
-import set from 'set-value'
 import { assetsDir, name as pkgName, version as pkgVersion } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
@@ -32,29 +31,44 @@ export function setPkgJson(
   },
 ) {
   const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
-  const deps = get(sourcePkgJson, 'dependencies', { default: {} })
-  const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
+  const sourceDeps = get(sourcePkgJson, 'dependencies', { default: {} })
+  const sourceDevDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
 
-  const targetDeps = get(targetPkgJson, 'dependencies', { default: {} })
-  const targetDevDeps = get(targetPkgJson, 'devDependencies', { default: {} })
+  const targetDeps = { ...get(targetPkgJson, 'dependencies', { default: {} }) }
+  const targetDevDeps = { ...get(targetPkgJson, 'devDependencies', { default: {} }) }
 
-  set(targetPkgJson, 'packageManager', packageManager)
-  for (const [depName, depVersion] of Object.entries(deps)) {
+  if (packageManager) {
+    targetPkgJson.packageManager = packageManager
+  }
+
+  for (const [depName, depVersion] of Object.entries(sourceDeps)) {
     if (!isWorkspace(targetDeps[depName])) {
-      set(targetPkgJson, ['dependencies', depName], depVersion, { preservePaths: false })
+      targetDeps[depName] = depVersion
     }
   }
-  for (const [depName, depVersion] of Object.entries(devDeps)) {
+  if (Object.keys(targetDeps).length) {
+    targetPkgJson.dependencies = targetDeps
+  }
+
+  for (const [depName, depVersion] of Object.entries(sourceDevDeps)) {
     if (depName === pkgName) {
-      set(targetPkgJson, ['devDependencies', depName], `^${pkgVersion}`, { preservePaths: false })
+      targetDevDeps[depName] = `^${pkgVersion}`
     }
     else if (!isWorkspace(targetDevDeps[depName])) {
-      set(targetPkgJson, ['devDependencies', depName], depVersion, { preservePaths: false })
+      targetDevDeps[depName] = depVersion
     }
   }
+  if (Object.keys(targetDevDeps).length) {
+    targetPkgJson.devDependencies = targetDevDeps
+  }
+
   const scriptPairs = options?.scripts ? Object.entries(options.scripts) : scriptsEntries
-  for (const [scriptName, scriptCmd] of scriptPairs) {
-    set(targetPkgJson, ['scripts', scriptName], scriptCmd)
+  if (scriptPairs.length) {
+    const scripts = { ...(targetPkgJson.scripts ?? {}) }
+    for (const [scriptName, scriptCmd] of scriptPairs) {
+      scripts[scriptName] = scriptCmd
+    }
+    targetPkgJson.scripts = scripts
   }
 }
 
@@ -116,15 +130,17 @@ export async function upgradeMonorepo(opts: CliOpts) {
     ...opts,
   }
 
-  const absOutDir = path.isAbsolute(merged.outDir ?? '') ? (merged.outDir ?? '') : path.join(cwd, merged.outDir ?? '')
+  const outDir = merged.outDir ?? ''
+  const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
   const gitClient = new GitClient({
     baseDir: cwd,
   })
   const repoName = await gitClient.getRepoName()
   const baseTargets = getAssetTargets(merged.raw)
   const configTargets = upgradeConfig?.targets ?? []
+  const mergeTargets = upgradeConfig?.mergeTargets
   let targets = configTargets.length
-    ? (upgradeConfig.mergeTargets === false ? [...configTargets] : Array.from(new Set([...baseTargets, ...configTargets])))
+    ? (mergeTargets === false ? [...configTargets] : Array.from(new Set([...baseTargets, ...configTargets])))
     : baseTargets
 
   if (merged.interactive) {

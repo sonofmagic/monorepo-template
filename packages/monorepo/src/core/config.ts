@@ -8,6 +8,7 @@ export interface CreateCommandConfig extends Partial<Omit<CreateNewProjectOption
   templatesDir?: string
   templateMap?: Record<string, string>
   choices?: CreateChoiceOption[]
+  defaultTemplate?: CreateNewProjectOptions['type']
 }
 
 export interface CreateChoiceOption {
@@ -70,8 +71,8 @@ async function loadConfigInternal(cwd: string): Promise<LoadedConfig> {
   const { config, configFile } = await loadConfig<MonorepoConfig>({
     name: 'monorepo',
     cwd,
-    // rcFile: 'monorepo.config',
     // configFile: ['monorepo.config'],
+    rcFile: false,
     defaults: {},
     globalRc: false,
     packageJson: false,

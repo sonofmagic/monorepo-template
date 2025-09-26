@@ -1,5 +1,4 @@
 import process from 'node:process'
-import defu from 'defu'
 import fs from 'fs-extra'
 import path from 'pathe'
 import pc from 'picocolors'
@@ -47,40 +46,41 @@ export function getCreateChoices(choices?: import('../core/config').CreateChoice
 }
 
 export function getTemplateMap(extra?: Record<string, string>) {
+  const base: Record<string, string> = { ...templateMap }
   if (extra && Object.keys(extra).length) {
-    return {
-      ...templateMap,
-      ...extra,
-    }
+    Object.assign(base, extra)
   }
-  return { ...templateMap }
+  return base
 }
 
 export async function createNewProject(options?: CreateNewProjectOptions) {
   const cwd = options?.cwd ?? process.cwd()
   const createConfig = await resolveCommandConfig('create', cwd)
-  const mergedOptions = defu<Required<CreateNewProjectOptions>, CreateNewProjectOptions[]>(options, {
-    cwd,
-    renameJson: createConfig?.renameJson ?? false,
-    type: (createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate) as string,
-    name: createConfig?.name ?? undefined,
-  })
+
+  const renameJson = options?.renameJson ?? createConfig?.renameJson ?? false
+  const name = options?.name ?? createConfig?.name
+  const requestedTemplate = options?.type ?? createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate
 
   const templateDefinitions = getTemplateMap(createConfig?.templateMap)
-  const templatesRoot = createConfig?.templatesDir ? path.resolve(cwd, createConfig.templatesDir) : defaultTemplatesDir
+  const templatesRoot = createConfig?.templatesDir
+    ? path.resolve(cwd, createConfig.templatesDir)
+    : defaultTemplatesDir
 
-  const bundlerName = mergedOptions.type ?? createConfig?.defaultTemplate ?? defaultTemplate
-  const sourceRelative = templateDefinitions[bundlerName] ?? templateDefinitions[createConfig?.defaultTemplate ?? defaultTemplate]
+  const fallbackTemplate = (createConfig?.defaultTemplate as string | undefined) ?? defaultTemplate
+  const bundlerName = (typeof requestedTemplate === 'string' && templateDefinitions[requestedTemplate])
+    ? requestedTemplate
+    : fallbackTemplate
+  const sourceRelative = templateDefinitions[bundlerName]
 
   if (!sourceRelative) {
     throw new Error(`未找到名为 ${bundlerName} 的模板，请检查 monorepo.config.ts`)
   }
 
   const from = path.join(templatesRoot, sourceRelative)
-  const targetName = mergedOptions.name ?? sourceRelative
-  const to = path.join(mergedOptions.cwd, targetName)
+  const targetName = name ?? sourceRelative
+  const to = path.join(cwd, targetName)
   if (await fs.pathExists(to)) {
-    throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(mergedOptions.cwd, to)}`)
+    throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(cwd, to)}`)
   }
 
   await fs.ensureDir(to)
@@ -112,7 +112,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     await fs.outputJson(
       path.resolve(
         to,
-        mergedOptions.renameJson ? 'package.mock.json' : 'package.json',
+        renameJson ? 'package.mock.json' : 'package.json',
       ),
       sourceJson,
       { spaces: 2 },
