@@ -1,11 +1,11 @@
-import type { GetWorkspacePackagesOptions } from './workspace'
+import type { GetWorkspacePackagesOptions } from '../core/workspace'
 import os from 'node:os'
 import { execa } from 'execa'
 import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'
-import { logger } from '../logger'
-import { getWorkspaceData } from './workspace'
+import { logger } from '../core/logger'
+import { getWorkspaceData } from '../core/workspace'
 
 export async function syncNpmMirror(cwd: string, options?: GetWorkspacePackagesOptions) {
   const { packages, workspaceDir } = await getWorkspaceData(cwd, options)

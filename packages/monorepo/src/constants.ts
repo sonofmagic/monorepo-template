@@ -7,13 +7,12 @@ export {
   version,
 }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-// import.meta.dirname for Nodejs >= v20.11.0
-// https://nodejs.org/api/esm.html#importmetadirname
+const packageJsonPath = fileURLToPath(new URL('../package.json', import.meta.url))
 
-export const templatesDir = path.join(__dirname, '../templates')
+export const packageDir = path.dirname(packageJsonPath)
 
-export const assetsDir = path.join(__dirname, '../assets')
+export const templatesDir = path.join(packageDir, 'templates')
 
-export const rootDir = path.join(__dirname, '../../..')
+export const assetsDir = path.join(packageDir, 'assets')
+
+export const rootDir = path.resolve(packageDir, '..', '..')

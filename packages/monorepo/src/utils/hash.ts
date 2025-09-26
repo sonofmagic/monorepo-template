@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { logger } from '../logger'
+import { logger } from '../core/logger'
 
 export function getFileHash(data: crypto.BinaryLike) {
   const hashSum = crypto.createHash('md5')

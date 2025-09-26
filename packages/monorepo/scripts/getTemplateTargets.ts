@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { simpleGit } from 'simple-git'
+import { fromMap } from '../src/commands/create'
 import { rootDir } from '../src/constants'
-import { fromMap } from '../src/monorepo/create'
 
 const git = simpleGit(rootDir)
 async function getTrackedFilesInDir(dir: string) {

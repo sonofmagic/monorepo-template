@@ -1,4 +1,4 @@
-import { getAssetTargets } from '@/targets'
+import { getAssetTargets } from '@/commands/upgrade/targets'
 
 describe('targets', () => {
   it('normal', () => {

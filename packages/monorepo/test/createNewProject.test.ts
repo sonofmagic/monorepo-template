@@ -2,7 +2,7 @@ import { isCI } from 'ci-info'
 import { fdir as Fdir } from 'fdir'
 import fs from 'fs-extra'
 import path from 'pathe'
-import { createNewProject, upgradeMonorepo } from '@/monorepo'
+import { createNewProject, upgradeMonorepo } from '@/commands'
 
 async function scanFiles(root: string) {
   const api = new Fdir().withRelativePaths()

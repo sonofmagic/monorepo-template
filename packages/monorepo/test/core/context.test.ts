@@ -16,14 +16,14 @@ describe('createContext', () => {
     }
 
     vi.resetModules()
-    vi.doMock('@/monorepo/workspace', () => ({
+    vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages: fakePackages, workspaceDir: '/repo' })),
     }))
-    vi.doMock('@/monorepo/git', () => ({
+    vi.doMock('@/core/git', () => ({
       GitClient: vi.fn(() => gitInstance),
     }))
 
-    const { createContext } = await import('@/monorepo/context')
+    const { createContext } = await import('@/core/context')
     const ctx = await createContext('/repo')
 
     expect(ctx.gitUrl?.full_name).toBe('ice/awesome')
@@ -42,12 +42,12 @@ describe('init', () => {
     const setReadmeMock = vi.fn(async () => {})
 
     vi.resetModules()
-    vi.doMock('@/monorepo/context', () => ({ createContext: createContextMock }))
-    vi.doMock('@/monorepo/init/setChangeset', () => ({ default: setChangesetMock }))
-    vi.doMock('@/monorepo/init/setPkgJson', () => ({ default: setPkgJsonMock }))
-    vi.doMock('@/monorepo/init/setReadme', () => ({ default: setReadmeMock }))
+    vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
+    vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
+    vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
+    vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
 
-    const { init } = await import('@/monorepo/init')
+    const { init } = await import('@/commands/init')
     await init('/repo')
 
     expect(createContextMock).toHaveBeenCalledWith('/repo')

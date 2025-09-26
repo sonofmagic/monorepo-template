@@ -14,7 +14,7 @@ describe('commander program', () => {
     const mirrorMock = vi.fn(async () => {})
     const createMock = vi.fn(async () => {})
 
-    vi.doMock('@/monorepo', () => ({
+    vi.doMock('@/commands', () => ({
       cleanProjects: cleanMock,
       createNewProject: createMock,
       init: initMock,
@@ -28,15 +28,15 @@ describe('commander program', () => {
     vi.doMock('@inquirer/input', () => ({ default: inputMock }))
     vi.doMock('@inquirer/select', () => ({ default: selectMock }))
 
-    vi.doMock('@/monorepo/create', () => ({
+    vi.doMock('@/commands/create', () => ({
       createChoices: [{ value: 'unbuild', name: 'unbuild template' }],
       defaultTemplate: 'unbuild',
     }))
 
     const successMock = vi.fn()
-    vi.doMock('@/logger', () => ({ logger: { success: successMock } }))
+    vi.doMock('@/core/logger', () => ({ logger: { success: successMock } }))
 
-    const { default: program } = await import('@/program')
+    const { default: program } = await import('@/cli/program')
 
     await program.parseAsync(['node', 'monorepo', 'upgrade'])
     await program.parseAsync(['node', 'monorepo', 'init'])

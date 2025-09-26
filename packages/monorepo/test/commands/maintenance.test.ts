@@ -2,9 +2,9 @@ import { tmpdir } from 'node:os'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import setChangeset from '@/monorepo/init/setChangeset'
-import setPkgJson from '@/monorepo/init/setPkgJson'
-import setReadme from '@/monorepo/init/setReadme'
+import setChangeset from '@/commands/init/setChangeset'
+import setPkgJson from '@/commands/init/setPkgJson'
+import setReadme from '@/commands/init/setReadme'
 
 afterEach(async () => {
   vi.resetAllMocks()
@@ -49,11 +49,11 @@ describe('cleanProjects', () => {
     const checkboxMock = vi.fn(async () => packages.map(pkg => pkg.rootDir))
     vi.resetModules()
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
-    vi.doMock('@/monorepo/workspace', () => ({
+    vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir })),
     }))
 
-    const { cleanProjects } = await import('@/monorepo/clean')
+    const { cleanProjects } = await import('@/commands/clean')
     await cleanProjects(workspaceDir)
 
     expect(await fs.pathExists(pkgFooDir)).toBe(false)

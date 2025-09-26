@@ -1,13 +1,13 @@
-import type { CreateNewProjectOptions } from './monorepo'
-import type { CliOpts } from './types'
+import type { CreateNewProjectOptions } from '../commands/create'
+import type { CliOpts } from '../types'
 import process from 'node:process'
 import input from '@inquirer/input'
 import select from '@inquirer/select'
 import { program } from 'commander'
-import { name, version } from './constants'
-import { logger } from './logger'
-import { cleanProjects, createNewProject, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from './monorepo'
-import { createChoices, defaultTemplate } from './monorepo/create'
+import { cleanProjects, createNewProject, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from '../commands'
+import { createChoices, defaultTemplate } from '../commands/create'
+import { name, version } from '../constants'
+import { logger } from '../core/logger'
 
 const cwd = process.cwd()
 

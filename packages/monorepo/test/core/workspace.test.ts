@@ -18,7 +18,7 @@ describe('workspace helpers', () => {
     vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: readManifestMock }))
     vi.doMock('@pnpm/find-workspace-dir', () => ({ findWorkspaceDir: vi.fn(async () => '/repo') }))
 
-    const { getWorkspacePackages } = await import('@/monorepo/workspace')
+    const { getWorkspacePackages } = await import('@/core/workspace')
     const result = await getWorkspacePackages('/repo')
 
     expect(result.map(pkg => pkg.manifest.name)).toEqual(['pkg-a'])
@@ -37,7 +37,7 @@ describe('workspace helpers', () => {
     vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: vi.fn(async () => null) }))
     vi.doMock('@pnpm/find-workspace-dir', () => ({ findWorkspaceDir: vi.fn(async () => '/repo') }))
 
-    const { getWorkspacePackages } = await import('@/monorepo/workspace')
+    const { getWorkspacePackages } = await import('@/core/workspace')
     const result = await getWorkspacePackages('/repo', {
       ignoreRootPackage: false,
       ignorePrivatePackage: false,
@@ -55,7 +55,7 @@ describe('workspace helpers', () => {
     vi.doMock('@pnpm/workspace.find-packages', () => ({ findWorkspacePackages: findWorkspacePackagesMock }))
     vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: vi.fn(async () => null) }))
 
-    const { getWorkspaceData } = await import('@/monorepo/workspace')
+    const { getWorkspaceData } = await import('@/core/workspace')
     const data = await getWorkspaceData('/repo/sub')
 
     expect(data.workspaceDir).toBe('/repo/sub')

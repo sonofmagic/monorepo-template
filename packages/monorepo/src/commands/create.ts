@@ -5,7 +5,7 @@ import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
 import { templatesDir } from '../constants'
-import { logger } from '../logger'
+import { logger } from '../core/logger'
 
 export type CreateNewProjectType = 'tsup' | 'unbuild' | 'vue-lib' | 'vitepress' | 'hono-server' | 'vue-hono' | 'cli'
 

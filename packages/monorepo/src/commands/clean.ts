@@ -2,7 +2,7 @@ import checkbox from '@inquirer/checkbox'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
-import { getWorkspaceData } from './workspace'
+import { getWorkspaceData } from '../core/workspace'
 
 export async function cleanProjects(cwd: string) {
   const { packages, workspaceDir } = await getWorkspaceData(cwd)

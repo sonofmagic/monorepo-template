@@ -8,7 +8,7 @@ afterEach(() => {
 describe('CLI entrypoint', () => {
   it('invokes program.parse on startup', async () => {
     const parseMock = vi.fn()
-    vi.doMock('@/program', () => ({ default: { parse: parseMock } }))
+    vi.doMock('@/cli/program', () => ({ default: { parse: parseMock } }))
 
     await import('@/cli')
 

@@ -1,7 +1,7 @@
 import type { PackageJson } from 'pkg-types'
 import get from 'get-value'
+import { setPkgJson } from '@/commands/upgrade'
 import { version } from '@/constants'
-import { setPkgJson } from '@/monorepo/upgrade'
 
 describe('lib', () => {
   it('setPkgJson casae 0', () => {

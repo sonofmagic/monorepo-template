@@ -2,8 +2,8 @@ import CI from 'ci-info'
 import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
 import { vi } from 'vitest'
-import { logger } from '@/logger'
-import { GitClient } from '@/monorepo/git'
+import { GitClient } from '@/core/git'
+import { logger } from '@/core/logger'
 
 describe('git client', () => {
   const client = new GitClient({

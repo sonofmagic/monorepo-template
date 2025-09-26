@@ -1,2 +1,2 @@
-export * from './md5'
+export * from './hash'
 export * from './regexp'

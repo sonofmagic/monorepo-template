@@ -1,3 +1,3 @@
-import program from './program'
+import program from './cli/program'
 
 program.parse()

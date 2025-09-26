@@ -1,8 +1,8 @@
 import fs from 'fs-extra'
 import path from 'pathe'
+import { getAssetTargets } from '../src/commands/upgrade/targets'
 import { assetsDir, rootDir, templatesDir } from '../src/constants'
-import { logger } from '../src/logger'
-import { getAssetTargets } from '../src/targets'
+import { logger } from '../src/core/logger'
 
 import { getTemplateTargets } from './getTemplateTargets'
 

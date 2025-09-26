@@ -1,4 +1,4 @@
-import { createContext } from '../context'
+import { createContext } from '../../core/context'
 import setChangeset from './setChangeset'
 import setPkgJson from './setPkgJson'
 import setReadme from './setReadme'

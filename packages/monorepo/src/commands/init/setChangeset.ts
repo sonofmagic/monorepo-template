@@ -1,4 +1,4 @@
-import type { Context } from '../context'
+import type { Context } from '../../core/context'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'

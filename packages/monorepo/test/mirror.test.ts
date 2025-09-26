@@ -2,9 +2,9 @@ import { tmpdir } from 'node:os'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { afterEach } from 'vitest'
-import { setVscodeBinaryMirror } from '@/monorepo/mirror/binaryMirror'
-import { chinaMirrorsEnvs } from '@/monorepo/mirror/sources'
-import { setMirror } from '@/monorepo/mirror/utils'
+import { setVscodeBinaryMirror } from '@/commands/mirror/binaryMirror'
+import { chinaMirrorsEnvs } from '@/commands/mirror/sources'
+import { setMirror } from '@/commands/mirror/utils'
 
 const tempDirs: string[] = []
 

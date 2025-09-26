@@ -22,7 +22,7 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
-    const { upgradeMonorepo } = await import('@/monorepo/upgrade')
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
     const targetFile = path.join(outDir, 'netlify.toml')
     await fs.writeFile(targetFile, '# custom configuration\n')
@@ -42,7 +42,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     const { assetsDir } = await import('@/constants')
     const reference = await fs.readFile(path.join(assetsDir, 'netlify.toml'), 'utf8')
-    const { upgradeMonorepo } = await import('@/monorepo/upgrade')
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
 
     await upgradeMonorepo({ outDir })
     const targetFile = path.join(outDir, 'netlify.toml')
@@ -67,9 +67,9 @@ describe('upgradeMonorepo overwrite logic', () => {
     vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
-    vi.doMock('@/monorepo/git', () => ({ GitClient: gitClientMock }))
+    vi.doMock('@/core/git', () => ({ GitClient: gitClientMock }))
 
-    const { upgradeMonorepo } = await import('@/monorepo/upgrade')
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir, interactive: true })
 
     const configPath = path.join(outDir, '.changeset/config.json')
@@ -95,7 +95,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
 
-    const { upgradeMonorepo } = await import('@/monorepo/upgrade')
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
 
     const pkg = await fs.readJSON(packagePath)

@@ -1,7 +1,7 @@
 import path from 'pathe'
 import { vi } from 'vitest'
-// import { syncNpmMirror } from '@/monorepo/sync'
-import { getWorkspacePackages } from '@/monorepo/workspace'
+// import { syncNpmMirror } from '@/commands/sync'
+import { getWorkspacePackages } from '@/core/workspace'
 
 describe('sync', () => {
   it('syncNpmMirror case 0', async () => {
@@ -51,11 +51,11 @@ describe('sync', () => {
     })
     const execaMock = vi.fn(() => execaTag)
     vi.doMock('execa', () => ({ execa: execaMock }))
-    vi.doMock('@/monorepo/workspace', () => ({
+    vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
     }))
 
-    const { syncNpmMirror } = await import('@/monorepo/sync')
+    const { syncNpmMirror } = await import('@/commands/sync')
     await syncNpmMirror('/repo')
 
     expect(execaMock).toHaveBeenCalledTimes(2)
@@ -80,11 +80,11 @@ describe('sync', () => {
 
     vi.resetModules()
     vi.doMock('execa', () => ({ execa: execaMock }))
-    vi.doMock('@/monorepo/workspace', () => ({
+    vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
     }))
 
-    const { syncNpmMirror } = await import('@/monorepo/sync')
+    const { syncNpmMirror } = await import('@/commands/sync')
     await syncNpmMirror('/repo')
 
     expect(execaMock).toHaveBeenCalledTimes(1)
