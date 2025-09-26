@@ -4,8 +4,10 @@ import { getWorkspaceData } from '../workspace'
 import '@pnpm/types'
 
 export async function createContext(cwd: string) {
-  const git = new GitClient()
   const { packages, workspaceDir } = await getWorkspaceData(cwd)
+  const git = new GitClient({
+    baseDir: workspaceDir,
+  })
   const workspaceFilepath = path.resolve(workspaceDir, 'pnpm-workspace.yaml')
   const gitUrl = await git.getGitUrl()
   const gitUser = await git.getUser()

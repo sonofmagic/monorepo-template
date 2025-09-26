@@ -78,6 +78,19 @@ async function shouldWriteFile(
   }
 
   const src = asBuffer(source)
+  let destSize = 0
+  try {
+    const stat = await fs.stat(targetPath)
+    destSize = stat.size
+  }
+  catch {
+    return true
+  }
+
+  if (destSize !== src.length) {
+    return confirmOverwrite(promptLabel)
+  }
+
   const dest = await fs.readFile(targetPath)
   if (!isFileChanged(src, dest)) {
     return false
@@ -127,6 +140,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
     let relPath = path.relative(assetsDir, file.path)
     if (relPath === 'gitignore') {
       relPath = '.gitignore'
+    }
+
+    if (relPath.startsWith('.changeset/') && relPath.endsWith('.md')) {
+      continue
     }
     const targetPath = path.resolve(absOutDir, relPath)
 

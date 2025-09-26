@@ -7,9 +7,14 @@ import set from 'set-value'
 export default async function (ctx: Context) {
   const { gitUrl, gitUser, packages, cwd, workspaceFilepath } = ctx
 
-  if (gitUrl && await fs.exists(workspaceFilepath)) {
-    for (const pkg of packages) {
-      const pkgJson = pkg.manifest
+  const workspaceExists = await fs.pathExists(workspaceFilepath)
+  if (gitUrl && workspaceExists) {
+    await Promise.all(packages.map(async (pkg) => {
+      if (!await fs.pathExists(pkg.pkgJsonPath)) {
+        return
+      }
+
+      const pkgJson = JSON.parse(JSON.stringify(pkg.manifest)) as PackageJson
       const directory = path.relative(cwd, pkg.rootDir)
       set(pkgJson, ['bugs', 'url'], `https://github.com/${gitUrl.full_name}/issues`)
       const repository: PackageJson['repository'] = {
@@ -21,16 +26,15 @@ export default async function (ctx: Context) {
       }
 
       set(pkgJson, 'repository', repository)
-      if (gitUser) {
+      if (gitUser?.name && gitUser?.email) {
         set(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
       }
 
-      // "maintainers": [
-      //   "xxx <xxx@gmail.com> (url)",
-      // ],
-      await fs.writeJSON(pkg.pkgJsonPath, pkgJson, {
-        spaces: 2,
-      })
-    }
+      const nextContent = `${JSON.stringify(pkgJson, undefined, 2)}\n`
+      const prevContent = await fs.readFile(pkg.pkgJsonPath, 'utf8')
+      if (prevContent !== nextContent) {
+        await fs.writeFile(pkg.pkgJsonPath, nextContent, 'utf8')
+      }
+    }))
   }
 }

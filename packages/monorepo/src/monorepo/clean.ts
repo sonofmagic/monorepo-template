@@ -19,9 +19,12 @@ export async function cleanProjects(cwd: string) {
     }),
   })
 
-  for (const dir of cleanDirs) {
-    await fs.remove(dir)
-  }
+  const candidates = Array.from(new Set(cleanDirs.filter(Boolean)))
+  await Promise.all(candidates.map(async (dir) => {
+    if (await fs.pathExists(dir)) {
+      await fs.remove(dir)
+    }
+  }))
   const name = path.resolve(workspaceDir, 'package.json')
   const pkgJson = await fs.readJson(name)
   // fix https://github.com/sonofmagic/monorepo-template/issues/76

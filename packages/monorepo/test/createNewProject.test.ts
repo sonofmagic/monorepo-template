@@ -6,8 +6,21 @@ import { createNewProject, upgradeMonorepo } from '@/monorepo'
 
 async function scanFiles(root: string) {
   const api = new Fdir().withRelativePaths()
+  const excludes = new Set(['.DS_Store'])
 
-  return (await api.crawl(root).withPromise()).sort((a, b) => a.localeCompare(b))
+  const files = await api.crawl(root).withPromise()
+  return files
+    .filter((file) => {
+      const filename = file.split('/').pop() ?? ''
+      if (excludes.has(filename)) {
+        return false
+      }
+      if (file.startsWith('.changeset/') && file.endsWith('.md')) {
+        return false
+      }
+      return true
+    })
+    .sort((a, b) => a.localeCompare(b))
 }
 
 describe.skipIf(isCI)('createNewProject', () => {
