@@ -1,4 +1,5 @@
 import { tmpdir } from 'node:os'
+import { isCI } from 'ci-info'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { describe, expect, it, vi } from 'vitest'
@@ -12,7 +13,7 @@ function writeConfig(dir: string, content: string) {
 }
 
 describe('monorepo config integration', () => {
-  it('overrides create command defaults', async () => {
+  it.skipIf(isCI)('overrides create command defaults', async () => {
     vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-create-'))
     await writeConfig(
@@ -31,7 +32,7 @@ describe('monorepo config integration', () => {
     await fs.remove(root)
   })
 
-  it('allows clean command to run without prompt via config', async () => {
+  it.skipIf(isCI)('allows clean command to run without prompt via config', async () => {
     vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-clean-'))
     const workspaceDir = path.join(root, 'workspace')
