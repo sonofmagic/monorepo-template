@@ -4,6 +4,9 @@ import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
 
+/**
+ * 根据当前仓库信息同步 package.json 的仓库、作者等字段。
+ */
 export default async function (ctx: Context) {
   const { gitUrl, gitUser, packages, cwd, workspaceFilepath } = ctx
 

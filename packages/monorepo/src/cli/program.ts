@@ -14,6 +14,9 @@ const cwd = process.cwd()
 
 program.name(name).version(version)
 
+/**
+ * 升级子命令：同步 assets 模板到当前仓库。
+ */
 program
   .command('upgrade')
   .description('升级/同步 monorepo 相关包')

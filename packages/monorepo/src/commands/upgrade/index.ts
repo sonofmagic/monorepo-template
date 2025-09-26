@@ -23,6 +23,12 @@ function isWorkspace(version?: string) {
   return false
 }
 
+/**
+ * 将内置 package.json 内容合并进目标工程：
+ * - 同步依赖（保留 workspace: 前缀的版本）
+ * - 确保 @icebreakers/monorepo 使用最新版本
+ * - 写入预置脚本
+ */
 export function setPkgJson(
   sourcePkgJson: PackageJson,
   targetPkgJson: PackageJson,
@@ -80,6 +86,12 @@ function asBuffer(data: Buffer | string) {
   return typeof data === 'string' ? Buffer.from(data) : data
 }
 
+/**
+ * 判断是否需要写入目标文件，包含以下策略：
+ * 1. 目标文件不存在：直接写入
+ * 2. 开启 skipOverwrite：完全跳过
+ * 3. 文件大小不同或内容 hash 不一致，提示用户确认
+ */
 async function shouldWriteFile(
   targetPath: string,
   options: {
@@ -120,6 +132,9 @@ async function shouldWriteFile(
   return confirmOverwrite(promptLabel)
 }
 
+/**
+ * 将 assets 目录的模版文件同步到工程中，实现一键升级脚手架能力。
+ */
 export async function upgradeMonorepo(opts: CliOpts) {
   const cwd = opts.cwd ?? process.cwd()
   const upgradeConfig = await resolveCommandConfig('upgrade', cwd)
@@ -136,6 +151,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
     baseDir: cwd,
   })
   const repoName = await gitClient.getRepoName()
+  // 默认从 assets 目录读取一组标准文件作为升级目标。
   const baseTargets = getAssetTargets(merged.raw)
   const configTargets = upgradeConfig?.targets ?? []
   const mergeTargets = upgradeConfig?.mergeTargets
@@ -144,6 +160,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
     : baseTargets
 
   if (merged.interactive) {
+    // 交互模式允许用户临时调整需要覆盖的文件集合。
     // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
     targets = await checkbox({
       message: '选择你需要的文件',
@@ -159,6 +176,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
+  // 旧版本默认跳过 changeset Markdown，可通过配置覆盖。
   const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
   const scriptOverrides = upgradeConfig?.scripts
   const skipOverwrite = merged.skipOverwrite
@@ -190,6 +208,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       const sourcePkgJson = await fs.readJson(file.path) as PackageJson
       const targetPkgJson = await fs.readJson(targetPath) as PackageJson
       setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
+      // 直接覆写对象后重新序列化，保证键顺序与缩进一致。
       const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
       if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
         await fs.outputFile(targetPath, data, 'utf8')

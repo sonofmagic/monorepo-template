@@ -10,6 +10,7 @@ async function getRows(ctx: Context) {
   }
   rows.push('## Packages\n')
   const sortedPackages = [...packages].sort((a, b) => {
+    // 通过包名排序，生成稳定的 Packages 列表。
     const left = a.manifest.name ?? ''
     const right = b.manifest.name ?? ''
     return left.localeCompare(right)
@@ -56,6 +57,9 @@ async function getRows(ctx: Context) {
   return rows
 }
 
+/**
+ * 生成标准化的 README 草稿，列出所有子包并补充贡献者、作者信息。
+ */
 export default async function (ctx: Context) {
   const rows = await getRows(ctx)
   await fs.writeFile(path.resolve(ctx.cwd, 'README.md'), `${rows.join('\n')}\n`)

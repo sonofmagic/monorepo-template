@@ -7,6 +7,9 @@ import { templatesDir as defaultTemplatesDir } from '../constants'
 import { resolveCommandConfig } from '../core/config'
 import { logger } from '../core/logger'
 
+/**
+ * 内置模板映射表，value 指向仓库中对应模板所在路径。
+ */
 export const templateMap = {
   'tsup': 'packages/tsup-template',
   'unbuild': 'packages/unbuild-template',
@@ -28,6 +31,9 @@ export interface CreateNewProjectOptions {
 
 export const defaultTemplate: CreateNewProjectType = 'unbuild'
 
+/**
+ * 交互式选择模板时的默认选项列表。
+ */
 const baseChoices = [
   { name: 'unbuild 打包', value: 'unbuild' },
   { name: 'tsup 打包', value: 'tsup' },
@@ -38,6 +44,9 @@ const baseChoices = [
   { name: 'cli 模板', value: 'cli' },
 ] as const
 
+/**
+ * 若配置中提供 choices 则优先使用，否则退回默认预设。
+ */
 export function getCreateChoices(choices?: import('../core/config').CreateChoiceOption[]) {
   if (choices?.length) {
     return choices
@@ -45,6 +54,9 @@ export function getCreateChoices(choices?: import('../core/config').CreateChoice
   return [...baseChoices]
 }
 
+/**
+ * 合并内置与自定义模板映射，允许扩展新的模板类型。
+ */
 export function getTemplateMap(extra?: Record<string, string>) {
   const base: Record<string, string> = { ...templateMap }
   if (extra && Object.keys(extra).length) {
@@ -53,6 +65,9 @@ export function getTemplateMap(extra?: Record<string, string>) {
   return base
 }
 
+/**
+ * 根据提供的参数或配置生成新工程目录，并可自动改写 package.json。
+ */
 export async function createNewProject(options?: CreateNewProjectOptions) {
   const cwd = options?.cwd ?? process.cwd()
   const createConfig = await resolveCommandConfig('create', cwd)
@@ -66,6 +81,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     ? path.resolve(cwd, createConfig.templatesDir)
     : defaultTemplatesDir
 
+  // 如果用户输入的模板未在映射表里，则回退到默认模板，以保证命令不会中断。
   const fallbackTemplate = (createConfig?.defaultTemplate as string | undefined) ?? defaultTemplate
   const bundlerName = (typeof requestedTemplate === 'string' && templateDefinitions[requestedTemplate])
     ? requestedTemplate
@@ -86,6 +102,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   await fs.ensureDir(to)
 
   const filelist = await fs.readdir(from)
+  // 跳过 macOS 生成的临时文件，避免污染模板。
   const shouldSkip = (src: string) => path.basename(src) === '.DS_Store'
   const copyTasks = filelist
     .filter(filename => filename !== 'package.json')
@@ -109,6 +126,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     const sourceJson = await fs.readJson(sourceJsonPath)
     set(sourceJson, 'version', '0.0.0')
     set(sourceJson, 'name', path.basename(targetName))
+    // renameJson 可将 package.json 暂存为 package.mock.json，满足某些仓库需要自定义命名的情景。
     await fs.outputJson(
       path.resolve(
         to,
