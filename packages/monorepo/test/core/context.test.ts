@@ -22,6 +22,9 @@ describe('createContext', () => {
     vi.doMock('@/core/git', () => ({
       GitClient: vi.fn(() => gitInstance),
     }))
+    vi.doMock('@/core/config', () => ({
+      loadMonorepoConfig: vi.fn(async () => ({})),
+    }))
 
     const { createContext } = await import('@/core/context')
     const ctx = await createContext('/repo')
@@ -30,12 +33,13 @@ describe('createContext', () => {
     expect(ctx.gitUser?.email).toBe('dev@example.com')
     expect(ctx.packages).toBe(fakePackages)
     expect(ctx.workspaceFilepath.endsWith('pnpm-workspace.yaml')).toBe(true)
+    expect(ctx.config).toEqual({})
   })
 })
 
 describe('init', () => {
   it('executes setup pipeline', async () => {
-    const ctx = { cwd: '/repo' }
+    const ctx = { cwd: '/repo', config: { commands: {} } }
     const createContextMock = vi.fn(async () => ctx)
     const setChangesetMock = vi.fn(async () => {})
     const setPkgJsonMock = vi.fn(async () => {})

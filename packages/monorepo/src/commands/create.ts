@@ -4,21 +4,11 @@ import fs from 'fs-extra'
 import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
-import { templatesDir } from '../constants'
+import { templatesDir as defaultTemplatesDir } from '../constants'
+import { resolveCommandConfig } from '../core/config'
 import { logger } from '../core/logger'
 
-export type CreateNewProjectType = 'tsup' | 'unbuild' | 'vue-lib' | 'vitepress' | 'hono-server' | 'vue-hono' | 'cli'
-
-export interface CreateNewProjectOptions {
-  name?: string
-  cwd?: string
-  renameJson?: boolean
-  type?: CreateNewProjectType
-}
-
-export const defaultTemplate = 'unbuild'
-
-export const fromMap: Record<CreateNewProjectType, string> = {
+export const templateMap = {
   'tsup': 'packages/tsup-template',
   'unbuild': 'packages/unbuild-template',
   'vue-lib': 'packages/vue-lib-template',
@@ -26,18 +16,20 @@ export const fromMap: Record<CreateNewProjectType, string> = {
   'vue-hono': 'apps/client',
   'vitepress': 'apps/website',
   'cli': 'apps/cli',
-}
+} as const
 
-interface Choice<Value> {
-  value: Value
+export type CreateNewProjectType = keyof typeof templateMap
+
+export interface CreateNewProjectOptions {
   name?: string
-  description?: string
-  short?: string
-  disabled?: boolean | string
-  type?: never
+  cwd?: string
+  renameJson?: boolean
+  type?: CreateNewProjectType | string
 }
 
-export const createChoices: (Choice<CreateNewProjectType>)[] = [
+export const defaultTemplate: CreateNewProjectType = 'unbuild'
+
+const baseChoices = [
   { name: 'unbuild 打包', value: 'unbuild' },
   { name: 'tsup 打包', value: 'tsup' },
   { name: 'vue 组件', value: 'vue-lib' },
@@ -45,19 +37,50 @@ export const createChoices: (Choice<CreateNewProjectType>)[] = [
   { name: 'hono 模板', value: 'hono-server' },
   { name: 'vitepress 文档', value: 'vitepress' },
   { name: 'cli 模板', value: 'cli' },
-]
+] as const
+
+export function getCreateChoices(choices?: import('../core/config').CreateChoiceOption[]) {
+  if (choices?.length) {
+    return choices
+  }
+  return [...baseChoices]
+}
+
+export function getTemplateMap(extra?: Record<string, string>) {
+  if (extra && Object.keys(extra).length) {
+    return {
+      ...templateMap,
+      ...extra,
+    }
+  }
+  return { ...templateMap }
+}
 
 export async function createNewProject(options?: CreateNewProjectOptions) {
-  const { name: targetName, renameJson, cwd, type } = defu<Required<CreateNewProjectOptions>, CreateNewProjectOptions[]>(options, {
-    cwd: process.cwd(),
-    name: fromMap[defaultTemplate],
-    renameJson: false,
+  const cwd = options?.cwd ?? process.cwd()
+  const createConfig = await resolveCommandConfig('create', cwd)
+  const mergedOptions = defu<Required<CreateNewProjectOptions>, CreateNewProjectOptions[]>(options, {
+    cwd,
+    renameJson: createConfig?.renameJson ?? false,
+    type: (createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate) as string,
+    name: createConfig?.name ?? undefined,
   })
-  const bundlerName = type ?? defaultTemplate
-  const from = path.join(templatesDir, fromMap[bundlerName])
-  const to = path.join(cwd, targetName)
+
+  const templateDefinitions = getTemplateMap(createConfig?.templateMap)
+  const templatesRoot = createConfig?.templatesDir ? path.resolve(cwd, createConfig.templatesDir) : defaultTemplatesDir
+
+  const bundlerName = mergedOptions.type ?? createConfig?.defaultTemplate ?? defaultTemplate
+  const sourceRelative = templateDefinitions[bundlerName] ?? templateDefinitions[createConfig?.defaultTemplate ?? defaultTemplate]
+
+  if (!sourceRelative) {
+    throw new Error(`未找到名为 ${bundlerName} 的模板，请检查 monorepo.config.ts`)
+  }
+
+  const from = path.join(templatesRoot, sourceRelative)
+  const targetName = mergedOptions.name ?? sourceRelative
+  const to = path.join(mergedOptions.cwd, targetName)
   if (await fs.pathExists(to)) {
-    throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(cwd, to)}`)
+    throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(mergedOptions.cwd, to)}`)
   }
 
   await fs.ensureDir(to)
@@ -89,7 +112,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     await fs.outputJson(
       path.resolve(
         to,
-        renameJson ? 'package.mock.json' : 'package.json',
+        mergedOptions.renameJson ? 'package.mock.json' : 'package.json',
       ),
       sourceJson,
       { spaces: 2 },

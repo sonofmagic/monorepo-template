@@ -13,6 +13,34 @@ npx monorepo up
 npx monorepo -h
 ```
 
+### 配置文件
+
+在工作区根目录下创建 `monorepo.config.ts`（内容可为普通 ESM），即可覆盖每个命令的默认行为。例如：
+
+```ts
+// monorepo.config.ts
+import { defineMonorepoConfig } from '@icebreakers/monorepo'
+
+export default defineMonorepoConfig({
+  commands: {
+    create: {
+      defaultTemplate: 'cli',
+      renameJson: true,
+    },
+    clean: {
+      autoConfirm: true,
+      ignorePackages: ['docs'],
+    },
+    upgrade: {
+      skipOverwrite: true,
+      targets: ['.github', 'monorepo.config.ts'],
+    },
+  },
+})
+```
+
+目前支持 `create`、`clean`、`sync`、`upgrade`、`init` 与 `mirror` 六类命令的默认参数覆写。
+
 ## 文档地址
 
 https://monorepo.icebreaker.top/

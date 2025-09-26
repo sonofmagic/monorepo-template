@@ -4,9 +4,10 @@ import process from 'node:process'
 import input from '@inquirer/input'
 import select from '@inquirer/select'
 import { program } from 'commander'
-import { cleanProjects, createNewProject, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from '../commands'
-import { createChoices, defaultTemplate } from '../commands/create'
+import { cleanProjects, createNewProject, getCreateChoices, init, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from '../commands'
+import { defaultTemplate } from '../commands/create'
 import { name, version } from '../constants'
+import { resolveCommandConfig } from '../core/config'
 import { logger } from '../core/logger'
 
 const cwd = process.cwd()
@@ -22,7 +23,10 @@ program
   .option('--outDir <dir>', 'Output directory')
   .option('-s,--skip-overwrite', 'skip overwrite')
   .action(async (opts: CliOpts) => {
-    await upgradeMonorepo(opts)
+    await upgradeMonorepo({
+      ...opts,
+      cwd,
+    })
     logger.success('upgrade @icebreakers/monorepo ok!')
   })
 
@@ -51,16 +55,17 @@ program.command('new')
   .alias('create')
   .argument('[name]')
   .action(async (name: string) => {
+    const createConfig = await resolveCommandConfig('create', cwd)
     if (!name) {
       name = await input({
         message: '请输入包名',
-        default: 'my-package',
+        default: createConfig?.name ?? 'my-package',
       })
     }
     const type: CreateNewProjectOptions['type'] = await select({
       message: '请选择模板类型',
-      choices: createChoices,
-      default: defaultTemplate,
+      choices: getCreateChoices(createConfig?.choices),
+      default: createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate,
     })
 
     await createNewProject({

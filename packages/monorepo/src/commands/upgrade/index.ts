@@ -3,7 +3,6 @@ import { Buffer } from 'node:buffer'
 import process from 'node:process'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
-import defu from 'defu'
 import fs from 'fs-extra'
 import get from 'get-value'
 import klaw from 'klaw'
@@ -11,6 +10,7 @@ import path from 'pathe'
 import pc from 'picocolors'
 import set from 'set-value'
 import { assetsDir, name as pkgName, version as pkgVersion } from '../../constants'
+import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
 import { escapeStringRegexp, isFileChanged, isMatch } from '../../utils'
@@ -24,7 +24,13 @@ function isWorkspace(version?: string) {
   return false
 }
 
-export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJson) {
+export function setPkgJson(
+  sourcePkgJson: PackageJson,
+  targetPkgJson: PackageJson,
+  options?: {
+    scripts?: Record<string, string>
+  },
+) {
   const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
   const deps = get(sourcePkgJson, 'dependencies', { default: {} })
   const devDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
@@ -46,7 +52,8 @@ export function setPkgJson(sourcePkgJson: PackageJson, targetPkgJson: PackageJso
       set(targetPkgJson, ['devDependencies', depName], depVersion, { preservePaths: false })
     }
   }
-  for (const [scriptName, scriptCmd] of scriptsEntries) {
+  const scriptPairs = options?.scripts ? Object.entries(options.scripts) : scriptsEntries
+  for (const [scriptName, scriptCmd] of scriptPairs) {
     set(targetPkgJson, ['scripts', scriptName], scriptCmd)
   }
 }
@@ -100,18 +107,27 @@ async function shouldWriteFile(
 }
 
 export async function upgradeMonorepo(opts: CliOpts) {
-  const { outDir, raw, interactive, cwd, skipOverwrite } = defu<Required<CliOpts>, CliOpts[]>(opts, {
-    cwd: process.cwd(),
+  const cwd = opts.cwd ?? process.cwd()
+  const upgradeConfig = await resolveCommandConfig('upgrade', cwd)
+  const merged: CliOpts = {
+    cwd,
     outDir: '',
-  })
-  const absOutDir = path.isAbsolute(outDir) ? outDir : path.join(cwd, outDir)
+    ...(upgradeConfig ?? {}),
+    ...opts,
+  }
+
+  const absOutDir = path.isAbsolute(merged.outDir ?? '') ? (merged.outDir ?? '') : path.join(cwd, merged.outDir ?? '')
   const gitClient = new GitClient({
     baseDir: cwd,
   })
   const repoName = await gitClient.getRepoName()
-  let targets = getAssetTargets(raw)
+  const baseTargets = getAssetTargets(merged.raw)
+  const configTargets = upgradeConfig?.targets ?? []
+  let targets = configTargets.length
+    ? (upgradeConfig.mergeTargets === false ? [...configTargets] : Array.from(new Set([...baseTargets, ...configTargets])))
+    : baseTargets
 
-  if (interactive) {
+  if (merged.interactive) {
     // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
     targets = await checkbox({
       message: '选择你需要的文件',
@@ -127,6 +143,9 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
+  const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
+  const scriptOverrides = upgradeConfig?.scripts
+  const skipOverwrite = merged.skipOverwrite
   for await (const file of klaw(assetsDir, {
     filter(p) {
       const str = path.relative(assetsDir, p)
@@ -142,7 +161,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       relPath = '.gitignore'
     }
 
-    if (relPath.startsWith('.changeset/') && relPath.endsWith('.md')) {
+    if (skipChangesetMarkdown && relPath.startsWith('.changeset/') && relPath.endsWith('.md')) {
       continue
     }
     const targetPath = path.resolve(absOutDir, relPath)
@@ -154,7 +173,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
 
       const sourcePkgJson = await fs.readJson(file.path) as PackageJson
       const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-      setPkgJson(sourcePkgJson, targetPkgJson)
+      setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
       const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
       if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
         await fs.outputFile(targetPath, data, 'utf8')

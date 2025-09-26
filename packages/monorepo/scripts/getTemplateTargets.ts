@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { simpleGit } from 'simple-git'
-import { fromMap } from '../src/commands/create'
+import { templateMap } from '../src/commands/create'
 import { rootDir } from '../src/constants'
 
 const git = simpleGit(rootDir)
@@ -13,7 +13,7 @@ async function getTrackedFilesInDir(dir: string) {
 }
 export async function getTemplateTargets() {
   return Promise.all(
-    Object.values(fromMap).map((x) => {
+    Object.values(templateMap).map((x) => {
       return getTrackedFilesInDir(path.resolve(rootDir, x))
     }),
   ).then(x => x.flat(1))

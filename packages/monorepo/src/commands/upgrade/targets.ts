@@ -11,6 +11,7 @@ export function getAssetTargets(raw?: boolean) {
     'eslint.config.js',
     'lint-staged.config.js',
     'stylelint.config.js',
+    'monorepo.config.ts',
     'package.json',
     // pnpm
     'pnpm-workspace.yaml',

@@ -5,7 +5,15 @@ import setReadme from './setReadme'
 
 export async function init(cwd: string) {
   const ctx = await createContext(cwd)
-  await setChangeset(ctx)
-  await setPkgJson(ctx)
-  await setReadme(ctx)
+  const initConfig = ctx.config.commands?.init ?? {}
+
+  if (!initConfig.skipChangeset) {
+    await setChangeset(ctx)
+  }
+  if (!initConfig.skipPkgJson) {
+    await setPkgJson(ctx)
+  }
+  if (!initConfig.skipReadme) {
+    await setReadme(ctx)
+  }
 }

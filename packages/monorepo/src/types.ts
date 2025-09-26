@@ -1,3 +1,5 @@
+export type { MonorepoConfig } from './core/config'
+export { defineMonorepoConfig } from './core/config'
 export type { PackageJson } from 'pkg-types'
 export type { ConfigValues, SimpleGit, SimpleGitOptions } from 'simple-git'
 export interface CliOpts {

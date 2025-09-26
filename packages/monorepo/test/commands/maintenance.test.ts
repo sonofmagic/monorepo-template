@@ -52,6 +52,9 @@ describe('cleanProjects', () => {
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir })),
     }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({})),
+    }))
 
     const { cleanProjects } = await import('@/commands/clean')
     await cleanProjects(workspaceDir)
@@ -117,6 +120,7 @@ describe('init helpers', () => {
       packages,
       workspaceDir,
       workspaceFilepath,
+      config: { commands: {} },
     } as const
 
     await setPkgJson(ctx)

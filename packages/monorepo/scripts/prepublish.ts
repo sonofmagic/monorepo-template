@@ -13,6 +13,9 @@ const assetTargets = getAssetTargets()
 for (const t of assetTargets) {
   const from = path.resolve(rootDir, t)
   const to = path.resolve(assetsDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
+  if (!await fs.pathExists(from)) {
+    continue
+  }
   if (t === '.husky') {
     await fs.copy(from, to, {
       filter(src) {

@@ -3,7 +3,7 @@ import type { CreateNewProjectOptions } from './create'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { cleanProjects } from './clean'
-import { createNewProject } from './create'
+import { createNewProject, getCreateChoices, getTemplateMap, templateMap } from './create'
 import { init } from './init'
 import { setVscodeBinaryMirror } from './mirror'
 import { syncNpmMirror } from './sync'
@@ -17,11 +17,14 @@ export type {
 export {
   cleanProjects,
   createNewProject,
+  getCreateChoices,
+  getTemplateMap,
   getWorkspaceData,
   getWorkspacePackages,
   GitClient,
   init,
   setVscodeBinaryMirror,
   syncNpmMirror,
+  templateMap,
   upgradeMonorepo,
 }

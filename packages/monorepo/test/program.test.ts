@@ -17,9 +17,11 @@ describe('commander program', () => {
     vi.doMock('@/commands', () => ({
       cleanProjects: cleanMock,
       createNewProject: createMock,
+      getCreateChoices: vi.fn(() => choices),
       init: initMock,
       setVscodeBinaryMirror: mirrorMock,
       syncNpmMirror: syncMock,
+      templateMap: { unbuild: 'packages/unbuild-template' },
       upgradeMonorepo: upgradeMock,
     }))
 
@@ -28,9 +30,15 @@ describe('commander program', () => {
     vi.doMock('@inquirer/input', () => ({ default: inputMock }))
     vi.doMock('@inquirer/select', () => ({ default: selectMock }))
 
+    const choices = [{ value: 'unbuild', name: 'unbuild template' }]
     vi.doMock('@/commands/create', () => ({
-      createChoices: [{ value: 'unbuild', name: 'unbuild template' }],
       defaultTemplate: 'unbuild',
+      getTemplateMap: vi.fn(() => ({
+        unbuild: 'packages/unbuild-template',
+      })),
+    }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({ choices })),
     }))
 
     const successMock = vi.fn()
@@ -45,7 +53,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'new'])
 
-    expect(upgradeMock).toHaveBeenCalled()
+    expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMock).toHaveBeenCalled()
     expect(syncMock).toHaveBeenCalled()
     expect(cleanMock).toHaveBeenCalled()

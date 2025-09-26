@@ -1,4 +1,5 @@
 import path from 'pathe'
+import { loadMonorepoConfig } from './config'
 import { GitClient } from './git'
 import { getWorkspaceData } from './workspace'
 import '@pnpm/types'
@@ -11,6 +12,7 @@ export async function createContext(cwd: string) {
   const workspaceFilepath = path.resolve(workspaceDir, 'pnpm-workspace.yaml')
   const gitUrl = await git.getGitUrl()
   const gitUser = await git.getUser()
+  const config = await loadMonorepoConfig(workspaceDir)
   return {
     cwd,
     git,
@@ -19,6 +21,7 @@ export async function createContext(cwd: string) {
     workspaceDir,
     workspaceFilepath,
     packages,
+    config,
   }
 }
 

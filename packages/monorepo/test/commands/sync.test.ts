@@ -44,21 +44,22 @@ describe('sync', () => {
     ]
 
     vi.resetModules()
-    const execaTag = vi.fn(async (strings: TemplateStringsArray, pkgName: string) => {
-      const merged = strings.reduce((acc, chunk, idx) => acc + chunk + (idx < strings.length - 1 ? pkgName : ''), '')
-      commands.push(merged.trim())
+    const execaCommandMock = vi.fn(async (command: string) => {
+      commands.push(command.trim())
       return { stdout: '' }
     })
-    const execaMock = vi.fn(() => execaTag)
-    vi.doMock('execa', () => ({ execa: execaMock }))
+    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
+    }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({})),
     }))
 
     const { syncNpmMirror } = await import('@/commands/sync')
     await syncNpmMirror('/repo')
 
-    expect(execaMock).toHaveBeenCalledTimes(2)
+    expect(execaCommandMock).toHaveBeenCalledTimes(2)
     expect(commands).toEqual(['cnpm sync pkg-a', 'cnpm sync pkg-b'])
     vi.resetModules()
   })
@@ -75,19 +76,21 @@ describe('sync', () => {
       },
     ]
 
-    const execaTag = vi.fn(async () => ({}))
-    const execaMock = vi.fn(() => execaTag)
+    const execaCommandMock = vi.fn(async () => ({}))
 
     vi.resetModules()
-    vi.doMock('execa', () => ({ execa: execaMock }))
+    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
+    }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({})),
     }))
 
     const { syncNpmMirror } = await import('@/commands/sync')
     await syncNpmMirror('/repo')
 
-    expect(execaMock).toHaveBeenCalledTimes(1)
-    expect(execaTag).toHaveBeenCalledWith(expect.any(Array), 'pkg-a')
+    expect(execaCommandMock).toHaveBeenCalledTimes(1)
+    expect(execaCommandMock).toHaveBeenCalledWith('cnpm sync pkg-a', expect.objectContaining({ stdio: 'inherit' }))
   })
 })
