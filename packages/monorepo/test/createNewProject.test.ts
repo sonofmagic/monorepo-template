@@ -107,6 +107,26 @@ describe.skipIf(isCI)('createNewProject', () => {
     expect(files).toMatchSnapshot()
   })
 
+  it('createNewProject keeps scoped package names', async () => {
+    const cwd = path.resolve(__dirname, './fixtures')
+    const scopedName = '@demo/scoped-case'
+    const targetDir = path.resolve(cwd, scopedName)
+    try {
+      await createNewProject({
+        cwd,
+        name: scopedName,
+        renameJson: true,
+        type: 'unbuild',
+      })
+      const pkgJsonPath = path.join(targetDir, 'package.mock.json')
+      const pkgJson = await fs.readJson(pkgJsonPath)
+      expect(pkgJson.name).toBe(scopedName)
+    }
+    finally {
+      await fs.remove(path.resolve(cwd, '@demo'))
+    }
+  })
+
   it('createNewProject demo server case', async () => {
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),

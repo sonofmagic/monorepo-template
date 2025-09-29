@@ -73,7 +73,8 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   const createConfig = await resolveCommandConfig('create', cwd)
 
   const renameJson = options?.renameJson ?? createConfig?.renameJson ?? false
-  const name = options?.name ?? createConfig?.name
+  const rawName = options?.name ?? createConfig?.name
+  const name = typeof rawName === 'string' ? rawName.trim() : undefined
   const requestedTemplate = options?.type ?? createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate
 
   const templateDefinitions = getTemplateMap(createConfig?.templateMap)
@@ -93,7 +94,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   }
 
   const from = path.join(templatesRoot, sourceRelative)
-  const targetName = name ?? sourceRelative
+  const targetName = name && name.length > 0 ? name : sourceRelative
   const to = path.join(cwd, targetName)
   if (await fs.pathExists(to)) {
     throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(cwd, to)}`)
@@ -125,7 +126,8 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     const sourceJsonPath = path.resolve(from, 'package.json')
     const sourceJson = await fs.readJson(sourceJsonPath)
     set(sourceJson, 'version', '0.0.0')
-    set(sourceJson, 'name', path.basename(targetName))
+    const packageName = name?.startsWith('@') ? name : path.basename(targetName)
+    set(sourceJson, 'name', packageName)
     // renameJson 可将 package.json 暂存为 package.mock.json，满足某些仓库需要自定义命名的情景。
     await fs.outputJson(
       path.resolve(

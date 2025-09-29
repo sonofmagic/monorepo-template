@@ -1,3 +1,4 @@
 import process from 'node:process'
+import { runCli } from './index'
 
-console.log('[@icebreakers/cli]: ', process.argv)
+runCli(process.argv)
