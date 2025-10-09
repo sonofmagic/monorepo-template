@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.0.6
+
+### Patch Changes
+
+- [`a035f9c`](https://github.com/sonofmagic/monorepo-template/commit/a035f9c800b6daadfb17b0a5247db5caba6343a0) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore(deps): upgrade
+
 ## 2.0.5
 
 ### Patch Changes
