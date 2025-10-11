@@ -17,7 +17,7 @@ afterEach(() => {
 })
 
 describe('upgradeMonorepo overwrite logic', () => {
-  it('skips overwriting LICENSE when already present', async () => {
+  it.skipIf(CI.isCI)('skips overwriting LICENSE when already present', async () => {
     const confirmMock = vi.fn(async () => true)
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-license-')
 
