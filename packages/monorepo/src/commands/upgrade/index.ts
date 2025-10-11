@@ -229,6 +229,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
       continue
     }
 
+    if (relPath === 'LICENSE' && await fs.pathExists(targetPath)) {
+      continue
+    }
+
     if (await shouldWriteFile(targetPath, { skipOverwrite, source: await fs.readFile(file.path), promptLabel: relPath })) {
       await fs.copy(file.path, targetPath)
       logger.success(targetPath)

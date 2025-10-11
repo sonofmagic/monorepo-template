@@ -17,6 +17,28 @@ afterEach(() => {
 })
 
 describe('upgradeMonorepo overwrite logic', () => {
+  it('skips overwriting LICENSE when already present', async () => {
+    const confirmMock = vi.fn(async () => true)
+    const { root, outDir } = await createTempOutDir('monorepo-upgrade-license-')
+
+    vi.resetModules()
+    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
+
+    await upgradeMonorepo({ outDir })
+    const licensePath = path.join(outDir, 'LICENSE')
+    expect(await fs.pathExists(licensePath)).toBe(true)
+
+    await fs.writeFile(licensePath, '# custom license\n', 'utf8')
+    await upgradeMonorepo({ outDir })
+
+    const content = await fs.readFile(licensePath, 'utf8')
+    expect(content).toBe('# custom license\n')
+    expect(confirmMock).not.toHaveBeenCalled()
+
+    await fs.remove(root)
+  })
+
   it('honors skipOverwrite for existing files', async () => {
     const confirmMock = vi.fn(async () => true)
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-skip-')
