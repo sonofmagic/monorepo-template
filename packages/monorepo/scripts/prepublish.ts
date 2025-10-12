@@ -1,3 +1,5 @@
+import process from 'node:process'
+import { pathToFileURL } from 'node:url'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { getAssetTargets } from '../src/commands/upgrade/targets'
@@ -6,38 +8,66 @@ import { logger } from '../src/core/logger'
 
 import { getTemplateTargets } from './getTemplateTargets'
 
-await fs.ensureDir(assetsDir)
+interface PrepareAssetsOptions {
+  silent?: boolean
+}
 
-const assetTargets = getAssetTargets()
+export async function prepareAssets(options: PrepareAssetsOptions = {}) {
+  const log = options.silent ? (_message: string) => {} : (message: string) => logger.success(message)
 
-for (const t of assetTargets) {
-  const from = path.resolve(rootDir, t)
-  const to = path.resolve(assetsDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
-  if (!await fs.pathExists(from)) {
-    continue
+  await fs.ensureDir(assetsDir)
+
+  const assetTargets = getAssetTargets()
+
+  for (const t of assetTargets) {
+    const from = path.resolve(rootDir, t)
+    const to = path.resolve(assetsDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
+    if (!await fs.pathExists(from)) {
+      continue
+    }
+    if (t === '.husky') {
+      await fs.copy(from, to, {
+        filter(src) {
+          return !/[\\/]_$/.test(src)
+        },
+      })
+    }
+    else {
+      await fs.copy(from, to)
+    }
+
+    log(`assets/${path.relative(assetsDir, to)}`)
   }
-  if (t === '.husky') {
-    await fs.copy(from, to, {
-      filter(src) {
-        return !/[\\/]_$/.test(src)
-      },
-    })
-  }
-  else {
+
+  const templateTargets = await getTemplateTargets()
+
+  for (const t of templateTargets) {
+    const from = path.resolve(rootDir, t)
+    const to = path.resolve(templatesDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
     await fs.copy(from, to)
+
+    log(`templates/${path.relative(templatesDir, to)}`)
   }
 
-  logger.success(`assets/${path.relative(assetsDir, to)}`)
+  log('prepare ok!')
 }
 
-const templateTargets = await getTemplateTargets()
-
-for (const t of templateTargets) {
-  const from = path.resolve(rootDir, t)
-  const to = path.resolve(templatesDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
-  await fs.copy(from, to)
-
-  logger.success(`templates/${path.relative(templatesDir, to)}`)
+async function runCli() {
+  await prepareAssets()
 }
 
-logger.success('prepare ok!')
+const isDirectInvocation = (() => {
+  try {
+    return process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url
+  }
+  catch {
+    return false
+  }
+})()
+
+if (isDirectInvocation) {
+  runCli().catch((error) => {
+    logger.error(error)
+    process.exitCode = 1
+  })
+}
