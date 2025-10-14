@@ -8,7 +8,7 @@ import setReadme from '@/commands/init/setReadme'
 
 afterEach(async () => {
   vi.resetAllMocks()
-  vi.resetModules()
+  await vi.resetModules()
 })
 
 describe('cleanProjects', () => {
@@ -47,7 +47,7 @@ describe('cleanProjects', () => {
     }
 
     const checkboxMock = vi.fn(async () => packages.map(pkg => pkg.rootDir))
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir })),
