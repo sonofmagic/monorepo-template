@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.0.8
+
+### Patch Changes
+
+- [`b685002`](https://github.com/sonofmagic/monorepo-template/commit/b68500259af733e37ae0301ebb1678ceffae3e6d) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Improve unit test coverage for CLI helpers and template packages.
+
 ## 2.0.7
 
 ### Patch Changes
