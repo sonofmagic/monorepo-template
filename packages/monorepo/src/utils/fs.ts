@@ -8,5 +8,5 @@ export function isIgnorableFsError(error: unknown): error is NodeJS.ErrnoExcepti
     return false
   }
   const code = (error as NodeJS.ErrnoException).code
-  return code === 'ENOENT' || code === 'EBUSY'
+  return code === 'ENOENT' || code === 'EBUSY' || code === 'EEXIST'
 }
