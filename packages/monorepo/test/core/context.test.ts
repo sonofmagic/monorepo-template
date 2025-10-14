@@ -59,4 +59,26 @@ describe('init', () => {
     expect(setPkgJsonMock).toHaveBeenCalledWith(ctx)
     expect(setReadmeMock).toHaveBeenCalledWith(ctx)
   })
+
+  it('respects skip flags in init configuration', async () => {
+    const ctx = { cwd: '/repo', config: { commands: { init: { skipChangeset: true, skipPkgJson: true, skipReadme: true } } } }
+    const createContextMock = vi.fn(async () => ctx)
+    const setChangesetMock = vi.fn(async () => {})
+    const setPkgJsonMock = vi.fn(async () => {})
+    const setReadmeMock = vi.fn(async () => {})
+
+    vi.resetModules()
+    vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
+    vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
+    vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
+    vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
+
+    const { init } = await import('@/commands/init')
+    await init('/repo')
+
+    expect(createContextMock).toHaveBeenCalledWith('/repo')
+    expect(setChangesetMock).not.toHaveBeenCalled()
+    expect(setPkgJsonMock).not.toHaveBeenCalled()
+    expect(setReadmeMock).not.toHaveBeenCalled()
+  })
 })

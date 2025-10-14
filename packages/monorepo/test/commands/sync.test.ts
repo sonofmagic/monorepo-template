@@ -93,4 +93,49 @@ describe('sync', () => {
     expect(execaCommandMock).toHaveBeenCalledTimes(1)
     expect(execaCommandMock).toHaveBeenCalledWith('cnpm sync pkg-a', expect.objectContaining({ stdio: 'inherit' }))
   })
+
+  it('uses configured command template and package filters', async () => {
+    const packages = [
+      {
+        manifest: { name: 'pkg-a' },
+        rootDir: '/repo/packages/a',
+      },
+      {
+        manifest: { name: 'pkg-b' },
+        rootDir: '/repo/packages/b',
+      },
+    ]
+    const executed: string[] = []
+    const addMock = vi.fn(async (task: () => Promise<unknown>) => task())
+    const PQueueMock = vi.fn(() => ({ add: addMock }))
+    const execaCommandMock = vi.fn(async (command: string) => {
+      executed.push(command)
+      return {}
+    })
+
+    vi.resetModules()
+    vi.doMock('p-queue', () => ({
+      __esModule: true,
+      default: PQueueMock,
+    }))
+    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
+    vi.doMock('@/core/workspace', () => ({
+      getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
+    }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({
+        concurrency: 5,
+        command: 'custom {name}',
+        packages: ['pkg-b'],
+      })),
+    }))
+    vi.doMock('@/core/logger', () => ({ logger: { info: vi.fn() } }))
+
+    const { syncNpmMirror } = await import('@/commands/sync')
+    await syncNpmMirror('/repo')
+
+    expect(PQueueMock).toHaveBeenCalledWith({ concurrency: 5 })
+    expect(addMock).toHaveBeenCalledTimes(1)
+    expect(executed).toEqual(['custom pkg-b'])
+  })
 })
