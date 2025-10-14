@@ -13,6 +13,7 @@ describe('commander program', () => {
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
     const createMock = vi.fn(async () => {})
+    const choices = [{ value: 'unbuild', name: 'unbuild template' }]
 
     vi.doMock('@/commands', () => ({
       cleanProjects: cleanMock,
@@ -30,7 +31,6 @@ describe('commander program', () => {
     vi.doMock('@inquirer/input', () => ({ default: inputMock }))
     vi.doMock('@inquirer/select', () => ({ default: selectMock }))
 
-    const choices = [{ value: 'unbuild', name: 'unbuild template' }]
     vi.doMock('@/commands/create', () => ({
       defaultTemplate: 'unbuild',
       getTemplateMap: vi.fn(() => ({

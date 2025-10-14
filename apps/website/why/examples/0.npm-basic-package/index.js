@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 console.log(`load ${__filename}`)
 
 function sayHello() {

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // import c from 'chalk'
 // const c = require('chalk')
 const { sayHello } = require('icebreaker-npm-basic-package')

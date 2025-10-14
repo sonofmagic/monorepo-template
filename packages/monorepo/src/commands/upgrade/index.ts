@@ -13,13 +13,9 @@ import { assetsDir, name as pkgName, version as pkgVersion } from '../../constan
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isFileChanged, isMatch } from '../../utils'
+import { escapeStringRegexp, isFileChanged, isIgnorableFsError, isMatch } from '../../utils'
 import { scriptsEntries } from './scripts'
 import { getAssetTargets } from './targets'
-
-function isNotFoundError(error: unknown): error is NodeJS.ErrnoException {
-  return Boolean(error) && (error as NodeJS.ErrnoException).code === 'ENOENT'
-}
 
 function isWorkspace(version?: string) {
   if (typeof version === 'string') {
@@ -249,7 +245,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       }
     }
     catch (error) {
-      if (isNotFoundError(error)) {
+      if (isIgnorableFsError(error)) {
         continue
       }
       throw error

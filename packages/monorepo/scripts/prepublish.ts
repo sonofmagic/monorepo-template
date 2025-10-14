@@ -5,15 +5,12 @@ import path from 'pathe'
 import { getAssetTargets } from '../src/commands/upgrade/targets'
 import { assetsDir, rootDir, templatesDir } from '../src/constants'
 import { logger } from '../src/core/logger'
+import { isIgnorableFsError } from '../src/utils'
 
 import { getTemplateTargets } from './getTemplateTargets'
 
 interface PrepareAssetsOptions {
   silent?: boolean
-}
-
-function isNotFoundError(error: unknown): error is NodeJS.ErrnoException {
-  return Boolean(error) && (error as NodeJS.ErrnoException).code === 'ENOENT'
 }
 
 export async function prepareAssets(options: PrepareAssetsOptions = {}) {
@@ -42,7 +39,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
       }
     }
     catch (error) {
-      if (isNotFoundError(error)) {
+      if (isIgnorableFsError(error)) {
         continue
       }
       throw error
@@ -60,7 +57,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
       await fs.copy(from, to)
     }
     catch (error) {
-      if (isNotFoundError(error)) {
+      if (isIgnorableFsError(error)) {
         continue
       }
       throw error
