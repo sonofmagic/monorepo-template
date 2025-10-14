@@ -43,7 +43,7 @@ describe('sync', () => {
       },
     ]
 
-    vi.resetModules()
+    await vi.resetModules()
     const execaCommandMock = vi.fn(async (command: string) => {
       commands.push(command.trim())
       return { stdout: '' }
@@ -61,7 +61,7 @@ describe('sync', () => {
 
     expect(execaCommandMock).toHaveBeenCalledTimes(2)
     expect(commands).toEqual(['cnpm sync pkg-a', 'cnpm sync pkg-b'])
-    vi.resetModules()
+    await vi.resetModules()
   })
 
   it('skips workspaces without names', async () => {
@@ -78,7 +78,7 @@ describe('sync', () => {
 
     const execaCommandMock = vi.fn(async () => ({}))
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
@@ -113,7 +113,7 @@ describe('sync', () => {
       return {}
     })
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('p-queue', () => ({
       __esModule: true,
       default: PQueueMock,

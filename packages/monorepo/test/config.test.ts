@@ -14,7 +14,7 @@ function writeConfig(dir: string, content: string) {
 
 describe('monorepo config integration', () => {
   it.skipIf(isCI)('overrides create command defaults', async () => {
-    vi.resetModules()
+    await vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-create-'))
     await writeConfig(
       root,
@@ -33,7 +33,7 @@ describe('monorepo config integration', () => {
   })
 
   it.skipIf(isCI)('allows clean command to run without prompt via config', async () => {
-    vi.resetModules()
+    await vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-clean-'))
     const workspaceDir = path.join(root, 'workspace')
     const packagesDir = path.join(workspaceDir, 'packages')
@@ -75,7 +75,7 @@ describe('monorepo config integration', () => {
     expect(checkboxMock).not.toHaveBeenCalled()
     expect(await fs.pathExists(fooDir)).toBe(false)
 
-    vi.resetModules()
+    await vi.resetModules()
     await fs.remove(root)
   })
 })

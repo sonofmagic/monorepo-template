@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-afterEach(() => {
-  vi.resetModules()
+afterEach(async () => {
+  await vi.resetModules()
   vi.resetAllMocks()
 })
 
@@ -15,7 +15,7 @@ describe('createContext', () => {
       getUser: vi.fn(async () => ({ name: 'Dev Example', email: 'dev@example.com' })),
     }
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages: fakePackages, workspaceDir: '/repo' })),
     }))
@@ -45,7 +45,7 @@ describe('init', () => {
     const setPkgJsonMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
     vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
@@ -67,7 +67,7 @@ describe('init', () => {
     const setPkgJsonMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
     vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))

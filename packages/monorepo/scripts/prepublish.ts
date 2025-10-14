@@ -12,6 +12,10 @@ interface PrepareAssetsOptions {
   silent?: boolean
 }
 
+function isNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+  return Boolean(error) && (error as NodeJS.ErrnoException).code === 'ENOENT'
+}
+
 export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   const log = options.silent ? (_message: string) => {} : (message: string) => logger.success(message)
 
@@ -25,15 +29,23 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
     if (!await fs.pathExists(from)) {
       continue
     }
-    if (t === '.husky') {
-      await fs.copy(from, to, {
-        filter(src) {
-          return !/[\\/]_$/.test(src)
-        },
-      })
+    try {
+      if (t === '.husky') {
+        await fs.copy(from, to, {
+          filter(src) {
+            return !/[\\/]_$/.test(src)
+          },
+        })
+      }
+      else {
+        await fs.copy(from, to)
+      }
     }
-    else {
-      await fs.copy(from, to)
+    catch (error) {
+      if (isNotFoundError(error)) {
+        continue
+      }
+      throw error
     }
 
     log(`assets/${path.relative(assetsDir, to)}`)
@@ -44,7 +56,15 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   for (const t of templateTargets) {
     const from = path.resolve(rootDir, t)
     const to = path.resolve(templatesDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
-    await fs.copy(from, to)
+    try {
+      await fs.copy(from, to)
+    }
+    catch (error) {
+      if (isNotFoundError(error)) {
+        continue
+      }
+      throw error
+    }
 
     log(`templates/${path.relative(templatesDir, to)}`)
   }

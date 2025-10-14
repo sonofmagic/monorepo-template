@@ -12,8 +12,8 @@ const assetsDir = '/virtual/assets'
 const rootDir = '/virtual/repo'
 const templatesDir = '/virtual/templates'
 
-beforeEach(() => {
-  vi.resetModules()
+beforeEach(async () => {
+  await vi.resetModules()
   ensureDirMock.mockClear()
   copyMock.mockClear()
   pathExistsMock.mockReset()

@@ -9,8 +9,8 @@ const pathExistsMock = vi.fn(async () => false)
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const successMock = vi.fn()
 
-beforeEach(() => {
-  vi.resetModules()
+beforeEach(async () => {
+  await vi.resetModules()
   ensureDirMock.mockClear()
   copyMock.mockClear()
   readdirMock.mockReset()

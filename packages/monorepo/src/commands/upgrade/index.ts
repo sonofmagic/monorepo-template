@@ -17,6 +17,10 @@ import { escapeStringRegexp, isFileChanged, isMatch } from '../../utils'
 import { scriptsEntries } from './scripts'
 import { getAssetTargets } from './targets'
 
+function isNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+  return Boolean(error) && (error as NodeJS.ErrnoException).code === 'ENOENT'
+}
+
 function isWorkspace(version?: string) {
   if (typeof version === 'string') {
     return version.startsWith('workspace:')
@@ -201,46 +205,54 @@ export async function upgradeMonorepo(opts: CliOpts) {
     }
     const targetPath = path.resolve(absOutDir, relPath)
 
-    if (relPath === 'package.json') {
-      if (!await fs.pathExists(targetPath)) {
+    try {
+      if (relPath === 'package.json') {
+        if (!await fs.pathExists(targetPath)) {
+          continue
+        }
+
+        const sourcePkgJson = await fs.readJson(file.path) as PackageJson
+        const targetPkgJson = await fs.readJson(targetPath) as PackageJson
+        setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
+        // 直接覆写对象后重新序列化，保证键顺序与缩进一致。
+        const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
+        if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
+          await fs.outputFile(targetPath, data, 'utf8')
+          logger.success(targetPath)
+        }
         continue
       }
 
-      const sourcePkgJson = await fs.readJson(file.path) as PackageJson
-      const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-      setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
-      // 直接覆写对象后重新序列化，保证键顺序与缩进一致。
-      const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
-      if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
-        await fs.outputFile(targetPath, data, 'utf8')
-        logger.success(targetPath)
+      if (relPath === '.changeset/config.json' && repoName) {
+        const changesetJson = await fs.readJson(file.path)
+        set(changesetJson, 'changelog.1.repo', repoName)
+        const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
+        if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
+          await fs.outputFile(targetPath, data, 'utf8')
+          logger.success(targetPath)
+        }
+        continue
       }
-      continue
-    }
 
-    if (relPath === '.changeset/config.json' && repoName) {
-      const changesetJson = await fs.readJson(file.path)
-      set(changesetJson, 'changelog.1.repo', repoName)
-      const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
-      if (await shouldWriteFile(targetPath, { skipOverwrite, source: data, promptLabel: relPath })) {
-        await fs.outputFile(targetPath, data, 'utf8')
-        logger.success(targetPath)
+      if (relPath === 'LICENSE') {
+        const source = await fs.readFile(file.path)
+        if (await shouldWriteFile(targetPath, { skipOverwrite: true, source, promptLabel: relPath })) {
+          await fs.copy(file.path, targetPath)
+          logger.success(targetPath)
+        }
+        continue
       }
-      continue
-    }
 
-    if (relPath === 'LICENSE') {
-      const source = await fs.readFile(file.path)
-      if (await shouldWriteFile(targetPath, { skipOverwrite: true, source, promptLabel: relPath })) {
+      if (await shouldWriteFile(targetPath, { skipOverwrite, source: await fs.readFile(file.path), promptLabel: relPath })) {
         await fs.copy(file.path, targetPath)
         logger.success(targetPath)
       }
-      continue
     }
-
-    if (await shouldWriteFile(targetPath, { skipOverwrite, source: await fs.readFile(file.path), promptLabel: relPath })) {
-      await fs.copy(file.path, targetPath)
-      logger.success(targetPath)
+    catch (error) {
+      if (isNotFoundError(error)) {
+        continue
+      }
+      throw error
     }
   }
 }

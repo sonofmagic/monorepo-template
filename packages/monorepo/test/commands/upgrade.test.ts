@@ -11,8 +11,8 @@ async function createTempOutDir(slug: string) {
   return { root, outDir }
 }
 
-afterEach(() => {
-  vi.resetModules()
+afterEach(async () => {
+  await vi.resetModules()
   vi.resetAllMocks()
 })
 
@@ -21,7 +21,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     const confirmMock = vi.fn(async () => true)
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-license-')
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
@@ -43,7 +43,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     const confirmMock = vi.fn(async () => true)
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-skip-')
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
@@ -61,7 +61,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     const confirmMock = vi.fn(async () => true)
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-rewrite-')
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     const { assetsDir } = await import('@/constants')
     const reference = await fs.readFile(path.join(assetsDir, 'netlify.toml'), 'utf8')
@@ -87,7 +87,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     const gitClientMock = vi.fn(() => ({ getRepoName: vi.fn(async () => 'ice/awesome') }))
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-interactive-')
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     vi.doMock('@/core/git', () => ({ GitClient: gitClientMock }))
@@ -115,7 +115,7 @@ describe('upgradeMonorepo overwrite logic', () => {
       },
     }, { spaces: 2 })
 
-    vi.resetModules()
+    await vi.resetModules()
     vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
