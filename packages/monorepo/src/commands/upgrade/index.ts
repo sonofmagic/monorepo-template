@@ -4,10 +4,10 @@ import process from 'node:process'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
 import fs from 'fs-extra'
-import get from 'get-value'
 import klaw from 'klaw'
 import path from 'pathe'
 import pc from 'picocolors'
+import { coerce, gte, minVersion } from 'semver'
 import set from 'set-value'
 import { assetsDir, name as pkgName, version as pkgVersion } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
@@ -24,6 +24,31 @@ function isWorkspace(version?: string) {
   return false
 }
 
+function parseVersion(input: unknown) {
+  if (typeof input !== 'string' || input.trim().length === 0) {
+    return null
+  }
+  return minVersion(input) ?? coerce(input)
+}
+
+function shouldAssignVersion(currentVersion: unknown, nextVersion: string) {
+  if (typeof currentVersion !== 'string' || currentVersion.trim().length === 0) {
+    return true
+  }
+
+  if (currentVersion === nextVersion) {
+    return false
+  }
+
+  const current = parseVersion(currentVersion)
+  const next = parseVersion(nextVersion)
+  if (!current || !next) {
+    return true
+  }
+
+  return !gte(current, next)
+}
+
 /**
  * 将内置 package.json 内容合并进目标工程：
  * - 同步依赖（保留 workspace: 前缀的版本）
@@ -37,19 +62,27 @@ export function setPkgJson(
     scripts?: Record<string, string>
   },
 ) {
-  const packageManager = get(sourcePkgJson, 'packageManager', { default: '' })
-  const sourceDeps = get(sourcePkgJson, 'dependencies', { default: {} })
-  const sourceDevDeps = get(sourcePkgJson, 'devDependencies', { default: {} })
+  const packageManager = sourcePkgJson.packageManager ?? ''
+  const sourceDeps = sourcePkgJson.dependencies ?? {}
+  const sourceDevDeps = sourcePkgJson.devDependencies ?? {}
 
-  const targetDeps = { ...get(targetPkgJson, 'dependencies', { default: {} }) }
-  const targetDevDeps = { ...get(targetPkgJson, 'devDependencies', { default: {} }) }
+  const targetDeps = { ...(targetPkgJson.dependencies ?? {}) }
+  const targetDevDeps = { ...(targetPkgJson.devDependencies ?? {}) }
 
   if (packageManager) {
     targetPkgJson.packageManager = packageManager
   }
 
   for (const [depName, depVersion] of Object.entries(sourceDeps)) {
-    if (!isWorkspace(targetDeps[depName])) {
+    if (typeof depVersion !== 'string') {
+      continue
+    }
+
+    const targetVersion = targetDeps[depName]
+    if (isWorkspace(targetVersion)) {
+      continue
+    }
+    if (shouldAssignVersion(targetVersion, depVersion)) {
       targetDeps[depName] = depVersion
     }
   }
@@ -58,11 +91,25 @@ export function setPkgJson(
   }
 
   for (const [depName, depVersion] of Object.entries(sourceDevDeps)) {
-    if (depName === pkgName) {
-      targetDevDeps[depName] = `^${pkgVersion}`
+    if (typeof depVersion !== 'string') {
+      continue
     }
-    else if (!isWorkspace(targetDevDeps[depName])) {
-      targetDevDeps[depName] = depVersion
+
+    if (depName === pkgName) {
+      const nextVersion = `^${pkgVersion}`
+      const targetVersion = targetDevDeps[depName]
+      if (!isWorkspace(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
+        targetDevDeps[depName] = nextVersion
+      }
+    }
+    else {
+      const targetVersion = targetDevDeps[depName]
+      if (isWorkspace(targetVersion)) {
+        continue
+      }
+      if (shouldAssignVersion(targetVersion, depVersion)) {
+        targetDevDeps[depName] = depVersion
+      }
     }
   }
   if (Object.keys(targetDevDeps).length) {

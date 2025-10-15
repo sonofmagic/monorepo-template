@@ -94,4 +94,65 @@ describe('lib', () => {
       expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe(`^${version}`)
     }
   })
+
+  it('setPkgJson casae 5', () => {
+    const t: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '1.0.0',
+      },
+    }
+    const o: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '^999.0.0',
+      },
+    }
+    setPkgJson(t, o)
+    if (o.devDependencies) {
+      expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe('^999.0.0')
+    }
+  })
+
+  it('setPkgJson casae 6', () => {
+    const t: PackageJson = {
+      dependencies: {
+        foo: '^2.0.0',
+      },
+      devDependencies: {
+        bar: '~3.1.0',
+      },
+    }
+    const o: PackageJson = {
+      dependencies: {
+        foo: '^1.0.0',
+      },
+      devDependencies: {
+        bar: '~3.0.0',
+      },
+    }
+    setPkgJson(t, o)
+    expect(o.dependencies?.foo).toBe('^2.0.0')
+    expect(o.devDependencies?.bar).toBe('~3.1.0')
+  })
+
+  it('setPkgJson casae 7', () => {
+    const t: PackageJson = {
+      dependencies: {
+        foo: '^2.0.0',
+      },
+      devDependencies: {
+        bar: '^4.0.0',
+      },
+    }
+    const o: PackageJson = {
+      dependencies: {
+        foo: 'workspace:*',
+      },
+      devDependencies: {
+        bar: 'workspace:*',
+      },
+    }
+    setPkgJson(t, o)
+    expect(o.dependencies?.foo).toBe('workspace:*')
+    expect(o.devDependencies?.bar).toBe('workspace:*')
+  })
 })
