@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.0.9
+
+### Patch Changes
+
+- [`ace9269`](https://github.com/sonofmagic/monorepo-template/commit/ace926931e6d2bf97f8086ec9b32ac1999ddd56c) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Improve `setPkgJson` so dependency updates skip downgrades by comparing versions with semver, and add test coverage for the new behavior.
+
 ## 2.0.8
 
 ### Patch Changes
