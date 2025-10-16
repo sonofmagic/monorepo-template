@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.0.10
+
+### Patch Changes
+
+- [`37506a4`](https://github.com/sonofmagic/monorepo-template/commit/37506a4be5fe245cd87dc357b882faeebf57cde4) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Add a diff-aware overwrite selection to `monorepo up`, prompting once for all changed files and refactoring the upgrade helpers for reuse.
+
 ## 2.0.9
 
 ### Patch Changes
