@@ -18,11 +18,11 @@ afterEach(async () => {
 
 describe('upgradeMonorepo overwrite logic', () => {
   it('skips overwriting LICENSE when already present', async () => {
-    const confirmMock = vi.fn(async () => true)
+    const checkboxMock = vi.fn(async () => [])
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-license-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
+    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
     await upgradeMonorepo({ outDir })
@@ -34,17 +34,17 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     const content = await fs.readFile(licensePath, 'utf8')
     expect(content).toBe('# custom license\n')
-    expect(confirmMock).not.toHaveBeenCalled()
+    expect(checkboxMock).not.toHaveBeenCalled()
 
     await fs.remove(root)
   })
 
   it('honors skipOverwrite for existing files', async () => {
-    const confirmMock = vi.fn(async () => true)
+    const checkboxMock = vi.fn(async () => [])
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-skip-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
+    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
     const targetFile = path.join(outDir, 'netlify.toml')
@@ -53,42 +53,51 @@ describe('upgradeMonorepo overwrite logic', () => {
     const content = await fs.readFile(targetFile, 'utf8')
     expect(content).toBe('# custom configuration\n')
 
-    expect(confirmMock).not.toHaveBeenCalled()
+    expect(checkboxMock).not.toHaveBeenCalled()
     await fs.remove(root)
   })
 
-  it.skipIf(CI.isCI)('prompts when contents differ and rewrites on approval', async () => {
-    const confirmMock = vi.fn(async () => true)
+  it.skipIf(CI.isCI)('prompts when contents differ and rewrites selected files', async () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-rewrite-')
+    const targetFile = path.join(outDir, 'netlify.toml')
+    const checkboxMock = vi.fn(async (options: { choices?: Array<{ value: string }> }) => {
+      const choices = Array.isArray(options?.choices) ? options.choices : []
+      const match = choices.find(item => item.value === targetFile)
+      return match ? [match.value] : []
+    })
 
     await vi.resetModules()
-    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
+    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     const { assetsDir } = await import('@/constants')
     const reference = await fs.readFile(path.join(assetsDir, 'netlify.toml'), 'utf8')
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
     await upgradeMonorepo({ outDir })
-    const targetFile = path.join(outDir, 'netlify.toml')
     await fs.writeFile(targetFile, '# drifted\n')
     await upgradeMonorepo({ outDir })
-    expect(confirmMock).toHaveBeenCalledTimes(1)
+    expect(checkboxMock).toHaveBeenCalledTimes(1)
     const rewritten = await fs.readFile(targetFile, 'utf8')
     expect(rewritten).toBe(reference)
 
     await upgradeMonorepo({ outDir })
-    expect(confirmMock).toHaveBeenCalledTimes(1)
+    expect(checkboxMock).toHaveBeenCalledTimes(1)
 
     await fs.remove(root)
   })
 
   it.skipIf(CI.isCI)('supports interactive selection and updates changeset repo', async () => {
-    const confirmMock = vi.fn(async () => true)
-    const checkboxMock = vi.fn(async () => ['.changeset'])
+    const checkboxMock = vi.fn(async (options: { message?: string, choices?: Array<{ value: string }> }) => {
+      if (options?.message === '选择你需要的文件') {
+        return ['.changeset']
+      }
+      const choices = Array.isArray(options?.choices) ? options.choices : []
+      const first = choices[0]
+      return first ? [first.value] : []
+    })
     const gitClientMock = vi.fn(() => ({ getRepoName: vi.fn(async () => 'ice/awesome') }))
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-interactive-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
     vi.doMock('@/core/git', () => ({ GitClient: gitClientMock }))
 
@@ -105,7 +114,11 @@ describe('upgradeMonorepo overwrite logic', () => {
   })
 
   it.skipIf(CI.isCI)('merges package.json content when it already exists', async () => {
-    const confirmMock = vi.fn(async () => true)
+    const checkboxMock = vi.fn(async (options: { choices?: Array<{ value: string }> }) => {
+      const choices = Array.isArray(options?.choices) ? options.choices : []
+      const match = choices.find(item => typeof item.value === 'string' && item.value.endsWith('package.json'))
+      return match ? [match.value] : []
+    })
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-package-')
     const packagePath = path.join(outDir, 'package.json')
     await fs.writeJSON(packagePath, {
@@ -116,14 +129,14 @@ describe('upgradeMonorepo overwrite logic', () => {
     }, { spaces: 2 })
 
     await vi.resetModules()
-    vi.doMock('@inquirer/confirm', () => ({ default: confirmMock }))
+    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
 
     const pkg = await fs.readJSON(packagePath)
     expect(pkg.scripts.commitlint).toBe('commitlint --edit')
-    expect(confirmMock).toHaveBeenCalled()
+    expect(checkboxMock).toHaveBeenCalled()
 
     await fs.remove(root)
   })
