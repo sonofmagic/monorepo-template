@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.0.11
+
+### Patch Changes
+
+- [`57c5818`](https://github.com/sonofmagic/monorepo-template/commit/57c5818634227b88a9652fa00f850cb659a7864a) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Unifies the gitignore renaming logic under shared utilities, improving consistency across publish, create, and upgrade flows.
+
 ## 2.0.10
 
 ### Patch Changes
