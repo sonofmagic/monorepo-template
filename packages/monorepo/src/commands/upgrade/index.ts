@@ -10,7 +10,7 @@ import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isIgnorableFsError, isMatch } from '../../utils'
+import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath } from '../../utils'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
 import { getAssetTargets } from './targets'
@@ -68,18 +68,15 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const pendingOverwrites: PendingOverwrite[] = []
   for await (const file of klaw(assetsDir, {
     filter(p) {
-      const str = path.relative(assetsDir, p)
-      return isMatch(str, regexpArr)
+      const rel = toWorkspaceGitignorePath(path.relative(assetsDir, p))
+      return isMatch(rel, regexpArr)
     },
   })) {
     if (!file.stats.isFile()) {
       continue
     }
 
-    let relPath = path.relative(assetsDir, file.path)
-    if (relPath === 'gitignore') {
-      relPath = '.gitignore'
-    }
+    const relPath = toWorkspaceGitignorePath(path.relative(assetsDir, file.path))
 
     if (skipChangesetMarkdown && relPath.startsWith('.changeset/') && relPath.endsWith('.md')) {
       continue

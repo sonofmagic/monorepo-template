@@ -6,6 +6,7 @@ import set from 'set-value'
 import { templatesDir as defaultTemplatesDir } from '../constants'
 import { resolveCommandConfig } from '../core/config'
 import { logger } from '../core/logger'
+import { toWorkspaceGitignorePath } from '../utils'
 
 /**
  * 内置模板映射表，value 指向仓库中对应模板所在路径。
@@ -109,7 +110,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     .filter(filename => filename !== 'package.json')
     .map(async (filename) => {
       const sourcePath = path.resolve(from, filename)
-      const targetPath = path.resolve(to, filename === 'gitignore' ? '.gitignore' : filename)
+      const targetPath = path.resolve(to, toWorkspaceGitignorePath(filename))
       await fs.copy(sourcePath, targetPath, {
         filter(src) {
           if (shouldSkip(src)) {

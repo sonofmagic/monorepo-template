@@ -5,7 +5,7 @@ import path from 'pathe'
 import { getAssetTargets } from '../src/commands/upgrade/targets'
 import { assetsDir, rootDir, templatesDir } from '../src/constants'
 import { logger } from '../src/core/logger'
-import { isIgnorableFsError } from '../src/utils'
+import { isIgnorableFsError, toPublishGitignorePath } from '../src/utils'
 
 import { getTemplateTargets } from './getTemplateTargets'
 
@@ -22,7 +22,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
 
   for (const t of assetTargets) {
     const from = path.resolve(rootDir, t)
-    const to = path.resolve(assetsDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
+    const to = path.resolve(assetsDir, toPublishGitignorePath(t))
     if (!await fs.pathExists(from)) {
       continue
     }
@@ -52,7 +52,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
 
   for (const t of templateTargets) {
     const from = path.resolve(rootDir, t)
-    const to = path.resolve(templatesDir, t.endsWith('.gitignore') ? t.replace(/\.gitignore$/, 'gitignore') : t)
+    const to = path.resolve(templatesDir, toPublishGitignorePath(t))
     try {
       await fs.copy(from, to)
     }
