@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.1.0
+
+### Minor Changes
+
+- [`fc82dd5`](https://github.com/sonofmagic/monorepo-template/commit/fc82dd57d4dc83b8f0dde664cc54525da51fd1db) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Drop the legacy `--raw`/`--minimal-assets` upgrade flags in favor of the concise `-c/--core` switch and align documentation accordingly.
+
 ## 2.0.12
 
 ### Patch Changes
