@@ -22,14 +22,16 @@ program
   .description('升级/同步 monorepo 相关包')
   .alias('up')
   .option('-i,--interactive')
-  .option('--raw', 'raw mode')
+  .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
   .option('--outDir <dir>', 'Output directory')
   .option('-s,--skip-overwrite', 'skip overwrite')
   .action(async (opts: CliOpts) => {
-    await upgradeMonorepo({
+    const normalized: CliOpts = {
       ...opts,
+      core: opts.core ?? false,
       cwd,
-    })
+    }
+    await upgradeMonorepo(normalized)
     logger.success('upgrade @icebreakers/monorepo ok!')
   })
 

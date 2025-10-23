@@ -1,8 +1,8 @@
 /**
- * 根据 raw 模式返回需要同步的资产目录。
- * raw=true 时仅包含最小集，便于内联到其他项目。
+ * 根据 core 模式返回需要同步的资产目录。
+ * core=true 时仅包含最小集，便于内联到其他项目。
  */
-export function getAssetTargets(raw?: boolean) {
+export function getAssetTargets(core?: boolean) {
   const list: string[] = [
     '.changeset',
     '.husky',
@@ -31,7 +31,7 @@ export function getAssetTargets(raw?: boolean) {
     '.dockerignore',
     // #endregion
   ]
-  if (!raw) {
+  if (!core) {
     // renovate
     list.push('.github', 'LICENSE', 'renovate.json', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'netlify.toml')
   }

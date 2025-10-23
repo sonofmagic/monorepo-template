@@ -37,7 +37,9 @@ export async function upgradeMonorepo(opts: CliOpts) {
   })
   const repoName = await gitClient.getRepoName()
   // 默认从 assets 目录读取一组标准文件作为升级目标。
-  const baseTargets = getAssetTargets(merged.raw)
+  const useCoreAssets = merged.core ?? false
+  merged.core = useCoreAssets
+  const baseTargets = getAssetTargets(useCoreAssets)
   const configTargets = upgradeConfig?.targets ?? []
   const mergeTargets = upgradeConfig?.mergeTargets
   let targets = configTargets.length

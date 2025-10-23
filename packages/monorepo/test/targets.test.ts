@@ -6,7 +6,7 @@ describe('targets', () => {
     expect(targets).toMatchSnapshot()
   })
 
-  it('raw', () => {
+  it('core assets', () => {
     const targets = getAssetTargets(true)
     expect(targets).toMatchSnapshot()
   })

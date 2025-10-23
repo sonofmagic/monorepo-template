@@ -101,9 +101,9 @@ npx monorepo up           # 使用本地 CLI
 npx @icebreakers/monorepo@latest up  # 直接使用远端 CLI
 
 # 常用参数
-# --raw  排除 GitHub 相关文件
-# -i     以交互方式筛选文件
-# -s     跳过新增，仅覆盖已存在文件
+# -c, --core  仅同步核心配置，排除 GitHub 相关文件
+# -i          以交互方式筛选文件
+# -s          跳过新增，仅覆盖已存在文件
 ```
 
 升级 CLI 后再执行 `up`，可以同步获得模板最新的工作流、脚手架与配置。

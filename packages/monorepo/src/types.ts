@@ -8,7 +8,7 @@ export type { ConfigValues, SimpleGit, SimpleGitOptions } from 'simple-git'
  */
 export interface CliOpts {
   interactive?: boolean
-  raw?: boolean
+  core?: boolean
   outDir?: string
   cwd?: string
   skipOverwrite?: boolean
