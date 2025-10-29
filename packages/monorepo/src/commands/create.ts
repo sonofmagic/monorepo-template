@@ -13,6 +13,7 @@ import { toWorkspaceGitignorePath } from '../utils'
  */
 export const templateMap = {
   'tsup': 'packages/tsup-template',
+  'tsdown': 'packages/tsdown-template',
   'unbuild': 'packages/unbuild-template',
   'vue-lib': 'packages/vue-lib-template',
   'hono-server': 'apps/server',
@@ -38,6 +39,7 @@ export const defaultTemplate: CreateNewProjectType = 'unbuild'
 const baseChoices = [
   { name: 'unbuild 打包', value: 'unbuild' },
   { name: 'tsup 打包', value: 'tsup' },
+  { name: 'tsdown 打包', value: 'tsdown' },
   { name: 'vue 组件', value: 'vue-lib' },
   { name: 'vue hono 全栈', value: 'vue-hono' },
   { name: 'hono 模板', value: 'hono-server' },

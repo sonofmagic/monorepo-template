@@ -58,7 +58,9 @@ beforeEach(async () => {
 describe('createNewProject unit scenarios', () => {
   it('getCreateChoices returns defaults when override omitted', async () => {
     const { getCreateChoices } = await import('@/commands/create')
-    expect(getCreateChoices()).toHaveLength(7)
+    const defaults = getCreateChoices()
+    expect(defaults).toHaveLength(8)
+    expect(defaults.some(choice => choice.value === 'tsdown')).toBe(true)
     const customChoices = [{ name: 'custom', value: 'custom' }]
     expect(getCreateChoices(customChoices)).toBe(customChoices)
   })
@@ -68,6 +70,7 @@ describe('createNewProject unit scenarios', () => {
     const merged = getTemplateMap({ custom: 'templates/custom-template' })
     expect(merged.custom).toBe('templates/custom-template')
     expect(merged.unbuild).toBe('packages/unbuild-template')
+    expect(merged.tsdown).toBe('packages/tsdown-template')
   })
 
   it('throws when target directory already exists', async () => {
