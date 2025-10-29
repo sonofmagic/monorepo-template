@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.1.2
+
+### Patch Changes
+
+- [`a198e74`](https://github.com/sonofmagic/monorepo-template/commit/a198e74280f00464176c04cc70911da6386bd95a) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Handle pnpm `catalog:` version specifiers during `monorepo up` so catalog-managed dependencies are preserved without semver parsing errors.
+
 ## 2.1.1
 
 ### Patch Changes
