@@ -74,4 +74,17 @@ export class GitClient {
       email,
     }
   }
+
+  /**
+   * 获取当前仓库的顶层目录路径。
+   */
+  async getRepoRoot() {
+    try {
+      const root = await this.client.revparse(['--show-toplevel'])
+      return typeof root === 'string' ? root.trim() : undefined
+    }
+    catch {
+      return undefined
+    }
+  }
 }

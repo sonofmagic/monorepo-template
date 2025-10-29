@@ -8,6 +8,9 @@ const outputJsonMock = vi.fn(async () => {})
 const pathExistsMock = vi.fn(async () => false)
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const successMock = vi.fn()
+const getRepoNameMock = vi.fn(async () => 'ice/awesome')
+const getUserMock = vi.fn(async () => ({ name: 'Dev Example', email: 'dev@example.com' }))
+const getRepoRootMock = vi.fn(async () => '/repo')
 
 beforeEach(async () => {
   await vi.resetModules()
@@ -19,10 +22,16 @@ beforeEach(async () => {
   pathExistsMock.mockReset()
   resolveCommandConfigMock.mockReset()
   successMock.mockClear()
+  getRepoNameMock.mockClear()
+  getUserMock.mockClear()
+  getRepoRootMock.mockClear()
 
   readdirMock.mockResolvedValue(['package.json', 'README.md', 'gitignore', '.DS_Store'])
   readJsonMock.mockResolvedValue({ name: 'template', version: '1.0.0' })
   pathExistsMock.mockImplementation(async () => false)
+  getRepoNameMock.mockResolvedValue('ice/awesome')
+  getUserMock.mockResolvedValue({ name: 'Dev Example', email: 'dev@example.com' })
+  getRepoRootMock.mockResolvedValue('/repo')
 
   vi.doMock('fs-extra', () => ({
     __esModule: true,
@@ -51,6 +60,22 @@ beforeEach(async () => {
       success: successMock,
       info: vi.fn(),
       error: vi.fn(),
+    },
+  }))
+
+  vi.doMock('@/core/git', () => ({
+    GitClient: class {
+      getRepoName() {
+        return getRepoNameMock()
+      }
+
+      getUser() {
+        return getUserMock()
+      }
+
+      getRepoRoot() {
+        return getRepoRootMock()
+      }
     },
   }))
 })
@@ -111,5 +136,12 @@ describe('createNewProject unit scenarios', () => {
     expect(outputCall).toBeDefined()
     const pkgJson = outputCall?.[1] as Record<string, unknown> | undefined
     expect(pkgJson?.name).toBe('@scope/demo')
+    expect(pkgJson?.author).toBe('Dev Example <dev@example.com>')
+    expect(pkgJson?.bugs).toEqual(expect.objectContaining({ url: 'https://github.com/ice/awesome/issues' }))
+    expect(pkgJson?.repository).toEqual(expect.objectContaining({
+      type: 'git',
+      url: 'git+https://github.com/ice/awesome.git',
+      directory: '@scope/demo',
+    }))
   })
 })

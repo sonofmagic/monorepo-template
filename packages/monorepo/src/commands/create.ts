@@ -1,3 +1,4 @@
+import type { PackageJson } from '@/types'
 import process from 'node:process'
 import fs from 'fs-extra'
 import path from 'pathe'
@@ -5,6 +6,7 @@ import pc from 'picocolors'
 import set from 'set-value'
 import { templatesDir as defaultTemplatesDir } from '../constants'
 import { resolveCommandConfig } from '../core/config'
+import { GitClient } from '../core/git'
 import { logger } from '../core/logger'
 import { toWorkspaceGitignorePath } from '../utils'
 
@@ -68,6 +70,40 @@ export function getTemplateMap(extra?: Record<string, string>) {
   return base
 }
 
+async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir: string) {
+  try {
+    const git = new GitClient({ baseDir: repoDir })
+    const repoName = await git.getRepoName()
+    if (!repoName) {
+      return
+    }
+
+    set(pkgJson, ['bugs', 'url'], `https://github.com/${repoName}/issues`)
+
+    const repository: PackageJson['repository'] = {
+      type: 'git',
+      url: `git+https://github.com/${repoName}.git`,
+    }
+
+    const repoRoot = await git.getRepoRoot()
+    const directoryBase = repoRoot ?? repoDir
+    const relative = path.relative(directoryBase, targetDir)
+    if (relative && relative !== '.') {
+      repository.directory = relative.split(path.sep).join('/')
+    }
+
+    set(pkgJson, 'repository', repository)
+
+    const gitUser = await git.getUser()
+    if (gitUser?.name && gitUser?.email) {
+      set(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
+    }
+  }
+  catch {
+    // 忽略 Git 仓库缺失或配置错误，确保脚手架流程不受影响。
+  }
+}
+
 /**
  * 根据提供的参数或配置生成新工程目录，并可自动改写 package.json。
  */
@@ -127,10 +163,11 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
 
   if (filelist.includes('package.json')) {
     const sourceJsonPath = path.resolve(from, 'package.json')
-    const sourceJson = await fs.readJson(sourceJsonPath)
+    const sourceJson = await fs.readJson(sourceJsonPath) as PackageJson
     set(sourceJson, 'version', '0.0.0')
     const packageName = name?.startsWith('@') ? name : path.basename(targetName)
     set(sourceJson, 'name', packageName)
+    await applyGitMetadata(sourceJson, cwd, to)
     // renameJson 可将 package.json 暂存为 package.mock.json，满足某些仓库需要自定义命名的情景。
     await fs.outputJson(
       path.resolve(
