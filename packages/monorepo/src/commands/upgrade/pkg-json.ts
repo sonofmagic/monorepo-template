@@ -3,18 +3,25 @@ import { coerce, gte, minVersion } from 'semver'
 import { name as pkgName, version as pkgVersion } from '../../constants'
 import { scriptsEntries } from './scripts'
 
-function isWorkspace(version?: string) {
-  if (typeof version === 'string') {
-    return version.startsWith('workspace:')
-  }
-  return false
-}
+const NON_OVERRIDABLE_PREFIXES = ['workspace:', 'catalog:']
 
 function parseVersion(input: unknown) {
   if (typeof input !== 'string' || input.trim().length === 0) {
     return null
   }
-  return minVersion(input) ?? coerce(input)
+  try {
+    return minVersion(input) ?? coerce(input)
+  }
+  catch {
+    return null
+  }
+}
+
+function hasNonOverridablePrefix(version?: string) {
+  if (typeof version !== 'string') {
+    return false
+  }
+  return NON_OVERRIDABLE_PREFIXES.some(prefix => version.startsWith(prefix))
 }
 
 function shouldAssignVersion(currentVersion: unknown, nextVersion: string) {
@@ -65,7 +72,7 @@ export function setPkgJson(
     }
 
     const targetVersion = targetDeps[depName]
-    if (isWorkspace(targetVersion)) {
+    if (hasNonOverridablePrefix(targetVersion)) {
       continue
     }
     if (shouldAssignVersion(targetVersion, depVersion)) {
@@ -84,13 +91,13 @@ export function setPkgJson(
     if (depName === pkgName) {
       const nextVersion = `^${pkgVersion}`
       const targetVersion = targetDevDeps[depName]
-      if (!isWorkspace(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
+      if (!hasNonOverridablePrefix(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
         targetDevDeps[depName] = nextVersion
       }
     }
     else {
       const targetVersion = targetDevDeps[depName]
-      if (isWorkspace(targetVersion)) {
+      if (hasNonOverridablePrefix(targetVersion)) {
         continue
       }
       if (shouldAssignVersion(targetVersion, depVersion)) {

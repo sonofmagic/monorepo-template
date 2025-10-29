@@ -12,6 +12,7 @@ describe('upgrade pkg-json helpers coverage', () => {
         'dep-keep': '^1.0.0',
         'dep-update': '^1.2.0',
         'dep-empty': '',
+        'dep-catalog': '^1.3.0',
       },
       devDependencies: {
         '@icebreakers/monorepo': '^0.0.1',
@@ -26,6 +27,7 @@ describe('upgrade pkg-json helpers coverage', () => {
         'dep-update': '^1.0.0',
         'dep-empty': '  ',
         'dep-workspace': 'workspace:*',
+        'dep-catalog': 'catalog:crossEnv',
       },
       devDependencies: {
         '@icebreakers/monorepo': '^0.2.0',
@@ -49,6 +51,7 @@ describe('upgrade pkg-json helpers coverage', () => {
       'dep-update': '^1.2.0',
       'dep-empty': '',
       'dep-workspace': 'workspace:*',
+      'dep-catalog': 'catalog:crossEnv',
     })
     expect(target.devDependencies?.['dep-dev-update']).toBe('workspace:^2.0.0')
     expect(target.devDependencies?.['dep-dev-stale']).toBe('^2.0.0')
