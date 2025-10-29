@@ -1,5 +1,15 @@
 # @icebreakers/monorepo
 
+## 2.1.1
+
+### Patch Changes
+
+- [`6d97e86`](https://github.com/sonofmagic/monorepo-template/commit/6d97e86ebbe8001ce916857d2a07a8f4447a6c78) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: add tsdown template and expose it via monorepo create choices
+
+- [`0f4d105`](https://github.com/sonofmagic/monorepo-template/commit/0f4d105052b61bf29909dbe29f3f49c841792f20) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: scaffolded packages now inherit repository, bugs, and author metadata from the current git remote
+
+- [`f5a7a60`](https://github.com/sonofmagic/monorepo-template/commit/f5a7a6029d546e7bf21e6d6636eefe426bacc4af) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: migrate shared Vitest setup and templates to Vitest v4
+
 ## 2.1.0
 
 ### Minor Changes
