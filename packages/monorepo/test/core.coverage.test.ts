@@ -53,13 +53,18 @@ describe('core module coverage', () => {
     expect(resolvedClean.autoConfirm).toBe(true)
     expect(resolvedMirror).toEqual({})
 
-    const gitClientMock = vi.fn(() => ({
-      getGitUrl: vi.fn(async () => ({ full_name: 'ice/awesome', name: 'awesome' })),
-      getUser: vi.fn(async () => ({ name: 'Dev Example', email: 'dev@example.com' })),
-    }))
+    class GitClientMock {
+      async getGitUrl() {
+        return { full_name: 'ice/awesome', name: 'awesome' }
+      }
+
+      async getUser() {
+        return { name: 'Dev Example', email: 'dev@example.com' }
+      }
+    }
 
     vi.doMock('@/core/git', () => ({
-      GitClient: gitClientMock,
+      GitClient: GitClientMock,
     }))
 
     const contextModule = await import('@/core/context')

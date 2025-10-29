@@ -94,12 +94,16 @@ describe('upgradeMonorepo overwrite logic', () => {
       const first = choices[0]
       return first ? [first.value] : []
     })
-    const gitClientMock = vi.fn(() => ({ getRepoName: vi.fn(async () => 'ice/awesome') }))
+    class GitClientMock {
+      async getRepoName() {
+        return 'ice/awesome'
+      }
+    }
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-interactive-')
 
     await vi.resetModules()
     vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
-    vi.doMock('@/core/git', () => ({ GitClient: gitClientMock }))
+    vi.doMock('@/core/git', () => ({ GitClient: GitClientMock }))
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir, interactive: true })

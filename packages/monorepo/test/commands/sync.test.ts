@@ -106,8 +106,17 @@ describe('sync', () => {
       },
     ]
     const executed: string[] = []
+    const queueCtorMock = vi.fn()
     const addMock = vi.fn(async (task: () => Promise<unknown>) => task())
-    const PQueueMock = vi.fn(() => ({ add: addMock }))
+    class MockQueue {
+      constructor(options: { concurrency: number }) {
+        queueCtorMock(options)
+      }
+
+      add(task: () => Promise<unknown>) {
+        return addMock(task)
+      }
+    }
     const execaCommandMock = vi.fn(async (command: string) => {
       executed.push(command)
       return {}
@@ -116,7 +125,7 @@ describe('sync', () => {
     await vi.resetModules()
     vi.doMock('p-queue', () => ({
       __esModule: true,
-      default: PQueueMock,
+      default: MockQueue,
     }))
     vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
     vi.doMock('@/core/workspace', () => ({
@@ -134,7 +143,7 @@ describe('sync', () => {
     const { syncNpmMirror } = await import('@/commands/sync')
     await syncNpmMirror('/repo')
 
-    expect(PQueueMock).toHaveBeenCalledWith({ concurrency: 5 })
+    expect(queueCtorMock).toHaveBeenCalledWith({ concurrency: 5 })
     expect(addMock).toHaveBeenCalledTimes(1)
     expect(executed).toEqual(['custom pkg-b'])
   })

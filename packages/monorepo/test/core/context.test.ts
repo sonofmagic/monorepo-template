@@ -10,9 +10,14 @@ describe('createContext', () => {
     const fakePackages = [
       { manifest: { name: 'pkg-a' }, rootDir: '/repo/packages/a', pkgJsonPath: '/repo/packages/a/package.json' },
     ]
-    const gitInstance = {
-      getGitUrl: vi.fn(async () => ({ full_name: 'ice/awesome', name: 'awesome' })),
-      getUser: vi.fn(async () => ({ name: 'Dev Example', email: 'dev@example.com' })),
+    class GitClientMock {
+      async getGitUrl() {
+        return { full_name: 'ice/awesome', name: 'awesome' }
+      }
+
+      async getUser() {
+        return { name: 'Dev Example', email: 'dev@example.com' }
+      }
     }
 
     await vi.resetModules()
@@ -20,7 +25,7 @@ describe('createContext', () => {
       getWorkspaceData: vi.fn(async () => ({ packages: fakePackages, workspaceDir: '/repo' })),
     }))
     vi.doMock('@/core/git', () => ({
-      GitClient: vi.fn(() => gitInstance),
+      GitClient: GitClientMock,
     }))
     vi.doMock('@/core/config', () => ({
       loadMonorepoConfig: vi.fn(async () => ({})),
