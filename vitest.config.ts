@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
 const ROOT_DIR = path.dirname(fileURLToPath(new URL(import.meta.url)))
-const PROJECT_ROOTS = ['packages', 'apps']
+const PROJECT_ROOTS = [
+  'packages',
+  'apps',
+]
 const CONFIG_CANDIDATES = [
   'vitest.config.ts',
   'vitest.config.mts',
@@ -51,7 +54,6 @@ export default defineConfig(() => {
       projects,
       coverage: {
         enabled: true,
-        all: false,
         skipFull: true,
       },
       forceRerunTriggers: [
