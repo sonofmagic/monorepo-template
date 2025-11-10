@@ -267,8 +267,8 @@ importers:
         specifier: ^1001.0.1
         version: 1001.0.1
       '@pnpm/types':
-        specifier: ^1000.9.0
-        version: 1000.9.0
+        specifier: ^1001.0.0
+        version: 1001.0.0
       '@pnpm/worker':
         specifier: ^1000.3.0
         version: 1000.3.0(@pnpm/logger@1001.0.1)(@types/node@24.10.0)
@@ -2699,6 +2699,10 @@ packages:
 
   '@pnpm/types@1000.9.0':
     resolution: {integrity: sha512-UvDTCxnbyqkTg2X0dBOuZ4IdFJ8g4UFu0Ybv/5/cZAxCWVhNl1hC/Xc9hR4tZrlBL0NRFePLRhO/iw9LmA1lbw==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/types@1001.0.0':
+    resolution: {integrity: sha512-9P7I8Zv8hvAO81+D5KVmwveH4nmxhBNFEEeb77YYPV72bkyqzKTR6I8OGEs7TNZ6gPHufF+lIyBVEqO6SMFpJA==}
     engines: {node: '>=18.12'}
 
   '@pnpm/util.lex-comparator@3.0.2':
@@ -12577,6 +12581,8 @@ snapshots:
       strip-comments-strings: 1.2.0
 
   '@pnpm/types@1000.9.0': {}
+
+  '@pnpm/types@1001.0.0': {}
 
   '@pnpm/util.lex-comparator@3.0.2': {}
 
