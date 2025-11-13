@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 2.2.0
+
+### Minor Changes
+
+- [`df74551`](https://github.com/sonofmagic/monorepo-template/commit/df745515f7adabcae2ee95611d0e1727de3582bb) Thanks [@sonofmagic](https://github.com/sonofmagic)! - feat: 优化智能提示
+
 ## 2.1.6
 
 ### Patch Changes
