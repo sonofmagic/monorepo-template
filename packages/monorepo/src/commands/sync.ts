@@ -1,4 +1,4 @@
-import type { GetWorkspacePackagesOptions } from '../core/workspace'
+import type { GetWorkspacePackagesOptions } from '../types'
 import os from 'node:os'
 import { execaCommand } from 'execa'
 import PQueue from 'p-queue'

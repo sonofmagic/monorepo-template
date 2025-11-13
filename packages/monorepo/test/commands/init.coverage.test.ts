@@ -1,3 +1,6 @@
+import type { ProjectManifest } from '@pnpm/types'
+import type { Context } from '@/core/context'
+import gitUrlParse from 'git-url-parse'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const files = new Map<string, string>()
@@ -13,6 +16,33 @@ const readFileMock = vi.fn(async (file: string) => files.get(file) ?? '')
 const writeFileMock = vi.fn(async (file: string, content: string) => {
   files.set(file, content)
 })
+
+type WorkspacePackage = Context['packages'][number]
+
+function createWorkspacePackage(manifest: ProjectManifest, dir: string): WorkspacePackage {
+  return {
+    manifest,
+    rootDir: dir as WorkspacePackage['rootDir'],
+    rootDirRealPath: dir as WorkspacePackage['rootDirRealPath'],
+    pkgJsonPath: `${dir}/package.json`,
+    writeProjectManifest: vi.fn(async () => {}),
+  }
+}
+
+function createTestContext(overrides: Partial<Context> = {}): Context {
+  const workspaceDir = overrides.workspaceDir ?? '/repo'
+  const workspaceFilepath = overrides.workspaceFilepath ?? `${workspaceDir}/pnpm-workspace.yaml`
+  return {
+    cwd: overrides.cwd ?? workspaceDir,
+    git: overrides.git ?? ({} as Context['git']),
+    gitUrl: overrides.gitUrl ?? gitUrlParse('https://github.com/ice/awesome.git'),
+    gitUser: overrides.gitUser ?? { name: 'Dev Example', email: 'dev@example.com' },
+    workspaceDir,
+    workspaceFilepath,
+    packages: (overrides.packages ?? []) as Context['packages'],
+    config: overrides.config ?? { commands: {} },
+  }
+}
 
 vi.mock('fs-extra', () => ({
   __esModule: true,
@@ -51,27 +81,15 @@ describe('init helpers coverage', () => {
     files.set(`${workspaceDir}/packages/a/package.json`, JSON.stringify({ name: 'pkg-a', version: '0.0.0', description: 'Alpha' }))
     files.set(`${workspaceDir}/packages/root/package.json`, JSON.stringify({ name: 'root-app', version: '0.0.0', private: false }))
 
-    const ctx = {
+    const ctx = createTestContext({
       cwd: workspaceDir,
       workspaceDir,
       workspaceFilepath,
-      gitUrl: { full_name: 'ice/awesome', name: 'awesome' },
-      gitUser: { name: 'Dev Example', email: 'dev@example.com' },
       packages: [
-        {
-          manifest: { name: 'pkg-a', version: '0.0.0', description: 'Alpha' },
-          rootDir: `${workspaceDir}/packages/a`,
-          rootDirRealPath: `${workspaceDir}/packages/a`,
-          pkgJsonPath: `${workspaceDir}/packages/a/package.json`,
-        },
-        {
-          manifest: { name: 'root-app', version: '0.0.0' },
-          rootDir: `${workspaceDir}/packages/root`,
-          rootDirRealPath: `${workspaceDir}/packages/root`,
-          pkgJsonPath: `${workspaceDir}/packages/root/package.json`,
-        },
+        createWorkspacePackage({ name: 'pkg-a', version: '0.0.0', description: 'Alpha' }, `${workspaceDir}/packages/a`),
+        createWorkspacePackage({ name: 'root-app', version: '0.0.0' }, `${workspaceDir}/packages/root`),
       ],
-    } as const
+    })
 
     const [setChangeset, setPkgJson, setReadme] = await Promise.all([
       import('@/commands/init/setChangeset').then(mod => mod.default),
@@ -83,7 +101,8 @@ describe('init helpers coverage', () => {
     const updatedChangeset = JSON.parse(files.get(`${workspaceDir}/.changeset/config.json`) ?? '{}')
     expect(updatedChangeset.changelog[1].repo).toBe('ice/awesome')
 
-    await setChangeset({ ...ctx, gitUrl: { name: 'awesome' } })
+    const gitUrlWithoutRepo = { ...(ctx.gitUrl ?? gitUrlParse('https://github.com/ice/awesome.git')), full_name: '' }
+    await setChangeset({ ...ctx, gitUrl: gitUrlWithoutRepo })
     expect(outputJsonMock).toHaveBeenCalledTimes(1)
 
     await setPkgJson(ctx)
@@ -91,7 +110,7 @@ describe('init helpers coverage', () => {
     expect(pkgA.author).toBe('Dev Example <dev@example.com>')
     expect(pkgA.repository.directory).toBe('packages/a')
 
-    await setPkgJson({ ...ctx, gitUser: { name: 'Dev Example' } })
+    await setPkgJson({ ...ctx, gitUser: { name: 'Dev Example', email: '' } })
     expect(files.get(`${workspaceDir}/packages/root/package.json`)).toContain('"repository":')
 
     await setReadme(ctx)

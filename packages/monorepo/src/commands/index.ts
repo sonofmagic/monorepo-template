@@ -1,4 +1,4 @@
-import type { GetWorkspacePackagesOptions } from '../core/workspace'
+import type { GetWorkspacePackagesOptions } from '../types'
 import type { CreateNewProjectOptions } from './create'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'

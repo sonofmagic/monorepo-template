@@ -1,10 +1,25 @@
+import type { ProjectManifest } from '@pnpm/types'
+import type { Context } from '@/core/context'
 import { tmpdir } from 'node:os'
 import fs from 'fs-extra'
+import gitUrlParse from 'git-url-parse'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import setChangeset from '@/commands/init/setChangeset'
 import setPkgJson from '@/commands/init/setPkgJson'
 import setReadme from '@/commands/init/setReadme'
+
+type WorkspacePackage = Context['packages'][number]
+
+function createWorkspacePackage(manifest: ProjectManifest, dir: string): WorkspacePackage {
+  return {
+    manifest,
+    rootDir: dir as WorkspacePackage['rootDir'],
+    rootDirRealPath: dir as WorkspacePackage['rootDirRealPath'],
+    pkgJsonPath: path.join(dir, 'package.json'),
+    writeProjectManifest: vi.fn(async () => {}),
+  }
+}
 
 afterEach(async () => {
   vi.resetAllMocks()
@@ -27,19 +42,9 @@ describe('cleanProjects', () => {
       },
     }, { spaces: 2 })
 
-    const packages = [
-      {
-        manifest: { name: 'foo' },
-        rootDir: pkgFooDir,
-        rootDirRealPath: pkgFooDir,
-        pkgJsonPath: path.join(pkgFooDir, 'package.json'),
-      },
-      {
-        manifest: { name: 'bar' },
-        rootDir: pkgBarDir,
-        rootDirRealPath: pkgBarDir,
-        pkgJsonPath: path.join(pkgBarDir, 'package.json'),
-      },
+    const packages: WorkspacePackage[] = [
+      createWorkspacePackage({ name: 'foo' }, pkgFooDir),
+      createWorkspacePackage({ name: 'bar' }, pkgBarDir),
     ]
 
     for (const pkg of packages) {
@@ -97,31 +102,21 @@ describe('init helpers', () => {
     const workspaceFilepath = path.join(workspaceDir, 'pnpm-workspace.yaml')
     await fs.writeFile(workspaceFilepath, 'packages:\n  - packages/*\n')
 
-    const packages = [
-      {
-        manifest: await fs.readJSON(path.join(pkgBetaDir, 'package.json')),
-        rootDir: pkgBetaDir,
-        rootDirRealPath: pkgBetaDir,
-        pkgJsonPath: path.join(pkgBetaDir, 'package.json'),
-      },
-      {
-        manifest: await fs.readJSON(path.join(pkgAlphaDir, 'package.json')),
-        rootDir: pkgAlphaDir,
-        rootDirRealPath: pkgAlphaDir,
-        pkgJsonPath: path.join(pkgAlphaDir, 'package.json'),
-      },
+    const packages: WorkspacePackage[] = [
+      createWorkspacePackage(await fs.readJSON(path.join(pkgBetaDir, 'package.json')) as ProjectManifest, pkgBetaDir),
+      createWorkspacePackage(await fs.readJSON(path.join(pkgAlphaDir, 'package.json')) as ProjectManifest, pkgAlphaDir),
     ]
 
-    const ctx = {
+    const ctx: Context = {
       cwd: workspaceDir,
-      git: {} as unknown,
-      gitUrl: { full_name: 'ice/awesome', name: 'awesome' },
+      git: {} as Context['git'],
+      gitUrl: gitUrlParse('https://github.com/ice/awesome.git'),
       gitUser: { name: 'Dev Example', email: 'dev@example.com' },
       packages,
       workspaceDir,
       workspaceFilepath,
       config: { commands: {} },
-    } as const
+    }
 
     await setPkgJson(ctx)
     await setChangeset(ctx)

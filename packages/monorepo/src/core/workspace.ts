@@ -1,17 +1,11 @@
+import type { GetWorkspacePackagesOptions } from '../types'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
 import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
 import { defu } from 'defu'
 import path from 'pathe'
 
-/**
- * 工作区包列表的查询选项，允许控制根包、私有包与匹配模式。
- */
-export interface GetWorkspacePackagesOptions {
-  ignoreRootPackage?: boolean
-  ignorePrivatePackage?: boolean
-  patterns?: string[]
-}
+export type { GetWorkspacePackagesOptions } from '../types'
 
 /**
  * 读取 pnpm workspace 下的所有包，并根据配置过滤与补充字段。

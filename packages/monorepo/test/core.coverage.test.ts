@@ -16,7 +16,7 @@ describe('core module coverage', () => {
       { rootDir: '/repo/packages/b', manifest: { name: 'pkg-b', private: true }, rootDirRealPath: '/repo/packages/b' },
     ])
     const readWorkspaceManifestMock = vi.fn(async () => ({ packages: ['packages/*'] }))
-    const findWorkspaceDirMock = vi.fn(async () => '/repo')
+    const findWorkspaceDirMock = vi.fn<() => Promise<string | undefined>>(async () => '/repo')
 
     await vi.resetModules()
     vi.doMock('c12', () => ({ loadConfig: loadConfigMock }))
@@ -50,7 +50,8 @@ describe('core module coverage', () => {
 
     const resolvedClean = await configModule.resolveCommandConfig('clean', '/repo')
     const resolvedMirror = await configModule.resolveCommandConfig('mirror', '/repo')
-    expect(resolvedClean.autoConfirm).toBe(true)
+    expect(resolvedClean).toBeDefined()
+    expect(resolvedClean?.autoConfirm).toBe(true)
     expect(resolvedMirror).toEqual({})
 
     class GitClientMock {

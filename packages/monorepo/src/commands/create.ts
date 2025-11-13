@@ -1,4 +1,4 @@
-import type { PackageJson } from '@/types'
+import type { CreateChoiceOption, PackageJson } from '@/types'
 import process from 'node:process'
 import fs from 'fs-extra'
 import path from 'pathe'
@@ -52,7 +52,7 @@ const baseChoices = [
 /**
  * 若配置中提供 choices 则优先使用，否则退回默认预设。
  */
-export function getCreateChoices(choices?: import('../core/config').CreateChoiceOption[]) {
+export function getCreateChoices(choices?: CreateChoiceOption[]) {
   if (choices?.length) {
     return choices
   }

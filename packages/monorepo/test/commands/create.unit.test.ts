@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+interface CopyOptions {
+  filter?: (src: string) => boolean
+}
+
 const ensureDirMock = vi.fn(async () => {})
-const copyMock = vi.fn(async () => {})
+const copyMock = vi.fn<(source: string, target: string, options?: CopyOptions) => Promise<void>>(async () => {})
 const readdirMock = vi.fn(async () => ['package.json'])
 const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
-const outputJsonMock = vi.fn(async () => {})
+const outputJsonMock = vi.fn<(file: string, data: unknown, options?: { spaces?: number }) => Promise<void>>(async () => {})
 const pathExistsMock = vi.fn(async () => false)
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const successMock = vi.fn()
@@ -123,7 +127,7 @@ describe('createNewProject unit scenarios', () => {
     expect(pkgJson?.name).toBe('demo-app')
     const copyTargets = copyMock.mock.calls.map(args => args[0])
     expect(copyTargets.some(target => target.includes('README.md'))).toBe(true)
-    const filter = copyMock.mock.calls[0]?.[2]?.filter as ((src: string) => boolean) | undefined
+    const filter = copyMock.mock.calls[0]?.[2]?.filter
     expect(filter?.('/repo/templates/.DS_Store')).toBe(false)
   })
 

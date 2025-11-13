@@ -1,12 +1,12 @@
+import type { PackageJson } from '@/types'
 import { describe, expect, it } from 'vitest'
-
 import { setPkgJson } from '@/commands/upgrade/pkg-json'
 import { scripts, scriptsEntries } from '@/commands/upgrade/scripts'
 import { version as pkgVersion } from '@/constants'
 
 describe('upgrade pkg-json helpers coverage', () => {
   it('merges package metadata while respecting workspace prefixes and version precedence', () => {
-    const source = {
+    const source: PackageJson = {
       packageManager: 'pnpm@8.10.0',
       dependencies: {
         'dep-keep': '^1.0.0',
@@ -21,7 +21,7 @@ describe('upgrade pkg-json helpers coverage', () => {
       },
     }
 
-    const target = {
+    const target: PackageJson = {
       dependencies: {
         'dep-keep': '^1.5.0',
         'dep-update': '^1.0.0',

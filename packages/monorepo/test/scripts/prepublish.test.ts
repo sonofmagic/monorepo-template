@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+interface CopyOptions {
+  filter?: (src: string) => boolean
+}
+
 const ensureDirMock = vi.fn(async () => {})
-const copyMock = vi.fn(async () => {})
-const pathExistsMock = vi.fn(async () => true)
-const getAssetTargetsMock = vi.fn(() => [])
-const getTemplateTargetsMock = vi.fn(async () => [])
-const successMock = vi.fn()
-const errorMock = vi.fn()
+const copyMock = vi.fn<(source: string, target: string, options?: CopyOptions) => Promise<void>>(async () => {})
+const pathExistsMock = vi.fn(async (_target: string) => true)
+const getAssetTargetsMock = vi.fn<() => string[]>(() => [])
+const getTemplateTargetsMock = vi.fn<() => Promise<string[]>>(async () => [])
+const successMock = vi.fn<(message: string) => void>()
+const errorMock = vi.fn<(err: unknown) => void>()
 
 const assetsDir = '/virtual/assets'
 const rootDir = '/virtual/repo'
@@ -67,7 +71,7 @@ describe('prepareAssets', () => {
       'packages/template/.gitignore',
     ])
 
-    pathExistsMock.mockImplementation(async (target) => {
+    pathExistsMock.mockImplementation(async (target: string) => {
       return !target.includes('missing')
     })
 
@@ -78,7 +82,8 @@ describe('prepareAssets', () => {
     // ensure copy was performed for husky folder with filter to drop "_"
     const huskyCall = copyMock.mock.calls.find(args => args[0] === `${rootDir}/.husky`)
     expect(huskyCall).toBeDefined()
-    const [, huskyDest, huskyOptions] = huskyCall ?? []
+    const huskyDest = huskyCall?.[1]
+    const huskyOptions = huskyCall?.[2]
     expect(huskyDest).toBe(`${assetsDir}/.husky`)
     expect(typeof huskyOptions?.filter).toBe('function')
     expect(huskyOptions?.filter?.(`${rootDir}/.husky/_`)).toBe(false)
