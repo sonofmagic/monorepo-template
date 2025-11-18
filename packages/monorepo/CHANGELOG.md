@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.0.0
+
+### Major Changes
+
+- [`bddd7c2`](https://github.com/sonofmagic/monorepo-template/commit/bddd7c2e140e9c50a8a7051a9f489470e9e416b0) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Adopted `@inquirer/prompts@8.0.0` which is ESM-only and enforces `Node >=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0`. Users must upgrade Node before updating to this release.
+
 ## 2.2.0
 
 ### Minor Changes
