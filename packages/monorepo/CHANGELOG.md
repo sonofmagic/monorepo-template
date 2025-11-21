@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.0.1
+
+### Patch Changes
+
+- [`9b08c05`](https://github.com/sonofmagic/monorepo-template/commit/9b08c0523b0edbaee35acd4837ee78b3d771f9d5) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore(deps): upgrade
+
 ## 3.0.0
 
 ### Major Changes
