@@ -30,7 +30,7 @@ onMounted(() => {
   <div>
     <div
       class="
-        flex min-h-screen items-center justify-center bg-black bg-gradient-to-br
+        flex min-h-screen items-center justify-center bg-black bg-linear-to-br
         p-4
       "
     >
