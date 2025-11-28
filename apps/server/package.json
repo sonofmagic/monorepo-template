@@ -24,10 +24,11 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsx watch src/node-entry.ts",
-    "start": "node dist/node-entry.js",
-    "build:watch": "tsup --watch --sourcemap",
-    "build": "tsup",
+    "dev": "wrangler dev",
+    "node:build:watch": "tsup --watch --sourcemap",
+    "node:build": "tsup",
+    "node:dev": "tsx watch src/node-entry.ts",
+    "node:start": "node dist/node-entry.js",
     "test": "vitest run",
     "test:dev": "vitest",
     "release": "pnpm publish",
@@ -35,7 +36,6 @@
     "lint:fix": "eslint . --fix",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
-    "worker:dev": "wrangler dev",
     "postinstall": "pnpm cf-typegen"
   },
   "publishConfig": {
