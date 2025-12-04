@@ -1,4 +1,4 @@
-import type { UserConfig } from 'vite'
+import type { PluginOption, UserConfig } from 'vite'
 import Tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
@@ -7,21 +7,28 @@ import { mergeConfig } from 'vite'
 import DTS from 'vite-plugin-dts'
 import { sharedConfig } from './vite.shared.config'
 
+// 某些插件仍引用旧版 Vite 类型，这里统一断言到当前工程使用的 PluginOption，避免类型不兼容。
+const ensureVitePlugin = <T>(plugin: T) => plugin as unknown as PluginOption
+
 export default mergeConfig(sharedConfig, {
   plugins: [
-    VueRouter(
-      {
-        dts: path.relative(import.meta.dirname, './types/typed-router.d.ts'),
-      },
+    ensureVitePlugin(
+      VueRouter(
+        {
+          dts: path.relative(import.meta.dirname, './types/typed-router.d.ts'),
+        },
+      ),
     ),
-    Vue(),
-    DTS(
-      {
-        tsconfigPath: './tsconfig.app.json',
-        entryRoot: './lib',
-      },
+    ensureVitePlugin(Vue()),
+    ensureVitePlugin(
+      DTS(
+        {
+          tsconfigPath: './tsconfig.app.json',
+          entryRoot: './lib',
+        },
+      ),
     ),
-    Tailwindcss(),
+    ensureVitePlugin(Tailwindcss()),
   ],
   // https://vite.dev/guide/build.html#library-mode
   build: {

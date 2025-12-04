@@ -53,15 +53,15 @@ npx monorepo clean         # 批量删除已勾选的子项目
 npx monorepo sync          # 同步所有包到 npmmirror
 npx monorepo mirror        # 写入 VS Code 镜像配置
 npx monorepo up            # 从最新模板同步配置文件
-npx monorepo ai template   # 生成 Agentic 任务提示词模板（支持输出到文件）
+npx monorepo ai create     # 生成 Agentic 任务提示词模板（支持输出到文件，可用别名 ai new）
 ```
 
-示例：`npx monorepo ai template -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。
+示例：`npx monorepo ai create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx monorepo ai new`.
 
 多文件场景：
 
-- `npx monorepo ai template --name checkout` 自动落盘到 `agentic/checkout.md`（默认目录可改）。
-- `npx monorepo ai template --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
+- `npx monorepo ai create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
+- `npx monorepo ai create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
 
 所有命令都支持在 `monorepo.config.ts` 中覆写默认行为，例如新增模板、修改同步命令、跳过 README 初始化等。配置示例见下文和 [配置中心说明](./monorepo/manage.md#使用-monorepo-configts-定制命令行为)。
 
@@ -73,10 +73,9 @@ import { defineMonorepoConfig } from '@icebreakers/monorepo'
 export default defineMonorepoConfig({
   commands: {
     ai: {
-      output: 'agentic-task.md',
-      format: 'md',
+      baseDir: 'agentic/custom-prompts',
+      format: 'json',
       force: true,
-      baseDir: 'agentic',
       tasksFile: 'agentic/tasks.json',
     },
     create: {

@@ -4,29 +4,48 @@ afterEach(async () => {
   await vi.resetModules()
   vi.restoreAllMocks()
   vi.resetAllMocks()
+  vi.useRealTimers()
 })
 
-describe('ai template command', () => {
-  it('prints markdown template to stdout by default', async () => {
+describe('ai create command', () => {
+  it('writes markdown template into timestamped folder by default', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-02-14T10:20:30.400Z'))
+    const ensureDirMock = vi.fn(async () => {})
+    const outputFileMock = vi.fn(async () => {})
+    const pathExistsMock = vi.fn(async () => false)
+    const successMock = vi.fn()
+
+    vi.doMock('fs-extra', () => ({
+      __esModule: true,
+      default: {
+        ensureDir: ensureDirMock,
+        outputFile: outputFileMock,
+        pathExists: pathExistsMock,
+      },
+      ensureDir: ensureDirMock,
+      outputFile: outputFileMock,
+      pathExists: pathExistsMock,
+    }))
+
     vi.doMock('@/core/logger', () => ({
       logger: {
-        success: vi.fn(),
+        success: successMock,
         info: vi.fn(),
         error: vi.fn(),
       },
     }))
 
-    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true)
     const { generateAgenticTemplate } = await import('@/commands/ai')
 
     const content = await generateAgenticTemplate({ cwd: '/repo' })
 
     expect(content).toContain('目标/产物')
     expect(content).toContain('里程碑（根因→设计→实现→验证）')
-    expect(writeSpy).toHaveBeenCalledTimes(1)
-    expect(writeSpy).toHaveBeenCalledWith(expect.stringContaining('目标/产物'))
-
-    writeSpy.mockRestore()
+    expect(ensureDirMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030')
+    expect(pathExistsMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030/prompt.md')
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030/prompt.md', expect.stringContaining('目标/产物'), 'utf8')
+    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('已生成模板'))
   })
 
   it('writes template with name/baseDir and reports overwrite', async () => {
@@ -110,5 +129,41 @@ describe('ai template command', () => {
     expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/checkout.md', expect.stringContaining('目标/产物'), 'utf8')
     expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/payments.json', expect.stringContaining('"目标/产物"'), 'utf8')
     expect(successMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('accepts custom folder names when provided', async () => {
+    const ensureDirMock = vi.fn(async () => {})
+    const outputFileMock = vi.fn(async () => {})
+    const pathExistsMock = vi.fn(async () => false)
+
+    vi.doMock('fs-extra', () => ({
+      __esModule: true,
+      default: {
+        ensureDir: ensureDirMock,
+        outputFile: outputFileMock,
+        pathExists: pathExistsMock,
+      },
+      ensureDir: ensureDirMock,
+      outputFile: outputFileMock,
+      pathExists: pathExistsMock,
+    }))
+
+    vi.doMock('@/core/logger', () => ({
+      logger: {
+        success: vi.fn(),
+        info: vi.fn(),
+        error: vi.fn(),
+      },
+    }))
+
+    const { generateAgenticTemplate } = await import('@/commands/ai')
+    await generateAgenticTemplate({
+      cwd: '/repo',
+      folderName: 'custom-folder',
+    })
+
+    expect(ensureDirMock).toHaveBeenCalledWith('/repo/agentic/prompts/custom-folder')
+    expect(pathExistsMock).toHaveBeenCalledWith('/repo/agentic/prompts/custom-folder/prompt.md')
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/prompts/custom-folder/prompt.md', expect.any(String), 'utf8')
   })
 })

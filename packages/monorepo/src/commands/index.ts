@@ -3,7 +3,7 @@ import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplat
 import type { CreateNewProjectOptions } from './create'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
-import { generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
+import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
 import { cleanProjects } from './clean'
 import { createNewProject, getCreateChoices, getTemplateMap, templateMap } from './create'
 import { init } from './init'
@@ -22,6 +22,8 @@ export type {
 export {
   cleanProjects,
   createNewProject,
+  createTimestampFolderName,
+  defaultAgenticBaseDir,
   generateAgenticTemplate,
   generateAgenticTemplates,
   getCreateChoices,

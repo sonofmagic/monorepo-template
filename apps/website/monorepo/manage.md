@@ -83,15 +83,15 @@ export default defineMonorepoConfig({
 
 常用配置项：
 
-| 命令      | 可覆盖字段                                                                         | 说明                                      |
-| --------- | ---------------------------------------------------------------------------------- | ----------------------------------------- |
-| `create`  | `templatesDir` / `templateMap` / `choices` / `defaultTemplate`                     | 扩展模板来源、修改提示内容                |
-| `clean`   | `autoConfirm` / `ignorePackages` / `includePrivate` / `pinnedVersion`              | 控制交互、过滤包、锁定依赖版本            |
-| `sync`    | `concurrency` / `command` / `packages`                                             | 定义同步命令与并发度                      |
-| `upgrade` | `targets` / `mergeTargets` / `scripts` / `skipChangesetMarkdown` / `skipOverwrite` | 改写配置同步策略                          |
-| `init`    | `skipReadme` / `skipPkgJson` / `skipChangeset`                                     | 按需跳过初始化步骤                        |
-| `mirror`  | `env`                                                                              | 注入镜像环境变量                          |
-| `ai`      | `output` / `format` / `force` / `baseDir` / `tasksFile`                            | 预设 Agentic 模板输出目录、格式与批量任务 |
+| 命令      | 可覆盖字段                                                                         | 说明                                                                                        |
+| --------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `create`  | `templatesDir` / `templateMap` / `choices` / `defaultTemplate`                     | 扩展模板来源、修改提示内容                                                                  |
+| `clean`   | `autoConfirm` / `ignorePackages` / `includePrivate` / `pinnedVersion`              | 控制交互、过滤包、锁定依赖版本                                                              |
+| `sync`    | `concurrency` / `command` / `packages`                                             | 定义同步命令与并发度                                                                        |
+| `upgrade` | `targets` / `mergeTargets` / `scripts` / `skipChangesetMarkdown` / `skipOverwrite` | 改写配置同步策略                                                                            |
+| `init`    | `skipReadme` / `skipPkgJson` / `skipChangeset`                                     | 按需跳过初始化步骤                                                                          |
+| `mirror`  | `env`                                                                              | 注入镜像环境变量                                                                            |
+| `ai`      | `output` / `format` / `force` / `baseDir` / `tasksFile`                            | 预设 Agentic 模板输出目录、格式与批量任务，默认写入 `agentic/prompts/<timestamp>/prompt.md` |
 
 更多细节可参考 CLI 命令文档或源码中的 `commands/*`。
 

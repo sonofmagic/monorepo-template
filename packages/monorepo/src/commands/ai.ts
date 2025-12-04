@@ -16,9 +16,14 @@ export interface GenerateAgenticTemplateOptions {
   name?: string
   /**
    * 基础目录，配合 name 使用。
-   * @default 'agentic'
+   * @default 'agentic/prompts'
    */
   baseDir?: string
+  /**
+   * 自动生成目录时使用的自定义文件夹名称。
+   * @default 自动生成的时间戳
+   */
+  folderName?: string
 }
 
 export type AgenticTemplateTask = string | (Omit<GenerateAgenticTemplateOptions, 'cwd'> & { name?: string })
@@ -33,6 +38,8 @@ const agenticSections = [
   '里程碑（根因→设计→实现→验证）',
 ] as const
 
+export const defaultAgenticBaseDir = 'agentic/prompts'
+
 function renderMarkdownTemplate() {
   return `${agenticSections.map(title => `## ${title}\n- `).join('\n\n')}\n`
 }
@@ -45,13 +52,24 @@ function renderJsonTemplate() {
   return `${JSON.stringify(payload, null, 2)}\n`
 }
 
+export function createTimestampFolderName(date = new Date()) {
+  const pad = (value: number) => value.toString().padStart(2, '0')
+  const year = date.getUTCFullYear()
+  const month = pad(date.getUTCMonth() + 1)
+  const day = pad(date.getUTCDate())
+  const hour = pad(date.getUTCHours())
+  const minute = pad(date.getUTCMinutes())
+  const second = pad(date.getUTCSeconds())
+  return `${year}${month}${day}-${hour}${minute}${second}`
+}
+
 /**
- * 生成 Agentic 任务提示词模板，支持输出到 stdout 或文件。
+ * 生成 Agentic 任务提示词模板，默认写入 agentic/prompts/<timestamp>/prompt.md，可自定义输出路径。
  */
 export async function generateAgenticTemplate(options: GenerateAgenticTemplateOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   const format = options.format ?? 'md'
-  const baseDir = options.baseDir ?? 'agentic'
+  const baseDir = options.baseDir ?? defaultAgenticBaseDir
 
   if (format !== 'md' && format !== 'json') {
     throw new Error(`不支持的模板格式：${format}`)
@@ -68,8 +86,8 @@ export async function generateAgenticTemplate(options: GenerateAgenticTemplateOp
   }
 
   if (!outputPath) {
-    process.stdout.write(template)
-    return template
+    const folderName = options.folderName ?? createTimestampFolderName()
+    outputPath = path.join(baseDir, folderName, `prompt.${ext}`)
   }
 
   const targetPath = path.resolve(cwd, outputPath)

@@ -5,13 +5,13 @@ import type { GetWorkspacePackagesOptions } from './workspace'
 
 export interface AiCommandConfig {
   /**
-   * 默认输出路径，不填则直接打印到 stdout。
+   * 默认输出路径，不填则自动创建 `agentic/prompts/<timestamp>/prompt.md` 文件夹与模板。
    * @default undefined
    */
   output?: string
   /**
    * 默认存放目录，配合 name / tasks 批量生成时使用。
-   * @default 'agentic'
+   * @default 'agentic/prompts'
    */
   baseDir?: string
   /**

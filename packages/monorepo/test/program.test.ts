@@ -14,6 +14,14 @@ describe('commander program', () => {
     const mirrorMock = vi.fn(async () => {})
     const createMock = vi.fn(async () => {})
     const aiTemplateMock = vi.fn(async () => {})
+
+    vi.doMock('commander', async () => {
+      const actual = await vi.importActual<typeof import('commander')>('commander')
+      return {
+        ...actual,
+        program: new actual.Command(),
+      }
+    })
     const aiBatchMock = vi.fn(async () => {})
     const loadTasksMock = vi.fn(async () => ['config-task'])
     const choices = [{ value: 'unbuild', name: 'unbuild template' }]
@@ -69,8 +77,8 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'sync'])
     await program.parseAsync(['node', 'monorepo', 'clean'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'template', '--output', 'agentic.md', '--force', '--format', 'json'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'template'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'new'])
     await program.parseAsync(['node', 'monorepo', 'new'])
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
