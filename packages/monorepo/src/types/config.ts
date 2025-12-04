@@ -1,6 +1,35 @@
+import type { AgenticTemplateFormat } from '../commands/ai'
 import type { CreateNewProjectOptions } from '../commands/create'
 import type { CliOpts } from './cli'
 import type { GetWorkspacePackagesOptions } from './workspace'
+
+export interface AiCommandConfig {
+  /**
+   * 默认输出路径，不填则直接打印到 stdout。
+   * @default undefined
+   */
+  output?: string
+  /**
+   * 默认存放目录，配合 name / tasks 批量生成时使用。
+   * @default 'agentic'
+   */
+  baseDir?: string
+  /**
+   * 是否允许覆盖已存在文件。
+   * @default false
+   */
+  force?: boolean
+  /**
+   * 模板格式。
+   * @default 'md'
+   */
+  format?: AgenticTemplateFormat
+  /**
+   * 任务清单文件路径（JSON 数组），用于批量生成。
+   * @default undefined
+   */
+  tasksFile?: string
+}
 
 /**
  * `monorepo new` 命令的配置项，允许外部覆写模板目录、模板清单等。
@@ -173,6 +202,7 @@ export interface MonorepoConfig {
    * @default {}
    */
   commands?: {
+    ai?: AiCommandConfig
     create?: CreateCommandConfig
     clean?: CleanCommandConfig
     sync?: SyncCommandConfig

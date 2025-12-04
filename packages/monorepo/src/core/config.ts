@@ -65,6 +65,7 @@ export async function resolveCommandConfig<Name extends keyof NonNullable<Monore
 }
 
 export type {
+  AiCommandConfig,
   CleanCommandConfig,
   CliOpts,
   CreateChoiceOption,

@@ -11,6 +11,27 @@ pnpm add -D @icebreakers/monorepo@latest
 npx monorepo up
 # 帮助文档
 npx monorepo -h
+# 生成 Agentic 任务模板
+npx monorepo ai template -o agentic-task.md -f
+```
+
+`monorepo ai template` 支持批量生成：
+
+```bash
+# 基于名称自动落盘到 agentic/checkout.md（默认目录可在 monorepo.config.ts 中设置）
+npx monorepo ai template --name checkout
+
+# 使用任务清单一次生成多个文件（tasks.json 为字符串或对象数组）
+npx monorepo ai template --tasks agentic/tasks.json --format md -f
+```
+
+`agentic/tasks.json` 示例：
+
+```json
+[
+  "checkout",
+  { "name": "payments", "format": "json", "force": true }
+]
 ```
 
 ### 配置文件
@@ -23,6 +44,13 @@ import { defineMonorepoConfig } from '@icebreakers/monorepo'
 
 export default defineMonorepoConfig({
   commands: {
+    ai: {
+      output: 'agentic-task.md',
+      format: 'md',
+      force: true,
+      baseDir: 'agentic',
+      tasksFile: 'agentic/tasks.json',
+    },
     create: {
       defaultTemplate: 'cli',
       renameJson: true,

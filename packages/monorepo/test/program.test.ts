@@ -13,9 +13,27 @@ describe('commander program', () => {
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
     const createMock = vi.fn(async () => {})
+    const aiTemplateMock = vi.fn(async () => {})
+    const aiBatchMock = vi.fn(async () => {})
+    const loadTasksMock = vi.fn(async () => ['config-task'])
     const choices = [{ value: 'unbuild', name: 'unbuild template' }]
+    const resolveCommandConfigMock = vi.fn(async (name: string) => {
+      if (name === 'ai') {
+        return {
+          output: 'config-agentic.md',
+          format: 'md',
+          force: false,
+          baseDir: 'agentic',
+          tasksFile: 'agentic/tasks.json',
+        }
+      }
+      return { choices }
+    })
 
     vi.doMock('@/commands', () => ({
+      generateAgenticTemplate: aiTemplateMock,
+      generateAgenticTemplates: aiBatchMock,
+      loadAgenticTasks: loadTasksMock,
       cleanProjects: cleanMock,
       createNewProject: createMock,
       getCreateChoices: vi.fn(() => choices),
@@ -38,7 +56,7 @@ describe('commander program', () => {
       })),
     }))
     vi.doMock('@/core/config', () => ({
-      resolveCommandConfig: vi.fn(async () => ({ choices })),
+      resolveCommandConfig: resolveCommandConfigMock,
     }))
 
     const successMock = vi.fn()
@@ -51,6 +69,8 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'sync'])
     await program.parseAsync(['node', 'monorepo', 'clean'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'template', '--output', 'agentic.md', '--force', '--format', 'json'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'template'])
     await program.parseAsync(['node', 'monorepo', 'new'])
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
@@ -58,6 +78,20 @@ describe('commander program', () => {
     expect(syncMock).toHaveBeenCalled()
     expect(cleanMock).toHaveBeenCalled()
     expect(mirrorMock).toHaveBeenCalled()
+    expect(aiTemplateMock).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      cwd: expect.any(String),
+      output: 'agentic.md',
+      force: true,
+      format: 'json',
+      baseDir: 'agentic',
+    }))
+    expect(loadTasksMock).toHaveBeenCalledWith('agentic/tasks.json', expect.any(String))
+    expect(aiBatchMock).toHaveBeenCalledWith(['config-task'], expect.objectContaining({
+      cwd: expect.any(String),
+      baseDir: 'agentic',
+      force: false,
+      format: 'md',
+    }))
     expect(createMock).toHaveBeenCalledWith({
       name: 'my-package',
       cwd: expect.any(String),
