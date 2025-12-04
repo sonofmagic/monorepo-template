@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.0
+
+### Minor Changes
+
+- [`3de7c13`](https://github.com/sonofmagic/monorepo-template/commit/3de7c13f6c0320a0bb9790af52d51264a6e644db) Thanks [@sonofmagic](https://github.com/sonofmagic)! - 新增 `monorepo ai create`，支持按名称或任务清单批量生成 Agentic 任务模板，格式/目录/覆盖策略可通过 `monorepo.config.ts` 预设并同步到文档示例。
+
 ## 3.0.3
 
 ### Patch Changes
