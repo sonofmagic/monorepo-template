@@ -26,6 +26,11 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 4. **Build and verify**: Run `pnpm build`, `pnpm test`, and `pnpm lint` to validate builds, tests, and linting.
 5. **Template cleanup (optional)**: Use `pnpm script:clean` to prune sample packages when personalising the template.
 
+### Bootstrap shortcuts
+
+- Zero-install cleanup on a fresh clone: `pnpm dlx @icebreakers/monorepo@latest clean --yes` (add `--include-private` to keep private packages in scope).
+- One-liner scaffold: `pnpm create icebreaker my-app` or `npm create icebreaker@latest my-app` clones the repo, strips `.git`, and runs the cleanup. Flags: `--no-clean` to keep samples, `--branch <name>` / `--repo <git-url>` to point at a different source.
+
 ## Repository Layout
 
 ```text

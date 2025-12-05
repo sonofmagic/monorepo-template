@@ -59,6 +59,9 @@ describe('clean coverage', () => {
         autoConfirm: true,
         includePrivate: true,
       })
+      .mockResolvedValueOnce({
+        pinnedVersion: '2.0.0',
+      })
 
     getWorkspaceDataMock
       .mockResolvedValueOnce({
@@ -101,14 +104,25 @@ describe('clean coverage', () => {
           },
         ],
       })
+      .mockResolvedValueOnce({
+        workspaceDir,
+        packages: [
+          {
+            manifest: { name: 'pkg-a' },
+            rootDir: '/repo/packages/a',
+            rootDirRealPath: '/repo/packages/a',
+            pkgJsonPath: '/repo/packages/a/package.json',
+          },
+        ],
+      })
 
     checkboxMock.mockResolvedValue(['/repo/packages/keep-me'])
-    pathExistsMock
-      .mockResolvedValueOnce(true) // selected package exists
-      .mockResolvedValueOnce(true) // root package.json exists
-      .mockResolvedValue(true) // remaining calls default to true
+    pathExistsMock.mockResolvedValue(true)
     removeMock.mockResolvedValue(undefined)
-    readJsonMock.mockResolvedValue(rootPackageJson)
+    readJsonMock
+      .mockResolvedValueOnce(rootPackageJson)
+      .mockResolvedValueOnce({ devDependencies: {} })
+      .mockResolvedValueOnce({ devDependencies: {} })
     outputJsonMock.mockResolvedValue(undefined)
 
     const { cleanProjects } = await import('@/commands/clean')
@@ -126,17 +140,27 @@ describe('clean coverage', () => {
 
     checkboxMock.mockClear()
     removeMock.mockClear()
-    pathExistsMock.mockReset()
-    pathExistsMock.mockResolvedValue(false)
-    readJsonMock.mockResolvedValue({ devDependencies: {} })
 
     await cleanProjects(workspaceDir)
 
     expect(checkboxMock).not.toHaveBeenCalled()
-    expect(removeMock).not.toHaveBeenCalled()
-    expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
+    expect(removeMock).toHaveBeenCalledWith('/repo/packages/a')
+    expect(outputJsonMock).toHaveBeenNthCalledWith(2, '/repo/package.json', {
       devDependencies: {
         '@icebreakers/monorepo': 'latest',
+      },
+    }, { spaces: 2 })
+
+    checkboxMock.mockClear()
+    removeMock.mockClear()
+
+    await cleanProjects(workspaceDir, { autoConfirm: true, pinnedVersion: 'canary' })
+
+    expect(checkboxMock).not.toHaveBeenCalled()
+    expect(removeMock).toHaveBeenCalledWith('/repo/packages/a')
+    expect(outputJsonMock).toHaveBeenNthCalledWith(3, '/repo/package.json', {
+      devDependencies: {
+        '@icebreakers/monorepo': 'canary',
       },
     }, { spaces: 2 })
   })

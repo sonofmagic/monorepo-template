@@ -26,6 +26,11 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 4. **构建与验证**：依次运行 `pnpm build`、`pnpm test`、`pnpm lint` 完成本地构建、测试与代码检查。
 5. **模板清理（可选）**：执行 `pnpm script:clean` 清理示例包，为自定义项目腾出空间。
 
+### 快捷初始化
+
+- 零安装清理：`pnpm dlx @icebreakers/monorepo@latest clean --yes`，需要保留 private 包时追加 `--include-private`。
+- 一键脚手架：`pnpm create icebreaker my-app` 或 `npm create icebreaker@latest my-app`，自动 clone 模板、移除 `.git` 并调用清理。常用参数：`--no-clean` 保留示例、`--branch <name>` / `--repo <git-url>` 指向其他来源。
+
 ## 仓库结构
 
 ```text

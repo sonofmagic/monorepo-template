@@ -1,0 +1,39 @@
+{
+  "name": "create-icebreaker",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Bootstrap the icebreaker monorepo template via npm create/pnpm create with optional cleanup",
+  "author": "ice breaker <1324318532@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "directory": "packages/create-icebreaker"
+  },
+  "bugs": {
+    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+  },
+  "keywords": [
+    "monorepo",
+    "create-app",
+    "template",
+    "scaffold"
+  ],
+  "sideEffects": false,
+  "bin": {
+    "create-icebreaker": "bin/create-icebreaker.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

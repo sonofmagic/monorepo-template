@@ -1,6 +1,6 @@
 import type { AgenticTemplateFormat } from '../commands'
 import type { CreateNewProjectOptions } from '../commands/create'
-import type { CliOpts } from '../types'
+import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import input from '@inquirer/input'
 import select from '@inquirer/select'
@@ -18,6 +18,12 @@ interface AiTemplateCommandOptions {
   dir?: string
   name?: string
   tasks?: string
+}
+
+interface CleanCommandOptions {
+  yes?: boolean
+  includePrivate?: boolean
+  pinnedVersion?: string
 }
 
 const cwd = process.cwd()
@@ -55,10 +61,25 @@ program.command('sync').description('向 npmmirror 同步所有子包').action(a
   logger.success('sync npm mirror finished!')
 })
 
-program.command('clean').description('清除选中的包').action(async () => {
-  await cleanProjects(cwd)
-  logger.success('clean projects finished!')
-})
+program.command('clean')
+  .description('清除选中的包')
+  .option('-y, --yes', '跳过交互直接清理（等价 autoConfirm）')
+  .option('--include-private', '包含 private 包')
+  .option('--pinned-version <version>', '覆盖写入的 @icebreakers/monorepo 版本')
+  .action(async (opts: CleanCommandOptions) => {
+    const overrides: Partial<CleanCommandConfig> = {}
+    if (opts.yes) {
+      overrides.autoConfirm = true
+    }
+    if (opts.includePrivate) {
+      overrides.includePrivate = true
+    }
+    if (opts.pinnedVersion) {
+      overrides.pinnedVersion = opts.pinnedVersion
+    }
+    await cleanProjects(cwd, overrides)
+    logger.success('clean projects finished!')
+  })
 
 program.command('mirror').description('设置 VscodeBinaryMirror').action(async () => {
   await setVscodeBinaryMirror(cwd)

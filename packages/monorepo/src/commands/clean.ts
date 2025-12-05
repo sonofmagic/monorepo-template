@@ -1,3 +1,4 @@
+import type { CleanCommandConfig } from '../types'
 import checkbox from '@inquirer/checkbox'
 import fs from 'fs-extra'
 import path from 'pathe'
@@ -5,11 +6,24 @@ import set from 'set-value'
 import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
 
+function mergeCleanConfig(base: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>) {
+  if (!overrides) {
+    return base
+  }
+  const definedOverrides = Object.fromEntries(
+    Object.entries(overrides).filter(([, value]) => value !== undefined),
+  ) as Partial<CleanCommandConfig>
+  return {
+    ...base,
+    ...definedOverrides,
+  }
+}
+
 /**
  * 交互式清理被选中的包目录，同时重写根 package.json 中的 @icebreakers/monorepo 版本。
  */
-export async function cleanProjects(cwd: string) {
-  const cleanConfig = await resolveCommandConfig('clean', cwd)
+export async function cleanProjects(cwd: string, overrides?: Partial<CleanCommandConfig>) {
+  const cleanConfig = mergeCleanConfig(await resolveCommandConfig('clean', cwd), overrides)
   const workspaceOptions = cleanConfig?.includePrivate ? { ignorePrivatePackage: false } : undefined
   const { packages, workspaceDir } = await getWorkspaceData(cwd, workspaceOptions)
 

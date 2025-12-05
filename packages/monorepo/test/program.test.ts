@@ -75,7 +75,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'upgrade'])
     await program.parseAsync(['node', 'monorepo', 'init'])
     await program.parseAsync(['node', 'monorepo', 'sync'])
-    await program.parseAsync(['node', 'monorepo', 'clean'])
+    await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'new'])
@@ -84,7 +84,11 @@ describe('commander program', () => {
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMock).toHaveBeenCalled()
     expect(syncMock).toHaveBeenCalled()
-    expect(cleanMock).toHaveBeenCalled()
+    expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
+      autoConfirm: true,
+      includePrivate: true,
+      pinnedVersion: 'next',
+    })
     expect(mirrorMock).toHaveBeenCalled()
     expect(aiTemplateMock).toHaveBeenNthCalledWith(1, expect.objectContaining({
       cwd: expect.any(String),
