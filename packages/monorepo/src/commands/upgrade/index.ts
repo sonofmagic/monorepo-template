@@ -6,6 +6,7 @@ import fs from 'fs-extra'
 import klaw from 'klaw'
 import path from 'pathe'
 import set from 'set-value'
+import YAML from 'yaml'
 import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
@@ -14,6 +15,7 @@ import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePa
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
 import { getAssetTargets } from './targets'
+import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
 export { setPkgJson }
 
@@ -96,6 +98,32 @@ export async function upgradeMonorepo(opts: CliOpts) {
         setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
         // 直接覆写对象后重新序列化，保证键顺序与缩进一致。
         const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
+        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const action = async () => {
+          await fs.outputFile(targetPath, data, 'utf8')
+          logger.success(targetPath)
+        }
+        await scheduleOverwrite(intent, {
+          relPath,
+          targetPath,
+          action,
+          pending: pendingOverwrites,
+        })
+        continue
+      }
+
+      if (relPath === 'pnpm-workspace.yaml') {
+        const sourceManifest = normalizeWorkspaceManifest(
+          YAML.parse(await fs.readFile(file.path, 'utf8')),
+        )
+        const exists = await fs.pathExists(targetPath)
+        const targetManifest = exists
+          ? normalizeWorkspaceManifest(YAML.parse(await fs.readFile(targetPath, 'utf8')))
+          : normalizeWorkspaceManifest({})
+        const mergedManifest = exists
+          ? mergeWorkspaceManifest(sourceManifest, targetManifest)
+          : sourceManifest
+        const data = YAML.stringify(mergedManifest)
         const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')
