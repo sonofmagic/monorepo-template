@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.2
+
+### Patch Changes
+
+- [`d0876c2`](https://github.com/sonofmagic/monorepo-template/commit/d0876c24a0f494dd90580cd7853e38daa7f5f589) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Add merge-on-upgrade for `pnpm-workspace.yaml` so missing defaults are filled without overwriting existing workspace settings.
+
 ## 3.1.1
 
 ### Patch Changes
