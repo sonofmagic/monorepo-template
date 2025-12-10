@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.5
+
+### Patch Changes
+
+- [`1ec479c`](https://github.com/sonofmagic/monorepo-template/commit/1ec479c406f80a096f405c262358e04fb2d9e568) Thanks [@sonofmagic](https://github.com/sonofmagic)! - chore: update release.yml for oidc
+
 ## 3.1.4
 
 ### Patch Changes
