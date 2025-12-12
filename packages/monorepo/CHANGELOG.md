@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.8
+
+### Patch Changes
+
+- [`bf790ce`](https://github.com/sonofmagic/monorepo-template/commit/bf790ce66e3d7ace816e0ccdab104a1a5a5545ff) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Keep `.github/ISSUE_TEMPLATE/config.yml` discussions links in sync with the current repository during init and upgrade.
+
 ## 3.1.7
 
 ### Patch Changes
