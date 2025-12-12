@@ -68,7 +68,7 @@ registry.npmjs.org/:_authToken=npm_hashhashhashhashhashhashhashhashhash
 
 假如这一行存在，说明你本地的 `npm Access Token` 就设置好了，然后你才有发包的权限。
 
-> 你也可以在 `https://www.npmjs.com/settings/<你的用户名>/tokens` 中管理你的 `token`，给不同的 `token` 设置不同的作用域，有效期和 `ip` 限制，帮助你适配正常开发，`CI/CD`，`Token` 分发的各种场景
+> 你也可以在 `https://www.npmjs.com/settings/<你的用户名>/tokens` 中管理你的 `token`，给不同的 `token` 设置不同的作用域，有效期（目前最长 90 天）和 `ip` 限制，帮助你适配正常开发，`CI/CD`，`Token` 分发的各种场景；如需避免手动轮换，CI 场景推荐使用 npm 官方的 OIDC 方案获取临时 `NODE_AUTH_TOKEN`，并在工作流开启 `id-token: write` 权限。
 
 同样发私有源包也是同理:
 

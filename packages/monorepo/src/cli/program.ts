@@ -109,6 +109,9 @@ aiCommand.command('create')
     const shouldUseTasks = Boolean(tasksFile && !opts.output && !opts.name)
 
     if (shouldUseTasks) {
+      if (!tasksFile) {
+        throw new Error('tasks file path is required when using tasks mode')
+      }
       const tasks = await loadAgenticTasks(tasksFile, cwd)
       await generateAgenticTemplates(tasks, {
         cwd,

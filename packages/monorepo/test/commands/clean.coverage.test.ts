@@ -129,8 +129,10 @@ describe('clean coverage', () => {
 
     await cleanProjects(workspaceDir)
 
+    expect(getWorkspaceDataMock).toHaveBeenCalledWith(workspaceDir, { ignorePrivatePackage: false })
     expect(checkboxMock).toHaveBeenCalled()
     expect(removeMock).toHaveBeenCalledWith('/repo/packages/keep-me')
+    expect(removeMock).toHaveBeenCalledWith('/repo/README.zh-CN.md')
     expect(readJsonMock).toHaveBeenCalledWith('/repo/package.json')
     expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
       devDependencies: {

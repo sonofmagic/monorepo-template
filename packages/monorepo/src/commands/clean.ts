@@ -6,15 +6,16 @@ import set from 'set-value'
 import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
 
-function mergeCleanConfig(base: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>) {
+function mergeCleanConfig(base?: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>): CleanCommandConfig {
+  const normalizedBase = base ?? {}
   if (!overrides) {
-    return base
+    return normalizedBase
   }
   const definedOverrides = Object.fromEntries(
     Object.entries(overrides).filter(([, value]) => value !== undefined),
   ) as Partial<CleanCommandConfig>
   return {
-    ...base,
+    ...normalizedBase,
     ...definedOverrides,
   }
 }
@@ -24,7 +25,8 @@ function mergeCleanConfig(base: CleanCommandConfig, overrides?: Partial<CleanCom
  */
 export async function cleanProjects(cwd: string, overrides?: Partial<CleanCommandConfig>) {
   const cleanConfig = mergeCleanConfig(await resolveCommandConfig('clean', cwd), overrides)
-  const workspaceOptions = cleanConfig?.includePrivate ? { ignorePrivatePackage: false } : undefined
+  const includePrivate = cleanConfig?.includePrivate ?? true
+  const workspaceOptions = includePrivate ? { ignorePrivatePackage: false } : undefined
   const { packages, workspaceDir } = await getWorkspaceData(cwd, workspaceOptions)
 
   // 根据配置过滤需要跳过的包，默认全部参与清理。
@@ -59,7 +61,11 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
     })
   }
 
-  const candidates = Array.from(new Set(cleanDirs.filter(Boolean)))
+  const readmeZh = path.resolve(workspaceDir, 'README.zh-CN.md')
+  const candidates = Array.from(new Set([
+    ...cleanDirs.filter(Boolean),
+    readmeZh,
+  ]))
   await Promise.all(candidates.map(async (dir) => {
     if (await fs.pathExists(dir)) {
       await fs.remove(dir)

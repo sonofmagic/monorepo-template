@@ -104,7 +104,7 @@ export interface CleanCommandConfig {
   ignorePackages?: string[]
   /**
    * 是否包含 private 包。
-   * @default false
+   * @default true
    */
   includePrivate?: boolean
   /**

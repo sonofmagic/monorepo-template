@@ -98,8 +98,11 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # 这是为了使用新版本的 npm, 只有 npm@11.5.x 以上版本才支持 OIDC
+          # 否则你就必须使用 npm i -g npm@latest 来升级 npm 版本
+          node-version: 24
           cache: pnpm
+          registry-url: https://registry.npmjs.org
       - run: pnpm install
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
@@ -107,10 +110,12 @@ jobs:
           publish: pnpm publish-packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # npm/action-oidc-auth 会设置 NODE_AUTH_TOKEN 供 publish 使用
 ```
 
 `pnpm publish-packages` 为模板内脚本，可替换为自定义构建+发布流程。
+
+> 说明：npm 现行 token 默认 90 天过期，推荐在 CI 中使用 OIDC（如上）动态获取 `NODE_AUTH_TOKEN`，无需手动传入 `NPM_TOKEN`。若使用自托管或其他 CI，需要确保工作流具备 `id-token: write` 权限。
 
 ## 与其他方案对比
 

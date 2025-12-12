@@ -18,7 +18,7 @@ layout: doc
 
 1. **拉取模板**：[GitHub](https://github.com/sonofmagic/monorepo-template) 右上角 `Use this template`，或克隆源码。
 2. **安装依赖**：在 `pnpm-workspace.yaml` 所在目录执行 `pnpm install`（需要 Node.js ≥ 20，推荐 `npm i -g pnpm`）。
-3. **可选清理**：运行 `pnpm script:clean` 移除演示包，仅保留最小打包模板；随后再次执行 `pnpm install` 更新 lockfile。
+3. **可选清理**：直接运行 `npx -y @icebreakers/monorepo@latest clean` 远程执行清理，移除演示包后再执行 `pnpm install`（避免依赖本地构建 `monorepo`）；如已安装依赖，也可使用 `pnpm script:clean`。
 4. **初始化元数据**：`pnpm script:init` 会批量更新 `package.json`、`README.md` 等公共信息。
 
 ## 仓库结构速览
@@ -49,7 +49,7 @@ layout: doc
 
 ```bash
 npx monorepo new           # 创建子包/应用
-npx monorepo clean         # 批量删除已勾选的子项目
+npx -y @icebreakers/monorepo@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
 npx monorepo sync          # 同步所有包到 npmmirror
 npx monorepo mirror        # 写入 VS Code 镜像配置
 npx monorepo up            # 从最新模板同步配置文件

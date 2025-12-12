@@ -33,9 +33,11 @@ describe('cleanProjects', () => {
     const packagesDir = path.join(workspaceDir, 'packages')
     const pkgFooDir = path.join(packagesDir, 'foo')
     const pkgBarDir = path.join(packagesDir, 'bar')
+    const readmeZhPath = path.join(workspaceDir, 'README.zh-CN.md')
 
     await fs.ensureDir(pkgFooDir)
     await fs.ensureDir(pkgBarDir)
+    await fs.writeFile(readmeZhPath, 'should be removed')
     await fs.writeJSON(path.join(workspaceDir, 'package.json'), {
       devDependencies: {
         '@icebreakers/monorepo': '^0.1.0',
@@ -66,6 +68,7 @@ describe('cleanProjects', () => {
 
     expect(await fs.pathExists(pkgFooDir)).toBe(false)
     expect(await fs.pathExists(pkgBarDir)).toBe(false)
+    expect(await fs.pathExists(readmeZhPath)).toBe(false)
 
     const rootPkg = await fs.readJSON(path.join(workspaceDir, 'package.json'))
     expect(rootPkg.devDependencies['@icebreakers/monorepo']).toBe('latest')

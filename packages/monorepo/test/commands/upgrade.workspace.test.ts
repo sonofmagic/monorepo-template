@@ -1,10 +1,10 @@
-import type { WorkspaceManifest } from '@pnpm/workspace.read-manifest'
+import type { WorkspaceManifestLike } from '@/commands/upgrade/workspace'
 import { describe, expect, it } from 'vitest'
 import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from '@/commands/upgrade/workspace'
 
 describe('mergeWorkspaceManifest', () => {
   it('adds missing workspace config without overriding existing values', () => {
-    const source: WorkspaceManifest = normalizeWorkspaceManifest({
+    const source: WorkspaceManifestLike = normalizeWorkspaceManifest({
       packages: ['apps/*', 'packages/*', '!**/test/**'],
       onlyBuiltDependencies: ['esbuild', 'sharp'],
       catalogs: {
@@ -14,7 +14,7 @@ describe('mergeWorkspaceManifest', () => {
         },
       },
     })
-    const target: WorkspaceManifest = normalizeWorkspaceManifest({
+    const target: WorkspaceManifestLike = normalizeWorkspaceManifest({
       packages: ['apps/*'],
       onlyBuiltDependencies: ['sharp'],
       catalogs: {
