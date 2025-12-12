@@ -1,5 +1,6 @@
 import { createContext } from '../../core/context'
 import setChangeset from './setChangeset'
+import setIssueTemplateConfig from './setIssueTemplateConfig'
 import setPkgJson from './setPkgJson'
 import setReadme from './setReadme'
 
@@ -18,5 +19,8 @@ export async function init(cwd: string) {
   }
   if (!initConfig.skipReadme) {
     await setReadme(ctx)
+  }
+  if (!initConfig.skipIssueTemplateConfig) {
+    await setIssueTemplateConfig(ctx)
   }
 }

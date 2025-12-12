@@ -108,7 +108,7 @@ describe('upgrade command coverage', () => {
         mergeTargets: false,
       })
 
-    getAssetTargetsMock.mockReturnValue(['README.md', 'package.json'])
+    getAssetTargetsMock.mockReturnValue(['README.md', 'package.json', '.github'])
 
     const initialFeed = [
       { path: '/assets/folder', isFile: false },
@@ -117,6 +117,7 @@ describe('upgrade command coverage', () => {
       { path: '/assets/.changeset/config.json', isFile: true },
       { path: '/assets/.changeset/skip.md', isFile: true },
       { path: '/assets/LICENSE', isFile: true },
+      { path: '/assets/.github/ISSUE_TEMPLATE/config.yml', isFile: true },
       { path: '/assets/README.md', isFile: true },
       { path: '/assets/error.txt', isFile: true },
     ]
@@ -126,6 +127,14 @@ describe('upgrade command coverage', () => {
     fileContents.set('/assets/LICENSE', 'license')
     fileContents.set('/assets/README.md', '# readme')
     fileContents.set('/assets/error.txt', 'ignore me')
+    fileContents.set('/assets/.github/ISSUE_TEMPLATE/config.yml', [
+      'blank_issues_enabled: false',
+      'contact_links:',
+      '  - name: Feature Request',
+      '    url: https://github.com/sonofmagic/monorepo-template/discussions',
+      '    about: Suggest new features for consideration',
+      '',
+    ].join('\n'))
 
     jsonContents.set('/assets/package.json', {
       dependencies: {
@@ -154,13 +163,16 @@ describe('upgrade command coverage', () => {
       }
       return jsonContents.get(targetPath)
     })
-    readFileMock.mockImplementation(async (targetPath: string) => {
+    readFileMock.mockImplementation(async (targetPath: string, encoding?: BufferEncoding) => {
       if (targetPath.endsWith('error.txt')) {
         const err = new Error('not found') as NodeJS.ErrnoException
         err.code = 'ENOENT'
         throw err
       }
       const value = fileContents.get(targetPath)
+      if (encoding === 'utf8') {
+        return typeof value === 'string' ? value : ''
+      }
       return typeof value === 'string' ? Buffer.from(value) : Buffer.from('')
     })
     outputFileMock.mockImplementation(async () => {})
@@ -170,6 +182,7 @@ describe('upgrade command coverage', () => {
       .mockResolvedValueOnce({ type: 'prompt', reason: 'changed' })
       .mockResolvedValueOnce({ type: 'write', reason: 'missing' })
       .mockResolvedValueOnce({ type: 'write', reason: 'missing' })
+      .mockResolvedValue({ type: 'write', reason: 'missing' })
 
     scheduleOverwriteMock.mockImplementation(async (intent, options) => {
       if (intent.type === 'write') {
@@ -193,6 +206,9 @@ describe('upgrade command coverage', () => {
     expect(scheduleOverwriteMock).toHaveBeenCalled()
     expect(flushPendingOverwritesMock).toHaveBeenCalledTimes(1)
     expect(loggerSuccessMock).toHaveBeenCalled()
+    const issueTemplateCall = outputFileMock.mock.calls.find(args => args[0] === '/workspace/.github/ISSUE_TEMPLATE/config.yml')
+    expect(issueTemplateCall?.[1]).toBeDefined()
+    expect(issueTemplateCall?.[1] as string).toContain('https://github.com/ice/awesome/discussions')
 
     evaluateWriteIntentMock.mockResolvedValueOnce({ type: 'write', reason: 'missing' })
     readFileMock.mockImplementation(async () => {

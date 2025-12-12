@@ -78,6 +78,14 @@ describe('init helpers coverage', () => {
     const workspaceFilepath = `${workspaceDir}/pnpm-workspace.yaml`
     files.set(workspaceFilepath, '')
     files.set(`${workspaceDir}/.changeset/config.json`, JSON.stringify({ changelog: [null, { repo: '' }] }))
+    files.set(`${workspaceDir}/.github/ISSUE_TEMPLATE/config.yml`, [
+      'blank_issues_enabled: false',
+      'contact_links:',
+      '  - name: Feature Request',
+      '    url: https://github.com/sonofmagic/monorepo-template/discussions',
+      '    about: Suggest new features for consideration',
+      '',
+    ].join('\n'))
     files.set(`${workspaceDir}/packages/a/package.json`, JSON.stringify({ name: 'pkg-a', version: '0.0.0', description: 'Alpha' }))
     files.set(`${workspaceDir}/packages/root/package.json`, JSON.stringify({ name: 'root-app', version: '0.0.0', private: false }))
 
@@ -91,10 +99,11 @@ describe('init helpers coverage', () => {
       ],
     })
 
-    const [setChangeset, setPkgJson, setReadme] = await Promise.all([
+    const [setChangeset, setPkgJson, setReadme, setIssueTemplateConfig] = await Promise.all([
       import('@/commands/init/setChangeset').then(mod => mod.default),
       import('@/commands/init/setPkgJson').then(mod => mod.default),
       import('@/commands/init/setReadme').then(mod => mod.default),
+      import('@/commands/init/setIssueTemplateConfig').then(mod => mod.default),
     ])
 
     await setChangeset(ctx)
@@ -119,6 +128,12 @@ describe('init helpers coverage', () => {
     await setReadme({ ...ctx, gitUrl: undefined })
     const readme = files.get(`${workspaceDir}/README.md`) ?? ''
     expect(readme).not.toContain('Contributions Welcome!')
+
+    await setIssueTemplateConfig(ctx)
+    const issueTemplate = files.get(`${workspaceDir}/.github/ISSUE_TEMPLATE/config.yml`) ?? ''
+    expect(issueTemplate).toContain('https://github.com/ice/awesome/discussions')
+    await setIssueTemplateConfig({ ...ctx, gitUrl: undefined })
+    expect(files.get(`${workspaceDir}/.github/ISSUE_TEMPLATE/config.yml`)).toBe(issueTemplate)
   })
 
   it('invokes init pipeline respecting skip flags', async () => {
@@ -132,22 +147,26 @@ describe('init helpers coverage', () => {
     }))
     const setChangesetMock = vi.fn(async () => {})
     const setPkgJsonMock = vi.fn(async () => {})
+    const setIssueTemplateConfigMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
 
     await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
     vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
+    vi.doMock('@/commands/init/setIssueTemplateConfig', () => ({ default: setIssueTemplateConfigMock }))
     vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
 
     const { init } = await import('@/commands/init')
     await init('/repo')
     expect(setChangesetMock).toHaveBeenCalled()
     expect(setPkgJsonMock).toHaveBeenCalled()
+    expect(setIssueTemplateConfigMock).toHaveBeenCalled()
     expect(setReadmeMock).toHaveBeenCalled()
 
     setChangesetMock.mockClear()
     setPkgJsonMock.mockClear()
+    setIssueTemplateConfigMock.mockClear()
     setReadmeMock.mockClear()
     createContextMock.mockResolvedValueOnce({
       cwd: '/repo',
@@ -156,6 +175,7 @@ describe('init helpers coverage', () => {
           init: {
             skipChangeset: true,
             skipPkgJson: true,
+            skipIssueTemplateConfig: true,
             skipReadme: true,
           },
         },
@@ -165,6 +185,7 @@ describe('init helpers coverage', () => {
     await init('/repo')
     expect(setChangesetMock).not.toHaveBeenCalled()
     expect(setPkgJsonMock).not.toHaveBeenCalled()
+    expect(setIssueTemplateConfigMock).not.toHaveBeenCalled()
     expect(setReadmeMock).not.toHaveBeenCalled()
   })
 })

@@ -180,6 +180,11 @@ export interface InitCommandConfig {
    * @default false
    */
   skipChangeset?: boolean
+  /**
+   * 是否跳过 Issue 模版 discussions 链接的更新。
+   * @default false
+   */
+  skipIssueTemplateConfig?: boolean
 }
 
 /**

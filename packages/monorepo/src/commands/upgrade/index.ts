@@ -11,7 +11,7 @@ import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath } from '../../utils'
+import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
 import { getAssetTargets } from './targets'
@@ -161,6 +161,23 @@ export async function upgradeMonorepo(opts: CliOpts) {
         const intent = await evaluateWriteIntent(targetPath, { skipOverwrite: true, source })
         const action = async () => {
           await fs.outputFile(targetPath, source)
+          logger.success(targetPath)
+        }
+        await scheduleOverwrite(intent, {
+          relPath,
+          targetPath,
+          action,
+          pending: pendingOverwrites,
+        })
+        continue
+      }
+
+      if (relPath === '.github/ISSUE_TEMPLATE/config.yml') {
+        const source = await fs.readFile(file.path, 'utf8')
+        const data = updateIssueTemplateConfig(source, repoName)
+        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const action = async () => {
+          await fs.outputFile(targetPath, data)
           logger.success(targetPath)
         }
         await scheduleOverwrite(intent, {
