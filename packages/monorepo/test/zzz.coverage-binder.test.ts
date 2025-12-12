@@ -20,7 +20,7 @@ describe('coverage binder', () => {
 
     pathExistsMock.mockResolvedValueOnce(false)
     await import('../vitest.setup')
-    expect(prepareAssetsMock).toHaveBeenCalledWith({ silent: true })
+    expect(prepareAssetsMock).toHaveBeenCalledWith({ silent: true, overwriteExisting: false })
 
     pathExistsMock.mockResolvedValueOnce(true)
     await import('../vitest.setup')

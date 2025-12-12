@@ -11,10 +11,14 @@ import { getTemplateTargets } from './getTemplateTargets'
 
 interface PrepareAssetsOptions {
   silent?: boolean
+  overwriteExisting?: boolean
 }
 
 export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   const log = options.silent ? (_message: string) => {} : (message: string) => logger.success(message)
+  const copyOptions = {
+    overwrite: options.overwriteExisting ?? true,
+  } as const
 
   await fs.ensureDir(assetsDir)
 
@@ -29,13 +33,14 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
     try {
       if (t === '.husky') {
         await fs.copy(from, to, {
+          ...copyOptions,
           filter(src) {
             return !/[\\/]_$/.test(src)
           },
         })
       }
       else {
-        await fs.copy(from, to)
+        await fs.copy(from, to, copyOptions)
       }
     }
     catch (error) {
@@ -54,7 +59,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
     const from = path.resolve(rootDir, t)
     const to = path.resolve(templatesDir, toPublishGitignorePath(t))
     try {
-      await fs.copy(from, to)
+      await fs.copy(from, to, copyOptions)
     }
     catch (error) {
       if (isIgnorableFsError(error)) {

@@ -9,7 +9,8 @@ async function ensureAssetsPrepared(): Promise<void> {
     return
   }
 
-  await prepareAssets({ silent: true })
+  // Avoid overwriting existing assets/templates when multiple workers race on Windows.
+  await prepareAssets({ silent: true, overwriteExisting: false })
 }
 
 // eslint-disable-next-line antfu/no-top-level-await

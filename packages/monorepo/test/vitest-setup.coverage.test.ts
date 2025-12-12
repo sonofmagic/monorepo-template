@@ -18,7 +18,7 @@ describe('vitest setup coverage', () => {
     }))
     pathExistsMock.mockResolvedValueOnce(false)
     await import('../vitest.setup')
-    expect(prepareAssetsMock).toHaveBeenCalledWith({ silent: true })
+    expect(prepareAssetsMock).toHaveBeenCalledWith({ silent: true, overwriteExisting: false })
 
     await vi.resetModules()
     pathExistsMock.mockReset()
