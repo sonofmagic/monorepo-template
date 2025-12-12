@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.6
+
+### Patch Changes
+
+- [`616c7f7`](https://github.com/sonofmagic/monorepo-template/commit/616c7f794afd7c473e2024849d5cfda9d610965b) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Avoid overwriting prepared assets/templates so concurrent Windows test runs do not hit EPERM unlink errors.
+
 ## 3.1.5
 
 ### Patch Changes
