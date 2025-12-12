@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.7
+
+### Patch Changes
+
+- [`4b58df0`](https://github.com/sonofmagic/monorepo-template/commit/4b58df03e73476ee5cdf06805d7040bb30130b39) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Make `monorepo clean` include private packages and remove README.zh-CN by default, plus document npm OIDC publishing guidance.
+
 ## 3.1.6
 
 ### Patch Changes
