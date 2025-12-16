@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.11
+
+### Patch Changes
+
+- [`94380bf`](https://github.com/sonofmagic/monorepo-template/commit/94380bf78f2272a0c0c39e33158e930b7db5cf30) Thanks [@sonofmagic](https://github.com/sonofmagic)! - Ensure pnpm-workspace.yaml merges dedupe quoted globs and stringify with single quotes to avoid churn.
+
 ## 3.1.10
 
 ### Patch Changes
