@@ -123,7 +123,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
         const mergedManifest = exists
           ? mergeWorkspaceManifest(sourceManifest, targetManifest)
           : sourceManifest
-        const data = YAML.stringify(mergedManifest)
+        const data = YAML.stringify(mergedManifest, { singleQuote: true })
         const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')

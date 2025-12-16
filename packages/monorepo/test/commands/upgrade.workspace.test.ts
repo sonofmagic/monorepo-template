@@ -42,6 +42,15 @@ describe('mergeWorkspaceManifest', () => {
     })
   })
 
+  it('dedupes workspace globs regardless of wrapping quotes', () => {
+    const merged = mergeWorkspaceManifest(
+      normalizeWorkspaceManifest({ packages: ['apps/*', '!**/test/**'] }),
+      normalizeWorkspaceManifest({ packages: [`'apps/*'`, `"!**/test/**"`] }),
+    )
+
+    expect(merged.packages).toEqual([`'apps/*'`, `"!**/test/**"`])
+  })
+
   it('keeps target shapes when source types differ', () => {
     const merged = mergeWorkspaceManifest(
       normalizeWorkspaceManifest({ packages: ['apps/*'], hoist: true }),

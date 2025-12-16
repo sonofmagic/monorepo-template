@@ -108,7 +108,7 @@ describe('upgrade command coverage', () => {
         mergeTargets: false,
       })
 
-    getAssetTargetsMock.mockReturnValue(['README.md', 'package.json', '.github'])
+    getAssetTargetsMock.mockReturnValue(['README.md', 'package.json', '.github', 'pnpm-workspace.yaml'])
 
     const initialFeed = [
       { path: '/assets/folder', isFile: false },
@@ -119,6 +119,7 @@ describe('upgrade command coverage', () => {
       { path: '/assets/LICENSE', isFile: true },
       { path: '/assets/.github/ISSUE_TEMPLATE/config.yml', isFile: true },
       { path: '/assets/README.md', isFile: true },
+      { path: '/assets/pnpm-workspace.yaml', isFile: true },
       { path: '/assets/error.txt', isFile: true },
     ]
     klawFeeds.push(initialFeed)
@@ -133,6 +134,20 @@ describe('upgrade command coverage', () => {
       '  - name: Feature Request',
       '    url: https://github.com/sonofmagic/monorepo-template/discussions',
       '    about: Suggest new features for consideration',
+      '',
+    ].join('\n'))
+    fileContents.set('/assets/pnpm-workspace.yaml', [
+      'packages:',
+      '  - apps/*',
+      '  - packages/*',
+      '  - \'!**/test/**\'',
+      '',
+    ].join('\n'))
+    fileContents.set('/workspace/pnpm-workspace.yaml', [
+      'packages:',
+      '  - apps/*',
+      '  - packages/*',
+      '  - \"!**/test/**\"',
       '',
     ].join('\n'))
 
@@ -209,6 +224,8 @@ describe('upgrade command coverage', () => {
     const issueTemplateCall = outputFileMock.mock.calls.find(args => args[0] === '/workspace/.github/ISSUE_TEMPLATE/config.yml')
     expect(issueTemplateCall?.[1]).toBeDefined()
     expect(issueTemplateCall?.[1] as string).toContain('https://github.com/ice/awesome/discussions')
+    const workspaceCall = outputFileMock.mock.calls.find(args => args[0] === '/workspace/pnpm-workspace.yaml')
+    expect(workspaceCall?.[1]).toContain('- \'!**/test/**\'')
 
     evaluateWriteIntentMock.mockResolvedValueOnce({ type: 'write', reason: 'missing' })
     readFileMock.mockImplementation(async () => {

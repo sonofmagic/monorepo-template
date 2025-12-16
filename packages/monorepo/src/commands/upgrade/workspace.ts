@@ -6,6 +6,15 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function normalizeQuotedString(value: string) {
+  const trimmed = value.trim()
+  const first = trimmed[0]
+  if ((first === '\'' || first === '"') && trimmed.endsWith(first)) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
+}
+
 export function normalizeWorkspaceManifest(manifest: unknown): WorkspaceManifestLike {
   if (isPlainObject(manifest)) {
     return { ...manifest }
@@ -14,9 +23,14 @@ export function normalizeWorkspaceManifest(manifest: unknown): WorkspaceManifest
 }
 
 function mergeUniqueArray<T>(target: T[], source: T[]) {
+  const seen = new Set(target.map((item) => {
+    return typeof item === 'string' ? normalizeQuotedString(item) : item
+  }))
   const result = [...target]
   for (const item of source) {
-    if (!result.includes(item)) {
+    const key = typeof item === 'string' ? normalizeQuotedString(item) : item
+    if (!seen.has(key)) {
+      seen.add(key)
       result.push(item)
     }
   }
