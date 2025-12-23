@@ -1,8 +1,9 @@
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
+import { consola } from 'consola'
 
 export function runCli(argv: string[] = process.argv) {
-  console.log('[@icebreakers/cli]: ', argv)
+  consola.info('[@icebreakers/cli]:', argv)
 }
 
 const executedFile = process.argv[1]

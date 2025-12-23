@@ -51,20 +51,24 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
     cleanDirs = await checkbox<string>({
       message: '请选择需要清理的目录',
       choices: filteredPackages.map((x) => {
-        return {
+        const baseChoice = {
           name: path.relative(workspaceDir, x.rootDir),
           value: x.rootDir,
           checked: true,
-          description: x.manifest.name,
         }
+        return x.manifest.name
+          ? { ...baseChoice, description: x.manifest.name }
+          : baseChoice
       }),
     })
   }
 
   const readmeZh = path.resolve(workspaceDir, 'README.zh-CN.md')
+  const qoderDir = path.resolve(workspaceDir, '.qoder')
   const candidates = Array.from(new Set([
     ...cleanDirs.filter(Boolean),
     readmeZh,
+    qoderDir,
   ]))
   await Promise.all(candidates.map(async (dir) => {
     if (await fs.pathExists(dir)) {

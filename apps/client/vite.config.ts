@@ -31,12 +31,26 @@ export default defineConfig({
     ensureVitePlugin(cloudflare()),
     ensureVitePlugin(VueDevTools()),
   ],
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'query-vendor': ['@tanstack/vue-query'],
+          'trpc-vendor': ['@trpc/client'],
+        },
+      },
+    },
+  },
   server: {
     // proxy: {
     //   '/api': {
     //     target: `http://localhost:8787`,
     //     changeOrigin: true,
-    //     // rewrite: path => path.replace(/^\/api/, ''),
+    //     // rewrite: path => path.replace(/^/api/, ''),
     //   },
     // },
   },

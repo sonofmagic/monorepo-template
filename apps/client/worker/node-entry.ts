@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 import { serve } from '@hono/node-server'
+import { consola } from 'consola'
 import { logger } from 'hono/logger'
 import { app } from './app'
 import { port } from './config'
@@ -10,4 +10,4 @@ serve({
   port,
 })
 
-console.log(`Server listening on http://localhost:${port}`)
+consola.success(`Server listening on http://localhost:${port}`)
