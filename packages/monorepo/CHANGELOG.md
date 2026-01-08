@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.16
+
+### Patch Changes
+
+- 🐛 **chore(deps): upgrade** [`bfe55e7`](https://github.com/sonofmagic/monorepo-template/commit/bfe55e7a68dbb908267bf1845dfd11a6f23e9a4a) by @sonofmagic
+
 ## 3.1.15
 
 ### Patch Changes
