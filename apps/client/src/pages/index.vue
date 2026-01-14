@@ -84,7 +84,7 @@ const helloErrorMessage = computed(() => {
             <p class="text-xs tracking-[0.2em] text-slate-400 uppercase">
               TanStack Query + i18n
             </p>
-            <h1 class="text-3xl leading-tight font-semibold">
+            <h1 class="text-3xl/tight font-semibold">
               {{ t('hello') }}
             </h1>
             <p class="text-sm text-slate-400">
@@ -211,7 +211,7 @@ const helloErrorMessage = computed(() => {
           <pre
             class="
               mt-4 max-h-48 overflow-auto rounded-lg bg-black/40 p-3 text-left
-              text-xs leading-relaxed text-slate-100 ring-1 ring-white/10
+              text-xs/relaxed text-slate-100 ring-1 ring-white/10
             "
           >{{ JSON.stringify(liveData, null, 2) }}</pre>
           <p v-if="helloErrorMessage" class="mt-3 text-sm text-rose-200">
@@ -256,7 +256,7 @@ const helloErrorMessage = computed(() => {
           <pre
             class="
               mt-4 max-h-48 overflow-auto rounded-lg bg-black/40 p-3 text-left
-              text-xs leading-relaxed text-slate-100 ring-1 ring-white/10
+              text-xs/relaxed text-slate-100 ring-1 ring-white/10
             "
           >{{ JSON.stringify(cachedHello ?? '-', null, 2) }}</pre>
         </section>
@@ -347,7 +347,7 @@ const helloErrorMessage = computed(() => {
           <pre
             class="
               mt-4 max-h-48 overflow-auto rounded-lg bg-black/40 p-3 text-left
-              text-xs leading-relaxed text-slate-100 ring-1 ring-white/10
+              text-xs/relaxed text-slate-100 ring-1 ring-white/10
             "
           >{{ JSON.stringify(queryMeta, null, 2) }}</pre>
         </section>
