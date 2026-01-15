@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.1.18
+
+### Patch Changes
+
+- 🐛 **新增 monorepo CLI 的 Codex skill 与参考文档。** [`2da32fa`](https://github.com/sonofmagic/monorepo-template/commit/2da32fa15d6b3459de91f78034e051838b25a695) by @sonofmagic
+
 ## 3.1.17
 
 ### Patch Changes
