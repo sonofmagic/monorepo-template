@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
 import { name, version } from '../package.json'
 
 /**
@@ -16,19 +17,14 @@ export {
 const packageJsonPath = fileURLToPath(new URL('../package.json', import.meta.url))
 
 /**
- * @icebreakers/monorepo 包的根目录，所有模板与资产目录都以此为基准。
+ * @icebreakers/monorepo 包的根目录。
  */
 export const packageDir = path.dirname(packageJsonPath)
 
 /**
- * CLI 提供的模板目录，`monorepo new` 会从这里复制目标工程骨架。
+ * CLI 提供的模板/资产目录来源于 @icebreakers/monorepo-templates。
  */
-export const templatesDir = path.join(packageDir, 'templates')
-
-/**
- * 升级命令需要写入的静态文件集合，位于 assets 目录中。
- */
-export const assetsDir = path.join(packageDir, 'assets')
+export { assetsDir, templatesDir }
 
 /**
  * monorepo 根目录，方便需要跳出当前包的逻辑（例如定位工作区文件）。

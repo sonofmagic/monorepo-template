@@ -42,12 +42,22 @@ export async function prepareTarget(dir: string, force: boolean) {
 
 export async function copyDirContents(sourceDir: string, targetDir: string) {
   await fs.mkdir(targetDir, { recursive: true })
-  const entries = await fs.readdir(sourceDir)
-  await Promise.all(entries.map(async (entry) => {
-    const from = path.join(sourceDir, entry)
-    const to = path.join(targetDir, entry)
-    await fs.cp(from, to, { recursive: true })
-  }))
+  const entries = await fs.readdir(sourceDir, { withFileTypes: true })
+  for (const entry of entries) {
+    const from = path.join(sourceDir, entry.name)
+    const targetName = entry.name === 'gitignore' ? '.gitignore' : entry.name
+    const to = path.join(targetDir, targetName)
+    if (entry.isDirectory()) {
+      await copyDirContents(from, to)
+      continue
+    }
+    if (entry.isSymbolicLink()) {
+      const link = await fs.readlink(from)
+      await fs.symlink(link, to)
+      continue
+    }
+    await fs.cp(from, to)
+  }
 }
 
 export async function removeIfEmpty(dir: string) {

@@ -1,7 +1,6 @@
+import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import path from 'pathe'
-import { assetsDir } from '@/constants'
-import { prepareAssets } from './scripts/prepublish'
 
 async function ensureAssetsPrepared(): Promise<void> {
   const licensePath = path.join(assetsDir, 'LICENSE')

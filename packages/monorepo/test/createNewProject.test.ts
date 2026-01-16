@@ -1,3 +1,4 @@
+import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
 import { isCI } from 'ci-info'
 import { fdir as Fdir } from 'fdir'
 import fs from 'fs-extra'
@@ -25,12 +26,12 @@ async function scanFiles(root: string) {
 
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
-    await import('../scripts/prepublish')
+    await prepareAssets()
     await fs.remove(path.resolve(__dirname, './fixtures/demo'))
   })
 
   it('assets', async () => {
-    const files = await scanFiles(path.resolve(__dirname, '../assets'))
+    const files = await scanFiles(assetsDir)
     expect(files).toMatchSnapshot()
   })
 

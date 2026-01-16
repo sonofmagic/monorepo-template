@@ -13,7 +13,8 @@ describe('vitest setup coverage', () => {
       },
       pathExists: pathExistsMock,
     }))
-    vi.doMock('../scripts/prepublish', () => ({
+    vi.doMock('@icebreakers/monorepo-templates', () => ({
+      assetsDir: '/assets',
       prepareAssets: prepareAssetsMock,
     }))
     pathExistsMock.mockResolvedValueOnce(false)
@@ -30,7 +31,8 @@ describe('vitest setup coverage', () => {
       },
       pathExists: pathExistsMock,
     }))
-    vi.doMock('../scripts/prepublish', () => ({
+    vi.doMock('@icebreakers/monorepo-templates', () => ({
+      assetsDir: '/assets',
       prepareAssets: prepareAssetsMock,
     }))
     pathExistsMock.mockResolvedValueOnce(true)

@@ -1,6 +1,7 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets } from '../assets-data.mjs'
 import { templateChoices as rawTemplateChoices } from '../template-data.mjs'
+import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
+import { prepareAssets } from './prepare'
 
 export interface TemplateChoice {
   key: string
@@ -10,11 +11,10 @@ export interface TemplateChoice {
 }
 
 export const templateChoices = rawTemplateChoices as TemplateChoice[]
+export const assetTargets = rawAssetTargets as string[]
+export const getAssetTargets = rawGetAssetTargets as (core?: boolean) => string[]
 
-const packageDir = path.resolve(fileURLToPath(new URL('../', import.meta.url)))
-
-export const templatesDir = path.join(packageDir, 'templates')
-export const skeletonDir = path.join(packageDir, 'skeleton')
+export { assetsDir, packageDir, skeletonDir, templatesDir }
 
 export const templateSourceMap = Object.fromEntries(
   templateChoices.map(item => [item.key, item.source]),
@@ -25,3 +25,5 @@ export const templateTargetMap = Object.fromEntries(
 ) as Record<string, string>
 
 export const templateMap = templateSourceMap
+
+export { prepareAssets }

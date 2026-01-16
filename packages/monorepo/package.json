@@ -49,11 +49,9 @@
   "types": "./dist/index.d.mts",
   "bin": "dev/bin.js",
   "files": [
-    "assets",
     "bin",
     "dist",
-    "resources",
-    "templates"
+    "resources"
   ],
   "engines": {
     "node": ">=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0"
@@ -65,13 +63,13 @@
     "test:dev": "vitest",
     "release": "pnpm publish",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepublish": "tsx scripts/prepublish.ts"
+    "lint:fix": "eslint . --fix"
   },
   "publishConfig": {
     "bin": "bin/monorepo.js"
   },
   "dependencies": {
+    "@icebreakers/monorepo-templates": "workspace:*",
     "@inquirer/checkbox": "^5.0.4",
     "@inquirer/input": "^5.0.4",
     "@inquirer/select": "^5.0.4",

@@ -13,6 +13,7 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 ## 主要特性
 
 - **模块化结构**：模板源代码集中在 `templates/`，可复用工具包位于 `packages/`，职责清晰。
+- **集中式脚手架资源**：`@icebreakers/monorepo-templates` 打包骨架、模板与升级资产，供 `monorepo` 与 `create-icebreaker` 统一使用。
 - **统一工具链**：pnpm 工作区、Turbo 任务编排、Vitest 单测与 Changesets 发布覆盖开发到交付的全流程。
 - **工程规范**：集成 ESLint、Stylelint、Husky、Commitlint，自动化保障代码质量与提交信息。
 - **可扩展模板**：借助 `@icebreakers/monorepo` 提供的脚本（`script:init`、`script:sync`、`script:clean` 等）维护依赖与脚手架。
@@ -46,7 +47,7 @@ templates/
 packages/
   monorepo/           # @icebreakers/monorepo 辅助脚本
   create-icebreaker/  # npm create 脚手架
-  monorepo-templates/ # 模板资源包
+  monorepo-templates/ # 模板、骨架与资产资源包
 ```
 
 - `templates/cli`：CLI 工具示例。

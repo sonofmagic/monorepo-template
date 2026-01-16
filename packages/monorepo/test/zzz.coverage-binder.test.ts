@@ -14,7 +14,8 @@ describe('coverage binder', () => {
       default: { pathExists: pathExistsMock },
       pathExists: pathExistsMock,
     }))
-    vi.doMock('../scripts/prepublish', () => ({
+    vi.doMock('@icebreakers/monorepo-templates', () => ({
+      assetsDir: '/assets',
       prepareAssets: prepareAssetsMock,
     }))
 
@@ -36,49 +37,6 @@ describe('coverage binder', () => {
     const { getTemplateTargets } = await import('../scripts/getTemplateTargets')
     const targets = await getTemplateTargets()
     expect(targets).toEqual(expect.arrayContaining(['README.md', 'package.json']))
-  })
-
-  it('executes prepublish script workflow', async () => {
-    await vi.resetModules()
-    const ensureDirMock = vi.fn(async () => {})
-    const copyMock = vi.fn(async () => {})
-    const pathExistsMock = vi.fn(async () => true)
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
-        ensureDir: ensureDirMock,
-        copy: copyMock,
-        pathExists: pathExistsMock,
-      },
-      ensureDir: ensureDirMock,
-      copy: copyMock,
-      pathExists: pathExistsMock,
-    }))
-    vi.doMock('../src/constants', () => ({
-      assetsDir: '/assets',
-      rootDir: '/repo',
-      templatesDir: '/templates',
-    }))
-    vi.doMock('../src/commands/upgrade/targets', () => ({
-      getAssetTargets: () => ['docs/.gitignore'],
-    }))
-    vi.doMock('./getTemplateTargets', () => ({
-      getTemplateTargets: async () => ['unbuild/gitignore'],
-    }))
-    const successMock = vi.fn()
-    vi.doMock('../src/core/logger', () => ({
-      logger: {
-        success: successMock,
-        error: vi.fn(),
-      },
-    }))
-
-    const { prepareAssets } = await import('../scripts/prepublish')
-    await prepareAssets()
-    vi.unmock('../src/commands/upgrade/targets')
-    vi.unmock('../src/core/logger')
-    vi.unmock('@/commands/upgrade/targets')
-    vi.unmock('@/core/logger')
   })
 
   it('executes create command primary flow', async () => {

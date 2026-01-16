@@ -122,6 +122,9 @@ importers:
 
   packages/monorepo:
     dependencies:
+      '@icebreakers/monorepo-templates':
+        specifier: workspace:*
+        version: link:../monorepo-templates
       '@inquirer/checkbox':
         specifier: ^5.0.4
         version: 5.0.4(@types/node@25.0.8)
