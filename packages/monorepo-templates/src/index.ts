@@ -2,6 +2,7 @@ import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets 
 import { templateChoices as rawTemplateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
 import { prepareAssets } from './prepare'
+import { runCommand } from './utils/command'
 import { isGitignoreFile, toPublishGitignorePath, toWorkspaceGitignorePath } from './utils/gitignore'
 import { createTemplateCopyFilter, shouldSkipTemplatePath } from './utils/template-filter'
 
@@ -32,6 +33,7 @@ export { prepareAssets }
 export {
   createTemplateCopyFilter,
   isGitignoreFile,
+  runCommand,
   shouldSkipTemplatePath,
   toPublishGitignorePath,
   toWorkspaceGitignorePath,
@@ -40,3 +42,4 @@ export { default as checkbox } from '@inquirer/checkbox'
 export { default as input } from '@inquirer/input'
 export { default as select } from '@inquirer/select'
 export { Command, program } from 'commander'
+export { execaCommand } from 'execa'

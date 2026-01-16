@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { runCommand } from './command'
+import { runCommand } from '@icebreakers/monorepo-templates'
 
 function normalizeRepo(repo: string) {
   if (repo.startsWith('http')) {

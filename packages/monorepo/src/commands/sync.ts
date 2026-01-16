@@ -1,6 +1,6 @@
 import type { GetWorkspacePackagesOptions } from '../types'
 import os from 'node:os'
-import { execaCommand } from 'execa'
+import { execaCommand } from '@icebreakers/monorepo-templates'
 import PQueue from 'p-queue'
 import path from 'pathe'
 import pc from 'picocolors'

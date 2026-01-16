@@ -48,7 +48,13 @@ describe('sync', () => {
       commands.push(command.trim())
       return { stdout: '' }
     })
-    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        execaCommand: execaCommandMock,
+      }
+    })
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
     }))
@@ -79,7 +85,13 @@ describe('sync', () => {
     const execaCommandMock = vi.fn(async () => ({}))
 
     await vi.resetModules()
-    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        execaCommand: execaCommandMock,
+      }
+    })
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
     }))
@@ -127,7 +139,13 @@ describe('sync', () => {
       __esModule: true,
       default: MockQueue,
     }))
-    vi.doMock('execa', () => ({ execaCommand: execaCommandMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        execaCommand: execaCommandMock,
+      }
+    })
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir: '/repo' })),
     }))

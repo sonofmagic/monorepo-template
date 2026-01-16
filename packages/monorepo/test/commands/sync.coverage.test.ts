@@ -21,9 +21,13 @@ vi.mock('p-queue', () => ({
   },
 }))
 
-vi.mock('execa', () => ({
-  execaCommand: execaCommandMock,
-}))
+vi.mock('@icebreakers/monorepo-templates', async () => {
+  const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+  return {
+    ...actual,
+    execaCommand: execaCommandMock,
+  }
+})
 
 vi.mock('@/core/workspace', () => ({
   getWorkspaceData: getWorkspaceDataMock,
