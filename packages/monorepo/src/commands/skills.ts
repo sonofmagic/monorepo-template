@@ -1,6 +1,6 @@
 import os from 'node:os'
 import process from 'node:process'
-import checkbox from '@inquirer/checkbox'
+import { checkbox } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import path from 'pathe'
 import { packageDir } from '../constants'

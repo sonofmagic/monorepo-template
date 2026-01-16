@@ -55,7 +55,13 @@ describe('cleanProjects', () => {
 
     const checkboxMock = vi.fn(async () => packages.map(pkg => pkg.rootDir))
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('@/core/workspace', () => ({
       getWorkspaceData: vi.fn(async () => ({ packages, workspaceDir })),
     }))

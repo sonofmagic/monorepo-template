@@ -21,7 +21,13 @@ describe('upgrade overwrite helpers coverage', () => {
       stat: statMock,
       readFile: readFileMock,
     }))
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('@/utils', async () => {
       const actual = await vi.importActual<typeof import('@/utils')>('@/utils')
       return {

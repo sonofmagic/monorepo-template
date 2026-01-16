@@ -8,10 +8,13 @@ const removeMock = vi.fn()
 const readJsonMock = vi.fn()
 const outputJsonMock = vi.fn()
 
-vi.mock('@inquirer/checkbox', () => ({
-  __esModule: true,
-  default: checkboxMock,
-}))
+vi.mock('@icebreakers/monorepo-templates', async () => {
+  const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+  return {
+    ...actual,
+    checkbox: checkboxMock,
+  }
+})
 
 vi.mock('fs-extra', () => ({
   __esModule: true,

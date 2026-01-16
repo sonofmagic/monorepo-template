@@ -27,10 +27,13 @@ describe('skills sync command', () => {
       ensureDir: ensureDirMock,
       copy: copyMock,
     }))
-    vi.doMock('@inquirer/checkbox', () => ({
-      __esModule: true,
-      default: checkboxMock,
-    }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('node:os', () => ({
       __esModule: true,
       default: { homedir: () => '/home' },
@@ -66,10 +69,13 @@ describe('skills sync command', () => {
       ensureDir: ensureDirMock,
       copy: copyMock,
     }))
-    vi.doMock('@inquirer/checkbox', () => ({
-      __esModule: true,
-      default: checkboxMock,
-    }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('node:os', () => ({
       __esModule: true,
       default: { homedir: () => '/home' },
@@ -121,10 +127,13 @@ describe('skills sync command', () => {
       ensureDir: ensureDirMock,
       copy: copyMock,
     }))
-    vi.doMock('@inquirer/checkbox', () => ({
-      __esModule: true,
-      default: checkboxMock,
-    }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('node:os', () => ({
       __esModule: true,
       default: { homedir: () => '/home' },

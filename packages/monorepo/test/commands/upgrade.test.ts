@@ -22,7 +22,13 @@ describe('upgradeMonorepo overwrite logic', () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-license-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
     await upgradeMonorepo({ outDir })
@@ -44,7 +50,13 @@ describe('upgradeMonorepo overwrite logic', () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-skip-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })
     const targetFile = path.join(outDir, 'netlify.toml')
@@ -67,7 +79,13 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
 
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     const { assetsDir } = await import('@/constants')
     const reference = await fs.readFile(path.join(assetsDir, 'netlify.toml'), 'utf8')
     const { upgradeMonorepo } = await import('@/commands/upgrade')
@@ -102,7 +120,13 @@ describe('upgradeMonorepo overwrite logic', () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-interactive-')
 
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
     vi.doMock('@/core/git', () => ({ GitClient: GitClientMock }))
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
@@ -133,7 +157,13 @@ describe('upgradeMonorepo overwrite logic', () => {
     }, { spaces: 2 })
 
     await vi.resetModules()
-    vi.doMock('@inquirer/checkbox', () => ({ default: checkboxMock }))
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir })

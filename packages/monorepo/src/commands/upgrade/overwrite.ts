@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import checkbox from '@inquirer/checkbox'
+import { checkbox } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import pc from 'picocolors'
 import { isFileChanged } from '../../utils'

@@ -36,3 +36,7 @@ export {
   toPublishGitignorePath,
   toWorkspaceGitignorePath,
 }
+export { default as checkbox } from '@inquirer/checkbox'
+export { default as input } from '@inquirer/input'
+export { default as select } from '@inquirer/select'
+export { Command, program } from 'commander'

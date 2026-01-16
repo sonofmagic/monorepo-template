@@ -18,11 +18,16 @@ describe('commander program', () => {
       { target: 'codex', dest: '/home/.codex/skills/icebreakers-monorepo-cli' },
     ]))
 
-    vi.doMock('commander', async () => {
-      const actual = await vi.importActual<typeof import('commander')>('commander')
+    const inputMock = vi.fn(async () => 'my-package')
+    const selectMock = vi.fn(async () => 'unbuild')
+
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
       return {
         ...actual,
         program: new actual.Command(),
+        input: inputMock,
+        select: selectMock,
       }
     })
     const aiBatchMock = vi.fn(async () => {})
@@ -56,11 +61,6 @@ describe('commander program', () => {
       templateMap: { unbuild: { source: 'unbuild', target: 'packages/unbuild' } },
       upgradeMonorepo: upgradeMock,
     }))
-
-    const inputMock = vi.fn(async () => 'my-package')
-    const selectMock = vi.fn(async () => 'unbuild')
-    vi.doMock('@inquirer/input', () => ({ default: inputMock }))
-    vi.doMock('@inquirer/select', () => ({ default: selectMock }))
 
     vi.doMock('@/commands/create', () => ({
       defaultTemplate: 'unbuild',

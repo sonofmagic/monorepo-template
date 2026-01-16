@@ -120,7 +120,7 @@ describe('createNewProject unit scenarios', () => {
 
   it('getTemplateMap merges extra entries', async () => {
     const { getTemplateMap } = await import('@/commands/create')
-    const merged = getTemplateMap({ custom: 'custom-template' }) as TemplateMapSubset
+    const merged = getTemplateMap({ custom: 'custom-template' }) as unknown as TemplateMapSubset
     expect(merged.custom).toEqual({ source: 'custom-template', target: 'custom-template' })
     expect(merged.unbuild).toEqual({ source: 'unbuild', target: 'packages/unbuild' })
     expect(merged.tsdown).toEqual({ source: 'tsdown', target: 'packages/tsdown' })

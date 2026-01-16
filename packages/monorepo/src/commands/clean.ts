@@ -1,5 +1,5 @@
 import type { CleanCommandConfig } from '../types'
-import checkbox from '@inquirer/checkbox'
+import { checkbox } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
