@@ -1,5 +1,13 @@
 # create-icebreaker
 
+## 0.1.1
+
+### Patch Changes
+
+- 🐛 **Consolidate skeleton into assets and scaffold new projects from assets.** [`4e50f39`](https://github.com/sonofmagic/monorepo-template/commit/4e50f39fec14b846a125fb880d4ce8076d51ae26) by @sonofmagic
+- 📦 **Dependencies** [`4e50f39`](https://github.com/sonofmagic/monorepo-template/commit/4e50f39fec14b846a125fb880d4ce8076d51ae26)
+  → `@icebreakers/monorepo-templates@0.1.1`
+
 ## 0.1.0
 
 ### Minor Changes
