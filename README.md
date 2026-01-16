@@ -30,7 +30,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 ### Bootstrap shortcuts
 
 - Zero-install cleanup on a fresh clone: `pnpm dlx @icebreakers/monorepo@latest clean --yes` (add `--include-private` to keep private packages in scope).
-- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Defaults to npm templates; use `--source git` to clone. Use `--templates tsup,vue-hono` or `--templates 2,5` to preselect.
+- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsup,vue-hono` or `--templates 2,5` to preselect.
 
 ## Repository Layout
 

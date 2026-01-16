@@ -30,7 +30,7 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 ### 快捷初始化
 
 - 零安装清理：`pnpm dlx @icebreakers/monorepo@latest clean --yes`，需要保留 private 包时追加 `--include-private`。
-- 一键脚手架：`pnpm create icebreaker` 或 `npm create icebreaker@latest`，进入交互模式，输入目标目录并选择保留的模板。默认走 npm 模板，使用 `--source git` 可改为 clone。可用 `--templates tsup,vue-hono` 或 `--templates 2,5` 预选模板。
+- 一键脚手架：`pnpm create icebreaker` 或 `npm create icebreaker@latest`，进入交互模式，输入目标目录并选择保留的模板。可用 `--templates tsup,vue-hono` 或 `--templates 2,5` 预选模板。
 
 ## 仓库结构
 

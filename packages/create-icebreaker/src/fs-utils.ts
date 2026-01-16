@@ -63,24 +63,3 @@ export async function copyDirContents(sourceDir: string, targetDir: string, root
     await fs.cp(from, to)
   }
 }
-
-export async function removeIfEmpty(dir: string) {
-  try {
-    const entries = await fs.readdir(dir)
-    if (entries.length === 0) {
-      await fs.rm(dir, { recursive: true, force: true })
-    }
-  }
-  catch (error) {
-    if (error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return
-    }
-    throw error
-  }
-}
-
-export async function removePaths(rootDir: string, paths: string[]) {
-  await Promise.all(paths.map(async (relative) => {
-    await fs.rm(path.join(rootDir, relative), { recursive: true, force: true })
-  }))
-}

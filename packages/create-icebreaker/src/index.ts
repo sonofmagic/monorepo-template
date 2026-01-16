@@ -1,20 +1,14 @@
-import type { SourceType } from './types'
 import path from 'node:path'
 import process from 'node:process'
 import { Command } from '@icebreakers/monorepo-templates'
-import { DEFAULT_BRANCH, DEFAULT_REPO, DEFAULT_SOURCE, DEFAULT_TARGET } from './constants'
+import { DEFAULT_TARGET } from './constants'
 import { prepareTarget } from './fs-utils'
 import { updateRootPackageJson } from './package-json'
 import { promptTargetDir, promptTemplates } from './prompts'
-import { scaffoldFromRepo } from './scaffold'
-import { cloneRepo } from './source-git'
 import { scaffoldFromNpm } from './source-npm'
 import { resolveTemplateSelections } from './templates'
 
 interface CreateOptions {
-  source?: string
-  repo?: string
-  branch?: string
   templates?: string
   force?: boolean
 }
@@ -31,19 +25,8 @@ function printNextSteps(targetDir: string) {
   ].join('\n'))
 }
 
-function normalizeSource(value?: string): SourceType {
-  const normalized = value?.toLowerCase()
-  if (normalized === 'npm' || normalized === 'git') {
-    return normalized
-  }
-  return DEFAULT_SOURCE
-}
-
 async function runCreate(targetDirInput: string, options: CreateOptions) {
   const isInteractive = Boolean(process.stdin.isTTY && process.stdout.isTTY)
-  const source = normalizeSource(options.source)
-  const repo = options.repo ?? DEFAULT_REPO
-  const branch = options.branch ?? DEFAULT_BRANCH
   let targetInput = targetDirInput || DEFAULT_TARGET
 
   if (isInteractive) {
@@ -66,13 +49,7 @@ async function runCreate(targetDirInput: string, options: CreateOptions) {
   const projectName = path.basename(targetDir) || targetInput
 
   await prepareTarget(targetDir, Boolean(options.force))
-  if (source === 'git') {
-    await cloneRepo(repo, branch, targetDir)
-    await scaffoldFromRepo(targetDir, selectedTemplates)
-  }
-  else {
-    await scaffoldFromNpm(targetDir, selectedTemplates)
-  }
+  await scaffoldFromNpm(targetDir, selectedTemplates)
   await updateRootPackageJson(targetDir, projectName)
   printNextSteps(targetDir)
 }
@@ -82,11 +59,8 @@ program
   .name('create-icebreaker')
   .description('Bootstrap the icebreaker monorepo template')
   .argument('[dir]', 'Target directory', DEFAULT_TARGET)
-  .option('-s, --source <source>', 'Source for templates (npm|git)', DEFAULT_SOURCE)
-  .option('-r, --repo <repo>', 'GitHub repo or git url to clone', DEFAULT_REPO)
-  .option('-b, --branch <branch>', 'Branch or tag to checkout', DEFAULT_BRANCH)
   .option('-t, --templates <list>', 'Comma-separated template keys or indexes to keep')
-  .option('-f, --force', 'Remove existing target directory before cloning', false)
+  .option('-f, --force', 'Remove existing target directory before scaffolding', false)
   .action(async (dir: string, options: CreateOptions) => {
     try {
       await runCreate(dir, options)
