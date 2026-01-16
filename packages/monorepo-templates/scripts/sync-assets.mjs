@@ -11,6 +11,15 @@ const repoRoot = path.resolve(packageDir, '..', '..')
 const templatesDir = path.join(packageDir, 'templates')
 const skeletonDir = path.join(packageDir, 'skeleton')
 const assetsDir = path.join(packageDir, 'assets')
+const templateSkipDirs = new Set([
+  'node_modules',
+  'dist',
+  '.turbo',
+  '.cache',
+  '.vite',
+  '.tmp',
+  '.vue-global-types',
+])
 
 const publishBasename = 'gitignore'
 const workspaceBasename = '.gitignore'
@@ -44,6 +53,25 @@ function replaceBasename(input, from, to) {
 
 function toPublishGitignorePath(input) {
   return replaceBasename(input, workspaceBasename, publishBasename)
+}
+
+function shouldSkipTemplatePath(rootDir, targetPath) {
+  const relative = path.relative(rootDir, targetPath)
+  if (!relative || relative.startsWith('..')) {
+    return false
+  }
+  const segments = relative.split(path.sep)
+  if (segments.some(segment => templateSkipDirs.has(segment))) {
+    return true
+  }
+  const basename = path.basename(targetPath)
+  if (basename.endsWith('.tsbuildinfo')) {
+    return true
+  }
+  if (basename === 'typed-router.d.ts' && segments.includes('types')) {
+    return true
+  }
+  return false
 }
 
 async function renameGitignoreFiles(targetDir) {
@@ -118,7 +146,10 @@ async function copyTemplates() {
     const from = path.join(repoRoot, 'templates', template.source)
     const to = path.join(templatesDir, template.source)
     await fs.mkdir(path.dirname(to), { recursive: true })
-    await fs.cp(from, to, { recursive: true })
+    await fs.cp(from, to, {
+      recursive: true,
+      filter: src => !shouldSkipTemplatePath(from, src),
+    })
     await renameGitignoreFiles(to)
   }
 }

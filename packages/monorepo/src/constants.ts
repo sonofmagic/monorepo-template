@@ -1,4 +1,4 @@
-import path from 'node:path'
+import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
 import { name, version } from '../package.json'

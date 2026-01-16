@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { defineProject } from 'vitest/config'
+import { configDefaults, defineProject } from 'vitest/config'
 
 export default defineProject({
   test: {
@@ -8,11 +8,15 @@ export default defineProject({
         find: '@',
         replacement: path.resolve(__dirname, './src'),
       },
+      {
+        find: '@icebreakers/monorepo-templates',
+        replacement: path.resolve(__dirname, '../monorepo-templates/src/index.ts'),
+      },
     ],
     globals: true,
     testTimeout: 60_000,
     setupFiles: ['./vitest.setup.ts'],
-    exclude: ['templates/**/*', './test/fixtures/**/*'],
+    exclude: [...configDefaults.exclude, 'templates/**/*', './test/fixtures/**/*'],
     coverage: {
       include: [
         'src/**/*.ts',

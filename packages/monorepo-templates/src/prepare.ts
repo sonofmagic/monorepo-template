@@ -1,5 +1,6 @@
+import type { Dirent } from 'node:fs'
 import fs from 'node:fs/promises'
-import path from 'node:path'
+import * as path from 'node:path'
 import { assetTargets } from '../assets-data.mjs'
 import { templateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
@@ -28,6 +29,16 @@ const skeletonFiles = [
 
 const publishBasename = 'gitignore'
 const workspaceBasename = '.gitignore'
+const templateSkipDirs = new Set([
+  'node_modules',
+  'dist',
+  '.turbo',
+  '.cache',
+  '.vite',
+  '.tmp',
+  '.vue-global-types',
+  '.wrangler',
+])
 
 function detectSeparator(input: string) {
   if (input.includes('\\') && !input.includes('/')) {
@@ -60,6 +71,33 @@ function toPublishGitignorePath(input: string) {
   return replaceBasename(input, workspaceBasename, publishBasename)
 }
 
+function shouldSkipTemplatePath(rootDir: string, targetPath: string) {
+  const relative = path.relative(rootDir, targetPath)
+  if (!relative || relative.startsWith('..')) {
+    return false
+  }
+  const segments = relative.split(path.sep)
+  if (segments.some(segment => templateSkipDirs.has(segment))) {
+    return true
+  }
+  for (let i = 0; i < segments.length - 1; i += 1) {
+    if (segments[i] === '.vitepress' && segments[i + 1] === 'cache') {
+      return true
+    }
+  }
+  const basename = path.basename(targetPath)
+  if (basename.endsWith('.tsbuildinfo')) {
+    return true
+  }
+  if (basename === 'typed-router.d.ts' && segments.includes('types')) {
+    return true
+  }
+  if (basename === 'worker-configuration.d.ts') {
+    return true
+  }
+  return false
+}
+
 async function pathExists(targetPath: string) {
   try {
     await fs.access(targetPath)
@@ -71,7 +109,16 @@ async function pathExists(targetPath: string) {
 }
 
 async function renameGitignoreFiles(targetDir: string) {
-  const entries = await fs.readdir(targetDir, { withFileTypes: true })
+  let entries: Dirent[]
+  try {
+    entries = await fs.readdir(targetDir, { withFileTypes: true })
+  }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return
+    }
+    throw error
+  }
   await Promise.all(entries.map(async (entry) => {
     const current = path.join(targetDir, entry.name)
     if (entry.isDirectory()) {
@@ -88,7 +135,15 @@ async function resetDir(targetDir: string, overwriteExisting: boolean) {
   if (!overwriteExisting && await pathExists(targetDir)) {
     return
   }
-  await fs.rm(targetDir, { recursive: true, force: true })
+  try {
+    await fs.rm(targetDir, { recursive: true, force: true })
+  }
+  catch (error) {
+    const err = error as NodeJS.ErrnoException
+    if (err?.code !== 'ENOTEMPTY' && err?.code !== 'EBUSY' && err?.code !== 'EPERM') {
+      throw error
+    }
+  }
   await fs.mkdir(targetDir, { recursive: true })
 }
 
@@ -96,11 +151,20 @@ async function copyEntry(from: string, to: string, overwriteExisting: boolean, f
   if (!overwriteExisting && await pathExists(to)) {
     return
   }
-  await fs.cp(from, to, {
-    recursive: true,
-    force: overwriteExisting,
-    filter,
-  })
+  try {
+    await fs.cp(from, to, {
+      recursive: true,
+      force: overwriteExisting,
+      filter,
+    })
+  }
+  catch (error) {
+    const err = error as NodeJS.ErrnoException
+    if (!overwriteExisting && (err?.code === 'EEXIST' || err?.code === 'ENOTEMPTY')) {
+      return
+    }
+    throw error
+  }
 }
 
 async function copySkeleton(repoRoot: string, overwriteExisting: boolean) {
@@ -139,7 +203,8 @@ async function copyTemplates(repoRoot: string, overwriteExisting: boolean) {
       continue
     }
     const to = path.join(templatesDir, template.source)
-    await copyEntry(from, to, overwriteExisting)
+    const filter = (src: string) => !shouldSkipTemplatePath(from, src)
+    await copyEntry(from, to, overwriteExisting, filter)
     await renameGitignoreFiles(to)
   }
 }

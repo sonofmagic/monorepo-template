@@ -1,9 +1,13 @@
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('coverage binder', () => {
+  afterEach(() => {
+    vi.unmock('@icebreakers/monorepo-templates')
+  })
+
   it('executes vitest setup paths', async () => {
     await vi.resetModules()
     const pathExistsMock = vi.fn()
@@ -14,10 +18,14 @@ describe('coverage binder', () => {
       default: { pathExists: pathExistsMock },
       pathExists: pathExistsMock,
     }))
-    vi.doMock('@icebreakers/monorepo-templates', () => ({
-      assetsDir: '/assets',
-      prepareAssets: prepareAssetsMock,
-    }))
+    vi.doMock('@icebreakers/monorepo-templates', async (importOriginal) => {
+      const actual = await importOriginal<typeof import('@icebreakers/monorepo-templates')>()
+      return {
+        ...actual,
+        assetsDir: '/assets',
+        prepareAssets: prepareAssetsMock,
+      }
+    })
 
     pathExistsMock.mockResolvedValueOnce(false)
     await import('../vitest.setup')
@@ -96,7 +104,8 @@ describe('coverage binder', () => {
 
   it('executes upgrade targets helper', async () => {
     await vi.resetModules()
-    const { getAssetTargets } = await vi.importActual<typeof import('@/commands/upgrade/targets')>('@/commands/upgrade/targets')
+    vi.unmock('@icebreakers/monorepo-templates')
+    const { getAssetTargets } = await import('@icebreakers/monorepo-templates')
     const targets = getAssetTargets()
     expect(targets).toContain('.changeset')
   })

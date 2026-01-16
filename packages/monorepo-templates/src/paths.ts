@@ -1,4 +1,4 @@
-import path from 'node:path'
+import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const packageDir = path.resolve(fileURLToPath(new URL('../', import.meta.url)))

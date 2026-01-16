@@ -26,7 +26,7 @@ async function scanFiles(root: string) {
 
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
-    await prepareAssets()
+    await prepareAssets({ overwriteExisting: false })
     await fs.remove(path.resolve(__dirname, './fixtures/demo'))
   })
 

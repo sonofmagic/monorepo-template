@@ -6,8 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { createNewProject } from '@/commands/create'
 
-const templatesRoot = path.resolve(__dirname, '../templates')
-
+const templatesRoot = path.resolve(__dirname, '../../..', 'templates')
 function writeConfig(dir: string, content: string) {
   return fs.writeFile(path.join(dir, 'monorepo.config.ts'), content, 'utf8')
 }
@@ -18,7 +17,7 @@ describe('monorepo config integration', () => {
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-create-'))
     await writeConfig(
       root,
-      `import path from 'node:path'\nimport { defineMonorepoConfig } from '@icebreakers/monorepo'\n\nexport default defineMonorepoConfig({\n  commands: {\n    create: {\n      defaultTemplate: 'cli',\n      renameJson: true,\n      templatesDir: ${JSON.stringify(path.relative(root, templatesRoot))},\n    },\n  },\n})\n`,
+      `export default {\n  commands: {\n    create: {\n      defaultTemplate: 'cli',\n      renameJson: true,\n      templatesDir: ${JSON.stringify(path.relative(root, templatesRoot))},\n    },\n  },\n}\n`,
     )
 
     const targetDir = path.join(root, 'demo-app')
@@ -50,7 +49,7 @@ describe('monorepo config integration', () => {
 
     await writeConfig(
       workspaceDir,
-      `import { defineMonorepoConfig } from '@icebreakers/monorepo'\n\nexport default defineMonorepoConfig({\n  commands: {\n    clean: {\n      autoConfirm: true,\n    },\n  },\n})\n`,
+      `export default {\n  commands: {\n    clean: {\n      autoConfirm: true,\n    },\n  },\n}\n`,
     )
 
     const checkboxMock = vi.fn()

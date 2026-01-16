@@ -1,6 +1,29 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+const skipDirs = new Set([
+  'node_modules',
+  'dist',
+  '.turbo',
+  '.cache',
+  '.vite',
+  '.tmp',
+  '.vue-global-types',
+])
+
+function shouldSkipEntry(entryName: string) {
+  if (skipDirs.has(entryName)) {
+    return true
+  }
+  if (entryName.endsWith('.tsbuildinfo')) {
+    return true
+  }
+  if (entryName === 'typed-router.d.ts') {
+    return true
+  }
+  return false
+}
+
 export async function pathExists(targetPath: string) {
   try {
     await fs.access(targetPath)
@@ -46,6 +69,9 @@ export async function copyDirContents(sourceDir: string, targetDir: string) {
   for (const entry of entries) {
     const from = path.join(sourceDir, entry.name)
     const targetName = entry.name === 'gitignore' ? '.gitignore' : entry.name
+    if (shouldSkipEntry(entry.name)) {
+      continue
+    }
     const to = path.join(targetDir, targetName)
     if (entry.isDirectory()) {
       await copyDirContents(from, to)
