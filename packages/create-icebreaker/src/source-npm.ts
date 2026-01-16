@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { skeletonDir, templatesDir } from '@icebreakers/monorepo-templates'
+import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
 import { copyDirContents } from './fs-utils'
 import { templateChoices } from './templates'
 
@@ -19,6 +19,6 @@ async function copySelectedTemplates(targetDir: string, selectedTemplates: strin
 }
 
 export async function scaffoldFromNpm(targetDir: string, selectedTemplates: string[]) {
-  await copyDirContents(skeletonDir, targetDir)
+  await copyDirContents(assetsDir, targetDir)
   await copySelectedTemplates(targetDir, selectedTemplates)
 }

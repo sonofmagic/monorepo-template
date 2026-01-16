@@ -13,7 +13,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 ## Key Features
 
 - **Modular Architecture**: Template sources live under `templates/` while reusable tooling lives in `packages/`, keeping responsibilities clear.
-- **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages skeletons, templates, and upgrade assets for both `monorepo` and `create-icebreaker`.
+- **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
 - **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
 - **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `@icebreakers/monorepo` keep dependencies and scaffolding aligned.
@@ -47,7 +47,7 @@ templates/
 packages/
   monorepo/           # @icebreakers/monorepo helper scripts
   create-icebreaker/  # npm create flow
-  monorepo-templates/ # template, skeleton, and asset bundle for npm
+  monorepo-templates/ # template and asset bundle for npm
 ```
 
 - `templates/cli`: Sample CLI app scaffold.

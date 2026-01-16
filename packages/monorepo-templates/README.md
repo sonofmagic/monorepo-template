@@ -4,6 +4,5 @@ Template assets and metadata used by `create-icebreaker` and `@icebreakers/monor
 
 This package ships:
 
-- `skeleton/`: minimal root workspace config files
 - `templates/`: app and package templates
-- `assets/`: upgrade assets for `monorepo`
+- `assets/`: root workspace config files and upgrade assets for `monorepo`

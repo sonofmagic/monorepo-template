@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import * as path from 'node:path'
 import { assetTargets } from '../assets-data.mjs'
 import { templateChoices } from '../template-data.mjs'
-import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
+import { assetsDir, packageDir, templatesDir } from './paths'
 import { toPublishGitignorePath } from './utils/gitignore'
 import { shouldSkipTemplatePath } from './utils/template-filter'
 
@@ -11,23 +11,6 @@ export interface PrepareAssetsOptions {
   overwriteExisting?: boolean
   silent?: boolean
 }
-
-const skeletonFiles = [
-  '.editorconfig',
-  '.gitignore',
-  '.npmrc',
-  'package.json',
-  'pnpm-workspace.yaml',
-  'turbo.json',
-  'tsconfig.json',
-  'eslint.config.js',
-  'stylelint.config.js',
-  'vitest.config.ts',
-  'commitlint.config.ts',
-  'lint-staged.config.js',
-  'renovate.json',
-  'LICENSE',
-]
 
 async function pathExists(targetPath: string) {
   try {
@@ -99,17 +82,6 @@ async function copyEntry(from: string, to: string, overwriteExisting: boolean, f
   }
 }
 
-async function copySkeleton(repoRoot: string, overwriteExisting: boolean) {
-  for (const file of skeletonFiles) {
-    const from = path.join(repoRoot, file)
-    if (!await pathExists(from)) {
-      continue
-    }
-    const to = path.join(skeletonDir, toPublishGitignorePath(file))
-    await copyEntry(from, to, overwriteExisting)
-  }
-}
-
 async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
   for (const target of assetTargets) {
     const from = path.join(repoRoot, target)
@@ -149,8 +121,6 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   }
   await resetDir(assetsDir, overwriteExisting)
   await resetDir(templatesDir, overwriteExisting)
-  await resetDir(skeletonDir, overwriteExisting)
-  await copySkeleton(repoRoot, overwriteExisting)
   await copyAssets(repoRoot, overwriteExisting)
   await copyTemplates(repoRoot, overwriteExisting)
 }

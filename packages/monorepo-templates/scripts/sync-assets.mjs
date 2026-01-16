@@ -9,7 +9,6 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const packageDir = path.resolve(scriptDir, '..')
 const repoRoot = path.resolve(packageDir, '..', '..')
 const templatesDir = path.join(packageDir, 'templates')
-const skeletonDir = path.join(packageDir, 'skeleton')
 const assetsDir = path.join(packageDir, 'assets')
 const templateSkipDirs = new Set([
   'node_modules',
@@ -100,34 +99,9 @@ async function renameGitignoreFiles(targetDir) {
   }))
 }
 
-const skeletonFiles = [
-  '.editorconfig',
-  '.gitignore',
-  '.npmrc',
-  'package.json',
-  'pnpm-workspace.yaml',
-  'turbo.json',
-  'tsconfig.json',
-  'eslint.config.js',
-  'stylelint.config.js',
-  'vitest.config.ts',
-  'commitlint.config.ts',
-  'lint-staged.config.js',
-  'renovate.json',
-  'LICENSE',
-]
-
 async function resetDir(targetDir) {
   await fs.rm(targetDir, { recursive: true, force: true })
   await fs.mkdir(targetDir, { recursive: true })
-}
-
-async function copySkeleton() {
-  for (const file of skeletonFiles) {
-    const from = path.join(repoRoot, file)
-    const to = path.join(skeletonDir, toPublishGitignorePath(file))
-    await fs.cp(from, to, { recursive: true })
-  }
 }
 
 async function copyAssets() {
@@ -168,8 +142,6 @@ async function copyTemplates() {
 async function main() {
   await resetDir(assetsDir)
   await resetDir(templatesDir)
-  await resetDir(skeletonDir)
-  await copySkeleton()
   await copyAssets()
   await copyTemplates()
 }
