@@ -14,6 +14,9 @@ describe('commander program', () => {
     const mirrorMock = vi.fn(async () => {})
     const createMock = vi.fn(async () => {})
     const aiTemplateMock = vi.fn(async () => {})
+    const syncSkillsMock = vi.fn(async () => ([
+      { target: 'codex', dest: '/home/.codex/skills/icebreakers-monorepo-cli' },
+    ]))
 
     vi.doMock('commander', async () => {
       const actual = await vi.importActual<typeof import('commander')>('commander')
@@ -47,7 +50,9 @@ describe('commander program', () => {
       getCreateChoices: vi.fn(() => choices),
       init: initMock,
       setVscodeBinaryMirror: mirrorMock,
+      skillTargets: ['codex', 'claude'],
       syncNpmMirror: syncMock,
+      syncSkills: syncSkillsMock,
       templateMap: { unbuild: 'packages/unbuild-template' },
       upgradeMonorepo: upgradeMock,
     }))
@@ -68,7 +73,7 @@ describe('commander program', () => {
     }))
 
     const successMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({ logger: { success: successMock } }))
+    vi.doMock('@/core/logger', () => ({ logger: { success: successMock, info: vi.fn() } }))
 
     const { default: program } = await import('@/cli/program')
 
@@ -80,6 +85,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'new'])
     await program.parseAsync(['node', 'monorepo', 'new'])
+    await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMock).toHaveBeenCalled()
@@ -109,6 +115,10 @@ describe('commander program', () => {
       cwd: expect.any(String),
       type: 'unbuild',
     })
-    expect(successMock).toHaveBeenCalledTimes(6)
+    expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
+      cwd: expect.any(String),
+      targets: ['codex'],
+    }))
+    expect(successMock).toHaveBeenCalledTimes(7)
   })
 })

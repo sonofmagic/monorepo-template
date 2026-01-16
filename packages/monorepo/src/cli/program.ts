@@ -1,15 +1,17 @@
-import type { AgenticTemplateFormat } from '../commands'
-import type { CreateNewProjectOptions } from '../commands/create'
+import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../commands/ai'
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import input from '@inquirer/input'
 import select from '@inquirer/select'
 import { program } from 'commander'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, syncNpmMirror, upgradeMonorepo } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo } from '../commands'
 import { defaultTemplate } from '../commands/create'
-import { name, version } from '../constants'
+import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
 import { logger } from '../core/logger'
+
+type SkillTarget = typeof skillTargets[number]
+type CreateNewProjectOptions = NonNullable<Parameters<typeof createNewProject>[0]>
 
 interface AiTemplateCommandOptions {
   output?: string
@@ -26,9 +28,15 @@ interface CleanCommandOptions {
   pinnedVersion?: string
 }
 
+interface SkillsSyncCommandOptions {
+  codex?: boolean
+  claude?: boolean
+  all?: boolean
+}
+
 const cwd = process.cwd()
 
-program.name(name).version(version)
+program.name(cliName).version(version)
 
 /**
  * 升级子命令：同步 assets 模板到当前仓库。
@@ -86,6 +94,41 @@ program.command('mirror').description('设置 VscodeBinaryMirror').action(async 
   logger.success('set vscode binary mirror finished!')
 })
 
+const skillsCommand = program.command('skills').description('技能工具集')
+
+skillsCommand.command('sync')
+  .description('同步 resources/skills/icebreakers-monorepo-cli 到全局目录')
+  .option('--codex', '同步到 ~/.codex/skills')
+  .option('--claude', '同步到 ~/.claude/skills')
+  .option('--all', '同步全部目标')
+  .action(async (opts: SkillsSyncCommandOptions) => {
+    const selected = new Set<SkillTarget>()
+    if (opts.all) {
+      for (const target of skillTargets) {
+        selected.add(target)
+      }
+    }
+    else {
+      if (opts.codex) {
+        selected.add('codex')
+      }
+      if (opts.claude) {
+        selected.add('claude')
+      }
+    }
+
+    const options = selected.size
+      ? { cwd, targets: Array.from(selected) }
+      : { cwd }
+    const results = await syncSkills(options)
+    if (!results.length) {
+      logger.info('未选择任何目标，已跳过同步。')
+      return
+    }
+    logger.info(`[已同步的目标]:\n${results.map(item => `- ${item.target}: ${item.dest}`).join('\n')}\n`)
+    logger.success('skills sync finished!')
+  })
+
 const aiCommand = program.command('ai').description('AI 助手工具集')
 
 aiCommand.command('create')
@@ -104,7 +147,7 @@ aiCommand.command('create')
     const output = opts.output ?? aiConfig?.output
     const baseDir = opts.dir ?? aiConfig?.baseDir ?? defaultAgenticBaseDir
     const tasksFile = opts.tasks ?? aiConfig?.tasksFile
-    const name = opts.name
+    const templateName = opts.name
 
     const shouldUseTasks = Boolean(tasksFile && !opts.output && !opts.name)
 
@@ -123,7 +166,7 @@ aiCommand.command('create')
     }
 
     let folderName: string | undefined
-    if (!output && !name) {
+    if (!output && !templateName) {
       const generated = createTimestampFolderName()
       const answer = await input({
         message: '提示词将写入哪个文件夹？（可回车确认或自定义）',
@@ -132,25 +175,34 @@ aiCommand.command('create')
       folderName = (answer?.trim?.() ?? generated) || generated
     }
 
-    await generateAgenticTemplate({
+    const templateOptions: GenerateAgenticTemplateOptions = {
       cwd,
-      output,
       force,
       format,
       baseDir,
-      name,
-      folderName,
-    })
+    }
+    if (output !== undefined) {
+      templateOptions.output = output
+    }
+    if (templateName !== undefined) {
+      templateOptions.name = templateName
+    }
+    if (folderName !== undefined) {
+      templateOptions.folderName = folderName
+    }
+
+    await generateAgenticTemplate(templateOptions)
   })
 
 program.command('new')
   .description('创建一个新的子包')
   .alias('create')
   .argument('[name]')
-  .action(async (name: string) => {
+  .action(async (inputName: string) => {
     const createConfig = await resolveCommandConfig('create', cwd)
-    if (!name) {
-      name = await input({
+    let packageName = inputName
+    if (!packageName) {
+      packageName = await input({
         message: '请输入包名',
         default: createConfig?.name ?? 'my-package',
       })
@@ -162,7 +214,7 @@ program.command('new')
     })
 
     await createNewProject({
-      name,
+      name: packageName,
       cwd,
       type,
     })

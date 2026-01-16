@@ -15,9 +15,16 @@ npx monorepo -h
 npx monorepo ai create -o agentic-task.md -f
 # 或使用别名
 npx monorepo ai new --name checkout
+# 同步技能到全局目录
+npx monorepo skills sync
+# 仅同步指定目标
+npx monorepo skills sync --codex
+npx monorepo skills sync --claude
 ```
 
 `monorepo ai create`（别名 `ai new`）默认会把模板写入 `agentic/prompts/<timestamp>/prompt.md`，每次都会建一个以时间命名的目录，并在命令行提示可修改该目录名称，方便追加截图等素材；也可以通过参数自定义路径。
+
+`monorepo skills sync` 会将包内 `resources/skills/icebreakers-monorepo-cli` 同步到 `~/.codex/skills/icebreakers-monorepo-cli` 或 `~/.claude/skills/icebreakers-monorepo-cli`；未指定目标时会交互选择。
 
 `monorepo ai create` 支持批量生成：
 

@@ -5,6 +5,7 @@ import path from 'pathe'
 import set from 'set-value'
 import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
+import { getSkillTargetPaths } from './skills'
 
 function mergeCleanConfig(base?: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>): CleanCommandConfig {
   const normalizedBase = base ?? {}
@@ -65,10 +66,12 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
 
   const readmeZh = path.resolve(workspaceDir, 'README.zh-CN.md')
   const qoderDir = path.resolve(workspaceDir, '.qoder')
+  const skillTargets = Object.values(getSkillTargetPaths())
   const candidates = Array.from(new Set([
     ...cleanDirs.filter(Boolean),
     readmeZh,
     qoderDir,
+    ...skillTargets,
   ]))
   await Promise.all(candidates.map(async (dir) => {
     if (await fs.pathExists(dir)) {
