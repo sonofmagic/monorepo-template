@@ -12,7 +12,7 @@ By default this:
 - uses npm templates by default (no GitHub needed)
 - asks for the project directory (defaults to `icebreaker-monorepo`)
 - asks which templates to keep (default keeps none)
-- removes `templates/`, `packages/monorepo`, `packages/create-icebreaker`, and `packages/monorepo-templates` when cloning from git
+- removes `docs/`, `templates/`, `packages/monorepo`, `packages/create-icebreaker`, and `packages/monorepo-templates` when cloning from git
 - updates the root `package.json` name
 
 ## Templates
