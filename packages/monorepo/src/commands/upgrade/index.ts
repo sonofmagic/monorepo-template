@@ -1,3 +1,4 @@
+import type { Buffer } from 'node:buffer'
 import type { CliOpts, PackageJson } from '../../types'
 import type { PendingOverwrite } from './overwrite'
 import process from 'node:process'
@@ -69,6 +70,9 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
   const scriptOverrides = upgradeConfig?.scripts
   const skipOverwrite = merged.skipOverwrite
+  const buildWriteIntentOptions = (source: string | Buffer) => {
+    return skipOverwrite === undefined ? { source } : { skipOverwrite, source }
+  }
   const pendingOverwrites: PendingOverwrite[] = []
   for await (const file of klaw(assetsDir, {
     filter(p) {
@@ -95,10 +99,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
 
         const sourcePkgJson = await fs.readJson(file.path) as PackageJson
         const targetPkgJson = await fs.readJson(targetPath) as PackageJson
-        setPkgJson(sourcePkgJson, targetPkgJson, { scripts: scriptOverrides })
+        setPkgJson(sourcePkgJson, targetPkgJson, scriptOverrides ? { scripts: scriptOverrides } : undefined)
         // 直接覆写对象后重新序列化，保证键顺序与缩进一致。
         const data = `${JSON.stringify(targetPkgJson, undefined, 2)}\n`
-        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')
           logger.success(targetPath)
@@ -124,7 +128,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
           ? mergeWorkspaceManifest(sourceManifest, targetManifest)
           : sourceManifest
         const data = YAML.stringify(mergedManifest, { singleQuote: true })
-        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')
           logger.success(targetPath)
@@ -142,7 +146,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
         const changesetJson = await fs.readJson(file.path)
         set(changesetJson, 'changelog.1.repo', repoName)
         const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
-        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')
           logger.success(targetPath)
@@ -175,7 +179,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       if (relPath === '.github/ISSUE_TEMPLATE/config.yml') {
         const source = await fs.readFile(file.path, 'utf8')
         const data = updateIssueTemplateConfig(source, repoName)
-        const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source: data })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data)
           logger.success(targetPath)
@@ -190,7 +194,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
       }
 
       const source = await fs.readFile(file.path)
-      const intent = await evaluateWriteIntent(targetPath, { skipOverwrite, source })
+      const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(source))
       const action = async () => {
         await fs.outputFile(targetPath, source)
         logger.success(targetPath)

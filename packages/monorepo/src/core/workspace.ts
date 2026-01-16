@@ -17,9 +17,11 @@ export async function getWorkspacePackages(workspaceDir: string, options?: GetWo
   })
 
   const manifest = await readWorkspaceManifest(workspaceDir)
-  const packages = await findWorkspacePackages(workspaceDir, {
-    patterns: patterns ?? manifest?.packages,
-  })
+  const workspacePatterns = patterns ?? manifest?.packages
+  const packages = await findWorkspacePackages(
+    workspaceDir,
+    workspacePatterns ? { patterns: workspacePatterns } : {},
+  )
   let pkgs = packages.filter((x) => {
     if (ignorePrivatePackage && x.manifest.private) {
       return false

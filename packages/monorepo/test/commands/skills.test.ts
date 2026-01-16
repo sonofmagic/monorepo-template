@@ -97,7 +97,16 @@ describe('skills sync command', () => {
     const removeMock = vi.fn(async () => {})
     const ensureDirMock = vi.fn(async () => {})
     const copyMock = vi.fn(async () => {})
-    const checkboxMock = vi.fn(async () => ['claude'])
+    interface CheckboxChoice {
+      name: string
+      value: string
+      checked?: boolean
+    }
+    interface CheckboxOptions {
+      message: string
+      choices: CheckboxChoice[]
+    }
+    const checkboxMock = vi.fn(async (_options: CheckboxOptions) => ['claude'])
 
     vi.doMock('fs-extra', () => ({
       __esModule: true,
@@ -126,7 +135,7 @@ describe('skills sync command', () => {
     const results = await syncSkills({ cwd: '/repo' })
 
     expect(checkboxMock).toHaveBeenCalledTimes(1)
-    const [promptOptions] = checkboxMock.mock.calls[0] ?? []
+    const promptOptions = checkboxMock.mock.calls[0]?.[0]
     expect(promptOptions).toEqual({
       message: '请选择需要同步的技能目标',
       choices: [

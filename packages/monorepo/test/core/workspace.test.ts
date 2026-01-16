@@ -22,7 +22,7 @@ describe('workspace helpers', () => {
     const result = await getWorkspacePackages('/repo')
 
     expect(result.map(pkg => pkg.manifest.name)).toEqual(['pkg-a'])
-    expect(result[0].pkgJsonPath).toBe('/repo/packages/a/package.json')
+    expect(result[0]?.pkgJsonPath).toBe('/repo/packages/a/package.json')
     expect(readManifestMock).toHaveBeenCalledWith('/repo')
     expect(findWorkspacePackagesMock).toHaveBeenCalledWith('/repo', { patterns: ['packages/*'] })
   })
@@ -59,7 +59,7 @@ describe('workspace helpers', () => {
     const data = await getWorkspaceData('/repo/sub')
 
     expect(data.workspaceDir).toBe('/repo/sub')
-    expect(findWorkspacePackagesMock).toHaveBeenCalledWith('/repo/sub', { patterns: undefined })
+    expect(findWorkspacePackagesMock).toHaveBeenCalledWith('/repo/sub', {})
     expect(data.packages).toEqual([])
   })
 })

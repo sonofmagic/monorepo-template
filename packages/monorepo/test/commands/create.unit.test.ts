@@ -1,7 +1,31 @@
+import type { TemplateDefinition } from '@/commands/create'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 interface CopyOptions {
   filter?: (src: string) => boolean
+}
+
+interface TemplateMapSubset {
+  custom: TemplateDefinition
+  unbuild: TemplateDefinition
+  tsdown: TemplateDefinition
+}
+
+interface PackageBugs {
+  url?: string
+}
+
+interface PackageRepo {
+  type?: string
+  url?: string
+  directory?: string
+}
+
+interface OutputPackageJson {
+  name?: string
+  author?: string
+  bugs?: PackageBugs
+  repository?: PackageRepo
 }
 
 const ensureDirMock = vi.fn(async () => {})
@@ -96,7 +120,7 @@ describe('createNewProject unit scenarios', () => {
 
   it('getTemplateMap merges extra entries', async () => {
     const { getTemplateMap } = await import('@/commands/create')
-    const merged = getTemplateMap({ custom: 'custom-template' })
+    const merged = getTemplateMap({ custom: 'custom-template' }) as TemplateMapSubset
     expect(merged.custom).toEqual({ source: 'custom-template', target: 'custom-template' })
     expect(merged.unbuild).toEqual({ source: 'unbuild', target: 'packages/unbuild' })
     expect(merged.tsdown).toEqual({ source: 'tsdown', target: 'packages/tsdown' })
@@ -123,7 +147,7 @@ describe('createNewProject unit scenarios', () => {
     expect(successMock).toHaveBeenCalledWith(expect.stringContaining('[tsup]'))
     const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.json'))
     expect(outputCall).toBeDefined()
-    const pkgJson = outputCall?.[1] as Record<string, unknown> | undefined
+    const pkgJson = outputCall?.[1] as { name?: string } | undefined
     expect(pkgJson?.name).toBe('demo-app')
     const copyTargets = copyMock.mock.calls.map(args => args[0])
     expect(copyTargets.some(target => target.includes('README.md'))).toBe(true)
@@ -138,7 +162,7 @@ describe('createNewProject unit scenarios', () => {
 
     const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.mock.json'))
     expect(outputCall).toBeDefined()
-    const pkgJson = outputCall?.[1] as Record<string, unknown> | undefined
+    const pkgJson = outputCall?.[1] as OutputPackageJson | undefined
     expect(pkgJson?.name).toBe('@scope/demo')
     expect(pkgJson?.author).toBe('Dev Example <dev@example.com>')
     expect(pkgJson?.bugs).toEqual(expect.objectContaining({ url: 'https://github.com/ice/awesome/issues' }))

@@ -24,32 +24,57 @@ export function parseArgs(argv: string[]): CliOptions {
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
+    if (!arg) {
+      continue
+    }
     if (arg === '--repo' && argv[i + 1]) {
-      options.repo = argv[++i]
+      const next = argv[i + 1]
+      if (next) {
+        options.repo = next
+      }
+      i += 1
       continue
     }
     if (arg.startsWith('--repo=')) {
-      options.repo = arg.split('=')[1] || options.repo
+      const value = arg.slice('--repo='.length)
+      if (value) {
+        options.repo = value
+      }
       continue
     }
     if (arg === '--branch' && argv[i + 1]) {
-      options.branch = argv[++i]
+      const next = argv[i + 1]
+      if (next) {
+        options.branch = next
+      }
+      i += 1
       continue
     }
     if (arg.startsWith('--branch=')) {
-      options.branch = arg.split('=')[1] || options.branch
+      const value = arg.slice('--branch='.length)
+      if (value) {
+        options.branch = value
+      }
       continue
     }
     if (arg === '--templates' && argv[i + 1]) {
-      options.templates = argv[++i]
+      const next = argv[i + 1]
+      if (next) {
+        options.templates = next
+      }
+      i += 1
       continue
     }
     if (arg.startsWith('--templates=')) {
-      options.templates = arg.split('=')[1] || options.templates
+      const value = arg.slice('--templates='.length)
+      if (value) {
+        options.templates = value
+      }
       continue
     }
     if (arg === '--source' && argv[i + 1]) {
-      const normalized = normalizeSource(argv[i + 1])
+      const next = argv[i + 1]
+      const normalized = next ? normalizeSource(next) : undefined
       if (normalized) {
         options.source = normalized
       }
@@ -57,7 +82,8 @@ export function parseArgs(argv: string[]): CliOptions {
       continue
     }
     if (arg.startsWith('--source=')) {
-      const normalized = normalizeSource(arg.split('=')[1])
+      const value = arg.slice('--source='.length)
+      const normalized = normalizeSource(value)
       if (normalized) {
         options.source = normalized
       }
@@ -77,7 +103,10 @@ export function parseArgs(argv: string[]): CliOptions {
   }
 
   if (positionals.length) {
-    options.targetDir = positionals[0]
+    const target = positionals[0]
+    if (target) {
+      options.targetDir = target
+    }
   }
 
   return options

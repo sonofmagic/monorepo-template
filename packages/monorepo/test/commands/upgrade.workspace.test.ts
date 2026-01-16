@@ -55,7 +55,7 @@ describe('mergeWorkspaceManifest', () => {
     const merged = mergeWorkspaceManifest(
       normalizeWorkspaceManifest({ packages: ['apps/*'], hoist: true }),
       normalizeWorkspaceManifest({ packages: 'string-value', hoist: false }),
-    )
+    ) as WorkspaceManifestLike & { hoist: boolean }
 
     expect(merged.packages).toBe('string-value')
     expect(merged.hoist).toBe(false)

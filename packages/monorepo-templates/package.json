@@ -42,6 +42,7 @@
   "scripts": {
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json",
     "sync:assets": "node scripts/sync-assets.mjs",
     "prepack": "node scripts/sync-assets.mjs",
     "lint": "eslint ."

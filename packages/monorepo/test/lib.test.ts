@@ -130,8 +130,10 @@ describe('lib', () => {
       },
     }
     setPkgJson(t, o)
-    expect(o.dependencies?.foo).toBe('^2.0.0')
-    expect(o.devDependencies?.bar).toBe('~3.1.0')
+    const deps = o.dependencies as { foo?: string } | undefined
+    const devDeps = o.devDependencies as { bar?: string } | undefined
+    expect(deps?.foo).toBe('^2.0.0')
+    expect(devDeps?.bar).toBe('~3.1.0')
   })
 
   it('setPkgJson casae 7', () => {
@@ -152,7 +154,9 @@ describe('lib', () => {
       },
     }
     setPkgJson(t, o)
-    expect(o.dependencies?.foo).toBe('workspace:*')
-    expect(o.devDependencies?.bar).toBe('workspace:*')
+    const deps = o.dependencies as { foo?: string } | undefined
+    const devDeps = o.devDependencies as { bar?: string } | undefined
+    expect(deps?.foo).toBe('workspace:*')
+    expect(devDeps?.bar).toBe('workspace:*')
   })
 })
