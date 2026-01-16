@@ -2,6 +2,8 @@ import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets 
 import { templateChoices as rawTemplateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
 import { prepareAssets } from './prepare'
+import { isGitignoreFile, toPublishGitignorePath, toWorkspaceGitignorePath } from './utils/gitignore'
+import { createTemplateCopyFilter, shouldSkipTemplatePath } from './utils/template-filter'
 
 export interface TemplateChoice {
   key: string
@@ -27,3 +29,10 @@ export const templateTargetMap = Object.fromEntries(
 export const templateMap = templateSourceMap
 
 export { prepareAssets }
+export {
+  createTemplateCopyFilter,
+  isGitignoreFile,
+  shouldSkipTemplatePath,
+  toPublishGitignorePath,
+  toWorkspaceGitignorePath,
+}

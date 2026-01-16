@@ -4,6 +4,8 @@ import * as path from 'node:path'
 import { assetTargets } from '../assets-data.mjs'
 import { templateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
+import { toPublishGitignorePath } from './utils/gitignore'
+import { shouldSkipTemplatePath } from './utils/template-filter'
 
 export interface PrepareAssetsOptions {
   overwriteExisting?: boolean
@@ -26,77 +28,6 @@ const skeletonFiles = [
   'renovate.json',
   'LICENSE',
 ]
-
-const publishBasename = 'gitignore'
-const workspaceBasename = '.gitignore'
-const templateSkipDirs = new Set([
-  'node_modules',
-  'dist',
-  '.turbo',
-  '.cache',
-  '.vite',
-  '.tmp',
-  '.vue-global-types',
-  '.wrangler',
-])
-
-function detectSeparator(input: string) {
-  if (input.includes('\\') && !input.includes('/')) {
-    return '\\'
-  }
-  return '/'
-}
-
-function replaceBasename(input: string, from: string, to: string) {
-  if (!input) {
-    return input
-  }
-  const separator = detectSeparator(input)
-  const normalized = input.replace(/[\\/]/g, separator)
-  const hasTrailingSeparator = normalized.endsWith(separator)
-  const segments = normalized.split(separator)
-  if (hasTrailingSeparator && segments[segments.length - 1] === '') {
-    segments.pop()
-  }
-  const lastIndex = segments.length - 1
-  if (lastIndex >= 0 && segments[lastIndex] === from) {
-    segments[lastIndex] = to
-    const rebuilt = segments.join(separator)
-    return hasTrailingSeparator ? `${rebuilt}${separator}` : rebuilt
-  }
-  return input
-}
-
-function toPublishGitignorePath(input: string) {
-  return replaceBasename(input, workspaceBasename, publishBasename)
-}
-
-function shouldSkipTemplatePath(rootDir: string, targetPath: string) {
-  const relative = path.relative(rootDir, targetPath)
-  if (!relative || relative.startsWith('..')) {
-    return false
-  }
-  const segments = relative.split(path.sep)
-  if (segments.some(segment => templateSkipDirs.has(segment))) {
-    return true
-  }
-  for (let i = 0; i < segments.length - 1; i += 1) {
-    if (segments[i] === '.vitepress' && segments[i + 1] === 'cache') {
-      return true
-    }
-  }
-  const basename = path.basename(targetPath)
-  if (basename.endsWith('.tsbuildinfo')) {
-    return true
-  }
-  if (basename === 'typed-router.d.ts' && segments.includes('types')) {
-    return true
-  }
-  if (basename === 'worker-configuration.d.ts') {
-    return true
-  }
-  return false
-}
 
 async function pathExists(targetPath: string) {
   try {
@@ -125,8 +56,9 @@ async function renameGitignoreFiles(targetDir: string) {
       await renameGitignoreFiles(current)
       return
     }
-    if (entry.name === workspaceBasename) {
-      await fs.rename(current, path.join(targetDir, publishBasename))
+    const renamed = toPublishGitignorePath(entry.name)
+    if (renamed !== entry.name) {
+      await fs.rename(current, path.join(targetDir, renamed))
     }
   }))
 }

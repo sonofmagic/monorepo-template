@@ -1,28 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
-const skipDirs = new Set([
-  'node_modules',
-  'dist',
-  '.turbo',
-  '.cache',
-  '.vite',
-  '.tmp',
-  '.vue-global-types',
-])
-
-function shouldSkipEntry(entryName: string) {
-  if (skipDirs.has(entryName)) {
-    return true
-  }
-  if (entryName.endsWith('.tsbuildinfo')) {
-    return true
-  }
-  if (entryName === 'typed-router.d.ts') {
-    return true
-  }
-  return false
-}
+import { shouldSkipTemplatePath, toWorkspaceGitignorePath } from '@icebreakers/monorepo-templates'
 
 export async function pathExists(targetPath: string) {
   try {
@@ -63,18 +41,18 @@ export async function prepareTarget(dir: string, force: boolean) {
   await fs.mkdir(dir, { recursive: true })
 }
 
-export async function copyDirContents(sourceDir: string, targetDir: string) {
+export async function copyDirContents(sourceDir: string, targetDir: string, rootDir = sourceDir) {
   await fs.mkdir(targetDir, { recursive: true })
   const entries = await fs.readdir(sourceDir, { withFileTypes: true })
   for (const entry of entries) {
     const from = path.join(sourceDir, entry.name)
-    const targetName = entry.name === 'gitignore' ? '.gitignore' : entry.name
-    if (shouldSkipEntry(entry.name)) {
+    if (shouldSkipTemplatePath(rootDir, from)) {
       continue
     }
+    const targetName = toWorkspaceGitignorePath(entry.name)
     const to = path.join(targetDir, targetName)
     if (entry.isDirectory()) {
-      await copyDirContents(from, to)
+      await copyDirContents(from, to, rootDir)
       continue
     }
     if (entry.isSymbolicLink()) {

@@ -19,6 +19,12 @@ const templateSkipDirs = new Set([
   '.vite',
   '.tmp',
   '.vue-global-types',
+  '.wrangler',
+])
+const skipFiles = new Set([
+  '.DS_Store',
+  'typed-router.d.ts',
+  'worker-configuration.d.ts',
 ])
 
 const publishBasename = 'gitignore'
@@ -64,11 +70,16 @@ function shouldSkipTemplatePath(rootDir, targetPath) {
   if (segments.some(segment => templateSkipDirs.has(segment))) {
     return true
   }
+  for (let i = 0; i < segments.length - 1; i += 1) {
+    if (segments[i] === '.vitepress' && segments[i + 1] === 'cache') {
+      return true
+    }
+  }
   const basename = path.basename(targetPath)
-  if (basename.endsWith('.tsbuildinfo')) {
+  if (skipFiles.has(basename)) {
     return true
   }
-  if (basename === 'typed-router.d.ts' && segments.includes('types')) {
+  if (basename.endsWith('.tsbuildinfo')) {
     return true
   }
   return false

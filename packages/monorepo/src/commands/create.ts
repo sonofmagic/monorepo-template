@@ -1,5 +1,6 @@
 import type { CreateChoiceOption, PackageJson } from '@/types'
 import process from 'node:process'
+import { shouldSkipTemplatePath } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import path from 'pathe'
 import pc from 'picocolors'
@@ -158,36 +159,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   await fs.ensureDir(to)
 
   const filelist = await fs.readdir(from)
-  // 跳过 macOS 生成的临时文件，避免污染模板。
-  const shouldSkip = (src: string) => {
-    if (path.basename(src) === '.DS_Store') {
-      return true
-    }
-    const relative = path.relative(from, src)
-    if (!relative || relative.startsWith('..')) {
-      return false
-    }
-    const segments = relative.split(path.sep)
-    const skipDirs = new Set(['node_modules', 'dist', '.turbo', '.cache', '.vite', '.tmp', '.vue-global-types', '.wrangler'])
-    if (segments.some(segment => skipDirs.has(segment))) {
-      return true
-    }
-    for (let i = 0; i < segments.length - 1; i += 1) {
-      if (segments[i] === '.vitepress' && segments[i + 1] === 'cache') {
-        return true
-      }
-    }
-    if (relative.split(path.sep).some(segment => segment.endsWith('.tsbuildinfo'))) {
-      return true
-    }
-    if (segments.includes('types') && path.basename(src) === 'typed-router.d.ts') {
-      return true
-    }
-    if (path.basename(src) === 'worker-configuration.d.ts') {
-      return true
-    }
-    return false
-  }
+  const shouldSkip = (src: string) => shouldSkipTemplatePath(from, src)
   const copyTasks = filelist
     .filter(filename => filename !== 'package.json')
     .map(async (filename) => {
