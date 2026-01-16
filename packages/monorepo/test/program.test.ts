@@ -53,7 +53,7 @@ describe('commander program', () => {
       skillTargets: ['codex', 'claude'],
       syncNpmMirror: syncMock,
       syncSkills: syncSkillsMock,
-      templateMap: { unbuild: 'packages/unbuild-template' },
+      templateMap: { unbuild: { source: 'unbuild', target: 'packages/unbuild' } },
       upgradeMonorepo: upgradeMock,
     }))
 
@@ -65,7 +65,7 @@ describe('commander program', () => {
     vi.doMock('@/commands/create', () => ({
       defaultTemplate: 'unbuild',
       getTemplateMap: vi.fn(() => ({
-        unbuild: 'packages/unbuild-template',
+        unbuild: { source: 'unbuild', target: 'packages/unbuild' },
       })),
     }))
     vi.doMock('@/core/config', () => ({

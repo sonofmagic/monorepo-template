@@ -1,5 +1,5 @@
 import type { AgenticTemplateFormat } from '../commands/ai'
-import type { CreateNewProjectOptions } from '../commands/create'
+import type { CreateNewProjectOptions, TemplateDefinition } from '../commands/create'
 import type { CliOpts } from './cli'
 import type { GetWorkspacePackagesOptions } from './workspace'
 
@@ -41,10 +41,10 @@ export interface CreateCommandConfig extends Partial<Omit<CreateNewProjectOption
    */
   templatesDir?: string
   /**
-   * 扩展模板映射表，key 为类型，value 为模板相对路径。
+   * 扩展模板映射表，key 为类型，value 为模板来源/目标路径。
    * @default 内置 `templateMap`
    */
-  templateMap?: Record<string, string>
+  templateMap?: Record<string, string | TemplateDefinition>
   /**
    * 自定义交互提示的选项列表。
    * @default 内置 `baseChoices`

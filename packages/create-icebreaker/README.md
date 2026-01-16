@@ -1,23 +1,37 @@
 # create-icebreaker
 
-One-shot bootstrapper for the icebreaker monorepo template. It clones the template repo, removes `.git`, and optionally runs the built-in cleanup before you install dependencies.
+Interactive bootstrapper for the icebreaker monorepo template. It can scaffold from npm (default) or clone from GitHub, then trims templates based on your selections.
 
 ## Usage
 
-- `pnpm create icebreaker my-app`
-- `npm create icebreaker@latest my-app`
+- `pnpm create icebreaker`
+- `npm create icebreaker@latest`
 
 By default this:
 
-- clones `sonofmagic/monorepo-template` (branch `main`) into `my-app`
-- strips the git history
-- runs `pnpm dlx @icebreakers/monorepo@latest clean --yes`
+- uses npm templates by default (no GitHub needed)
+- asks for the project directory (defaults to `icebreaker-monorepo`)
+- asks which templates to keep (default keeps none)
+- removes `templates/`, `packages/monorepo`, `packages/create-icebreaker`, and `packages/monorepo-templates` when cloning from git
+- updates the root `package.json` name
+
+## Templates
+
+Available template keys:
+
+- `unbuild`
+- `tsup`
+- `tsdown`
+- `vue-lib`
+- `vue-hono`
+- `hono-server`
+- `vitepress`
+- `cli`
 
 ## Flags
 
-- `--repo <git-url-or-owner/name>`: clone a different repo
-- `--branch <branch-or-tag>`: choose a branch or tag
-- `--no-clean`: skip running `monorepo clean`
-- `--include-private`: include private packages when cleaning
+- `--repo <git-url-or-owner/name>`: clone a different repo (git source only)
+- `--branch <branch-or-tag>`: choose a branch or tag (git source only)
+- `--source <npm|git>`: use npm templates or clone from git (default npm)
+- `--templates <list>`: comma-separated template keys or indexes to keep (e.g. `tsup,vue-hono` or `1,5`)
 - `--force`: overwrite a non-empty target directory
-- `--agent <pnpm|npm>`: force which tool to run the cleanup with

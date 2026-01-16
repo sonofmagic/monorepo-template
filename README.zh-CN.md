@@ -12,7 +12,7 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 
 ## 主要特性
 
-- **模块化结构**：所有可部署应用集中在 `apps/`，复用模板位于 `packages/`，职责清晰。
+- **模块化结构**：模板源代码集中在 `templates/`，可复用工具包位于 `packages/`，职责清晰。
 - **统一工具链**：pnpm 工作区、Turbo 任务编排、Vitest 单测与 Changesets 发布覆盖开发到交付的全流程。
 - **工程规范**：集成 ESLint、Stylelint、Husky、Commitlint，自动化保障代码质量与提交信息。
 - **可扩展模板**：借助 `@icebreakers/monorepo` 提供的脚本（`script:init`、`script:sync`、`script:clean` 等）维护依赖与脚手架。
@@ -29,28 +29,35 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 ### 快捷初始化
 
 - 零安装清理：`pnpm dlx @icebreakers/monorepo@latest clean --yes`，需要保留 private 包时追加 `--include-private`。
-- 一键脚手架：`pnpm create icebreaker my-app` 或 `npm create icebreaker@latest my-app`，自动 clone 模板、移除 `.git` 并调用清理。常用参数：`--no-clean` 保留示例、`--branch <name>` / `--repo <git-url>` 指向其他来源。
+- 一键脚手架：`pnpm create icebreaker` 或 `npm create icebreaker@latest`，进入交互模式，输入目标目录并选择保留的模板。默认走 npm 模板，使用 `--source git` 可改为 clone。可用 `--templates tsup,vue-hono` 或 `--templates 2,5` 预选模板。
 
 ## 仓库结构
 
 ```text
-apps/
+templates/
   cli/          # CLI 程序脚手架
   client/       # Web 客户端示例（如 Vue/React）
   server/       # 服务端或 API 层入口
-  website/      # 静态站点或文档站
+  vitepress/    # 静态站点或文档站
+  tsup/         # 基于 tsup 的库模板
+  tsdown/       # 基于 tsdown 的库模板
+  unbuild/      # 基于 unbuild 的库模板
+  vue-lib/      # Vue 组件库模板
 packages/
   monorepo/           # @icebreakers/monorepo 辅助脚本
-  tsup-template/      # 基于 tsup 的库模板
-  unbuild-template/   # 基于 unbuild 的库模板
-  vue-lib-template/   # Vue 组件库模板
+  create-icebreaker/  # npm create 脚手架
+  monorepo-templates/ # 模板资源包
 ```
 
-- `apps/cli`：CLI 工具示例。
-- `apps/client`：前端富客户端范例。
-- `apps/server`：服务端或 API 框架入口。
-- `apps/website`：营销页或文档站示例。
-- `packages/*`：共享库与脚手架模板，可被各应用复用。
+- `templates/cli`：CLI 工具示例。
+- `templates/client`：前端富客户端范例。
+- `templates/server`：服务端或 API 框架入口。
+- `templates/vitepress`：营销页或文档站示例。
+- `templates/tsup`：基于 tsup 的库模板。
+- `templates/tsdown`：基于 tsdown 的库模板。
+- `templates/unbuild`：基于 unbuild 的库模板。
+- `templates/vue-lib`：Vue 组件库模板。
+- `packages/*`：共享库与脚手架工具，可被各应用复用。
 - 根目录配置文件（如 `turbo.json`、`tsconfig.json`、`eslint.config.js`）确保跨工作区设置一致。
 
 ## 常用脚本
@@ -70,10 +77,9 @@ packages/
 
 ## 模板使用流程
 
-- 在 GitHub 仓库页点击 “Use this template”，或克隆后重置远程地址。
-- 安装依赖并运行 `pnpm script:init` 同步工作区配置。
-- 根据团队需求删除不需要的应用/包，或复制现有模板创建新模块。
-- 借助 `pnpm script:sync` 保持依赖版本一致，避免包间差异。
+- 使用 `pnpm create icebreaker` 在新目录中生成精简后的工作区。
+- 安装依赖后执行 `pnpm install`、`pnpm dev` 开始开发。
+- 根据团队需求继续增删应用/包或复制模板扩展模块。
 
 ## 发布与版本管理
 

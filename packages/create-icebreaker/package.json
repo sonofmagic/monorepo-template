@@ -24,14 +24,20 @@
     "create-icebreaker": "bin/create-icebreaker.js"
   },
   "files": [
-    "bin"
+    "bin",
+    "dist"
   ],
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
+    "dev": "tsdown --watch --sourcemap",
+    "build": "tsdown",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@icebreakers/monorepo-templates": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

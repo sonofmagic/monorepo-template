@@ -1,0 +1,60 @@
+{
+  "name": "@icebreakers/server",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "tsup(esbuild) build package template",
+  "author": "ice breaker <1324318532@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "directory": "templates/server"
+  },
+  "bugs": {
+    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+  },
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./router": "./src/trpc-router.ts",
+    "./config": "./src/config.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "wrangler dev",
+    "node:build:watch": "tsup --watch --sourcemap",
+    "node:build": "tsup",
+    "node:dev": "tsx watch src/node-entry.ts",
+    "node:start": "node dist/node-entry.js",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "release": "pnpm publish",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "postinstall": "pnpm cf-typegen"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.19.9",
+    "consola": "^3.4.2",
+    "hono": "^4.11.4",
+    "wrangler": "^4.59.1",
+    "zod": "^4.3.5"
+  }
+}

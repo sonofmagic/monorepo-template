@@ -96,10 +96,10 @@ describe('createNewProject unit scenarios', () => {
 
   it('getTemplateMap merges extra entries', async () => {
     const { getTemplateMap } = await import('@/commands/create')
-    const merged = getTemplateMap({ custom: 'templates/custom-template' })
-    expect(merged.custom).toBe('templates/custom-template')
-    expect(merged.unbuild).toBe('packages/unbuild-template')
-    expect(merged.tsdown).toBe('packages/tsdown-template')
+    const merged = getTemplateMap({ custom: 'custom-template' })
+    expect(merged.custom).toEqual({ source: 'custom-template', target: 'custom-template' })
+    expect(merged.unbuild).toEqual({ source: 'unbuild', target: 'packages/unbuild' })
+    expect(merged.tsdown).toEqual({ source: 'tsdown', target: 'packages/tsdown' })
   })
 
   it('throws when target directory already exists', async () => {
@@ -128,7 +128,7 @@ describe('createNewProject unit scenarios', () => {
     const copyTargets = copyMock.mock.calls.map(args => args[0])
     expect(copyTargets.some(target => target.includes('README.md'))).toBe(true)
     const filter = copyMock.mock.calls[0]?.[2]?.filter
-    expect(filter?.('/repo/templates/.DS_Store')).toBe(false)
+    expect(filter?.('/repo/templates/tsup/.DS_Store')).toBe(false)
   })
 
   it('writes package.mock.json when renameJson option is enabled', async () => {

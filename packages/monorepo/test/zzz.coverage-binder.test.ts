@@ -63,7 +63,7 @@ describe('coverage binder', () => {
       getAssetTargets: () => ['docs/.gitignore'],
     }))
     vi.doMock('./getTemplateTargets', () => ({
-      getTemplateTargets: async () => ['packages/template/gitignore'],
+      getTemplateTargets: async () => ['unbuild/gitignore'],
     }))
     const successMock = vi.fn()
     vi.doMock('../src/core/logger', () => ({

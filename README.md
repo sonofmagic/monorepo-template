@@ -12,7 +12,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 
 ## Key Features
 
-- **Modular Architecture**: All deployable surfaces live under `apps/` while reusable templates reside in `packages/`, keeping responsibilities clear.
+- **Modular Architecture**: Template sources live under `templates/` while reusable tooling lives in `packages/`, keeping responsibilities clear.
 - **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
 - **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `@icebreakers/monorepo` keep dependencies and scaffolding aligned.
@@ -29,27 +29,34 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 ### Bootstrap shortcuts
 
 - Zero-install cleanup on a fresh clone: `pnpm dlx @icebreakers/monorepo@latest clean --yes` (add `--include-private` to keep private packages in scope).
-- One-liner scaffold: `pnpm create icebreaker my-app` or `npm create icebreaker@latest my-app` clones the repo, strips `.git`, and runs the cleanup. Flags: `--no-clean` to keep samples, `--branch <name>` / `--repo <git-url>` to point at a different source.
+- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Defaults to npm templates; use `--source git` to clone. Use `--templates tsup,vue-hono` or `--templates 2,5` to preselect.
 
 ## Repository Layout
 
 ```text
-apps/
+templates/
   cli/          # CLI application scaffold
   client/       # Web client (e.g., Vue/React)
   server/       # Server or API layer
-  website/      # Static site or documentation portal
+  vitepress/    # Static site or documentation portal
+  tsup/         # Library template powered by tsup
+  tsdown/       # Library template powered by tsdown
+  unbuild/      # Library template powered by unbuild
+  vue-lib/      # Vue component library template
 packages/
   monorepo/           # @icebreakers/monorepo helper scripts
-  tsup-template/      # Library template powered by tsup
-  unbuild-template/   # Library template powered by unbuild
-  vue-lib-template/   # Vue component library template
+  create-icebreaker/  # npm create flow
+  monorepo-templates/ # template asset bundle for npm
 ```
 
-- `apps/cli`: Sample CLI app scaffold.
-- `apps/client`: Sample rich web client application.
-- `apps/server`: Entry point for server or API services.
-- `apps/website`: Static marketing or documentation site starter.
+- `templates/cli`: Sample CLI app scaffold.
+- `templates/client`: Sample rich web client application.
+- `templates/server`: Entry point for server or API services.
+- `templates/vitepress`: Static marketing or documentation site starter.
+- `templates/tsup`: Library template powered by tsup.
+- `templates/tsdown`: Library template powered by tsdown.
+- `templates/unbuild`: Library template powered by unbuild.
+- `templates/vue-lib`: Vue component library template.
 - `packages/*`: Reusable packages and scaffolding shared across apps.
 - Root configuration files (`turbo.json`, `tsconfig.json`, `eslint.config.js`, etc.) enforce consistent settings across the monorepo.
 
@@ -70,10 +77,9 @@ packages/
 
 ## Template Workflow
 
-- Click “Use this template” on GitHub, or clone the repository and update the remote origin.
-- Install dependencies and run `pnpm script:init` to align workspace configuration.
-- Remove unused apps/packages or duplicate existing templates to spin up new modules quickly.
-- Keep versions aligned via `pnpm script:sync`.
+- Use `pnpm create icebreaker` to scaffold a trimmed workspace in a new directory.
+- Install dependencies and start development with `pnpm install` and `pnpm dev`.
+- Add or remove apps/packages as your workspace evolves.
 
 ## Release & Versioning
 

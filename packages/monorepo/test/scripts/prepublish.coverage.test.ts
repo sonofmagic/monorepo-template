@@ -6,7 +6,7 @@ describe('prepublish script coverage', () => {
     const copyMock = vi.fn()
     const pathExistsMock = vi.fn()
     const getAssetTargetsMock = vi.fn(() => ['.husky', 'docs/.gitignore'])
-    const getTemplateTargetsMock = vi.fn(async () => ['packages/template/gitignore'])
+    const getTemplateTargetsMock = vi.fn(async () => ['unbuild/gitignore'])
     const successMock = vi.fn()
     const errorMock = vi.fn()
 

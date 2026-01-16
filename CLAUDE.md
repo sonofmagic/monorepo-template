@@ -4,21 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a pnpm + Turbo monorepo template designed for production-ready projects. The monorepo maintains a clear separation: **deployable applications** live under `apps/` while **reusable packages/templates** live under `packages/`.
+This is a pnpm + Turbo monorepo template designed for production-ready projects. Template sources live under `templates/` while reusable tooling lives under `packages/`.
 
 ### Architecture
 
-- **`apps/`** - Deployable applications:
+- **`templates/`** - Template sources:
   - `cli/` - CLI application scaffold
   - `client/` - Vue.js web client with Cloudflare integration
   - `server/` - Server/API layer (tsup-based)
-  - `website/` - VitePress documentation site
+  - `vitepress/` - VitePress documentation site
+  - `tsup/`, `unbuild/`, `tsdown/` - Library build templates
+  - `vue-lib/` - Vue component library template
 
-- **`packages/`** - Reusable templates and utilities:
+- **`packages/`** - Reusable tooling:
   - `monorepo/` - @icebreakers/monorepo helper scripts and CLI
-  - `tsup-template/`, `unbuild-template/`, `tsdown-template/` - Library build templates
-  - `vue-lib-template/` - Vue component library template
-  - `create-icebreaker/` - CLI scaffolding tool
+  - `create-icebreaker/` - npm create scaffolding tool
+  - `monorepo-templates/` - template asset bundle for npm
 
 ### Build System
 

@@ -56,7 +56,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   const templateTargets = await getTemplateTargets()
 
   for (const t of templateTargets) {
-    const from = path.resolve(rootDir, t)
+    const from = path.resolve(rootDir, 'templates', t)
     const to = path.resolve(templatesDir, toPublishGitignorePath(t))
     try {
       await fs.copy(from, to, copyOptions)

@@ -5,14 +5,14 @@ under `apps/`, pass the path explicitly, e.g. `apps/my-app`.
 
 Built-in template map:
 
-- tsup -> packages/tsup-template
-- tsdown -> packages/tsdown-template
-- unbuild -> packages/unbuild-template
-- vue-lib -> packages/vue-lib-template
-- hono-server -> apps/server
-- vue-hono -> apps/client
-- vitepress -> apps/website
-- cli -> apps/cli
+- tsup -> templates/tsup => packages/tsup
+- tsdown -> templates/tsdown => packages/tsdown
+- unbuild -> templates/unbuild => packages/unbuild
+- vue-lib -> templates/vue-lib => packages/vue-lib
+- hono-server -> templates/server => apps/server
+- vue-hono -> templates/client => apps/client
+- vitepress -> templates/vitepress => apps/website
+- cli -> templates/cli => apps/cli
 
 Notes:
 

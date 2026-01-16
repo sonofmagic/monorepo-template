@@ -11,20 +11,32 @@ import { logger } from '../core/logger'
 import { toWorkspaceGitignorePath } from '../utils'
 
 /**
- * 内置模板映射表，value 指向仓库中对应模板所在路径。
+ * 内置模板映射表，source 指向 templates 根目录下的来源目录，target 为生成路径。
  */
 export const templateMap = {
-  'tsup': 'packages/tsup-template',
-  'tsdown': 'packages/tsdown-template',
-  'unbuild': 'packages/unbuild-template',
-  'vue-lib': 'packages/vue-lib-template',
-  'hono-server': 'apps/server',
-  'vue-hono': 'apps/client',
-  'vitepress': 'apps/website',
-  'cli': 'apps/cli',
+  'tsup': { source: 'tsup', target: 'packages/tsup' },
+  'tsdown': { source: 'tsdown', target: 'packages/tsdown' },
+  'unbuild': { source: 'unbuild', target: 'packages/unbuild' },
+  'vue-lib': { source: 'vue-lib', target: 'packages/vue-lib' },
+  'hono-server': { source: 'server', target: 'apps/server' },
+  'vue-hono': { source: 'client', target: 'apps/client' },
+  'vitepress': { source: 'vitepress', target: 'apps/website' },
+  'cli': { source: 'cli', target: 'apps/cli' },
 } as const
 
 export type CreateNewProjectType = keyof typeof templateMap
+
+export interface TemplateDefinition {
+  source: string
+  target: string
+}
+
+function normalizeTemplateDefinition(value: string | TemplateDefinition) {
+  if (typeof value === 'string') {
+    return { source: value, target: value }
+  }
+  return value
+}
 
 export interface CreateNewProjectOptions {
   name?: string
@@ -62,10 +74,14 @@ export function getCreateChoices(choices?: CreateChoiceOption[]) {
 /**
  * 合并内置与自定义模板映射，允许扩展新的模板类型。
  */
-export function getTemplateMap(extra?: Record<string, string>) {
-  const base: Record<string, string> = { ...templateMap }
+export function getTemplateMap(extra?: Record<string, string | TemplateDefinition>) {
+  const base: Record<string, TemplateDefinition> = Object.fromEntries(
+    Object.entries(templateMap).map(([key, value]) => [key, normalizeTemplateDefinition(value)]),
+  )
   if (extra && Object.keys(extra).length) {
-    Object.assign(base, extra)
+    for (const [key, value] of Object.entries(extra)) {
+      base[key] = normalizeTemplateDefinition(value)
+    }
   }
   return base
 }
@@ -126,14 +142,14 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   const bundlerName = (typeof requestedTemplate === 'string' && templateDefinitions[requestedTemplate])
     ? requestedTemplate
     : fallbackTemplate
-  const sourceRelative = templateDefinitions[bundlerName]
+  const templateDefinition = templateDefinitions[bundlerName]
 
-  if (!sourceRelative) {
+  if (!templateDefinition) {
     throw new Error(`未找到名为 ${bundlerName} 的模板，请检查 monorepo.config.ts`)
   }
 
-  const from = path.join(templatesRoot, sourceRelative)
-  const targetName = name && name.length > 0 ? name : sourceRelative
+  const from = path.join(templatesRoot, templateDefinition.source)
+  const targetName = name && name.length > 0 ? name : templateDefinition.target
   const to = path.join(cwd, targetName)
   if (await fs.pathExists(to)) {
     throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(cwd, to)}`)

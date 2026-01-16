@@ -1,0 +1,50 @@
+{
+  "name": "@icebreakers/monorepo-templates",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Template assets for icebreaker monorepo scaffolding",
+  "author": "ice breaker <1324318532@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "directory": "packages/monorepo-templates"
+  },
+  "bugs": {
+    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+  },
+  "keywords": [
+    "monorepo",
+    "template",
+    "scaffold"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "skeleton",
+    "template-data.mjs",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "tsdown --watch --sourcemap",
+    "build": "tsdown",
+    "sync:assets": "node scripts/sync-assets.mjs",
+    "prepack": "node scripts/sync-assets.mjs",
+    "lint": "eslint ."
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

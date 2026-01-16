@@ -68,7 +68,7 @@ describe('prepareAssets', () => {
       'docs/.gitignore',
     ])
     getTemplateTargetsMock.mockResolvedValue([
-      'packages/template/.gitignore',
+      'unbuild/.gitignore',
     ])
 
     pathExistsMock.mockImplementation(async (target: string) => {
@@ -93,13 +93,13 @@ describe('prepareAssets', () => {
     const assetGitignore = copyMock.mock.calls.find(args => args[0] === `${rootDir}/docs/.gitignore`)
     expect(assetGitignore?.[1]).toBe(`${assetsDir}/docs/gitignore`)
 
-    const templateGitignore = copyMock.mock.calls.find(args => args[0] === `${rootDir}/packages/template/.gitignore`)
-    expect(templateGitignore?.[1]).toBe(`${templatesDir}/packages/template/gitignore`)
+    const templateGitignore = copyMock.mock.calls.find(args => args[0] === `${rootDir}/templates/unbuild/.gitignore`)
+    expect(templateGitignore?.[1]).toBe(`${templatesDir}/unbuild/gitignore`)
 
     expect(successMock.mock.calls.map(args => args[0])).toEqual([
       'assets/.husky',
       'assets/docs/gitignore',
-      'templates/packages/template/gitignore',
+      'templates/unbuild/gitignore',
       'prepare ok!',
     ])
   })

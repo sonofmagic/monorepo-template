@@ -30,7 +30,7 @@ export default defineMonorepoConfig({
     sync: {
       concurrency: 4,
       command: 'cnpm sync {name}',
-      patterns: ['apps/*', 'packages/*'],
+      patterns: ['apps/*', 'packages/*', 'templates/*'],
     },
     upgrade: {
       skipOverwrite: false,

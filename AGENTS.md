@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This pnpm + Turbo monorepo keeps deployable surfaces under `apps/` (`cli`, `client`, `server`, `website`) and reusable templates under `packages/` (e.g., `monorepo`, `vue-lib-template`). Shared TypeScript and build settings live in root configs such as `turbo.json`, `tsconfig.json`, and `eslint.config.js`. Tests sit alongside their targets in `test/*.test.ts`, and each app owns its public assets (`public/`, `worker/`) to keep deployments self-contained.
+This pnpm + Turbo monorepo keeps template sources under `templates/` (`cli`, `client`, `server`, `vitepress`, `tsup`, `tsdown`, `unbuild`, `vue-lib`) and reusable tooling under `packages/` (e.g., `monorepo`, `create-icebreaker`). Shared TypeScript and build settings live in root configs such as `turbo.json`, `tsconfig.json`, and `eslint.config.js`. Tests sit alongside their targets in `test/*.test.ts`, and each app owns its public assets (`public/`, `worker/`) to keep deployments self-contained.
 
 ## Build, Test, and Development Commands
 
