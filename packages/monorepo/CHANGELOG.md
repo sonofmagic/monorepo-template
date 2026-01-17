@@ -1,5 +1,13 @@
 # @icebreakers/monorepo
 
+## 3.2.2
+
+### Patch Changes
+
+- 🐛 **refactor scaffolding to share template copy utilities** [`403e513`](https://github.com/sonofmagic/monorepo-template/commit/403e51348ed1a26ab9d8e6f5f2bce3f11f08bf60) by @sonofmagic
+- 📦 **Dependencies** [`8258df9`](https://github.com/sonofmagic/monorepo-template/commit/8258df91e300e4cdbc39962495264aa43fe8e019)
+  → `@icebreakers/monorepo-templates@0.1.2`
+
 ## 3.2.1
 
 ### Patch Changes
