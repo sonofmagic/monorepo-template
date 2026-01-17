@@ -1,5 +1,13 @@
 # @icebreakers/monorepo-templates
 
+## 0.1.2
+
+### Patch Changes
+
+- 🐛 **refactor vue-lib template to library-only layout** [`8258df9`](https://github.com/sonofmagic/monorepo-template/commit/8258df91e300e4cdbc39962495264aa43fe8e019) by @sonofmagic
+
+- 🐛 **refactor scaffolding to share template copy utilities** [`403e513`](https://github.com/sonofmagic/monorepo-template/commit/403e51348ed1a26ab9d8e6f5f2bce3f11f08bf60) by @sonofmagic
+
 ## 0.1.1
 
 ### Patch Changes
