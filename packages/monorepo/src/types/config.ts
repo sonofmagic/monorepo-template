@@ -1,5 +1,6 @@
+import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
 import type { AgenticTemplateFormat } from '../commands/ai'
-import type { CreateNewProjectOptions, TemplateDefinition } from '../commands/create'
+import type { CreateNewProjectOptions } from '../commands/create'
 import type { CliOpts } from './cli'
 import type { GetWorkspacePackagesOptions } from './workspace'
 

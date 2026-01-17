@@ -2,7 +2,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { Command } from '@icebreakers/monorepo-templates'
 import { DEFAULT_TARGET } from './constants'
-import { prepareTarget } from './fs-utils'
 import { updateRootPackageJson } from './package-json'
 import { promptTargetDir, promptTemplates } from './prompts'
 import { scaffoldFromNpm } from './source-npm'
@@ -48,8 +47,7 @@ async function runCreate(targetDirInput: string, options: CreateOptions) {
   const targetDir = path.resolve(process.cwd(), targetInput)
   const projectName = path.basename(targetDir) || targetInput
 
-  await prepareTarget(targetDir, Boolean(options.force))
-  await scaffoldFromNpm(targetDir, selectedTemplates)
+  await scaffoldFromNpm(targetDir, selectedTemplates, Boolean(options.force))
   await updateRootPackageJson(targetDir, projectName)
   printNextSteps(targetDir)
 }

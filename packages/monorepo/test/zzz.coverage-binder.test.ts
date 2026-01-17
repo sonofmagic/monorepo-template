@@ -42,7 +42,7 @@ describe('coverage binder', () => {
       simpleGit: vi.fn(() => ({ raw: rawMock })),
     }))
 
-    const { getTemplateTargets } = await import('../scripts/getTemplateTargets')
+    const { getTemplateTargets } = await import('./helpers/getTemplateTargets')
     const targets = await getTemplateTargets()
     expect(targets).toEqual(expect.arrayContaining(['README.md', 'package.json']))
   })
@@ -50,34 +50,31 @@ describe('coverage binder', () => {
   it('executes create command primary flow', async () => {
     await vi.resetModules()
     const ensureDirMock = vi.fn(async () => {})
-    const readdirMock = vi.fn(async () => ['package.json', 'README.md', '.DS_Store'])
-    const copyMock = vi.fn(async (_from: string, _to: string, options?: { filter?: (src: string) => boolean }) => {
-      if (options?.filter) {
-        options.filter(path.join(_from, '.DS_Store'))
-        options.filter(path.join(_from, 'README.md'))
-      }
-    })
-    const pathExistsMock = vi.fn(async () => false)
+    const pathExistsMock = vi.fn(async (targetPath: string) => targetPath.endsWith('package.json'))
     const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
     const outputJsonMock = vi.fn(async () => {})
+    const scaffoldTemplateMock = vi.fn(async () => {})
 
     vi.doMock('fs-extra', () => ({
       __esModule: true,
       default: {
         ensureDir: ensureDirMock,
-        readdir: readdirMock,
-        copy: copyMock,
         pathExists: pathExistsMock,
         readJson: readJsonMock,
         outputJson: outputJsonMock,
       },
       ensureDir: ensureDirMock,
-      readdir: readdirMock,
-      copy: copyMock,
       pathExists: pathExistsMock,
       readJson: readJsonMock,
       outputJson: outputJsonMock,
     }))
+    vi.doMock('@icebreakers/monorepo-templates', async (importOriginal) => {
+      const actual = await importOriginal<typeof import('@icebreakers/monorepo-templates')>()
+      return {
+        ...actual,
+        scaffoldTemplate: scaffoldTemplateMock,
+      }
+    })
     vi.doMock('@/core/config', () => ({
       resolveCommandConfig: vi.fn(async () => ({
         renameJson: true,
@@ -96,8 +93,7 @@ describe('coverage binder', () => {
 
     const { createNewProject } = await import('@/commands/create')
     await createNewProject({ cwd: '/repo', type: 'custom' })
-    expect(readdirMock).toHaveBeenCalled()
-    expect(copyMock).toHaveBeenCalled()
+    expect(scaffoldTemplateMock).toHaveBeenCalled()
     expect(outputJsonMock).toHaveBeenCalledWith(path.join('/repo', 'my-app', 'package.mock.json'), expect.any(Object), { spaces: 2 })
     expect(successMock).toHaveBeenCalled()
   })

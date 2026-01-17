@@ -1,9 +1,5 @@
-import type { TemplateDefinition } from '@/commands/create'
+import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-interface CopyOptions {
-  filter?: (src: string) => boolean
-}
 
 interface TemplateMapSubset {
   custom: TemplateDefinition
@@ -29,11 +25,10 @@ interface OutputPackageJson {
 }
 
 const ensureDirMock = vi.fn(async () => {})
-const copyMock = vi.fn<(source: string, target: string, options?: CopyOptions) => Promise<void>>(async () => {})
-const readdirMock = vi.fn(async () => ['package.json'])
 const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
 const outputJsonMock = vi.fn<(file: string, data: unknown, options?: { spaces?: number }) => Promise<void>>(async () => {})
 const pathExistsMock = vi.fn(async () => false)
+const scaffoldTemplateMock = vi.fn(async () => {})
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const successMock = vi.fn()
 const getRepoNameMock = vi.fn(async () => 'ice/awesome')
@@ -43,20 +38,18 @@ const getRepoRootMock = vi.fn(async () => '/repo')
 beforeEach(async () => {
   await vi.resetModules()
   ensureDirMock.mockClear()
-  copyMock.mockClear()
-  readdirMock.mockReset()
   readJsonMock.mockReset()
   outputJsonMock.mockClear()
   pathExistsMock.mockReset()
+  scaffoldTemplateMock.mockClear()
   resolveCommandConfigMock.mockReset()
   successMock.mockClear()
   getRepoNameMock.mockClear()
   getUserMock.mockClear()
   getRepoRootMock.mockClear()
 
-  readdirMock.mockResolvedValue(['package.json', 'README.md', 'gitignore', '.DS_Store'])
   readJsonMock.mockResolvedValue({ name: 'template', version: '1.0.0' })
-  pathExistsMock.mockImplementation(async () => false)
+  pathExistsMock.mockImplementation(async (targetPath: string) => targetPath.endsWith('package.json'))
   getRepoNameMock.mockResolvedValue('ice/awesome')
   getUserMock.mockResolvedValue({ name: 'Dev Example', email: 'dev@example.com' })
   getRepoRootMock.mockResolvedValue('/repo')
@@ -65,15 +58,11 @@ beforeEach(async () => {
     __esModule: true,
     default: {
       ensureDir: ensureDirMock,
-      copy: copyMock,
-      readdir: readdirMock,
       readJson: readJsonMock,
       outputJson: outputJsonMock,
       pathExists: pathExistsMock,
     },
     ensureDir: ensureDirMock,
-    copy: copyMock,
-    readdir: readdirMock,
     readJson: readJsonMock,
     outputJson: outputJsonMock,
     pathExists: pathExistsMock,
@@ -106,6 +95,10 @@ beforeEach(async () => {
       }
     },
   }))
+
+  vi.doMock('@icebreakers/monorepo-templates', () => ({
+    scaffoldTemplate: scaffoldTemplateMock,
+  }))
 })
 
 describe('createNewProject unit scenarios', () => {
@@ -127,15 +120,15 @@ describe('createNewProject unit scenarios', () => {
   })
 
   it('throws when target directory already exists', async () => {
-    pathExistsMock.mockResolvedValue(true)
+    pathExistsMock.mockResolvedValueOnce(true)
     const { createNewProject } = await import('@/commands/create')
 
     await expect(createNewProject({ cwd: '/repo', name: 'demo' })).rejects.toThrow('目标目录已存在')
     expect(ensureDirMock).not.toHaveBeenCalled()
+    expect(scaffoldTemplateMock).not.toHaveBeenCalled()
   })
 
   it('falls back to default template when requested type is unknown', async () => {
-    readdirMock.mockResolvedValue(['package.json', 'README.md', 'gitignore', '.DS_Store'])
     resolveCommandConfigMock.mockResolvedValue({
       defaultTemplate: 'tsup',
       renameJson: false,
@@ -149,14 +142,12 @@ describe('createNewProject unit scenarios', () => {
     expect(outputCall).toBeDefined()
     const pkgJson = outputCall?.[1] as { name?: string } | undefined
     expect(pkgJson?.name).toBe('demo-app')
-    const copyTargets = copyMock.mock.calls.map(args => args[0])
-    expect(copyTargets.some(target => target.includes('README.md'))).toBe(true)
-    const filter = copyMock.mock.calls[0]?.[2]?.filter
-    expect(filter?.('/repo/templates/tsup/.DS_Store')).toBe(false)
+    expect(scaffoldTemplateMock).toHaveBeenCalledWith(expect.objectContaining({
+      skipRootBasenames: ['package.json'],
+    }))
   })
 
   it('writes package.mock.json when renameJson option is enabled', async () => {
-    readdirMock.mockResolvedValue(['package.json'])
     const { createNewProject } = await import('@/commands/create')
     await createNewProject({ cwd: '/repo', name: '@scope/demo', renameJson: true, type: 'tsup' })
 

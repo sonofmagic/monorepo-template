@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { simpleGit } from 'simple-git'
-import { templateMap } from '../src/commands/create'
-import { rootDir } from '../src/constants'
+import { templateMap } from '../../src/commands/create'
+import { rootDir } from '../../src/constants'
 
 const git = simpleGit(rootDir)
 const templatePrefix = /^templates[\\/]/

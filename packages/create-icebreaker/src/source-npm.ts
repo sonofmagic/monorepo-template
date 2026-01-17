@@ -1,24 +1,10 @@
-import path from 'node:path'
-import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
-import { copyDirContents } from './fs-utils'
-import { templateChoices } from './templates'
+import { scaffoldWorkspace } from '@icebreakers/monorepo-templates'
 
-async function copySelectedTemplates(targetDir: string, selectedTemplates: string[]) {
-  if (!selectedTemplates.length) {
-    return
-  }
-  const selected = new Set(selectedTemplates)
-  for (const template of templateChoices) {
-    if (!selected.has(template.key)) {
-      continue
-    }
-    const from = path.join(templatesDir, template.source)
-    const to = path.join(targetDir, template.target)
-    await copyDirContents(from, to)
-  }
-}
-
-export async function scaffoldFromNpm(targetDir: string, selectedTemplates: string[]) {
-  await copyDirContents(assetsDir, targetDir)
-  await copySelectedTemplates(targetDir, selectedTemplates)
+export async function scaffoldFromNpm(targetDir: string, selectedTemplates: string[], force = false) {
+  await scaffoldWorkspace({
+    targetDir,
+    templateKeys: selectedTemplates,
+    targetMode: 'prepare',
+    force,
+  })
 }

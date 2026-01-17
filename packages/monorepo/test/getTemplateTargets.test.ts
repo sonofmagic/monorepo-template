@@ -1,4 +1,4 @@
-import { getTemplateTargets } from '../scripts/getTemplateTargets'
+import { getTemplateTargets } from './helpers/getTemplateTargets'
 
 describe('getTemplateTargets', () => {
   it('should work', async () => {

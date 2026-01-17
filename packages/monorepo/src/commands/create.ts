@@ -1,6 +1,7 @@
+import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
 import type { CreateChoiceOption, PackageJson } from '@/types'
 import process from 'node:process'
-import { shouldSkipTemplatePath } from '@icebreakers/monorepo-templates'
+import { scaffoldTemplate } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import path from 'pathe'
 import pc from 'picocolors'
@@ -9,7 +10,6 @@ import { templatesDir as defaultTemplatesDir } from '../constants'
 import { resolveCommandConfig } from '../core/config'
 import { GitClient } from '../core/git'
 import { logger } from '../core/logger'
-import { toWorkspaceGitignorePath } from '../utils'
 
 /**
  * 内置模板映射表，source 指向 templates 根目录下的来源目录，target 为生成路径。
@@ -26,11 +26,6 @@ export const templateMap = {
 } as const
 
 export type CreateNewProjectType = keyof typeof templateMap
-
-export interface TemplateDefinition {
-  source: string
-  target: string
-}
 
 function normalizeTemplateDefinition(value: string | TemplateDefinition) {
   if (typeof value === 'string') {
@@ -158,24 +153,16 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
 
   await fs.ensureDir(to)
 
-  const filelist = await fs.readdir(from)
-  const shouldSkip = (src: string) => shouldSkipTemplatePath(from, src)
-  const copyTasks = filelist
-    .filter(filename => filename !== 'package.json')
-    .map(async (filename) => {
-      const sourcePath = path.resolve(from, filename)
-      const targetPath = path.resolve(to, toWorkspaceGitignorePath(filename))
-      await fs.copy(sourcePath, targetPath, {
-        filter(src) {
-          return !shouldSkip(src)
-        },
-      })
-    })
+  const sourceJsonPath = path.resolve(from, 'package.json')
+  const hasPackageJson = await fs.pathExists(sourceJsonPath)
 
-  await Promise.all(copyTasks)
+  await scaffoldTemplate({
+    sourceDir: from,
+    targetDir: to,
+    skipRootBasenames: ['package.json'],
+  })
 
-  if (filelist.includes('package.json')) {
-    const sourceJsonPath = path.resolve(from, 'package.json')
+  if (hasPackageJson) {
     const sourceJson = await fs.readJson(sourceJsonPath) as PackageJson
     set(sourceJson, 'version', '0.0.0')
     const packageName = name?.startsWith('@') ? name : path.basename(targetName)
