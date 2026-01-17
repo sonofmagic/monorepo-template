@@ -16,15 +16,13 @@
   "keywords": [],
   "sideEffects": false,
   "exports": {
-    ".": "./lib/index.ts"
+    ".": "./src/index.ts"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
     "test": "vitest run",
     "test:dev": "vitest",
     "release": "pnpm publish",
@@ -45,17 +43,13 @@
     "types": "./dist/index.d.ts"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "jsdom": "^27.4.0",
-    "tailwindcss": "^4.1.18",
-    "unplugin-vue-router": "^0.19.2",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
     "vue": "^3.5.26",
-    "vue-router": "^4.6.4",
     "vue-tsc": "^3.2.2"
   }
 }

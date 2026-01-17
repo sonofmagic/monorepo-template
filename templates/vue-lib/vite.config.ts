@@ -1,8 +1,6 @@
 import type { PluginOption, UserConfig } from 'vite'
-import Tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
 import path from 'pathe'
-import VueRouter from 'unplugin-vue-router/vite'
 import { mergeConfig } from 'vite'
 import DTS from 'vite-plugin-dts'
 import { sharedConfig } from './vite.shared.config'
@@ -12,28 +10,20 @@ const ensureVitePlugin = <T>(plugin: T) => plugin as unknown as PluginOption
 
 export default mergeConfig(sharedConfig, {
   plugins: [
-    ensureVitePlugin(
-      VueRouter(
-        {
-          dts: path.relative(import.meta.dirname, './types/typed-router.d.ts'),
-        },
-      ),
-    ),
     ensureVitePlugin(Vue()),
     ensureVitePlugin(
       DTS(
         {
           tsconfigPath: './tsconfig.app.json',
-          entryRoot: './lib',
+          entryRoot: './src',
         },
       ),
     ),
-    ensureVitePlugin(Tailwindcss()),
   ],
   // https://vite.dev/guide/build.html#library-mode
   build: {
     lib: {
-      entry: path.resolve(import.meta.dirname, 'lib/index'),
+      entry: path.resolve(import.meta.dirname, 'src/index'),
       name: 'icebreaker',
       // the proper extensions will be added
       fileName: 'index',

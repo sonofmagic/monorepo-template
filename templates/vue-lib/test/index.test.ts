@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import HelloWorld from '../lib/HelloWorld.vue'
+import HelloWorld from '../src/HelloWorld.vue'
 
 it('displays message', () => {
   const wrapper = mount(HelloWorld, {

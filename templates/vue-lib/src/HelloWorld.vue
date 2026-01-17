@@ -7,15 +7,16 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="p-2">
-    <div class="rounded-2xl p-2">
-      {{ msg }}
-    </div>
+  <div class="hello-world">
+    {{ msg }}
   </div>
 </template>
 
 <style scoped>
-.a {
-  color: aliceblue;
+.hello-world {
+  padding: 8px;
+  color: #222;
+  background: #f5f5f5;
+  border-radius: 12px;
 }
 </style>
