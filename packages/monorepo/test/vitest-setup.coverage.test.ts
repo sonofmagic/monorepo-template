@@ -4,6 +4,9 @@ describe('vitest setup coverage', () => {
   it('prepares assets when license is missing and skips otherwise', async () => {
     const pathExistsMock = vi.fn()
     const prepareAssetsMock = vi.fn(async () => {})
+    const lockCloseMock = vi.fn(async () => {})
+    const openMock = vi.fn(async () => ({ close: lockCloseMock }))
+    const rmMock = vi.fn(async () => {})
 
     await vi.resetModules()
     vi.doMock('fs-extra', () => ({
@@ -12,6 +15,10 @@ describe('vitest setup coverage', () => {
         pathExists: pathExistsMock,
       },
       pathExists: pathExistsMock,
+    }))
+    vi.doMock('node:fs/promises', () => ({
+      open: openMock,
+      rm: rmMock,
     }))
     vi.doMock('@icebreakers/monorepo-templates', () => ({
       assetsDir: '/assets',
@@ -24,12 +31,19 @@ describe('vitest setup coverage', () => {
     await vi.resetModules()
     pathExistsMock.mockReset()
     prepareAssetsMock.mockReset()
+    lockCloseMock.mockReset()
+    openMock.mockReset()
+    rmMock.mockReset()
     vi.doMock('fs-extra', () => ({
       __esModule: true,
       default: {
         pathExists: pathExistsMock,
       },
       pathExists: pathExistsMock,
+    }))
+    vi.doMock('node:fs/promises', () => ({
+      open: openMock,
+      rm: rmMock,
     }))
     vi.doMock('@icebreakers/monorepo-templates', () => ({
       assetsDir: '/assets',
