@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 0.1.5
+
+### Patch Changes
+
+- 🐛 **chore(deps): upgrade jsdom** [`d8a61a6`](https://github.com/sonofmagic/monorepo-template/commit/d8a61a6accc1f0a9bfefbd8ac3c4a6924ae09f87) by @sonofmagic
+
 ## 0.1.4
 
 ### Patch Changes
