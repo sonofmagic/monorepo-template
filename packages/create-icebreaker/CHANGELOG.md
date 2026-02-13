@@ -1,5 +1,13 @@
 # create-icebreaker
 
+## 0.1.9
+
+### Patch Changes
+
+- 🐛 **Replace maintainer email metadata across packages and templates.** [`e3bd746`](https://github.com/sonofmagic/monorepo-template/commit/e3bd7460f2a48ca986b8a3c585be2f9235d5ec0f) by @sonofmagic
+- 📦 **Dependencies** [`e3bd746`](https://github.com/sonofmagic/monorepo-template/commit/e3bd7460f2a48ca986b8a3c585be2f9235d5ec0f)
+  → `@icebreakers/monorepo-templates@0.1.9`
+
 ## 0.1.8
 
 ### Patch Changes
