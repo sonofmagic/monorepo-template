@@ -1,5 +1,16 @@
 # @icebreakers/monorepo-templates
 
+## 0.1.10
+
+### Patch Changes
+
+- 🐛 **Enforce stricter commit-time quality gates in scaffolded projects.** [`ac7b512`](https://github.com/sonofmagic/monorepo-template/commit/ac7b512e2aa506491381dde0299da2faaa88e375) by @sonofmagic
+
+  - Add Stylelint checks for staged style files (including Vue SFC style blocks) in `lint-staged.config.js`.
+  - Update agent rules to require build-first validation, ESLint/Stylelint, TypeScript error fixes, and `tsd` tests for TypeScript libraries before running test suites.
+
+- 🐛 **Remove the deprecated VS Code ESLint lookup flag from template settings and upgrade fixtures.** [`b2e7b9f`](https://github.com/sonofmagic/monorepo-template/commit/b2e7b9fd3f089b3a46215618092b361e4382d06e) by @sonofmagic
+
 ## 0.1.9
 
 ### Patch Changes
