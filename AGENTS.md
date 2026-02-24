@@ -19,6 +19,12 @@ Follow the root `.editorconfig`: two-space indentation, LF line endings, UTF-8. 
 
 `lint-staged.config.js` must include Stylelint checks for staged style files so style validation also runs during pre-commit.
 
+When a single code file exceeds 300 lines, treat it as a refactor signal and split it into smaller modules.
+
+When splitting code, do not create suffix-based sibling files such as `xxx.config.ts` or `xxx.filter.ts` just to move logic around. Create a dedicated folder (for example `xxx/`) and place the split modules inside it with clear responsibilities.
+
+All generated code must pass ESLint checks, and all generated style files must pass Stylelint checks.
+
 ## Testing Guidelines
 
 Vitest powers unit tests located in `test/*.test.ts`. Mirror existing naming by matching the unit under test (`monorepo` utilities map to `packages/monorepo/test/*.test.ts`). Aim for meaningful assertions rather than snapshot defaults, and add coverage checks with `pnpm test -- --coverage`, which writes reports to `coverage/`. When introducing new public APIs, include integration-style tests in the relevant app workspace. AI-assisted validation must run a full test matrix when available, including unit, integration, and E2E tests.
@@ -26,6 +32,8 @@ Vitest powers unit tests located in `test/*.test.ts`. Mirror existing naming by 
 Before running tests, build the packages first and run tests against build artifacts instead of source-only execution to better match real delivery behavior.
 
 TypeScript issues must be fixed before commit. Do not commit with unresolved TypeScript compile or type-check errors.
+
+TypeScript code must be validated with `tsc` (`pnpm typecheck` or the relevant workspace `typecheck` script) and must not contain type errors.
 
 When building TypeScript libraries (type-focused APIs or public type definitions), add and maintain `tsd` type tests to verify exported type behavior.
 
