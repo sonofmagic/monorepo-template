@@ -27,7 +27,7 @@ interface OutputPackageJson {
 const ensureDirMock = vi.fn(async () => {})
 const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
 const outputJsonMock = vi.fn<(file: string, data: unknown, options?: { spaces?: number }) => Promise<void>>(async () => {})
-const pathExistsMock = vi.fn(async () => false)
+const pathExistsMock = vi.fn<(targetPath: string) => Promise<boolean>>(async (_targetPath: string) => false)
 const scaffoldTemplateMock = vi.fn(async () => {})
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const successMock = vi.fn()

@@ -83,11 +83,16 @@ async function copyDirContents(sourceDir: string, targetDir: string, options: Co
     const targetName = renameEntry(entry.name)
     const to = path.join(targetDir, targetName)
     if (entry.isDirectory()) {
-      await copyDirContents(from, to, {
+      const nestedOptions: CopyDirContentsOptions = {
         rootDir,
         filter,
         renameEntry,
-        skipRootBasenames: options.skipRootBasenames,
+      }
+      if (options.skipRootBasenames) {
+        nestedOptions.skipRootBasenames = options.skipRootBasenames
+      }
+      await copyDirContents(from, to, {
+        ...nestedOptions,
       })
       continue
     }
@@ -114,12 +119,20 @@ export async function scaffoldTemplate(options: ScaffoldTemplateOptions) {
     await fs.mkdir(targetDir, { recursive: true })
   }
 
-  await copyDirContents(sourceDir, targetDir, {
+  const copyOptions: CopyDirContentsOptions = {
     rootDir: sourceDir,
-    filter,
-    renameEntry,
-    skipRootBasenames,
-  })
+  }
+  if (filter) {
+    copyOptions.filter = filter
+  }
+  if (renameEntry) {
+    copyOptions.renameEntry = renameEntry
+  }
+  if (skipRootBasenames) {
+    copyOptions.skipRootBasenames = skipRootBasenames
+  }
+
+  await copyDirContents(sourceDir, targetDir, copyOptions)
 }
 
 export async function scaffoldWorkspace(options: ScaffoldWorkspaceOptions) {

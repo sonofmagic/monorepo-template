@@ -174,4 +174,49 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     await fs.remove(root)
   })
+
+  it('merges AGENTS.md content when it already exists', async () => {
+    const checkboxMock = vi.fn(async (options: { choices?: Array<{ value: string }> }) => {
+      const choices = Array.isArray(options?.choices) ? options.choices : []
+      return choices.map(choice => choice.value)
+    })
+    const { root, outDir } = await createTempOutDir('monorepo-upgrade-agents-')
+    const agentsPath = path.join(outDir, 'AGENTS.md')
+
+    await vi.resetModules()
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
+
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
+    await upgradeMonorepo({ outDir })
+
+    await fs.writeFile(agentsPath, [
+      '# Repository Guidelines',
+      '',
+      '## Project Structure & Module Organization',
+      '',
+      'custom structure section',
+      '',
+      '## Team Notes',
+      '',
+      'team-only notes',
+      '',
+    ].join('\n'), 'utf8')
+
+    await upgradeMonorepo({ outDir })
+
+    const next = await fs.readFile(agentsPath, 'utf8')
+    expect(next).toContain('custom structure section')
+    expect(next).not.toContain('This pnpm + Turbo monorepo keeps template sources under')
+    expect(next).toContain('## Build, Test, and Development Commands')
+    expect(next).toContain('## Team Notes')
+    expect(next).toContain('team-only notes')
+
+    await fs.remove(root)
+  })
 })

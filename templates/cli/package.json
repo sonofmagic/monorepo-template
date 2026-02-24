@@ -22,7 +22,8 @@
     "dev": "tsup --watch --sourcemap",
     "build": "tsup",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "consola": "^3.4.2"

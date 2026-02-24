@@ -13,6 +13,7 @@ import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
 import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
+import { mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
 import { getAssetTargets } from './targets'
@@ -128,6 +129,25 @@ export async function upgradeMonorepo(opts: CliOpts) {
           ? mergeWorkspaceManifest(sourceManifest, targetManifest)
           : sourceManifest
         const data = YAML.stringify(mergedManifest, { singleQuote: true })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
+        const action = async () => {
+          await fs.outputFile(targetPath, data, 'utf8')
+          logger.success(targetPath)
+        }
+        await scheduleOverwrite(intent, {
+          relPath,
+          targetPath,
+          action,
+          pending: pendingOverwrites,
+        })
+        continue
+      }
+
+      if (relPath === 'AGENTS.md') {
+        const source = await fs.readFile(file.path, 'utf8')
+        const exists = await fs.pathExists(targetPath)
+        const target = exists ? await fs.readFile(targetPath, 'utf8') : ''
+        const data = exists ? mergeAgentsMarkdown(source, target) : source
         const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')

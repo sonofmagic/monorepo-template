@@ -12,6 +12,7 @@ const coreAssetTargets = [
   'stylelint.config.js',
   'monorepo.config.ts',
   'package.json',
+  'AGENTS.md',
   // pnpm
   'pnpm-workspace.yaml',
   // base tsconfig
