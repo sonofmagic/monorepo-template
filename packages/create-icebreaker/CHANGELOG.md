@@ -1,5 +1,12 @@
 # create-icebreaker
 
+## 0.1.11
+
+### Patch Changes
+
+- 📦 **Dependencies** [`80a4318`](https://github.com/sonofmagic/monorepo-template/commit/80a4318faee69830a66902f175cc709962918abe)
+  → `@icebreakers/monorepo-templates@0.1.11`
+
 ## 0.1.10
 
 ### Patch Changes
