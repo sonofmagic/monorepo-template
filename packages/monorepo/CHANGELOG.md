@@ -1,5 +1,16 @@
 # @icebreakers/monorepo
 
+## 3.2.11
+
+### Patch Changes
+
+- 🐛 **Improve `monorepo up` AGENTS handling and harden related type checks.** [`80a4318`](https://github.com/sonofmagic/monorepo-template/commit/80a4318faee69830a66902f175cc709962918abe) by @sonofmagic
+  - Include `AGENTS.md` in upgrade asset targets.
+  - Merge `AGENTS.md` by section instead of blindly overwriting existing content.
+  - Fix TypeScript issues in `@icebreakers/monorepo` tests and `@icebreakers/monorepo-templates` scaffold options under `exactOptionalPropertyTypes`.
+- 📦 **Dependencies** [`80a4318`](https://github.com/sonofmagic/monorepo-template/commit/80a4318faee69830a66902f175cc709962918abe)
+  → `@icebreakers/monorepo-templates@0.1.11`
+
 ## 3.2.10
 
 ### Patch Changes
