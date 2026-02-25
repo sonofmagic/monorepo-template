@@ -3,6 +3,7 @@ import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets 
 import { templateChoices as rawTemplateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
 import { prepareAssets } from './prepare'
+import { ensureTemplateAssetsPrepared } from './runtime-assets'
 import { scaffoldTemplate, scaffoldWorkspace } from './scaffold'
 import { runCommand } from './utils/command'
 import { isGitignoreFile, toPublishGitignorePath, toWorkspaceGitignorePath } from './utils/gitignore'
@@ -24,7 +25,7 @@ export const templateTargetMap = Object.fromEntries(
 
 export const templateMap = templateSourceMap
 
-export { prepareAssets }
+export { ensureTemplateAssetsPrepared, prepareAssets }
 export { scaffoldTemplate, scaffoldWorkspace }
 export {
   createTemplateCopyFilter,

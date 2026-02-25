@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { templateChoices } from '../template-data.mjs'
 import { assetsDir as defaultAssetsDir, templatesDir as defaultTemplatesDir } from './paths'
+import { ensureTemplateAssetsPrepared } from './runtime-assets'
 import { toWorkspaceGitignorePath } from './utils/gitignore'
 import { shouldSkipTemplatePath } from './utils/template-filter'
 
@@ -105,6 +106,12 @@ async function copyDirContents(sourceDir: string, targetDir: string, options: Co
   }
 }
 
+function isDefaultTemplatesPath(sourceDir: string) {
+  const resolvedSource = path.resolve(sourceDir)
+  const resolvedTemplatesRoot = path.resolve(defaultTemplatesDir)
+  return resolvedSource === resolvedTemplatesRoot || resolvedSource.startsWith(`${resolvedTemplatesRoot}${path.sep}`)
+}
+
 export async function scaffoldTemplate(options: ScaffoldTemplateOptions) {
   const {
     sourceDir,
@@ -114,6 +121,10 @@ export async function scaffoldTemplate(options: ScaffoldTemplateOptions) {
     renameEntry,
     skipRootBasenames,
   } = options
+
+  if (isDefaultTemplatesPath(sourceDir)) {
+    await ensureTemplateAssetsPrepared()
+  }
 
   if (ensureTargetDir) {
     await fs.mkdir(targetDir, { recursive: true })
@@ -145,6 +156,13 @@ export async function scaffoldWorkspace(options: ScaffoldWorkspaceOptions) {
     targetMode = 'prepare',
     force = false,
   } = options
+
+  if (
+    (includeAssets && path.resolve(assetsDir) === path.resolve(defaultAssetsDir))
+    || (templateKeys.length > 0 && path.resolve(templatesDir) === path.resolve(defaultTemplatesDir))
+  ) {
+    await ensureTemplateAssetsPrepared()
+  }
 
   if (targetMode === 'prepare') {
     await prepareTargetDir(targetDir, { force })

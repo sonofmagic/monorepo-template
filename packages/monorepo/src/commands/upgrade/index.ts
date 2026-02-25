@@ -2,7 +2,7 @@ import type { Buffer } from 'node:buffer'
 import type { CliOpts, PackageJson } from '../../types'
 import type { PendingOverwrite } from './overwrite'
 import process from 'node:process'
-import { checkbox } from '@icebreakers/monorepo-templates'
+import { checkbox, ensureTemplateAssetsPrepared } from '@icebreakers/monorepo-templates'
 import fs from 'fs-extra'
 import klaw from 'klaw'
 import path from 'pathe'
@@ -25,6 +25,7 @@ export { setPkgJson }
  * 将 assets 目录的模版文件同步到工程中，实现一键升级脚手架能力。
  */
 export async function upgradeMonorepo(opts: CliOpts) {
+  await ensureTemplateAssetsPrepared()
   const cwd = opts.cwd ?? process.cwd()
   const upgradeConfig = await resolveCommandConfig('upgrade', cwd)
   const merged: CliOpts = {
