@@ -49,7 +49,7 @@ npx create-turbo@latest
 
 这会生成一个 monorepo 结构，比如：
 
-```
+```txt
 .
 ├── apps
 │   ├── web     # 前端应用

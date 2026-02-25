@@ -6,7 +6,7 @@ outline: [2, 4]
 
 在 `Node.js` 中，**npm 包（npm package）** 是指一个通过 [npm（Node Package Manager）](https://www.npmjs.com/) 发布和管理的可重用 `JavaScript` 模块。它可以是一个库、工具、框架、命令行工具，甚至是一个完整的应用程序。
 
-### 什么是 npm？
+## 什么是 npm？
 
 **npm（Node Package Manager）** 是 Node.js 的官方包管理工具，用于：
 
@@ -28,11 +28,11 @@ outline: [2, 4]
 
 ---
 
-### 什么是一个 npm 包？
+## 什么是一个 npm 包？
 
 一个 **npm 包** 通常具有以下结构：
 
-```
+```txt
 my-package/
 ├── package.json     // 包的元数据（名字、版本、依赖等）
 ├── index.js         // 主文件（或其它入口）

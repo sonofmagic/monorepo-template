@@ -10,13 +10,13 @@
 
 下面这 2 个标志想必大家在 `npmjs` 进行搜索的时候都见到过。
 
-<img width="40" src="../assets/npm-ts.svg" />
+<img width="40" src="../assets/npm-ts.svg" alt="TypeScript built-in types badge" />
 
 这个标志代表这个包发布的时候，本身包里面就自己提供了 `dts`，这个需要在打包生成出 `dts` 之后，在 `package.json` 中，通过 `types` 字段指定了 `dts` 的位置
 
 比如我发的所有包 [weapp-tailwindcss](https://www.npmjs.com/package/weapp-tailwindcss), [weapp-vite](https://www.npmjs.com/package/weapp-vite), [modern-ahocorasick](https://www.npmjs.com/package/modern-ahocorasick) 等等...
 
-<img width="40" src="../assets/npm-dt.svg" />
+<img width="40" src="../assets/npm-dt.svg" alt="DefinitelyTyped badge" />
 
 这个标志代表这个包发布的时候，本身包里面没有 `dts`，但是有好心人给他写了 `dts`，并发布到了 `@types/*` 这个作用域下了，所以这个包等同于也有 `dts`，而且 `vscode` 也在发现你安装了这样的包之后，也会去下载 `@types/*` 这样的包，当然更好的方式是你要显式安装 `@types` 包
 
@@ -29,9 +29,9 @@
 <div class="flex justify-center">
 <div class="flex items-center border p-6">
 
-<img class="w-12" src="../assets/npm-ts.svg" />
+<img class="w-12" src="../assets/npm-ts.svg" alt="TypeScript built-in types badge" />
 <div class="text-5xl mx-5">></div>
-<img class="w-12" src="../assets/npm-dt.svg" />
+<img class="w-12" src="../assets/npm-dt.svg" alt="DefinitelyTyped badge" />
 <div class="text-5xl mx-5">></div>
 <div>什么标志都没有的包</div>
 </div>
@@ -88,6 +88,6 @@ declare function add(a: number, b: number): number
 - 手动编写 `.d.ts`
 - 自动生成（例如通过 `tsc --declaration`）
 - 安装类型定义包：
-  ```
+  ```bash
   npm install --save-dev @types/express
   ```

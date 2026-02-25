@@ -14,7 +14,7 @@
 | `.mts`  | TypeScript，**指定生成 ESM**                       | TS 编译器/工具链                                     | 同上；不由 Node 直接执行。编译后产出 `.mjs/.js`（ESM 语义），并可生成 `.d.mts`。                                                                                                                                                  |
 | `.d.ts` | **类型声明文件**（仅类型，无运行时）               | TypeScript 编译器、编辑器/语言服务、打包器的类型阶段 | **永不执行**。仅在类型检查/智能提示/发布类型时被“读取”。若包的 `package.json` 有 `"types": "index.d.ts"`（或在 `exports` 的 `types`/ `typesVersions` 配置），TS 会用它做类型来源。也存在 `.d.mts` / `.d.cts` 变体以对应 ESM/CJS。 |
 
-# 关键规则与细节
+## 关键规则与细节
 
 1. **Node.js 如何决定 CJS vs ESM（针对 `.js`）**
    - 在某个包目录（有 `package.json`）下：
