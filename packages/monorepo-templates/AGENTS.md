@@ -26,4 +26,3 @@ This file adds package-local guidance. Global rules are defined in the repositor
 - `pnpm --filter @icebreakers/monorepo-templates build`
 - `pnpm --filter @icebreakers/monorepo-templates lint`
 - `pnpm --filter @icebreakers/monorepo-templates typecheck`
-
