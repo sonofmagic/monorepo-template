@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 3.2.12
+
+### Patch Changes
+
+- 🐛 **fix upgrade AGENTS merge to be idempotent and avoid duplicate section growth on repeated `monorepo up` runs.** [`ea5c77c`](https://github.com/sonofmagic/monorepo-template/commit/ea5c77c94e513686f6f54e752961efef5ff00f60) by @sonofmagic
+
 ## 3.2.11
 
 ### Patch Changes
