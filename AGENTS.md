@@ -24,6 +24,7 @@ When a single code file exceeds 300 lines, treat it as a refactor signal and spl
 When splitting code, do not create suffix-based sibling files such as `xxx.config.ts` or `xxx.filter.ts` just to move logic around. Create a dedicated folder (for example `xxx/`) and place the split modules inside it with clear responsibilities.
 
 All generated code must pass ESLint checks, and all generated style files must pass Stylelint checks.
+Generated Vue files or other SFC files that include style blocks are also required to pass Stylelint checks.
 
 ## Testing Guidelines
 
