@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mergeAgentsMarkdown } from '@/commands/upgrade/agents'
+import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from '@/commands/upgrade/agents'
 
 describe('mergeAgentsMarkdown', () => {
   it('keeps existing sections and fills missing sections from source', () => {
@@ -67,5 +67,44 @@ describe('mergeAgentsMarkdown', () => {
       'line-c',
       '',
     ].join('\n'))
+  })
+
+  it('is idempotent and does not accumulate duplicate custom sections', () => {
+    const source = [
+      '# Repository Guidelines',
+      '',
+      '## Build',
+      '',
+      'source build command',
+      '',
+    ].join('\n')
+    const target = [
+      '# Team Custom Guidelines',
+      '',
+      '## Build',
+      '',
+      'custom build command',
+      '',
+      '## Team Notes',
+      '',
+      'team-only notes',
+      '',
+      '## Team Notes',
+      '',
+      'team-only notes',
+      '',
+    ].join('\n')
+
+    const once = mergeAgentsMarkdown(source, target)
+    const twice = mergeAgentsMarkdown(source, once)
+
+    expect(twice).toBe(once)
+    expect(once.match(/^## Team Notes$/gm)).toHaveLength(1)
+  })
+
+  it('treats trailing newline and EOL differences as equivalent content', () => {
+    const linux = ['# Title', '', '## Section', '', 'body', ''].join('\n')
+    const windows = '# Title\r\n\r\n## Section\r\n\r\nbody'
+    expect(isAgentsMarkdownEquivalent(linux, windows)).toBe(true)
   })
 })

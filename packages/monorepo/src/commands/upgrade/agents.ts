@@ -12,6 +12,10 @@ function normalizeEol(input: string) {
   return input.replace(/\r\n/g, '\n')
 }
 
+function normalizeComparableContent(input: string) {
+  return normalizeEol(input).trimEnd()
+}
+
 function normalizeHeadingKey(line: string) {
   return line.replace(/^##\s+/, '').trim().toLowerCase()
 }
@@ -91,6 +95,10 @@ function mergePlainText(source: string, target: string) {
   return `${result.join('\n')}\n`
 }
 
+function getSectionSignature(section: MarkdownSection) {
+  return `${section.key}\n${trimEdgeEmptyLines(section.lines).join('\n')}`
+}
+
 /**
  * Merge AGENTS instructions by keeping existing sections and filling missing sections
  * from source defaults. This avoids destructive overwrite while still syncing updates.
@@ -111,8 +119,14 @@ export function mergeAgentsMarkdown(source: string, target: string) {
     mergedSections.push(targetSectionMap.get(section.key) ?? section)
   }
 
+  const seenTargetOnlySectionSignatures = new Set<string>()
   for (const section of targetParsed.sections) {
     if (!sourceSectionKeys.has(section.key)) {
+      const signature = getSectionSignature(section)
+      if (seenTargetOnlySectionSignatures.has(signature)) {
+        continue
+      }
+      seenTargetOnlySectionSignatures.add(signature)
       mergedSections.push(section)
     }
   }
@@ -129,4 +143,11 @@ export function mergeAgentsMarkdown(source: string, target: string) {
   }
 
   return `${blocks.filter(Boolean).join('\n\n')}\n`
+}
+
+/**
+ * Compare AGENTS markdown with normalized EOL and trailing newline differences ignored.
+ */
+export function isAgentsMarkdownEquivalent(left: string, right: string) {
+  return normalizeComparableContent(left) === normalizeComparableContent(right)
 }
