@@ -66,11 +66,13 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
 
   const readmeZh = path.resolve(workspaceDir, 'README.zh-CN.md')
   const qoderDir = path.resolve(workspaceDir, '.qoder')
+  const docsPlansDir = path.resolve(workspaceDir, 'docs/plans')
   const skillTargets = Object.values(getSkillTargetPaths())
   const candidates = Array.from(new Set([
     ...cleanDirs.filter(Boolean),
     readmeZh,
     qoderDir,
+    docsPlansDir,
     ...skillTargets,
   ]))
   await Promise.all(candidates.map(async (dir) => {

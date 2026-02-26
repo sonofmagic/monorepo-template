@@ -137,6 +137,7 @@ describe('clean coverage', () => {
     expect(removeMock).toHaveBeenCalledWith('/repo/packages/keep-me')
     expect(removeMock).toHaveBeenCalledWith('/repo/README.zh-CN.md')
     expect(removeMock).toHaveBeenCalledWith('/repo/.qoder')
+    expect(removeMock).toHaveBeenCalledWith('/repo/docs/plans')
     expect(readJsonMock).toHaveBeenCalledWith('/repo/package.json')
     expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
       devDependencies: {
