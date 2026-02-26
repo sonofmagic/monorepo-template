@@ -21,6 +21,54 @@ import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
 export { setPkgJson }
 
+function normalizeEol(input: string) {
+  return input.replace(/\r\n/g, '\n')
+}
+
+function normalizeGitignoreLine(line: string) {
+  const trimmed = line.trim()
+  if (!trimmed) {
+    return ''
+  }
+  if (trimmed.startsWith('#')) {
+    return `#${trimmed.slice(1).trim()}`
+  }
+  return trimmed
+}
+
+function isTextEquivalent(left: string, right: string) {
+  return normalizeEol(left).trimEnd() === normalizeEol(right).trimEnd()
+}
+
+function mergeGitignore(source: string, target: string) {
+  const sourceLines = normalizeEol(source).split('\n')
+  const result = normalizeEol(target).split('\n')
+  const seen = new Set(
+    result
+      .map(line => normalizeGitignoreLine(line))
+      .filter(Boolean),
+  )
+
+  for (const line of sourceLines) {
+    const normalized = normalizeGitignoreLine(line)
+    if (!normalized || seen.has(normalized)) {
+      continue
+    }
+    seen.add(normalized)
+    result.push(line)
+  }
+
+  while (result.length) {
+    const last = result.at(-1)
+    if (last === undefined || last.trim().length > 0) {
+      break
+    }
+    result.pop()
+  }
+
+  return `${result.join('\n')}\n`
+}
+
 /**
  * 将 assets 目录的模版文件同步到工程中，实现一键升级脚手架能力。
  */
@@ -130,6 +178,28 @@ export async function upgradeMonorepo(opts: CliOpts) {
           ? mergeWorkspaceManifest(sourceManifest, targetManifest)
           : sourceManifest
         const data = YAML.stringify(mergedManifest, { singleQuote: true })
+        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
+        const action = async () => {
+          await fs.outputFile(targetPath, data, 'utf8')
+          logger.success(targetPath)
+        }
+        await scheduleOverwrite(intent, {
+          relPath,
+          targetPath,
+          action,
+          pending: pendingOverwrites,
+        })
+        continue
+      }
+
+      if (relPath === '.gitignore') {
+        const source = await fs.readFile(file.path, 'utf8')
+        const exists = await fs.pathExists(targetPath)
+        const target = exists ? await fs.readFile(targetPath, 'utf8') : ''
+        const data = exists ? mergeGitignore(source, target) : source
+        if (exists && isTextEquivalent(target, data)) {
+          continue
+        }
         const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')

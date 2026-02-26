@@ -219,4 +219,42 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     await fs.remove(root)
   })
+
+  it('merges .gitignore content when it already exists', async () => {
+    const checkboxMock = vi.fn(async (options: { choices?: Array<{ value: string }> }) => {
+      const choices = Array.isArray(options?.choices) ? options.choices : []
+      return choices.map(choice => choice.value)
+    })
+    const { root, outDir } = await createTempOutDir('monorepo-upgrade-gitignore-')
+    const gitignorePath = path.join(outDir, '.gitignore')
+
+    await vi.resetModules()
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        checkbox: checkboxMock,
+      }
+    })
+
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
+    await upgradeMonorepo({ outDir })
+
+    await fs.writeFile(gitignorePath, [
+      '# local overrides',
+      'node_modules',
+      '.playwright-cli',
+      '',
+    ].join('\n'), 'utf8')
+
+    await upgradeMonorepo({ outDir })
+
+    const next = await fs.readFile(gitignorePath, 'utf8')
+    expect(next).toContain('# local overrides')
+    expect(next).toContain('.playwright-cli')
+    expect(next).toContain('.turbo')
+    expect((next.match(/^node_modules$/gm) ?? []).length).toBe(1)
+
+    await fs.remove(root)
+  })
 })
