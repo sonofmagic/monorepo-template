@@ -1,5 +1,14 @@
 # @icebreakers/monorepo
 
+## 3.2.13
+
+### Patch Changes
+
+- 🐛 **merge `.gitignore` during `monorepo up` instead of overwriting existing project rules.** [`bca9428`](https://github.com/sonofmagic/monorepo-template/commit/bca9428de15d1768911e2978f57cfbb124a0d1a4) by @sonofmagic
+  - keep local ignore entries when `.gitignore` already exists
+  - append only missing template rules and avoid duplicate entries
+  - skip overwrite prompt when merged result is content-equivalent
+
 ## 3.2.12
 
 ### Patch Changes
