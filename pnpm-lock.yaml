@@ -15,20 +15,20 @@ importers:
         specifier: ^20.4.3
         version: 20.4.3(@types/node@25.3.3)(typescript@5.9.3)
       '@icebreakers/changelog-github':
-        specifier: ^0.2.0
-        version: 0.2.0(encoding@0.1.13)
+        specifier: ^0.2.1
+        version: 0.2.1(encoding@0.1.13)
       '@icebreakers/commitlint-config':
-        specifier: ^1.2.8
-        version: 1.2.8(conventional-changelog-conventionalcommits@9.1.0)
+        specifier: ^1.2.9
+        version: 1.2.9(conventional-changelog-conventionalcommits@9.2.0)
       '@icebreakers/eslint-config':
-        specifier: ^1.6.23
-        version: 1.6.23(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-pnpm@1.6.0(eslint@10.0.2(jiti@2.6.1)))(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0)(tailwindcss@4.2.1)(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
+        specifier: ^1.6.24
+        version: 1.6.24(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-pnpm@1.6.0(eslint@10.0.2(jiti@2.6.1)))(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0)(tailwindcss@4.2.1)(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
       '@icebreakers/monorepo':
         specifier: workspace:*
         version: link:packages/monorepo
       '@icebreakers/stylelint-config':
-        specifier: ^2.0.2
-        version: 2.0.2(postcss@8.5.6)(stylelint-order@7.0.0(stylelint@17.4.0(typescript@5.9.3)))(stylelint@17.4.0(typescript@5.9.3))
+        specifier: ^2.0.3
+        version: 2.0.3(postcss@8.5.6)(stylelint-order@7.0.0(stylelint@17.4.0(typescript@5.9.3)))(stylelint@17.4.0(typescript@5.9.3))
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -51,8 +51,8 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       es-toolkit:
-        specifier: ^1.45.0
-        version: 1.45.0
+        specifier: ^1.45.1
+        version: 1.45.1
       eslint:
         specifier: ^10.0.2
         version: 10.0.2(jiti@2.6.1)
@@ -276,10 +276,10 @@ importers:
         version: 1.26.0(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))(workerd@1.20260301.1)(wrangler@4.70.0)
       '@hono/node-server':
         specifier: ^1.19.10
-        version: 1.19.10(hono@4.12.4)
+        version: 1.19.10(hono@4.12.5)
       '@hono/trpc-server':
         specifier: ^0.4.2
-        version: 0.4.2(@trpc/server@11.11.0(typescript@5.9.3))(hono@4.12.4)
+        version: 0.4.2(@trpc/server@11.11.0(typescript@5.9.3))(hono@4.12.5)
       '@tailwindcss/vite':
         specifier: ^4.2.1
         version: 4.2.1(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -299,8 +299,8 @@ importers:
         specifier: ^3.4.2
         version: 3.4.2
       hono:
-        specifier: ^4.12.4
-        version: 4.12.4
+        specifier: ^4.12.5
+        version: 4.12.5
       tailwindcss:
         specifier: ^4.2.1
         version: 4.2.1
@@ -333,13 +333,13 @@ importers:
     devDependencies:
       '@hono/node-server':
         specifier: ^1.19.10
-        version: 1.19.10(hono@4.12.4)
+        version: 1.19.10(hono@4.12.5)
       consola:
         specifier: ^3.4.2
         version: 3.4.2
       hono:
-        specifier: ^4.12.4
-        version: 4.12.4
+        specifier: ^4.12.5
+        version: 4.12.5
       wrangler:
         specifier: ^4.70.0
         version: 4.70.0
@@ -813,8 +813,8 @@ packages:
   '@changesets/get-dependents-graph@2.1.3':
     resolution: {integrity: sha512-gphr+v0mv2I3Oxt19VdWRRUxq3sseyUpX9DaHpTUmLj92Y10AGy+XOtV+kbM6L/fDcpx7/ISDFK6T8A/P3lOdQ==}
 
-  '@changesets/get-github-info@0.7.0':
-    resolution: {integrity: sha512-+i67Bmhfj9V4KfDeS1+Tz3iF32btKZB2AAx+cYMqDSRFP7r3/ZdGbjCo+c6qkyViN9ygDuBjzageuPGJtKGe5A==}
+  '@changesets/get-github-info@0.8.0':
+    resolution: {integrity: sha512-cRnC+xdF0JIik7coko3iUP9qbnfi1iJQ3sAa6dE+Tx3+ET8bjFEm63PA4WEohgjYcmsOikPHWzPsMWWiZmntOQ==}
 
   '@changesets/get-release-plan@4.0.15':
     resolution: {integrity: sha512-Q04ZaRPuEVZtA+auOYgFaVQQSA98dXiVe/yFaZfY7hoSmQICHGvP0TF4u3EDNHWmmCS4ekA/XSpKlSM2PyTS2g==}
@@ -924,8 +924,8 @@ packages:
     engines: {node: '>=v18'}
     hasBin: true
 
-  '@commitlint/config-conventional@20.4.2':
-    resolution: {integrity: sha512-rwkTF55q7Q+6dpSKUmJoScV0f3EpDlWKw2UPzklkLS4o5krMN1tPWAVOgHRtyUTMneIapLeQwaCjn44Td6OzBQ==}
+  '@commitlint/config-conventional@20.4.3':
+    resolution: {integrity: sha512-9RtLySbYQAs8yEqWEqhSZo9nYhbm57jx7qHXtgRmv/nmeQIjjMcwf6Dl+y5UZcGWgWx435TAYBURONaJIuCjWg==}
     engines: {node: '>=v18'}
 
   '@commitlint/config-validator@20.4.3':
@@ -982,10 +982,6 @@ packages:
 
   '@commitlint/top-level@20.4.3':
     resolution: {integrity: sha512-qD9xfP6dFg5jQ3NMrOhG0/w5y3bBUsVGyJvXxdWEwBm8hyx4WOk3kKXw28T5czBYvyeCVJgJJ6aoJZUWDpaacQ==}
-    engines: {node: '>=v18'}
-
-  '@commitlint/types@20.4.0':
-    resolution: {integrity: sha512-aO5l99BQJ0X34ft8b0h7QFkQlqxC6e7ZPVmBKz13xM9O8obDaM1Cld4sQlJDXXU/VFuUzQ30mVtHjVz74TuStw==}
     engines: {node: '>=v18'}
 
   '@commitlint/types@20.4.3':
@@ -2009,24 +2005,24 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@icebreakers/changelog-github@0.2.0':
-    resolution: {integrity: sha512-pmRQxW8XJUwQ5ggE7CU9LhwA4Xa+q823v6CNcWV7FmXLY+YxNrfBAxypWhSij4tNxTg+lRTGqcH6Ic6ejmlFdA==}
+  '@icebreakers/changelog-github@0.2.1':
+    resolution: {integrity: sha512-NBLdURm9d9KpQrJoWyRw495VqX6YYjwtfn6UZJPmmphd0r6Neydg9NmyBjN6iR7gy6uE9d+xH7nhgBb0Qju8XA==}
 
-  '@icebreakers/commitlint-config@1.2.8':
-    resolution: {integrity: sha512-DqTgrLLR+e1n2v5soqMj+1cwX6GzPh4tGC3PG5vAmarp3Vlxw7xniqyCYbrbfkfoMVvPq3UYSWlIt1cTPIUaGw==}
+  '@icebreakers/commitlint-config@1.2.9':
+    resolution: {integrity: sha512-oKaXbWBH2kj7E9b7jdaU9oG/ymp1sjE3koxp7GtIY22IRtVbqgjgQs4gdKv86OP2qrHgNzmnAZ6wIMoPyVlZcQ==}
     peerDependencies:
       conventional-changelog-conventionalcommits: '>=9.0.0'
 
-  '@icebreakers/eslint-config@1.6.23':
-    resolution: {integrity: sha512-5knq5Kc8peox+Yq09Z2jmviOcfrPzqJrMAZg5CKAHhH44J3FJK0m/PlHU4x9ZrcNUm0z5Hkodmw/v3Tn0b7Axg==}
+  '@icebreakers/eslint-config@1.6.24':
+    resolution: {integrity: sha512-irCLmelPy0w3Y6Ai1AgkhGwN6eerofNCDnDqYnd96okkRBlHx2stZI2qOJdIeyAhDHs8NWfbXA6/2Mw2iv57SQ==}
     peerDependencies:
       eslint-plugin-pnpm: ^1.4.3
     peerDependenciesMeta:
       eslint-plugin-pnpm:
         optional: true
 
-  '@icebreakers/stylelint-config@2.0.2':
-    resolution: {integrity: sha512-oRXuPa3cB6lbNvgfHjPQ5roxZnGEGFNlx2AA62+sjtORgCv+y3S0Imr5xlTr8V8RHgPtRvu8OfudLiIBxm8xOg==}
+  '@icebreakers/stylelint-config@2.0.3':
+    resolution: {integrity: sha512-gJ9pxYRo2eimu6F6DwjRQPH2iCvUxF5Nhhbt87hKUJNJHq1Ox5ZTNE775VWDtwpXrJexp8uiPByFN6I1U8qHnA==}
     hasBin: true
 
   '@iconify-json/simple-icons@1.2.51':
@@ -4104,19 +4100,22 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@unocss/config@66.6.2':
-    resolution: {integrity: sha512-qny2bRW1OA+MZbWShVZdBg6fJundm1LqQwCxJnIpeK3McpPHS3pnHBiwD1wfZHY2z5Pe+XgZOZkozNmG/eyyqg==}
+  '@unocss/config@66.6.4':
+    resolution: {integrity: sha512-iwHl5FG81cOAMalqigjw21Z2tMa0xjN0doQxnGOLx8KP+BllruXSjBj8CRk3m6Ny9fDxfpFY0ruYbIBA5AGwDQ==}
     engines: {node: '>=14'}
 
-  '@unocss/core@66.6.2':
-    resolution: {integrity: sha512-IOvN1BLRP0VTjjS5afSxmXhvKRDko2Shisp8spU+A9qiH1tXEFP3phyVevm/SuGwBHO1lC+SJ451/4oFkCAwJA==}
+  '@unocss/core@66.6.4':
+    resolution: {integrity: sha512-Fii3lhVJVFrKUz6hMGAkq3sXBfNnXB2G8bldNHuBHJpDAoP1F0oO/SU/oSqSjCYvtcD5RtOn8qwzcHuuN3B/mg==}
 
-  '@unocss/eslint-plugin@66.6.2':
-    resolution: {integrity: sha512-oRity0IekMIZUM1s9qu9+4VBC3jmqp6IAEnH7GObrRZlW1s8oZrPlilLNNVldEB0Ez3XynZwJAdb6cHwNmwmPQ==}
+  '@unocss/core@66.6.5':
+    resolution: {integrity: sha512-hzjo+0EF+pNbf+tb0OjRNZRF9BJoKECcZZgtufxRPpWJdlv+aYmNkH1p9fldlHHzYcn3ZqVnnHnmk7HwaolJbg==}
+
+  '@unocss/eslint-plugin@66.6.5':
+    resolution: {integrity: sha512-0DdqgzcJvDhiHy2DyQ4IkUsPU9/2w0KPUIwZFpTeuya26Q5Je0PWrVjzhWt0T+mAcwuWXZ+juMnCgvC8ftBF+g==}
     engines: {node: '>=14'}
 
-  '@unocss/rule-utils@66.6.2':
-    resolution: {integrity: sha512-cygfCtkeMrqMM6si1cnyOF16sS7M2gCAqgmZybAhGV7tmH7V8Izn52JZiZIrxVRNMz9dWMVWerHEI9nLbFdbrg==}
+  '@unocss/rule-utils@66.6.5':
+    resolution: {integrity: sha512-eDGXoMebb5aeEAFa2y4gnGLC+CHZPx93JYCt6uvEyf9xOoetwDcZaYC8brWdjaSKn+WVgsfxiZreC7F0rJywOQ==}
     engines: {node: '>=14'}
 
   '@valibot/to-json-schema@1.5.0':
@@ -5040,14 +5039,9 @@ packages:
     resolution: {integrity: sha512-4YB1zEXqB17oBI8yRsAs1T+ZhbdsOgJqkl6Trz+GXt/eKf1e4jnA0oW+sOd9BEENzEViuNW0DNoFFjSf3CeC5Q==}
     engines: {node: '>=18'}
 
-  conventional-changelog-conventionalcommits@9.1.0:
-    resolution: {integrity: sha512-MnbEysR8wWa8dAEvbj5xcBgJKQlX/m0lhS8DsyAAWDHdfs2faDJxTgzRYlRYpXSe7UiKrIIlB4TrBKU9q9DgkA==}
+  conventional-changelog-conventionalcommits@9.2.0:
+    resolution: {integrity: sha512-fCf+ODjseueTV09wVBoC0HXLi3OyuBJ+HfE3L63Khxqnr99f9nUcnQh3a15lCWHlGLihyZShW/mVVkBagr9JvQ==}
     engines: {node: '>=18'}
-
-  conventional-commits-parser@6.2.1:
-    resolution: {integrity: sha512-20pyHgnO40rvfI0NGF/xiEoFMkXDtkF8FwHvk5BokoFoCuTQRI8vrNCNFWUOfuolKJMm1tPCHc8GgYEtr1XRNA==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   conventional-commits-parser@6.3.0:
     resolution: {integrity: sha512-RfOq/Cqy9xV9bOA8N+ZH6DlrDR+5S3Mi0B5kACEjESpE+AviIpAptx9a9cFpWCCvgRtWT+0BbUw+e1BZfts9jg==}
@@ -5491,8 +5485,8 @@ packages:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
-  dotenv@17.2.4:
-    resolution: {integrity: sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==}
+  dotenv@17.3.1:
+    resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
     engines: {node: '>=12'}
 
   dts-resolver@2.1.3:
@@ -5613,8 +5607,8 @@ packages:
     resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.45.0:
-    resolution: {integrity: sha512-RArCX+Zea16+R1jg4mH223Z8p/ivbJjIkU3oC6ld2bdUfmDxiCkFYSi9zLOR2anucWJUeH4Djnzgd0im0nD3dw==}
+  es-toolkit@1.45.1:
+    resolution: {integrity: sha512-/jhoOj/Fx+A+IIyDNOvO3TItGmlMKhtX8ISAHKE90c4b/k1tqaqEZ+uUqfpU8DMnW5cgNJv606zS55jGvza0Xw==}
 
   esbuild@0.21.5:
     resolution: {integrity: sha512-mg3OPMV4hXywwpoDxu3Qda5xCKQi+vCTZq8S9J/EpkhB2HzKXq4SNFZE3+NK93JYxc8VMSep+lOUSC/RVKaBqw==}
@@ -6384,8 +6378,8 @@ packages:
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
-  hono@4.12.4:
-    resolution: {integrity: sha512-ooiZW1Xy8rQ4oELQ++otI2T9DsKpV0M6c6cO6JGx4RTfav9poFFLlet9UMXHZnoM1yG0HWGlQLswBGX3RZmHtg==}
+  hono@4.12.5:
+    resolution: {integrity: sha512-3qq+FUBtlTHhtYxbxheZgY8NIFnkkC/MR8u5TTsr7YZ3wixryQ3cCwn3iZbg8p8B88iDBBAYSfZDS75t8MN7Vg==}
     engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
@@ -10120,7 +10114,7 @@ snapshots:
     dependencies:
       '@algolia/client-common': 5.37.0
 
-  '@antfu/eslint-config@7.6.1(@eslint-react/eslint-plugin@2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@next/eslint-plugin-next@16.1.6)(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.6.2(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-format@2.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-hooks@7.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-refresh@0.5.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))':
+  '@antfu/eslint-config@7.6.1(@eslint-react/eslint-plugin@2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@next/eslint-plugin-next@16.1.6)(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.6.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-format@2.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-hooks@7.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-refresh@0.5.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@clack/prompts': 1.0.1
@@ -10161,7 +10155,7 @@ snapshots:
     optionalDependencies:
       '@eslint-react/eslint-plugin': 2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
       '@next/eslint-plugin-next': 16.1.6
-      '@unocss/eslint-plugin': 66.6.2(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
+      '@unocss/eslint-plugin': 66.6.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-format: 2.0.1(eslint@10.0.2(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@10.0.2(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.0.1(eslint@10.0.2(jiti@2.6.1))
@@ -10566,7 +10560,7 @@ snapshots:
       picocolors: 1.1.1
       semver: 7.7.4
 
-  '@changesets/get-github-info@0.7.0(encoding@0.1.13)':
+  '@changesets/get-github-info@0.8.0(encoding@0.1.13)':
     dependencies:
       dataloader: 1.4.0
       node-fetch: 2.7.0(encoding@0.1.13)
@@ -10711,10 +10705,10 @@ snapshots:
       - '@types/node'
       - typescript
 
-  '@commitlint/config-conventional@20.4.2':
+  '@commitlint/config-conventional@20.4.3':
     dependencies:
-      '@commitlint/types': 20.4.0
-      conventional-changelog-conventionalcommits: 9.1.0
+      '@commitlint/types': 20.4.3
+      conventional-changelog-conventionalcommits: 9.2.0
 
   '@commitlint/config-validator@20.4.3':
     dependencies:
@@ -10801,11 +10795,6 @@ snapshots:
   '@commitlint/top-level@20.4.3':
     dependencies:
       escalade: 3.2.0
-
-  '@commitlint/types@20.4.0':
-    dependencies:
-      conventional-commits-parser: 6.2.1
-      picocolors: 1.1.1
 
   '@commitlint/types@20.4.3':
     dependencies:
@@ -11442,14 +11431,14 @@ snapshots:
 
   '@gwhitney/detect-indent@7.0.1': {}
 
-  '@hono/node-server@1.19.10(hono@4.12.4)':
+  '@hono/node-server@1.19.10(hono@4.12.5)':
     dependencies:
-      hono: 4.12.4
+      hono: 4.12.5
 
-  '@hono/trpc-server@0.4.2(@trpc/server@11.11.0(typescript@5.9.3))(hono@4.12.4)':
+  '@hono/trpc-server@0.4.2(@trpc/server@11.11.0(typescript@5.9.3))(hono@4.12.5)':
     dependencies:
       '@trpc/server': 11.11.0(typescript@5.9.3)
-      hono: 4.12.4
+      hono: 4.12.5
 
   '@humanfs/core@0.19.1': {}
 
@@ -11462,23 +11451,23 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@icebreakers/changelog-github@0.2.0(encoding@0.1.13)':
+  '@icebreakers/changelog-github@0.2.1(encoding@0.1.13)':
     dependencies:
-      '@changesets/get-github-info': 0.7.0(encoding@0.1.13)
+      '@changesets/get-github-info': 0.8.0(encoding@0.1.13)
       '@changesets/types': 6.1.0
-      dotenv: 17.2.4
+      dotenv: 17.3.1
     transitivePeerDependencies:
       - encoding
 
-  '@icebreakers/commitlint-config@1.2.8(conventional-changelog-conventionalcommits@9.1.0)':
+  '@icebreakers/commitlint-config@1.2.9(conventional-changelog-conventionalcommits@9.2.0)':
     dependencies:
-      '@commitlint/config-conventional': 20.4.2
-      '@commitlint/types': 20.4.0
-      conventional-changelog-conventionalcommits: 9.1.0
+      '@commitlint/config-conventional': 20.4.3
+      '@commitlint/types': 20.4.3
+      conventional-changelog-conventionalcommits: 9.2.0
 
-  '@icebreakers/eslint-config@1.6.23(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-pnpm@1.6.0(eslint@10.0.2(jiti@2.6.1)))(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0)(tailwindcss@4.2.1)(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))':
+  '@icebreakers/eslint-config@1.6.24(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-pnpm@1.6.0(eslint@10.0.2(jiti@2.6.1)))(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0)(tailwindcss@4.2.1)(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
-      '@antfu/eslint-config': 7.6.1(@eslint-react/eslint-plugin@2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@next/eslint-plugin-next@16.1.6)(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.6.2(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-format@2.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-hooks@7.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-refresh@0.5.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@antfu/eslint-config': 7.6.1(@eslint-react/eslint-plugin@2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@next/eslint-plugin-next@16.1.6)(@typescript-eslint/rule-tester@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@unocss/eslint-plugin@66.6.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint-plugin-format@2.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-hooks@7.0.1(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-react-refresh@0.5.2(eslint@10.0.2(jiti@2.6.1)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0))(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2))
       '@eslint-react/eslint-plugin': 2.13.0(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
       '@next/eslint-plugin-next': 16.1.6
       '@tanstack/eslint-plugin-query': 5.91.4(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
@@ -11490,7 +11479,7 @@ snapshots:
       eslint-plugin-tailwindcss: 3.18.2(tailwindcss@4.2.1)
       eslint-plugin-vuejs-accessibility: 2.5.0(eslint@10.0.2(jiti@2.6.1))(globals@17.3.0)
     optionalDependencies:
-      '@unocss/eslint-plugin': 66.6.2(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
+      '@unocss/eslint-plugin': 66.6.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-mdx: 3.7.0(eslint@10.0.2(jiti@2.6.1))
       eslint-plugin-pnpm: 1.6.0(eslint@10.0.2(jiti@2.6.1))
     transitivePeerDependencies:
@@ -11520,7 +11509,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@icebreakers/stylelint-config@2.0.2(postcss@8.5.6)(stylelint-order@7.0.0(stylelint@17.4.0(typescript@5.9.3)))(stylelint@17.4.0(typescript@5.9.3))':
+  '@icebreakers/stylelint-config@2.0.3(postcss@8.5.6)(stylelint-order@7.0.0(stylelint@17.4.0(typescript@5.9.3)))(stylelint@17.4.0(typescript@5.9.3))':
     dependencies:
       comment-json: 4.6.2
       postcss-html: 1.8.1
@@ -13879,23 +13868,26 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@unocss/config@66.6.2':
+  '@unocss/config@66.6.4':
     dependencies:
-      '@unocss/core': 66.6.2
+      '@unocss/core': 66.6.4
       colorette: 2.0.20
       consola: 3.4.2
       unconfig: 7.5.0
     optional: true
 
-  '@unocss/core@66.6.2':
+  '@unocss/core@66.6.4':
     optional: true
 
-  '@unocss/eslint-plugin@66.6.2(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)':
+  '@unocss/core@66.6.5':
+    optional: true
+
+  '@unocss/eslint-plugin@66.6.5(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/utils': 8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
-      '@unocss/config': 66.6.2
-      '@unocss/core': 66.6.2
-      '@unocss/rule-utils': 66.6.2
+      '@unocss/config': 66.6.4
+      '@unocss/core': 66.6.5
+      '@unocss/rule-utils': 66.6.5
       magic-string: 0.30.21
       synckit: 0.11.12
     transitivePeerDependencies:
@@ -13904,9 +13896,9 @@ snapshots:
       - typescript
     optional: true
 
-  '@unocss/rule-utils@66.6.2':
+  '@unocss/rule-utils@66.6.5':
     dependencies:
-      '@unocss/core': 66.6.2
+      '@unocss/core': 66.6.5
       magic-string: 0.30.21
     optional: true
 
@@ -14954,13 +14946,9 @@ snapshots:
     dependencies:
       compare-func: 2.0.0
 
-  conventional-changelog-conventionalcommits@9.1.0:
+  conventional-changelog-conventionalcommits@9.2.0:
     dependencies:
       compare-func: 2.0.0
-
-  conventional-commits-parser@6.2.1:
-    dependencies:
-      meow: 13.2.0
 
   conventional-commits-parser@6.3.0:
     dependencies:
@@ -15453,7 +15441,7 @@ snapshots:
 
   dotenv@17.2.3: {}
 
-  dotenv@17.2.4: {}
+  dotenv@17.3.1: {}
 
   dts-resolver@2.1.3: {}
 
@@ -15607,7 +15595,7 @@ snapshots:
       is-date-object: 1.1.0
       is-symbol: 1.1.1
 
-  es-toolkit@1.45.0: {}
+  es-toolkit@1.45.1: {}
 
   esbuild@0.21.5:
     optionalDependencies:
@@ -16731,7 +16719,7 @@ snapshots:
     dependencies:
       hermes-estree: 0.25.1
 
-  hono@4.12.4: {}
+  hono@4.12.5: {}
 
   hookable@5.5.3: {}
 
