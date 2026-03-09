@@ -1,5 +1,4 @@
 import type { ConfigValues, SimpleGit, SimpleGitOptions } from '@/types'
-import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
 import { simpleGit } from 'simple-git'
 
@@ -46,8 +45,8 @@ export class GitClient {
    */
   async getGitUrl() {
     const config = await this.getConfig()
-    const x = get(config, 'remote.origin.url')
-    if (x) {
+    const x = config['remote.origin.url']
+    if (typeof x === 'string') {
       return gitUrlParse(x)
     }
   }
@@ -67,8 +66,8 @@ export class GitClient {
    */
   async getUser() {
     const config = await this.getConfig()
-    const name: string = get(config, 'user.name')
-    const email: string = get(config, 'user.email')
+    const name = config['user.name']
+    const email = config['user.email']
     return {
       name,
       email,

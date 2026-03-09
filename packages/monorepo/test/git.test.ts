@@ -1,5 +1,4 @@
 import CI from 'ci-info'
-import get from 'get-value'
 import gitUrlParse from 'git-url-parse'
 import { vi } from 'vitest'
 import { GitClient } from '@/core/git'
@@ -11,8 +10,8 @@ describe('git client', () => {
   })
   it('client config', async () => {
     const listConfig = await client.listConfig()
-    const x = get(listConfig.all, 'remote.origin.url')
-    if (x) {
+    const x = listConfig.all['remote.origin.url']
+    if (typeof x === 'string') {
       const url = gitUrlParse(x)
       const y = `${url.owner}/${url.name}`
       logger.log(y)

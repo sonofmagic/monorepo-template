@@ -4,7 +4,7 @@ import process from 'node:process'
 import { scaffoldTemplate } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import pc from 'picocolors'
-import set from 'set-value'
+import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 import { templatesDir as defaultTemplatesDir } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -90,7 +90,7 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
       return
     }
 
-    set(pkgJson, ['bugs', 'url'], `https://github.com/${repoName}/issues`)
+    setByPath(pkgJson, ['bugs', 'url'], `https://github.com/${repoName}/issues`)
 
     const repository: PackageJson['repository'] = {
       type: 'git',
@@ -104,11 +104,11 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
       repository.directory = relative.split(path.sep).join('/')
     }
 
-    set(pkgJson, 'repository', repository)
+    setByPath(pkgJson, 'repository', repository)
 
     const gitUser = await git.getUser()
     if (gitUser?.name && gitUser?.email) {
-      set(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
+      setByPath(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
     }
   }
   catch {
@@ -164,9 +164,9 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
 
   if (hasPackageJson) {
     const sourceJson = await fs.readJson(sourceJsonPath) as PackageJson
-    set(sourceJson, 'version', '0.0.0')
+    setByPath(sourceJson, 'version', '0.0.0')
     const packageName = name?.startsWith('@') ? name : path.basename(targetName)
-    set(sourceJson, 'name', packageName)
+    setByPath(sourceJson, 'name', packageName)
     await applyGitMetadata(sourceJson, cwd, to)
     // renameJson 可将 package.json 暂存为 package.mock.json，满足某些仓库需要自定义命名的情景。
     await fs.outputJson(

@@ -1,7 +1,7 @@
 import type { CleanCommandConfig } from '../types'
 import { checkbox } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
-import set from 'set-value'
+import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
@@ -84,7 +84,7 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
   const pkgJson = await fs.readJson(name)
   // fix https://github.com/sonofmagic/monorepo-template/issues/76
   // 确保根目录仍旧依赖 @icebreakers/monorepo，避免删除后被 package manager 清空。
-  set(pkgJson, 'devDependencies.@icebreakers/monorepo', cleanConfig?.pinnedVersion ?? 'latest', { preservePaths: false })
+  setByPath(pkgJson, 'devDependencies.@icebreakers/monorepo', cleanConfig?.pinnedVersion ?? 'latest')
   await fs.outputJson(name, pkgJson, {
     spaces: 2,
   })

@@ -1,6 +1,6 @@
 import type { Context } from '../../core/context'
 import path from 'pathe'
-import set from 'set-value'
+import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 
 /**
@@ -16,7 +16,7 @@ export default async function (ctx: Context) {
         changesetConfigPath,
       )
       if (gitUrl.full_name) {
-        set(changesetConfig, 'changelog.1.repo', gitUrl.full_name)
+        setByPath(changesetConfig, 'changelog.1.repo', gitUrl.full_name)
         await fs.outputJson(changesetConfigPath, changesetConfig, { spaces: 2 })
       }
     }

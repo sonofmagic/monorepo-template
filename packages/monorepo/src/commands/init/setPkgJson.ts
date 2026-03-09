@@ -1,7 +1,7 @@
 import type { Context } from '../../core/context'
 import type { PackageJson } from '@/types'
 import path from 'pathe'
-import set from 'set-value'
+import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 
 /**
@@ -19,7 +19,7 @@ export default async function (ctx: Context) {
 
       const pkgJson = JSON.parse(JSON.stringify(pkg.manifest)) as PackageJson
       const directory = path.relative(cwd, pkg.rootDir)
-      set(pkgJson, ['bugs', 'url'], `https://github.com/${gitUrl.full_name}/issues`)
+      setByPath(pkgJson, ['bugs', 'url'], `https://github.com/${gitUrl.full_name}/issues`)
       const repository: PackageJson['repository'] = {
         type: 'git',
         url: `git+https://github.com/${gitUrl.full_name}.git`,
@@ -28,9 +28,9 @@ export default async function (ctx: Context) {
         repository.directory = directory
       }
 
-      set(pkgJson, 'repository', repository)
+      setByPath(pkgJson, 'repository', repository)
       if (gitUser?.name && gitUser?.email) {
-        set(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
+        setByPath(pkgJson, 'author', `${gitUser.name} <${gitUser.email}>`)
       }
 
       const nextContent = `${JSON.stringify(pkgJson, undefined, 2)}\n`

@@ -5,14 +5,13 @@ import process from 'node:process'
 import { checkbox, ensureTemplateAssetsPrepared } from '@icebreakers/monorepo-templates'
 import klaw from 'klaw'
 import path from 'pathe'
-import set from 'set-value'
 import YAML from 'yaml'
 import fs from '@/utils/fs'
 import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
+import { escapeStringRegexp, isIgnorableFsError, isMatch, setByPath, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
@@ -240,7 +239,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
 
       if (relPath === '.changeset/config.json' && repoName) {
         const changesetJson = await fs.readJson(file.path)
-        set(changesetJson, 'changelog.1.repo', repoName)
+        setByPath(changesetJson, 'changelog.1.repo', repoName)
         const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
         const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {

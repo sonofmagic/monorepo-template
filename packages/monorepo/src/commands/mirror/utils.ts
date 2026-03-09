@@ -1,4 +1,4 @@
-import set from 'set-value'
+import { setByPath } from '@/utils'
 import { chinaMirrorsEnvs } from './sources'
 
 /**
@@ -9,7 +9,7 @@ export function setMirror(obj: object, envs: Record<string, string> = chinaMirro
   const prefix = 'terminal.integrated.env'
   if (typeof obj === 'object' && obj) {
     for (const platform of platforms) {
-      set(obj, [prefix, platform].join('.').replaceAll('.', '\\.'), envs)
+      setByPath(obj, [prefix, platform].join('.').replaceAll('.', '\\.'), envs)
     }
   }
 }

@@ -1,5 +1,4 @@
 import type { PackageJson } from 'pkg-types'
-import get from 'get-value'
 import { setPkgJson } from '@/commands/upgrade'
 import { version } from '@/constants'
 
@@ -91,7 +90,7 @@ describe('lib', () => {
     }
     setPkgJson(t, o)
     if (o.devDependencies) {
-      expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe(`^${version}`)
+      expect(o.devDependencies['@icebreakers/monorepo']).toBe(`^${version}`)
     }
   })
 
@@ -108,7 +107,7 @@ describe('lib', () => {
     }
     setPkgJson(t, o)
     if (o.devDependencies) {
-      expect(get(o.devDependencies, '@icebreakers/monorepo')).toBe('^999.0.0')
+      expect(o.devDependencies['@icebreakers/monorepo']).toBe('^999.0.0')
     }
   })
 

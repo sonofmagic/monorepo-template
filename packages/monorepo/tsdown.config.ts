@@ -7,12 +7,10 @@ export default defineConfig({
   clean: true,
   dts: true,
   inlineOnly: [
-    'get-value',
     'defu',
     'is-primitive',
     'isobject',
     'is-plain-object',
-    'set-value',
     'pkg-types',
   ],
   inputOptions(options) {
