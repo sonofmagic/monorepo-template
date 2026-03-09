@@ -8,8 +8,11 @@ interface ParsedMarkdown {
   sections: MarkdownSection[]
 }
 
+const crlfPattern = /\r\n/g
+const h2HeadingPrefixPattern = /^##\s+/
+
 function normalizeEol(input: string) {
-  return input.replace(/\r\n/g, '\n')
+  return input.replace(crlfPattern, '\n')
 }
 
 function normalizeComparableContent(input: string) {
@@ -17,7 +20,7 @@ function normalizeComparableContent(input: string) {
 }
 
 function normalizeHeadingKey(line: string) {
-  return line.replace(/^##\s+/, '').trim().toLowerCase()
+  return line.replace(h2HeadingPrefixPattern, '').trim().toLowerCase()
 }
 
 function trimEdgeEmptyLines(lines: string[]) {
@@ -47,7 +50,7 @@ function parseMarkdownByH2(content: string): ParsedMarkdown {
   let current: MarkdownSection | undefined
 
   for (const line of lines) {
-    if (/^##\s+/.test(line)) {
+    if (h2HeadingPrefixPattern.test(line)) {
       if (current) {
         sections.push(current)
       }

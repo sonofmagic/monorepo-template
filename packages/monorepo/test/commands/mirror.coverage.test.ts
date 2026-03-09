@@ -7,6 +7,7 @@ const resolveCommandConfigMock = vi.fn()
 const parseMock = vi.fn()
 const stringifyMock = vi.fn(() => '{}')
 const setMirrorMock = vi.fn()
+const vscodeSettingsPathPattern = /\.vscode\/settings\.json$/
 
 vi.mock('fs-extra', () => ({
   __esModule: true,
@@ -64,7 +65,7 @@ describe('mirror coverage', () => {
     await setVscodeBinaryMirror('/workspace')
 
     expect(setMirrorMock).toHaveBeenCalledWith({}, expect.objectContaining({ CUSTOM: 'https://mirror.test' }))
-    expect(writeFileMock).toHaveBeenCalledWith(expect.stringMatching(/\.vscode\/settings\.json$/), expect.any(String), 'utf8')
+    expect(writeFileMock).toHaveBeenCalledWith(expect.stringMatching(vscodeSettingsPathPattern), expect.any(String), 'utf8')
 
     setMirrorMock.mockClear()
     writeFileMock.mockClear()

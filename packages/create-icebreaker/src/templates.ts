@@ -1,6 +1,9 @@
 import type { TemplateChoice } from '@icebreakers/monorepo-templates'
 import { templateChoices } from '@icebreakers/monorepo-templates'
 
+const templateTokenSplitPattern = /[,\s]+/
+const numericTemplatePattern = /^\d+$/
+
 export { templateChoices }
 export type { TemplateChoice }
 
@@ -14,12 +17,12 @@ export function parseTemplateInput(input: string) {
   const selections = new Set<string>()
   const unknown: string[] = []
   const tokens = input
-    .split(/[,\\s]+/)
+    .split(templateTokenSplitPattern)
     .map(token => token.trim())
     .filter(Boolean)
   for (const token of tokens) {
     const normalized = token.toLowerCase()
-    if (/^\\d+$/.test(normalized)) {
+    if (numericTemplatePattern.test(normalized)) {
       const index = Number(normalized) - 1
       const choice = templateChoices[index]
       if (choice) {
@@ -39,7 +42,7 @@ export function parseTemplateInput(input: string) {
     }
   }
   return {
-    selections: Array.from(selections),
+    selections: [...selections],
     unknown,
   }
 }

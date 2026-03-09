@@ -11,6 +11,9 @@ import {
   toWorkspaceGitignorePath,
 } from '@/utils'
 
+const packageDirPattern = /^packages\//
+const readmePathPattern = /README\.md$/
+
 describe('utility helpers', () => {
   it('identifies ignorable fs errors', () => {
     expect(isIgnorableFsError({ code: 'ENOENT' } as NodeJS.ErrnoException)).toBe(true)
@@ -29,7 +32,7 @@ describe('utility helpers', () => {
   })
 
   it('performs regex array matching correctly', () => {
-    const patterns = [/^packages\//, /README\.md$/]
+    const patterns = [packageDirPattern, readmePathPattern]
     expect(isMatch('packages/pkg-a/index.ts', patterns)).toBe(true)
     expect(isMatch('docs/guide.md', patterns)).toBe(false)
   })

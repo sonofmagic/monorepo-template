@@ -9,7 +9,7 @@ async function getRows(ctx: Context) {
     rows.push(`# ${gitUrl.name}\n`)
   }
   rows.push('## Packages\n')
-  const sortedPackages = [...packages].sort((a, b) => {
+  const sortedPackages = packages.toSorted((a, b) => {
     // 通过包名排序，生成稳定的 Packages 列表。
     const left = a.manifest.name ?? ''
     const right = b.manifest.name ?? ''

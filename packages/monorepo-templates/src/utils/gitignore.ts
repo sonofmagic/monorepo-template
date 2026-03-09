@@ -1,5 +1,6 @@
 const publishBasename = 'gitignore'
 const workspaceBasename = '.gitignore'
+const normalizedPathPattern = /[\\/]/
 
 function detectSeparator(input: string) {
   if (input.includes('\\') && !input.includes('/')) {
@@ -13,10 +14,10 @@ function replaceBasename(input: string, from: string, to: string) {
     return input
   }
   const separator = detectSeparator(input)
-  const normalized = input.replace(/[\\/]/g, separator)
+  const normalized = input.replace(normalizedPathPattern, separator)
   const hasTrailingSeparator = normalized.endsWith(separator)
   const segments = normalized.split(separator)
-  if (hasTrailingSeparator && segments[segments.length - 1] === '') {
+  if (hasTrailingSeparator && segments.at(-1) === '') {
     segments.pop()
   }
   const lastIndex = segments.length - 1

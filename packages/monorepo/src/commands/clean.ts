@@ -68,13 +68,13 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
   const qoderDir = path.resolve(workspaceDir, '.qoder')
   const docsPlansDir = path.resolve(workspaceDir, 'docs/plans')
   const skillTargets = Object.values(getSkillTargetPaths())
-  const candidates = Array.from(new Set([
+  const candidates = [...new Set([
     ...cleanDirs.filter(Boolean),
     readmeZh,
     qoderDir,
     docsPlansDir,
     ...skillTargets,
-  ]))
+  ])]
   await Promise.all(candidates.map(async (dir) => {
     if (await fs.pathExists(dir)) {
       await fs.remove(dir)

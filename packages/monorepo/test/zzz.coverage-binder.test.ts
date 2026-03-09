@@ -3,6 +3,8 @@ import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+const packagePathPattern = /^packages\//
+
 describe('coverage binder', () => {
   afterEach(() => {
     vi.unmock('@icebreakers/monorepo-templates')
@@ -141,6 +143,6 @@ describe('coverage binder', () => {
 
     const regexpModule = await import('@/utils/regexp')
     expect(regexpModule.escapeStringRegexp('a+b')).toBe('a\\+b')
-    expect(regexpModule.isMatch('packages/a', [/^packages\//])).toBe(true)
+    expect(regexpModule.isMatch('packages/a', [packagePathPattern])).toBe(true)
   })
 })

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+const skillSourcePathPattern = /resources[\\/]skills[\\/]icebreakers-monorepo-cli$/
+
 afterEach(async () => {
   await vi.resetModules()
   vi.restoreAllMocks()
@@ -43,7 +45,7 @@ describe('skills sync command', () => {
     const { syncSkills } = await import('@/commands/skills')
 
     await expect(syncSkills({ cwd: '/repo' })).rejects.toThrow('未找到技能目录')
-    expect(pathExistsMock).toHaveBeenCalledWith(expect.stringMatching(/resources[\\/]skills[\\/]icebreakers-monorepo-cli$/))
+    expect(pathExistsMock).toHaveBeenCalledWith(expect.stringMatching(skillSourcePathPattern))
     expect(checkboxMock).not.toHaveBeenCalled()
     expect(removeMock).not.toHaveBeenCalled()
     expect(copyMock).not.toHaveBeenCalled()
@@ -90,8 +92,8 @@ describe('skills sync command', () => {
     expect(removeMock).toHaveBeenCalledWith('/home/.claude/skills/icebreakers-monorepo-cli')
     expect(ensureDirMock).toHaveBeenCalledWith('/home/.codex/skills')
     expect(ensureDirMock).toHaveBeenCalledWith('/home/.claude/skills')
-    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(/resources[\\/]skills[\\/]icebreakers-monorepo-cli$/), '/home/.codex/skills/icebreakers-monorepo-cli')
-    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(/resources[\\/]skills[\\/]icebreakers-monorepo-cli$/), '/home/.claude/skills/icebreakers-monorepo-cli')
+    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(skillSourcePathPattern), '/home/.codex/skills/icebreakers-monorepo-cli')
+    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(skillSourcePathPattern), '/home/.claude/skills/icebreakers-monorepo-cli')
     expect(results).toEqual([
       { target: 'codex', dest: '/home/.codex/skills/icebreakers-monorepo-cli' },
       { target: 'claude', dest: '/home/.claude/skills/icebreakers-monorepo-cli' },
@@ -153,7 +155,7 @@ describe('skills sync command', () => {
       ],
     })
     expect(copyMock).toHaveBeenCalledTimes(1)
-    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(/resources[\\/]skills[\\/]icebreakers-monorepo-cli$/), '/home/.claude/skills/icebreakers-monorepo-cli')
+    expect(copyMock).toHaveBeenCalledWith(expect.stringMatching(skillSourcePathPattern), '/home/.claude/skills/icebreakers-monorepo-cli')
     expect(results).toEqual([
       { target: 'claude', dest: '/home/.claude/skills/icebreakers-monorepo-cli' },
     ])

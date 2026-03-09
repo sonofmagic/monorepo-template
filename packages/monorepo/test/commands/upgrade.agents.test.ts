@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from '@/commands/upgrade/agents'
 
+const teamNotesHeadingPattern = /^## Team Notes$/gm
+
 describe('mergeAgentsMarkdown', () => {
   it('keeps existing sections and fills missing sections from source', () => {
     const source = [
@@ -99,7 +101,7 @@ describe('mergeAgentsMarkdown', () => {
     const twice = mergeAgentsMarkdown(source, once)
 
     expect(twice).toBe(once)
-    expect(once.match(/^## Team Notes$/gm)).toHaveLength(1)
+    expect(once.match(teamNotesHeadingPattern)).toHaveLength(1)
   })
 
   it('treats trailing newline and EOL differences as equivalent content', () => {

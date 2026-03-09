@@ -10,6 +10,8 @@ import setPkgJson from '@/commands/init/setPkgJson'
 import setReadme from '@/commands/init/setReadme'
 
 type WorkspacePackage = Context['packages'][number]
+const packagesHeadingPattern = /## Packages/
+const authorPattern = /Dev Example <dev@example.com>/
 
 function createWorkspacePackage(manifest: ProjectManifest, dir: string): WorkspacePackage {
   return {
@@ -144,11 +146,11 @@ describe('init helpers', () => {
     expect(changeset.changelog[1].repo).toBe('ice/awesome')
 
     const readme = await fs.readFile(path.join(workspaceDir, 'README.md'), 'utf8')
-    expect(readme).toMatch(/## Packages/)
+    expect(readme).toMatch(packagesHeadingPattern)
     const alphaIndex = readme.indexOf('[pkg-alpha]')
     const betaIndex = readme.indexOf('[pkg-beta]')
     expect(alphaIndex).toBeLessThan(betaIndex)
-    expect(readme).toMatch(/Dev Example <dev@example.com>/)
+    expect(readme).toMatch(authorPattern)
 
     await fs.remove(tmpRoot)
   })

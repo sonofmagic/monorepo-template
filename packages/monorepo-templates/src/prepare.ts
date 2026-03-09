@@ -7,6 +7,8 @@ import { assetsDir, packageDir, templatesDir } from './paths'
 import { toPublishGitignorePath } from './utils/gitignore'
 import { shouldSkipTemplatePath } from './utils/template-filter'
 
+const huskySkippedEntryPattern = /[\\/]_$/
+
 export interface PrepareAssetsOptions {
   overwriteExisting?: boolean
   silent?: boolean
@@ -91,7 +93,7 @@ async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
     const to = path.join(assetsDir, toPublishGitignorePath(target))
     const stats = await fs.stat(from)
     const filter = target === '.husky'
-      ? (src: string) => !/[\\/]_$/.test(src)
+      ? (src: string) => !huskySkippedEntryPattern.test(src)
       : undefined
     await copyEntry(from, to, overwriteExisting, filter)
     if (stats.isDirectory()) {

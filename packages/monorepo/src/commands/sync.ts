@@ -34,13 +34,13 @@ export async function syncNpmMirror(cwd: string, options?: GetWorkspacePackagesO
   logger.info(`[当前工作区Repo]:\n${packages.map(x => `- ${pc.green(x.manifest.name)} : ${path.relative(workspaceDir, x.rootDir)}`).join('\n')}\n`)
   const set = new Set(packages.map(x => x.manifest.name))
   if (packageFilter?.length) {
-    for (const name of Array.from(set)) {
+    for (const name of [...set]) {
       if (!name || !packageFilter.includes(name)) {
         set.delete(name)
       }
     }
   }
-  logger.info(`[即将同步的包]:\n${Array.from(set).map(x => `- ${pc.green(x ?? '')}`).join('\n')}\n`)
+  logger.info(`[即将同步的包]:\n${Array.from(set, x => `- ${pc.green(x ?? '')}`).join('\n')}\n`)
 
   const concurrency = configConcurrency ?? Math.max(os.cpus().length, 1)
   // 使用 PQueue 控制并发，避免同时请求过多导致被限流。

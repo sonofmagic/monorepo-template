@@ -21,8 +21,10 @@ import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
 export { setPkgJson }
 
+const crlfPattern = /\r\n/g
+
 function normalizeEol(input: string) {
-  return input.replace(/\r\n/g, '\n')
+  return input.replace(crlfPattern, '\n')
 }
 
 function normalizeGitignoreLine(line: string) {
@@ -96,7 +98,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const configTargets = upgradeConfig?.targets ?? []
   const mergeTargets = upgradeConfig?.mergeTargets
   let targets = configTargets.length
-    ? (mergeTargets === false ? [...configTargets] : Array.from(new Set([...baseTargets, ...configTargets])))
+    ? (mergeTargets === false ? [...configTargets] : [...new Set([...baseTargets, ...configTargets])])
     : baseTargets
 
   if (merged.interactive) {

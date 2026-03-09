@@ -4,6 +4,8 @@ import fs from 'fs-extra'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+const nodeModulesLinePattern = /^node_modules$/gm
+
 async function createTempOutDir(slug: string) {
   const root = await fs.mkdtemp(path.join(tmpdir(), slug))
   const outDir = path.join(root, 'workspace')
@@ -253,7 +255,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     expect(next).toContain('# local overrides')
     expect(next).toContain('.playwright-cli')
     expect(next).toContain('.turbo')
-    expect((next.match(/^node_modules$/gm) ?? []).length).toBe(1)
+    expect((next.match(nodeModulesLinePattern) ?? []).length).toBe(1)
 
     await fs.remove(root)
   })

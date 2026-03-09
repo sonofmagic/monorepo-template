@@ -27,7 +27,7 @@ function normalizeTargets(values?: SkillTarget[]) {
   if (!values?.length) {
     return undefined
   }
-  return Array.from(new Set(values))
+  return [...new Set(values)]
 }
 
 export async function syncSkills(options: SyncSkillsOptions = {}) {

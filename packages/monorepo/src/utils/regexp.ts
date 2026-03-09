@@ -1,10 +1,13 @@
+const regexpSpecialCharacterPattern = /[|\\{}()[\]^$+*?.]/g
+const hyphenPattern = /-/g
+
 /**
  * 逃逸正则表达式中所有特殊字符，避免被当做模式解析。
  */
 export function escapeStringRegexp(str: string) {
   return str
-    .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-    .replace(/-/g, '\\x2d')
+    .replace(regexpSpecialCharacterPattern, '\\$&')
+    .replace(hyphenPattern, '\\x2d')
 }
 
 /**

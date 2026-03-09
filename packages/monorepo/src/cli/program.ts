@@ -116,7 +116,7 @@ skillsCommand.command('sync')
     }
 
     const options = selected.size
-      ? { cwd, targets: Array.from(selected) }
+      ? { cwd, targets: [...selected] }
       : { cwd }
     const results = await syncSkills(options)
     if (!results.length) {
