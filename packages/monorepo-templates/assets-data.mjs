@@ -8,7 +8,7 @@ const coreAssetTargets = [
   '.npmrc',
   'commitlint.config.ts',
   'eslint.config.js',
-  'lint-staged.config.js',
+  'nano-staged.js',
   'stylelint.config.js',
   'monorepo.config.ts',
   'package.json',
