@@ -1,5 +1,13 @@
 # @icebreakers/monorepo-templates
 
+## 0.1.13
+
+### Patch Changes
+
+- 🐛 **deps: upgrade** [`d469409`](https://github.com/sonofmagic/monorepo-template/commit/d469409e065962372b1f9da5548e687f80b4ca33) by @sonofmagic
+
+- 🐛 **Rename the staged-file config from `lint-staged.config.js` to `nano-staged.js` and update generated monorepo assets accordingly.** [`2bf7b94`](https://github.com/sonofmagic/monorepo-template/commit/2bf7b94018c8c4dcf0608af0984a24737b330fe5) by @sonofmagic
+
 ## 0.1.12
 
 ### Patch Changes
