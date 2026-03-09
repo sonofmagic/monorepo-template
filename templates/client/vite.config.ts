@@ -4,9 +4,9 @@ import { cloudflare } from '@cloudflare/vite-plugin'
 import Tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from '@vitejs/plugin-vue-jsx'
-import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 import VueDevTools from 'vite-plugin-vue-devtools'
+import VueRouter from 'vue-router/vite'
 
 const ensureVitePlugin = <T>(plugin: T) => plugin as unknown as PluginOption
 // https://vite.dev/config/
@@ -21,7 +21,7 @@ export default defineConfig({
     ensureVitePlugin(
       VueRouter(
         {
-          dts: path.resolve(import.meta.dirname, 'src/types/typed-router.d.ts'),
+          dts: path.resolve(import.meta.dirname, 'src/route-map.d.ts'),
         },
       ),
     ),

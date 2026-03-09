@@ -14,7 +14,6 @@ const skipDirs = new Set([
 const skipFiles = new Set([
   '.DS_Store',
   'CHANGELOG.md',
-  'typed-router.d.ts',
   'worker-configuration.d.ts',
 ])
 
