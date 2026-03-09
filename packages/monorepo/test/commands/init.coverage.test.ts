@@ -44,23 +44,27 @@ function createTestContext(overrides: Partial<Context> = {}): Context {
   }
 }
 
-vi.mock('fs-extra', () => ({
-  __esModule: true,
-  default: {
+vi.mock('@/utils/fs', async () => {
+  const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      exists: existsMock,
+      pathExists: pathExistsMock,
+      readJson: readJsonMock,
+      outputJson: outputJsonMock,
+      readFile: readFileMock,
+      writeFile: writeFileMock,
+    },
     exists: existsMock,
     pathExists: pathExistsMock,
     readJson: readJsonMock,
     outputJson: outputJsonMock,
     readFile: readFileMock,
     writeFile: writeFileMock,
-  },
-  exists: existsMock,
-  pathExists: pathExistsMock,
-  readJson: readJsonMock,
-  outputJson: outputJsonMock,
-  readFile: readFileMock,
-  writeFile: writeFileMock,
-}))
+  }
+})
 
 afterEach(() => {
   files.clear()

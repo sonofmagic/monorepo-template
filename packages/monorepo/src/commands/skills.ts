@@ -1,8 +1,8 @@
 import os from 'node:os'
 import process from 'node:process'
 import { checkbox } from '@icebreakers/monorepo-templates'
-import fs from 'fs-extra'
 import path from 'pathe'
+import fs from '@/utils/fs'
 import { packageDir } from '../constants'
 
 export const skillName = 'icebreakers-monorepo-cli'

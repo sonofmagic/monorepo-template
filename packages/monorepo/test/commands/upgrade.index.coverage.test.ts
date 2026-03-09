@@ -69,19 +69,23 @@ describe('upgrade command coverage', () => {
       scheduleOverwrite: scheduleOverwriteMock,
       flushPendingOverwrites: flushPendingOverwritesMock,
     }))
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          readJson: readJsonMock,
+          readFile: readFileMock,
+          outputFile: outputFileMock,
+        },
         pathExists: pathExistsMock,
         readJson: readJsonMock,
         readFile: readFileMock,
         outputFile: outputFileMock,
-      },
-      pathExists: pathExistsMock,
-      readJson: readJsonMock,
-      readFile: readFileMock,
-      outputFile: outputFileMock,
-    }))
+      }
+    })
     vi.doMock('klaw', () => ({
       __esModule: true,
       default: (_dir: string, options: { filter: (p: string) => boolean }) => ({

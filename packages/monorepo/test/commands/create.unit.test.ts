@@ -54,19 +54,23 @@ beforeEach(async () => {
   getUserMock.mockResolvedValue({ name: 'Dev Example', email: 'dev@example.com' })
   getRepoRootMock.mockResolvedValue('/repo')
 
-  vi.doMock('fs-extra', () => ({
-    __esModule: true,
-    default: {
+  vi.doMock('@/utils/fs', async () => {
+    const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+    return {
+      ...actual,
+      default: {
+        ...actual.default,
+        ensureDir: ensureDirMock,
+        readJson: readJsonMock,
+        outputJson: outputJsonMock,
+        pathExists: pathExistsMock,
+      },
       ensureDir: ensureDirMock,
       readJson: readJsonMock,
       outputJson: outputJsonMock,
       pathExists: pathExistsMock,
-    },
-    ensureDir: ensureDirMock,
-    readJson: readJsonMock,
-    outputJson: outputJsonMock,
-    pathExists: pathExistsMock,
-  }))
+    }
+  })
 
   vi.doMock('@/core/config', () => ({
     resolveCommandConfig: resolveCommandConfigMock,

@@ -1,10 +1,10 @@
 import { tmpdir } from 'node:os'
-import fs from 'fs-extra'
 import path from 'pathe'
 import { afterEach, vi } from 'vitest'
 import { setVscodeBinaryMirror } from '@/commands/mirror/binaryMirror'
 import { chinaMirrorsEnvs } from '@/commands/mirror/sources'
 import { setMirror } from '@/commands/mirror/utils'
+import fs from '@/utils/fs'
 
 const tempDirs: string[] = []
 

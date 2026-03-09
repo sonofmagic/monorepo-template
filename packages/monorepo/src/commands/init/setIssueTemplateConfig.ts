@@ -1,6 +1,6 @@
 import type { Context } from '../../core/context'
-import fs from 'fs-extra'
 import path from 'pathe'
+import fs from '@/utils/fs'
 import { updateIssueTemplateConfig } from '../../utils'
 
 /**

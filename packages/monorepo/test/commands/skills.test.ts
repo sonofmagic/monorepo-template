@@ -16,19 +16,23 @@ describe('skills sync command', () => {
     const copyMock = vi.fn(async () => {})
     const checkboxMock = vi.fn(async () => [])
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          remove: removeMock,
+          ensureDir: ensureDirMock,
+          copy: copyMock,
+        },
         pathExists: pathExistsMock,
         remove: removeMock,
         ensureDir: ensureDirMock,
         copy: copyMock,
-      },
-      pathExists: pathExistsMock,
-      remove: removeMock,
-      ensureDir: ensureDirMock,
-      copy: copyMock,
-    }))
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async () => {
       const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
       return {
@@ -58,19 +62,23 @@ describe('skills sync command', () => {
     const copyMock = vi.fn(async () => {})
     const checkboxMock = vi.fn(async () => [])
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          remove: removeMock,
+          ensureDir: ensureDirMock,
+          copy: copyMock,
+        },
         pathExists: pathExistsMock,
         remove: removeMock,
         ensureDir: ensureDirMock,
         copy: copyMock,
-      },
-      pathExists: pathExistsMock,
-      remove: removeMock,
-      ensureDir: ensureDirMock,
-      copy: copyMock,
-    }))
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async () => {
       const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
       return {
@@ -116,19 +124,23 @@ describe('skills sync command', () => {
     }
     const checkboxMock = vi.fn(async (_options: CheckboxOptions) => ['claude'])
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          remove: removeMock,
+          ensureDir: ensureDirMock,
+          copy: copyMock,
+        },
         pathExists: pathExistsMock,
         remove: removeMock,
         ensureDir: ensureDirMock,
         copy: copyMock,
-      },
-      pathExists: pathExistsMock,
-      remove: removeMock,
-      ensureDir: ensureDirMock,
-      copy: copyMock,
-    }))
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async () => {
       const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
       return {

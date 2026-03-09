@@ -1,9 +1,9 @@
 import crypto from 'node:crypto'
 import CI from 'ci-info'
-import fs from 'fs-extra'
 import path from 'pathe'
 import { vi } from 'vitest'
 import { logger } from '@/core/logger'
+import fs from '@/utils/fs'
 import { getFileHash, isFileChanged } from '@/utils/hash'
 
 // windows 和 linux/macos 计算不一致，应该是 \r\n 和 \n 导致的

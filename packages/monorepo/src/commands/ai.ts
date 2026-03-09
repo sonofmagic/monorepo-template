@@ -1,6 +1,6 @@
 import process from 'node:process'
-import fs from 'fs-extra'
 import path from 'pathe'
+import fs from '@/utils/fs'
 import { logger } from '../core/logger'
 
 export type AgenticTemplateFormat = 'md' | 'json'

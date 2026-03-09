@@ -1,6 +1,6 @@
 import { parse, stringify } from 'comment-json'
-import fs from 'fs-extra'
 import path from 'pathe'
+import fs from '@/utils/fs'
 import { resolveCommandConfig } from '../../core/config'
 import { chinaMirrorsEnvs } from './sources'
 import { setMirror } from './utils'

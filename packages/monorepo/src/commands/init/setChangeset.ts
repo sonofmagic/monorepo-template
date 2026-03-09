@@ -1,7 +1,7 @@
 import type { Context } from '../../core/context'
-import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
+import fs from '@/utils/fs'
 
 /**
  * 将 changeset 配置中的仓库地址指向当前项目，方便自动生成变更日志链接。

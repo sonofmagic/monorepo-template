@@ -16,17 +16,21 @@ describe('ai create command', () => {
     const pathExistsMock = vi.fn(async () => false)
     const successMock = vi.fn()
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          ensureDir: ensureDirMock,
+          outputFile: outputFileMock,
+          pathExists: pathExistsMock,
+        },
         ensureDir: ensureDirMock,
         outputFile: outputFileMock,
         pathExists: pathExistsMock,
-      },
-      ensureDir: ensureDirMock,
-      outputFile: outputFileMock,
-      pathExists: pathExistsMock,
-    }))
+      }
+    })
 
     vi.doMock('@/core/logger', () => ({
       logger: {
@@ -54,17 +58,21 @@ describe('ai create command', () => {
     const pathExistsMock = vi.fn(async () => true)
     const successMock = vi.fn()
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          ensureDir: ensureDirMock,
+          outputFile: outputFileMock,
+          pathExists: pathExistsMock,
+        },
         ensureDir: ensureDirMock,
         outputFile: outputFileMock,
         pathExists: pathExistsMock,
-      },
-      ensureDir: ensureDirMock,
-      outputFile: outputFileMock,
-      pathExists: pathExistsMock,
-    }))
+      }
+    })
 
     vi.doMock('@/core/logger', () => ({
       logger: {
@@ -97,19 +105,23 @@ describe('ai create command', () => {
     const readJsonMock = vi.fn(async () => ['checkout', { name: 'payments', format: 'json', force: true }])
     const successMock = vi.fn()
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          ensureDir: ensureDirMock,
+          outputFile: outputFileMock,
+          pathExists: pathExistsMock,
+          readJson: readJsonMock,
+        },
         ensureDir: ensureDirMock,
         outputFile: outputFileMock,
         pathExists: pathExistsMock,
         readJson: readJsonMock,
-      },
-      ensureDir: ensureDirMock,
-      outputFile: outputFileMock,
-      pathExists: pathExistsMock,
-      readJson: readJsonMock,
-    }))
+      }
+    })
 
     vi.doMock('@/core/logger', () => ({
       logger: {
@@ -136,17 +148,21 @@ describe('ai create command', () => {
     const outputFileMock = vi.fn(async () => {})
     const pathExistsMock = vi.fn(async () => false)
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          ensureDir: ensureDirMock,
+          outputFile: outputFileMock,
+          pathExists: pathExistsMock,
+        },
         ensureDir: ensureDirMock,
         outputFile: outputFileMock,
         pathExists: pathExistsMock,
-      },
-      ensureDir: ensureDirMock,
-      outputFile: outputFileMock,
-      pathExists: pathExistsMock,
-    }))
+      }
+    })
 
     vi.doMock('@/core/logger', () => ({
       logger: {

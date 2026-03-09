@@ -1,8 +1,8 @@
 import type { Context } from '../../core/context'
 import type { PackageJson } from '@/types'
-import fs from 'fs-extra'
 import path from 'pathe'
 import set from 'set-value'
+import fs from '@/utils/fs'
 
 /**
  * 根据当前仓库信息同步 package.json 的仓库、作者等字段。

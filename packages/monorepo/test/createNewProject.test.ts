@@ -1,9 +1,9 @@
 import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
 import { isCI } from 'ci-info'
 import { fdir as Fdir } from 'fdir'
-import fs from 'fs-extra'
 import path from 'pathe'
 import { createNewProject, upgradeMonorepo } from '@/commands'
+import fs from '@/utils/fs'
 
 async function scanFiles(root: string) {
   const api = new Fdir().withRelativePaths()

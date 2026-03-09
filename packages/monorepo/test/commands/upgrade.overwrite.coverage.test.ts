@@ -10,17 +10,21 @@ describe('upgrade overwrite helpers coverage', () => {
     const isFileChangedMock = vi.fn()
 
     await vi.resetModules()
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          stat: statMock,
+          readFile: readFileMock,
+        },
         pathExists: pathExistsMock,
         stat: statMock,
         readFile: readFileMock,
-      },
-      pathExists: pathExistsMock,
-      stat: statMock,
-      readFile: readFileMock,
-    }))
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async () => {
       const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
       return {

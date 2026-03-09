@@ -1,10 +1,10 @@
 import { tmpdir } from 'node:os'
 import { isCI } from 'ci-info'
-import fs from 'fs-extra'
 import path from 'pathe'
 import { describe, expect, it, vi } from 'vitest'
 
 import { createNewProject } from '@/commands/create'
+import fs from '@/utils/fs'
 
 const templatesRoot = path.resolve(__dirname, '../../..', 'templates')
 function writeConfig(dir: string, content: string) {

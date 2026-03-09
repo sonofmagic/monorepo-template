@@ -1,8 +1,8 @@
 import { tmpdir } from 'node:os'
 import CI from 'ci-info'
-import fs from 'fs-extra'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import fs from '@/utils/fs'
 
 const nodeModulesLinePattern = /^node_modules$/gm
 

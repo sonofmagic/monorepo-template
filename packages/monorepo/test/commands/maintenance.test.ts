@@ -1,13 +1,13 @@
 import type { ProjectManifest } from '@pnpm/types'
 import type { Context } from '@/core/context'
 import { tmpdir } from 'node:os'
-import fs from 'fs-extra'
 import gitUrlParse from 'git-url-parse'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import setChangeset from '@/commands/init/setChangeset'
 import setPkgJson from '@/commands/init/setPkgJson'
 import setReadme from '@/commands/init/setReadme'
+import fs from '@/utils/fs'
 
 type WorkspacePackage = Context['packages'][number]
 const packagesHeadingPattern = /## Packages/

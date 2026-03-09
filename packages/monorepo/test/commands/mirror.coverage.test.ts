@@ -9,17 +9,21 @@ const stringifyMock = vi.fn(() => '{}')
 const setMirrorMock = vi.fn()
 const vscodeSettingsPathPattern = /\.vscode\/settings\.json$/
 
-vi.mock('fs-extra', () => ({
-  __esModule: true,
-  default: {
+vi.mock('@/utils/fs', async () => {
+  const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      ensureFile: ensureFileMock,
+      readFile: readFileMock,
+      writeFile: writeFileMock,
+    },
     ensureFile: ensureFileMock,
     readFile: readFileMock,
     writeFile: writeFileMock,
-  },
-  ensureFile: ensureFileMock,
-  readFile: readFileMock,
-  writeFile: writeFileMock,
-}))
+  }
+})
 
 vi.mock('comment-json', () => ({
   parse: parseMock,

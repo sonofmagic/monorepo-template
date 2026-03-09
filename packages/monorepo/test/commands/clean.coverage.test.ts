@@ -16,19 +16,23 @@ vi.mock('@icebreakers/monorepo-templates', async () => {
   }
 })
 
-vi.mock('fs-extra', () => ({
-  __esModule: true,
-  default: {
+vi.mock('@/utils/fs', async () => {
+  const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      pathExists: pathExistsMock,
+      remove: removeMock,
+      readJson: readJsonMock,
+      outputJson: outputJsonMock,
+    },
     pathExists: pathExistsMock,
     remove: removeMock,
     readJson: readJsonMock,
     outputJson: outputJsonMock,
-  },
-  pathExists: pathExistsMock,
-  remove: removeMock,
-  readJson: readJsonMock,
-  outputJson: outputJsonMock,
-}))
+  }
+})
 
 vi.mock('@/core/config', () => ({
   resolveCommandConfig: resolveCommandConfigMock,

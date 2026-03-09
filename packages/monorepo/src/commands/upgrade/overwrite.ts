@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { checkbox } from '@icebreakers/monorepo-templates'
-import fs from 'fs-extra'
 import pc from 'picocolors'
+import fs from '@/utils/fs'
 import { isFileChanged } from '../../utils'
 
 type WriteIntent

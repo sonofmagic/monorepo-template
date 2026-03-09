@@ -18,15 +18,22 @@ describe('coverage binder', () => {
     const openMock = vi.fn(async () => ({ close: lockCloseMock }))
     const rmMock = vi.fn(async () => {})
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: { pathExists: pathExistsMock },
-      pathExists: pathExistsMock,
-    }))
-    vi.doMock('node:fs/promises', () => ({
-      open: openMock,
-      rm: rmMock,
-    }))
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: { ...actual.default, pathExists: pathExistsMock },
+        pathExists: pathExistsMock,
+      }
+    })
+    vi.doMock('node:fs/promises', async () => {
+      const actual = await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises')
+      return {
+        ...actual,
+        open: openMock,
+        rm: rmMock,
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async (importOriginal) => {
       const actual = await importOriginal<typeof import('@icebreakers/monorepo-templates')>()
       return {
@@ -64,19 +71,23 @@ describe('coverage binder', () => {
     const outputJsonMock = vi.fn(async () => {})
     const scaffoldTemplateMock = vi.fn(async () => {})
 
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          ensureDir: ensureDirMock,
+          pathExists: pathExistsMock,
+          readJson: readJsonMock,
+          outputJson: outputJsonMock,
+        },
         ensureDir: ensureDirMock,
         pathExists: pathExistsMock,
         readJson: readJsonMock,
         outputJson: outputJsonMock,
-      },
-      ensureDir: ensureDirMock,
-      pathExists: pathExistsMock,
-      readJson: readJsonMock,
-      outputJson: outputJsonMock,
-    }))
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', async (importOriginal) => {
       const actual = await importOriginal<typeof import('@icebreakers/monorepo-templates')>()
       return {

@@ -1,7 +1,7 @@
 import { open, rm } from 'node:fs/promises'
 import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
-import fs from 'fs-extra'
 import path from 'pathe'
+import fs from '@/utils/fs'
 
 const lockFileName = '.prepare-assets.lock'
 const lockPollIntervalMs = 200

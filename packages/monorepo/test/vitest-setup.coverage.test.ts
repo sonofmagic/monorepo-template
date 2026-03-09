@@ -9,17 +9,25 @@ describe('vitest setup coverage', () => {
     const rmMock = vi.fn(async () => {})
 
     await vi.resetModules()
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+        },
         pathExists: pathExistsMock,
-      },
-      pathExists: pathExistsMock,
-    }))
-    vi.doMock('node:fs/promises', () => ({
-      open: openMock,
-      rm: rmMock,
-    }))
+      }
+    })
+    vi.doMock('node:fs/promises', async () => {
+      const actual = await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises')
+      return {
+        ...actual,
+        open: openMock,
+        rm: rmMock,
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', () => ({
       assetsDir: '/assets',
       prepareAssets: prepareAssetsMock,
@@ -34,17 +42,25 @@ describe('vitest setup coverage', () => {
     lockCloseMock.mockReset()
     openMock.mockReset()
     rmMock.mockReset()
-    vi.doMock('fs-extra', () => ({
-      __esModule: true,
-      default: {
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+        },
         pathExists: pathExistsMock,
-      },
-      pathExists: pathExistsMock,
-    }))
-    vi.doMock('node:fs/promises', () => ({
-      open: openMock,
-      rm: rmMock,
-    }))
+      }
+    })
+    vi.doMock('node:fs/promises', async () => {
+      const actual = await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises')
+      return {
+        ...actual,
+        open: openMock,
+        rm: rmMock,
+      }
+    })
     vi.doMock('@icebreakers/monorepo-templates', () => ({
       assetsDir: '/assets',
       prepareAssets: prepareAssetsMock,
