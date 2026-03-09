@@ -36,8 +36,8 @@ export {
   toWorkspaceGitignorePath,
 }
 export type { TemplateChoice, TemplateDefinition }
+export { execaCommand } from './utils/command'
 export { default as checkbox } from '@inquirer/checkbox'
 export { default as input } from '@inquirer/input'
 export { default as select } from '@inquirer/select'
 export { Command, program } from 'commander'
-export { execaCommand } from 'execa'
