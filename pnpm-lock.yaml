@@ -56,6 +56,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      nano-staged:
+        specifier: ^0.9.0
+        version: 0.9.0
       only-allow:
         specifier: ^1.2.2
         version: 1.2.2
@@ -189,6 +192,9 @@ importers:
       commander:
         specifier: ^14.0.3
         version: 14.0.3
+      nanoexec:
+        specifier: ^1.1.0
+        version: 1.1.0(@types/node@25.3.5)
 
   templates/cli:
     dependencies:
@@ -7441,6 +7447,16 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
+  nano-staged@0.9.0:
+    resolution: {integrity: sha512-0JfyX4i0Vp5HhC9RDtJ1kp7psz8CFuS3Gya3Z6WZv//QCwA9dPzi1S803VdR0c0P6R7sSvweZ5mSJmYQ/N+loQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    hasBin: true
+
+  nanoexec@1.1.0:
+    resolution: {integrity: sha512-AFEBFWI+4vgstL3Czpbn8yCKBgN+b2d0qPdBCjmrOf9OOUUpLqBr+JocLJCfA5OYxKSmoOdEm6OWO5QraTNtDg==}
+    peerDependencies:
+      '@types/node': '*'
+
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -8167,6 +8183,9 @@ packages:
     peerDependenciesMeta:
       bluebird:
         optional: true
+
+  promise-make-naked@3.0.2:
+    resolution: {integrity: sha512-B+b+kQ1YrYS7zO7P7bQcoqqMUizP06BOyNSBEnB5VJKDSWo8fsVuDkfSmwdjF0JsRtaNh83so5MMFJ95soH5jg==}
 
   promise-retry@2.0.1:
     resolution: {integrity: sha512-y+WKFlBR8BGXnsNlIHFGPZmyDf3DFMoLhaflAnyZgV6rG6xu+JwesTo2Q9R6XwYmtmwAFCkAk3e35jEdoeh/3g==}
@@ -17893,6 +17912,15 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
+  nano-staged@0.9.0:
+    dependencies:
+      picocolors: 1.1.1
+
+  nanoexec@1.1.0(@types/node@25.3.5):
+    dependencies:
+      '@types/node': 25.3.5
+      promise-make-naked: 3.0.2
+
   nanoid@3.3.11: {}
 
   natural-compare@1.4.0: {}
@@ -18585,6 +18613,8 @@ snapshots:
 
   promise-inflight@1.0.1:
     optional: true
+
+  promise-make-naked@3.0.2: {}
 
   promise-retry@2.0.1:
     dependencies:

@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -e
 
-node scripts/run-staged-checks.mjs
+pnpm exec nano-staged --config lint-staged.config.js
