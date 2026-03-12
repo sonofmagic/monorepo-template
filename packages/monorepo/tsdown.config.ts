@@ -6,13 +6,9 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   clean: true,
   dts: true,
-  inlineOnly: [
-    'defu',
-    'is-primitive',
-    'isobject',
-    'is-plain-object',
-    'pkg-types',
-  ],
+  deps: {
+    onlyBundle: ['defu', 'is-primitive', 'isobject', 'is-plain-object', 'pkg-types'],
+  },
   inputOptions(options) {
     const baseOnLog = options.onLog
     options.onLog = (level, log, handler) => {
