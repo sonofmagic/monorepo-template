@@ -7,7 +7,7 @@ const packagePathPattern = /^packages\//
 
 describe('coverage binder', () => {
   afterEach(() => {
-    vi.unmock('@icebreakers/monorepo-templates')
+    vi.doUnmock('@icebreakers/monorepo-templates')
   })
 
   it('executes vitest setup paths', async () => {
@@ -120,7 +120,7 @@ describe('coverage binder', () => {
 
   it('executes upgrade targets helper', async () => {
     await vi.resetModules()
-    vi.unmock('@icebreakers/monorepo-templates')
+    vi.doUnmock('@icebreakers/monorepo-templates')
     const { getAssetTargets } = await import('@icebreakers/monorepo-templates')
     const targets = getAssetTargets()
     expect(targets).toContain('.changeset')

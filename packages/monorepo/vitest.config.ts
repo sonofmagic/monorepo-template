@@ -29,9 +29,7 @@ export default defineProject({
       all: true,
       skipFull: false,
     },
-    // @ts-ignore
     forceRerunTriggers: ['**/vitest.config.*/**', '**/vite.config.*/**'],
-
   },
   server: {
     watch: {

@@ -24,10 +24,14 @@ async function scanFiles(root: string) {
     .sort((a, b) => a.localeCompare(b))
 }
 
+async function resetFixtureDir(relativePath: string) {
+  await fs.remove(path.resolve(__dirname, './fixtures', relativePath))
+}
+
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
     await prepareAssets({ overwriteExisting: false })
-    await fs.remove(path.resolve(__dirname, './fixtures/demo'))
+    await resetFixtureDir('demo')
   })
 
   it('assets', async () => {
@@ -36,6 +40,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('upgradeMonorepo', async () => {
+    await resetFixtureDir('demo/upgrade')
     await upgradeMonorepo({
       outDir: path.resolve(__dirname, './fixtures/demo/upgrade'),
     })
@@ -44,6 +49,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo unbuild case', async () => {
+    await resetFixtureDir('demo/case-unbuild')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/case-unbuild',
@@ -55,6 +61,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo tsup case', async () => {
+    await resetFixtureDir('demo/case-tsup')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/case-tsup',
@@ -66,6 +73,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo vue-ui case', async () => {
+    await resetFixtureDir('demo/case-vue-ui')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/case-vue-ui',
@@ -77,6 +85,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo default case', async () => {
+    await resetFixtureDir('demo/case-default')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/case-default',
@@ -87,6 +96,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo cli case', async () => {
+    await resetFixtureDir('demo/cli')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/cli',
@@ -98,6 +108,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo client case', async () => {
+    await resetFixtureDir('demo/client')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/client',
@@ -113,6 +124,7 @@ describe.skipIf(isCI)('createNewProject', () => {
     const scopedName = '@demo/scoped-case'
     const targetDir = path.resolve(cwd, scopedName)
     try {
+      await resetFixtureDir('@demo')
       await createNewProject({
         cwd,
         name: scopedName,
@@ -129,6 +141,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo server case', async () => {
+    await resetFixtureDir('demo/server')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/server',
@@ -140,6 +153,7 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo website case', async () => {
+    await resetFixtureDir('demo/website')
     await createNewProject({
       cwd: path.resolve(__dirname, './fixtures'),
       name: 'demo/website',
