@@ -1,5 +1,15 @@
 # @icebreakers/monorepo-templates
 
+## 0.1.15
+
+### Patch Changes
+
+- 🐛 **Align template tooling with Vite 8 and stabilize monorepo template workflows.** [`454e65b`](https://github.com/sonofmagic/monorepo-template/commit/454e65b29e92dd7951261a28128cf8977bc5f290) by @sonofmagic
+  - add a default export condition for `@icebreakers/monorepo-templates`
+  - update shipped Vite templates for Vite 8 config expectations
+  - add standard `build` scripts to the server template
+  - make monorepo template tests repeatable and remove Vitest 4 warnings
+
 ## 0.1.14
 
 ### Patch Changes
