@@ -3,16 +3,12 @@ import type { MonorepoConfig } from '@icebreakers/monorepo'
 export default {
   commands: {
     create: {
-      defaultTemplate: 'unbuild',
+      defaultTemplate: 'tsdown',
       renameJson: false,
     },
     clean: {
       autoConfirm: false,
       includePrivate: true,
-    },
-    sync: {
-      concurrency: 4,
-      command: 'cnpm sync {name}',
     },
     upgrade: {
       skipOverwrite: false,

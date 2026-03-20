@@ -24,26 +24,62 @@ const defaultWorkspaceOrder = [
 ].sort((left, right) => right.length - left.length)
 
 export interface VerifyCommandOptions {
+  /**
+   * 命令执行根目录。
+   * @default process.cwd()
+   */
   cwd?: string
 }
 
 export interface PrePushVerifyOptions extends VerifyCommandOptions {
+  /**
+   * pre-push hook 的 stdin 原始文本。
+   * 未提供时会从真实 stdin 读取。
+   * @default undefined
+   */
   stdinText?: string
+  /**
+   * 参与变更归属计算的 workspace 列表。
+   * @default 内置 `defaultWorkspaceOrder`
+   */
   workspaces?: string[]
+  /**
+   * 可注入的 `execFileSync` 实现，主要用于测试。
+   * @default node:child_process.execFileSync
+   */
   execFile?: typeof execFileSync
+  /**
+   * 可注入的 `spawnSync` 实现，主要用于测试。
+   * @default node:child_process.spawnSync
+   */
   spawn?: typeof spawnSync
 }
 
 export interface StagedTypecheckOptions extends VerifyCommandOptions {
+  /**
+   * 可注入的 `spawnSync` 实现，主要用于测试。
+   * @default node:child_process.spawnSync
+   */
   spawn?: typeof spawnSync
 }
 
 export interface CommitMsgVerifyOptions extends VerifyCommandOptions {
+  /**
+   * commit message 文件路径。
+   */
   editFile: string
+  /**
+   * 可注入的 `spawnSync` 实现，主要用于测试。
+   * @default node:child_process.spawnSync
+   */
   spawn?: typeof spawnSync
 }
 
 export interface PreCommitVerifyOptions extends VerifyCommandOptions {
+  /**
+   * 可注入的 `spawnSync` 实现，主要用于测试。
+   * @default node:child_process.spawnSync
+   */
   spawn?: typeof spawnSync
 }
 
@@ -196,6 +232,16 @@ function resolveTypecheckWorkspaceDir(filePath: string, cwd: string) {
   return cwd
 }
 
+/**
+ * 执行 pre-push 校验。
+ *
+ * 该函数会根据 push 范围内的改动文件，推导需要运行的 workspace 任务：
+ * - workspace 内改动：按包执行 `build` / `test` / `tsd`
+ * - 根级配置改动：在仓库根执行 `build` / `test` / `tsd`
+ *
+ * @param options pre-push 运行参数
+ * @returns Promise<void>
+ */
 export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   const execFile = options.execFile ?? execFileSync
@@ -264,6 +310,14 @@ export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
   }
 }
 
+/**
+ * 对暂存区中涉及类型检查的文件，按最近的 workspace 归属执行 `typecheck`。
+ *
+ * 当前识别的扩展名：`.ts`、`.tsx`、`.mts`、`.cts`、`.vue`。
+ *
+ * @param stagedFiles 暂存区文件路径列表
+ * @param options 运行参数
+ */
 export function verifyStagedTypecheck(stagedFiles: string[], options: StagedTypecheckOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   const spawn = options.spawn ?? spawnSync
@@ -283,6 +337,14 @@ export function verifyStagedTypecheck(stagedFiles: string[], options: StagedType
   }
 }
 
+/**
+ * 执行 commit-msg 校验。
+ *
+ * 优先读取 `tooling.husky.commitMsgCommand`；若未配置，则回退到
+ * `pnpm exec commitlint --edit <editFile>`。
+ *
+ * @param options commit-msg 运行参数
+ */
 export async function verifyCommitMsg(options: CommitMsgVerifyOptions) {
   const cwd = options.cwd ?? process.cwd()
   const spawn = options.spawn ?? spawnSync
@@ -297,6 +359,14 @@ export async function verifyCommitMsg(options: CommitMsgVerifyOptions) {
   runPnpmCommand(cwd, `[commit-msg] ${options.editFile}`, ['exec', 'commitlint', '--edit', options.editFile], spawn)
 }
 
+/**
+ * 执行 pre-commit 校验。
+ *
+ * 优先读取 `tooling.husky.preCommitCommand`；若未配置，则回退到
+ * `pnpm exec lint-staged`。
+ *
+ * @param options pre-commit 运行参数
+ */
 export async function verifyPreCommit(options: PreCommitVerifyOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   const spawn = options.spawn ?? spawnSync
@@ -311,4 +381,7 @@ export async function verifyPreCommit(options: PreCommitVerifyOptions = {}) {
   runPnpmCommand(cwd, '[pre-commit] lint-staged', ['exec', 'lint-staged'], spawn)
 }
 
+/**
+ * 用于测试场景的 `spawnSync` 返回值类型别名。
+ */
 export type VerifySpawnResult = SpawnSyncReturns<Buffer>

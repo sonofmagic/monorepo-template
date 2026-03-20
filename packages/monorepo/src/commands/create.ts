@@ -35,13 +35,35 @@ function normalizeTemplateDefinition(value: string | TemplateDefinition) {
 }
 
 export interface CreateNewProjectOptions {
+  /**
+   * 目标项目名。
+   * 未提供时使用模板映射中的 `target`。
+   * @default undefined
+   */
   name?: string
+  /**
+   * 生成目标的工作目录。
+   * @default process.cwd()
+   */
   cwd?: string
+  /**
+   * 是否把模板里的 `package.json` 输出为 `package.mock.json`。
+   * @default false
+   */
   renameJson?: boolean
+  /**
+   * 模板类型。
+   * 未提供时优先读取 `commands.create.defaultTemplate`，最后回退到 `'tsdown'`。
+   * @default 'tsdown'
+   */
   type?: CreateNewProjectType | string
 }
 
-export const defaultTemplate: CreateNewProjectType = 'unbuild'
+/**
+ * `createNewProject()` 默认使用的模板类型。
+ * @default 'tsdown'
+ */
+export const defaultTemplate: CreateNewProjectType = 'tsdown'
 
 /**
  * 交互式选择模板时的默认选项列表。
@@ -58,7 +80,10 @@ const baseChoices = [
 ] as const
 
 /**
- * 若配置中提供 choices 则优先使用，否则退回默认预设。
+ * 获取 `monorepo new` 的交互式模板选项。
+ *
+ * @param choices 外部自定义选项；传入非空数组时直接返回
+ * @returns 最终用于 CLI 交互的模板选项列表
  */
 export function getCreateChoices(choices?: CreateChoiceOption[]) {
   if (choices?.length) {
@@ -68,7 +93,19 @@ export function getCreateChoices(choices?: CreateChoiceOption[]) {
 }
 
 /**
- * 合并内置与自定义模板映射，允许扩展新的模板类型。
+ * 获取最终模板映射表。
+ *
+ * @param extra 额外模板定义；同名 key 会覆盖内置模板
+ * @returns 合并后的模板映射
+ *
+ * @example
+ * ```ts
+ * import { getTemplateMap } from '@icebreakers/monorepo'
+ *
+ * const templates = getTemplateMap({
+ *   docs: { source: 'vitepress', target: 'apps/docs' },
+ * })
+ * ```
  */
 export function getTemplateMap(extra?: Record<string, string | TemplateDefinition>) {
   const base: Record<string, TemplateDefinition> = Object.fromEntries(
@@ -117,7 +154,16 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
 }
 
 /**
- * 根据提供的参数或配置生成新工程目录，并可自动改写 package.json。
+ * 根据模板生成一个新项目目录，并自动补写 `package.json` 常用字段。
+ *
+ * 默认行为：
+ * - 优先读取 `monorepo.config.ts -> commands.create`
+ * - 模板类型默认回退到 `'tsdown'`
+ * - 若目标目录已存在则直接抛错
+ * - 若模板包含 `package.json`，会自动写入 `name`、`version` 与 Git 仓库信息
+ *
+ * @param options 运行时覆盖项
+ * @returns Promise<void>
  */
 export async function createNewProject(options?: CreateNewProjectOptions) {
   const cwd = options?.cwd ?? process.cwd()

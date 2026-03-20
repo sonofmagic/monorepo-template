@@ -33,14 +33,32 @@ async function loadConfigInternal(cwd: string): Promise<LoadedConfig> {
 }
 
 /**
- * 提供类型提示的辅助函数，供外部定义配置时使用。
+ * 为 `monorepo.config.ts` 提供类型提示的辅助函数。
+ *
+ * 推荐在用户项目中这样写：
+ *
+ * @example
+ * ```ts
+ * import { defineMonorepoConfig } from '@icebreakers/monorepo'
+ *
+ * export default defineMonorepoConfig({
+ *   tooling: {
+ *     vitest: {
+ *       includeWorkspaceRootConfig: false,
+ *     },
+ *   },
+ * })
+ * ```
  */
 export function defineMonorepoConfig(config: MonorepoConfig) {
   return config
 }
 
 /**
- * 加载指定目录的 monorepo 配置，并利用缓存提升性能。
+ * 加载指定目录的 `monorepo.config.*`，并在当前进程内做内存缓存。
+ *
+ * @param cwd 配置文件解析起点
+ * @returns 解析后的配置对象；未找到时返回空对象
  */
 export async function loadMonorepoConfig(cwd: string) {
   const key = path.resolve(cwd)
@@ -52,7 +70,11 @@ export async function loadMonorepoConfig(cwd: string) {
 }
 
 /**
- * 获取命令对应的合并配置，若未配置则返回空对象，保证调用端逻辑简单。
+ * 获取单个命令对应的配置块。
+ *
+ * @param name 命令名称，对应 `monorepo.config.ts -> commands.<name>`
+ * @param cwd 配置文件解析起点
+ * @returns 对应命令配置；未配置时返回空对象
  */
 export async function resolveCommandConfig<Name extends keyof NonNullable<MonorepoConfig['commands']>>(
   name: Name,
@@ -64,6 +86,12 @@ export async function resolveCommandConfig<Name extends keyof NonNullable<Monore
   return (commandConfig ?? {}) as NonNullable<MonorepoConfig['commands']>[Name]
 }
 
+/**
+ * 获取 `monorepo.config.ts` 中完整的 `tooling` 配置块。
+ *
+ * @param cwd 配置文件解析起点
+ * @returns `tooling` 配置；未配置时返回空对象
+ */
 export async function resolveToolingConfig(cwd: string): Promise<NonNullable<MonorepoConfig['tooling']>> {
   const config = await loadMonorepoConfig(cwd)
   return (config.tooling ?? {}) as NonNullable<MonorepoConfig['tooling']>
