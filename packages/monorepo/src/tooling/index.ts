@@ -1,4 +1,16 @@
 import type {
+  IcebreakerCommitlintConfig,
+  IcebreakerCommitlintOptions,
+} from '@icebreakers/commitlint-config'
+import type {
+  IcebreakerEslintConfig,
+  UserDefinedOptions as IcebreakerEslintOptions,
+} from '@icebreakers/eslint-config'
+import type {
+  IcebreakerStylelintConfig,
+  StylelintConfig as IcebreakerStylelintOptions,
+} from '@icebreakers/stylelint-config'
+import type {
   CommitlintToolingConfig,
   EslintToolingConfig,
   LintStagedToolingConfig,
@@ -19,21 +31,19 @@ import { loadMonorepoConfig } from '../core/config'
 /**
  * `commitlint.config.*` 最终导出的配置类型。
  *
- * 目前 commitlint 上游未暴露更细的结构化类型时，按对象配置处理。
  */
-export type MonorepoCommitlintConfig = Record<string, unknown>
+export type MonorepoCommitlintConfig = IcebreakerCommitlintConfig
 
 /**
  * `eslint.config.js` 最终导出的 flat config 类型。
  */
-export type MonorepoEslintConfig = ReturnType<typeof createEslint>
+export type MonorepoEslintConfig = IcebreakerEslintConfig
 
 /**
  * `stylelint.config.js` 最终导出的配置类型。
  *
- * 目前 stylelint 上游未暴露更细的结构化类型时，按对象配置处理。
  */
-export type MonorepoStylelintConfig = Record<string, unknown>
+export type MonorepoStylelintConfig = IcebreakerStylelintConfig
 
 /**
  * `lint-staged` 最终配置对象。
@@ -236,6 +246,23 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
   return config[key]
 }
 
+function resolveDefineInput<T extends object>(
+  optionsOrCwd?: T | string,
+  cwd = process.cwd(),
+) {
+  if (typeof optionsOrCwd === 'string') {
+    return {
+      cwd: optionsOrCwd,
+      options: undefined as T | undefined,
+    }
+  }
+
+  return {
+    cwd,
+    options: optionsOrCwd,
+  }
+}
+
 /**
  * 基于 `@icebreakers/commitlint-config` 创建 commitlint 配置。
  *
@@ -256,11 +283,10 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
  * })
  * ```
  */
-export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig = {}): MonorepoCommitlintConfig {
-  return {
-    ...createCommitlint(),
-    ...options,
-  }
+export function createMonorepoCommitlintConfig(
+  options: CommitlintToolingConfig = {},
+): MonorepoCommitlintConfig {
+  return createCommitlint(options as IcebreakerCommitlintOptions)
 }
 
 /**
@@ -276,8 +302,18 @@ export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig 
  * export default await defineCommitlintConfig()
  * ```
  */
-export async function defineCommitlintConfig(cwd = process.cwd()): Promise<MonorepoCommitlintConfig> {
-  return createMonorepoCommitlintConfig(await loadToolingSection('commitlint', cwd))
+export async function defineCommitlintConfig(options?: CommitlintToolingConfig, cwd?: string): Promise<MonorepoCommitlintConfig>
+export async function defineCommitlintConfig(cwd?: string): Promise<MonorepoCommitlintConfig>
+export async function defineCommitlintConfig(
+  optionsOrCwd?: CommitlintToolingConfig | string,
+  cwd = process.cwd(),
+): Promise<MonorepoCommitlintConfig> {
+  const resolved = resolveDefineInput<CommitlintToolingConfig>(optionsOrCwd, cwd)
+  const toolingOptions = await loadToolingSection('commitlint', resolved.cwd)
+  return createMonorepoCommitlintConfig({
+    ...toolingOptions,
+    ...resolved.options,
+  })
 }
 
 /**
@@ -293,12 +329,14 @@ export const defineMonorepoCommitlintConfig = defineCommitlintConfig
  * @param options 额外 ESLint 配置；`ignores` 默认会忽略 `fixtures` 目录
  * @returns 可直接作为 `eslint.config.js` 默认导出的 flat config
  */
-export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): MonorepoEslintConfig {
+export function createMonorepoEslintConfig(
+  options: EslintToolingConfig = {},
+): MonorepoEslintConfig {
   const { ignores = ['**/fixtures/**'], ...rest } = options
   return createEslint({
     ignores,
     ...rest,
-  })
+  } as IcebreakerEslintOptions)
 }
 
 /**
@@ -314,8 +352,18 @@ export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): M
  * export default await defineEslintConfig()
  * ```
  */
-export async function defineEslintConfig(cwd = process.cwd()): Promise<MonorepoEslintConfig> {
-  return createMonorepoEslintConfig(await loadToolingSection('eslint', cwd))
+export async function defineEslintConfig(options?: EslintToolingConfig, cwd?: string): Promise<MonorepoEslintConfig>
+export async function defineEslintConfig(cwd?: string): Promise<MonorepoEslintConfig>
+export async function defineEslintConfig(
+  optionsOrCwd?: EslintToolingConfig | string,
+  cwd = process.cwd(),
+): Promise<MonorepoEslintConfig> {
+  const resolved = resolveDefineInput<EslintToolingConfig>(optionsOrCwd, cwd)
+  const toolingOptions = await loadToolingSection('eslint', resolved.cwd)
+  return createMonorepoEslintConfig({
+    ...toolingOptions,
+    ...resolved.options,
+  })
 }
 
 /**
@@ -329,11 +377,10 @@ export const defineMonorepoEslintConfig = defineEslintConfig
  * @param options 额外合并到默认 stylelint 配置上的字段
  * @returns 可直接作为 `stylelint.config.js` 默认导出的配置对象
  */
-export function createMonorepoStylelintConfig(options: StylelintToolingConfig = {}): MonorepoStylelintConfig {
-  return {
-    ...createStylelint(),
-    ...options,
-  }
+export function createMonorepoStylelintConfig(
+  options: StylelintToolingConfig = {},
+): MonorepoStylelintConfig {
+  return createStylelint(options as IcebreakerStylelintOptions)
 }
 
 /**
@@ -342,8 +389,18 @@ export function createMonorepoStylelintConfig(options: StylelintToolingConfig = 
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 Stylelint 配置对象
  */
-export async function defineStylelintConfig(cwd = process.cwd()): Promise<MonorepoStylelintConfig> {
-  return createMonorepoStylelintConfig(await loadToolingSection('stylelint', cwd))
+export async function defineStylelintConfig(options?: StylelintToolingConfig, cwd?: string): Promise<MonorepoStylelintConfig>
+export async function defineStylelintConfig(cwd?: string): Promise<MonorepoStylelintConfig>
+export async function defineStylelintConfig(
+  optionsOrCwd?: StylelintToolingConfig | string,
+  cwd = process.cwd(),
+): Promise<MonorepoStylelintConfig> {
+  const resolved = resolveDefineInput<StylelintToolingConfig>(optionsOrCwd, cwd)
+  const toolingOptions = await loadToolingSection('stylelint', resolved.cwd)
+  return createMonorepoStylelintConfig({
+    ...toolingOptions,
+    ...resolved.options,
+  })
 }
 
 /**
@@ -404,8 +461,18 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 `lint-staged` 配置对象
  */
-export async function defineLintStagedConfig(cwd = process.cwd()): Promise<MonorepoLintStagedConfig> {
-  return createMonorepoLintStagedConfig(await loadToolingSection('lintStaged', cwd))
+export async function defineLintStagedConfig(options?: MonorepoLintStagedConfigOptions, cwd?: string): Promise<MonorepoLintStagedConfig>
+export async function defineLintStagedConfig(cwd?: string): Promise<MonorepoLintStagedConfig>
+export async function defineLintStagedConfig(
+  optionsOrCwd?: MonorepoLintStagedConfigOptions | string,
+  cwd = process.cwd(),
+): Promise<MonorepoLintStagedConfig> {
+  const resolved = resolveDefineInput<MonorepoLintStagedConfigOptions>(optionsOrCwd, cwd)
+  const toolingOptions = await loadToolingSection('lintStaged', resolved.cwd)
+  return createMonorepoLintStagedConfig({
+    ...toolingOptions,
+    ...resolved.options,
+  })
 }
 
 /**

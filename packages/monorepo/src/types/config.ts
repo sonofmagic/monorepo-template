@@ -1,4 +1,7 @@
+import type { IcebreakerCommitlintOptions } from '@icebreakers/commitlint-config'
+import type { UserDefinedOptions as IcebreakerEslintOptions } from '@icebreakers/eslint-config'
 import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
+import type { StylelintConfig as IcebreakerStylelintConfigOptions } from '@icebreakers/stylelint-config'
 import type { AgenticTemplateFormat } from '../commands/ai'
 import type { CreateNewProjectOptions } from '../commands/create'
 import type { CliOpts } from './cli'
@@ -204,12 +207,11 @@ export interface MirrorCommandConfig {
  *
  * 该对象会与 `@icebreakers/commitlint-config` 的默认配置合并。
  */
-export interface CommitlintToolingConfig extends Record<string, unknown> {
+export interface CommitlintToolingConfig extends IcebreakerCommitlintOptions {
   /**
    * 额外的 commitlint rules。
    * @default undefined
    */
-  rules?: Record<string, unknown>
 }
 
 /**
@@ -217,13 +219,12 @@ export interface CommitlintToolingConfig extends Record<string, unknown> {
  *
  * 该对象会与 `@icebreakers/eslint-config` 的默认 flat config 合并。
  */
-export interface EslintToolingConfig extends Record<string, unknown> {
+export interface EslintToolingConfig extends IcebreakerEslintOptions {
   /**
    * 额外的 ignore pattern。
    * 默认会忽略 `fixtures` 目录。
    * @default 包含 `fixtures` 目录的忽略规则
    */
-  ignores?: string[]
 }
 
 /**
@@ -231,12 +232,11 @@ export interface EslintToolingConfig extends Record<string, unknown> {
  *
  * 该对象会与 `@icebreakers/stylelint-config` 的默认配置合并。
  */
-export interface StylelintToolingConfig extends Record<string, unknown> {
+export interface StylelintToolingConfig extends IcebreakerStylelintConfigOptions {
   /**
    * 额外的 stylelint rules。
    * @default undefined
    */
-  rules?: Record<string, unknown>
 }
 
 /**

@@ -63,6 +63,48 @@ describe('tooling factories', () => {
     expect(config.test.coverage.skipFull).toBe(false)
   })
 
+  it('defines wrapper configs with inline overrides', async () => {
+    const commitlint = await defineCommitlintConfig({
+      extends: ['@custom/commitlint-config'],
+    })
+    const eslint = await defineEslintConfig({
+      ignores: ['custom-ignore/**'],
+    })
+    const stylelint = await defineStylelintConfig({
+      rules: {
+        'selector-class-pattern': null,
+      },
+    })
+    const lintStaged = await defineLintStagedConfig({
+      monorepoCommand: 'monorepo',
+    })
+    const eslintIgnores = eslint
+      .flatMap((config) => {
+        const ignores = (config as { ignores?: string[] }).ignores
+        return Array.isArray(ignores) ? ignores : []
+      })
+
+    expect(commitlint['extends']).toEqual(['@custom/commitlint-config'])
+    expect(eslintIgnores).toContain('custom-ignore/**')
+    expect(stylelint['rules']).toMatchObject({
+      'selector-class-pattern': null,
+    })
+
+    const command = lintStaged['*.{ts,tsx,mts,cts,vue}']
+    expect(typeof command).toBe('function')
+    if (typeof command !== 'function') {
+      throw new TypeError('expected lint-staged rule to be callable')
+    }
+    expect(command(['src/index.ts'])).toContain('monorepo verify staged-typecheck')
+  })
+
+  it('keeps define wrapper cwd-only shorthand working', async () => {
+    expect(await defineCommitlintConfig(process.cwd())).toBeTruthy()
+    expect(await defineEslintConfig(process.cwd())).toBeTruthy()
+    expect(await defineStylelintConfig(process.cwd())).toBeTruthy()
+    expect(await defineLintStagedConfig(process.cwd())).toBeTruthy()
+  })
+
   it('creates project-level vitest config with shared defaults', () => {
     const config = createMonorepoVitestProjectConfig({
       environment: 'node',
