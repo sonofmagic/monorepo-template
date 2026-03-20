@@ -94,7 +94,7 @@ Workspaces use `workspace:*` protocol for internal dependencies. Root `package.j
 - **Stylelint**: `@icebreakers/stylelint-config` for CSS/SCSS
 - **Testing**: Vitest with v8 coverage (reports to `coverage/`)
 - **Commits**: Conventional Commits required (enforced by commitlint + Husky)
-- **Pre-commit Hooks**: Husky + lint-staged run `eslint --fix`, tests, and other checks
+- **Pre-commit Hooks**: Husky + lint-staged run staged-file lint and autofix tasks
 
 ## Publishing Workflow
 

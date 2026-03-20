@@ -93,7 +93,7 @@ Leverage Changesets plus GitHub Actions for automated versioning:
 ## Quality Assurance
 
 - **Code style**: `.editorconfig` enforces two-space indentation and LF line endings, while ESLint and Stylelint maintain consistency across packages.
-- **Commit hooks**: Husky and lint-staged run `eslint --fix`, `vitest`, and other checks before commits.
+- **Commit hooks**: Husky and lint-staged run staged-file ESLint/Stylelint autofixes before commits.
 - **Testing & coverage**: Run `pnpm test -- --coverage` to export coverage reports into the `coverage/` directory.
 - **Staying current**: Use `npx @icebreakers/monorepo@latest` to upgrade this template when new features ship.
 

@@ -93,7 +93,7 @@ packages/
 ## 质量保障
 
 - **代码规范**：`.editorconfig` 约定两空格缩进与 LF 换行，ESLint 与 Stylelint 保证多包一致性。
-- **提交校验**：Husky 与 lint-staged 在提交前自动执行 `eslint --fix`、`vitest` 等检查。
+- **提交校验**：Husky 与 lint-staged 会在提交前对 staged 文件执行 ESLint/Stylelint 自动修复。
 - **测试与覆盖率**：运行 `pnpm test -- --coverage`，在 `coverage/` 输出覆盖率报告。
 - **持续升级**：执行 `npx @icebreakers/monorepo@latest` 获取模板最新能力。
 

@@ -17,7 +17,7 @@ This pnpm + Turbo monorepo keeps template sources under `templates/` (`cli`, `cl
 
 Follow the root `.editorconfig`: two-space indentation, LF line endings, UTF-8. Prefer TypeScript (`.ts`/`.tsx`) and Vue SFCs; name files with kebab-case (`user-table.vue`) and exported symbols with PascalCase for components or camelCase for utilities. ESLint (`@icebreakers/eslint-config`) and Stylelint enforce formatting; run `pnpm lint` before committing, and rely on Husky + lint-staged to auto-fix staged files. Any style-related code changes (CSS, SCSS, Less, Vue style blocks, and similar files) must pass Stylelint checks before commit. All changed code must pass ESLint checks before commit.
 
-`nano-staged.js` must include Stylelint checks for staged style files so style validation also runs during pre-commit.
+`lint-staged.config.js` must include Stylelint checks for staged style files so style validation also runs during pre-commit.
 
 When a single code file exceeds 300 lines, treat it as a refactor signal and split it into smaller modules.
 
