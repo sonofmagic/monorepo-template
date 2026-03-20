@@ -2,7 +2,7 @@ import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../c
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import { input, program, select } from '@icebreakers/monorepo-templates'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo, verifyPrePush, verifyStagedTypecheck } from '../commands'
 import { defaultTemplate } from '../commands/create'
 import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -125,6 +125,21 @@ skillsCommand.command('sync')
     }
     logger.info(`[已同步的目标]:\n${results.map(item => `- ${item.target}: ${item.dest}`).join('\n')}\n`)
     logger.success('skills sync finished!')
+  })
+
+const verifyCommand = program.command('verify').description('本地校验工具集')
+
+verifyCommand.command('pre-push')
+  .description('按推送变更范围执行 build/test/tsd 校验')
+  .action(async () => {
+    await verifyPrePush({ cwd })
+  })
+
+verifyCommand.command('staged-typecheck')
+  .description('按暂存文件所在 workspace 执行 typecheck')
+  .argument('[files...]')
+  .action((files: string[] = []) => {
+    verifyStagedTypecheck(files, { cwd })
   })
 
 const aiCommand = program.command('ai').description('AI 助手工具集')

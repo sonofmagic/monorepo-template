@@ -1,0 +1,254 @@
+import type { Buffer } from 'node:buffer'
+import type { SpawnSyncOptions, SpawnSyncReturns } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+
+const zeroSha = '0'.repeat(40)
+const typecheckExtensions = new Set(['.ts', '.tsx', '.mts', '.cts', '.vue'])
+const whitespacePattern = /\s+/
+const defaultWorkspaceOrder = [
+  'packages/create-icebreaker',
+  'packages/monorepo',
+  'packages/monorepo-templates',
+  'templates/cli',
+  'templates/client',
+  'templates/server',
+  'templates/tsdown',
+  'templates/tsup',
+  'templates/unbuild',
+  'templates/vitepress',
+  'templates/vue-lib',
+].sort((left, right) => right.length - left.length)
+
+export interface VerifyCommandOptions {
+  cwd?: string
+}
+
+export interface PrePushVerifyOptions extends VerifyCommandOptions {
+  stdinText?: string
+  workspaces?: string[]
+  execFile?: typeof execFileSync
+  spawn?: typeof spawnSync
+}
+
+export interface StagedTypecheckOptions extends VerifyCommandOptions {
+  spawn?: typeof spawnSync
+}
+
+function getPackageScripts(dir: string, cwd: string) {
+  const packageJsonPath = path.join(cwd, dir, 'package.json')
+  if (!fs.existsSync(packageJsonPath)) {
+    return {}
+  }
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+  return packageJson.scripts ?? {}
+}
+
+function getRootLevelTasksForFile(filePath: string) {
+  const basename = path.basename(filePath)
+  if (filePath.startsWith('.github/')) {
+    return ['build', 'test', 'tsd']
+  }
+  if (filePath === 'package.json' || filePath === 'pnpm-lock.yaml' || filePath === 'turbo.json' || filePath === 'pnpm-workspace.yaml') {
+    return ['build', 'test', 'tsd']
+  }
+  if (basename.startsWith('tsconfig') || filePath === 'lint-staged.config.js' || filePath.startsWith('scripts/')) {
+    return ['build', 'test', 'tsd']
+  }
+  return []
+}
+
+function resolveWorkspaceDir(filePath: string, workspaces: string[]) {
+  const normalized = filePath.split(path.sep).join('/')
+  for (const workspace of workspaces) {
+    if (normalized === workspace || normalized.startsWith(`${workspace}/`)) {
+      return workspace
+    }
+  }
+  return null
+}
+
+function getChangedFilesForRange(base: string, head: string, cwd: string, execFile: typeof execFileSync) {
+  const output = execFile('git', ['diff', '--name-only', '--diff-filter=ACMR', `${base}...${head}`], {
+    cwd,
+    encoding: 'utf8',
+  })
+  return output.split('\n').filter(Boolean)
+}
+
+function getChangedFilesForNewRemote(head: string, cwd: string, execFile: typeof execFileSync) {
+  const emptyTree = execFile('git', ['hash-object', '-t', 'tree', '--stdin'], {
+    cwd,
+    encoding: 'utf8',
+    input: '',
+  }).trim()
+  const output = execFile('git', ['diff', '--name-only', '--diff-filter=ACMR', emptyTree, head], {
+    cwd,
+    encoding: 'utf8',
+  })
+  return output.split('\n').filter(Boolean)
+}
+
+function runPnpmCommand(
+  cwd: string,
+  label: string,
+  args: string[],
+  spawn: typeof spawnSync,
+) {
+  process.stdout.write(`${label}\n`)
+  const options: SpawnSyncOptions = {
+    cwd,
+    stdio: 'inherit',
+  }
+  const result = spawn('pnpm', args, options)
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1)
+  }
+}
+
+async function readHookStdin() {
+  if (process.stdin.isTTY) {
+    return ''
+  }
+
+  process.stdin.setEncoding('utf8')
+  let output = ''
+
+  try {
+    for await (const chunk of process.stdin) {
+      output += chunk
+    }
+  }
+  catch (error) {
+    const err = error as NodeJS.ErrnoException
+    if (err.code !== 'EAGAIN') {
+      throw error
+    }
+  }
+
+  return output.trim()
+}
+
+function hasTypecheckScript(dir: string) {
+  const packageJsonPath = path.join(dir, 'package.json')
+  if (!fs.existsSync(packageJsonPath)) {
+    return false
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+    return typeof packageJson.scripts?.typecheck === 'string' && packageJson.scripts.typecheck.length > 0
+  }
+  catch {
+    return false
+  }
+}
+
+function resolveTypecheckWorkspaceDir(filePath: string, cwd: string) {
+  let current = path.dirname(path.resolve(cwd, filePath))
+
+  while (current.startsWith(cwd)) {
+    if (current !== cwd && hasTypecheckScript(current)) {
+      return current
+    }
+
+    const next = path.dirname(current)
+    if (next === current) {
+      break
+    }
+    current = next
+  }
+
+  return cwd
+}
+
+export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
+  const cwd = options.cwd ?? process.cwd()
+  const execFile = options.execFile ?? execFileSync
+  const spawn = options.spawn ?? spawnSync
+  const workspaces = options.workspaces ?? defaultWorkspaceOrder
+  const hookStdin = options.stdinText ?? await readHookStdin()
+  const hookLines = hookStdin.length > 0 ? hookStdin.split('\n') : []
+
+  const tasksByWorkspace = new Map<string, Set<string>>()
+  const rootTasks = new Set<string>()
+
+  for (const line of hookLines) {
+    const [, localSha, , remoteSha] = line.trim().split(whitespacePattern)
+    if (!localSha || localSha === zeroSha) {
+      continue
+    }
+
+    const changedFiles = remoteSha && remoteSha !== zeroSha
+      ? getChangedFilesForRange(remoteSha, localSha, cwd, execFile)
+      : getChangedFilesForNewRemote(localSha, cwd, execFile)
+
+    for (const file of changedFiles) {
+      const workspace = resolveWorkspaceDir(file, workspaces)
+      if (workspace) {
+        const tasks = tasksByWorkspace.get(workspace) ?? new Set()
+        tasks.add('build')
+        tasks.add('test')
+        tasks.add('tsd')
+        tasksByWorkspace.set(workspace, tasks)
+        continue
+      }
+
+      for (const task of getRootLevelTasksForFile(file)) {
+        rootTasks.add(task)
+      }
+    }
+  }
+
+  for (const [workspace, tasks] of tasksByWorkspace) {
+    const scripts = getPackageScripts(workspace, cwd)
+    for (const task of [...tasks]) {
+      if (typeof scripts[task] !== 'string' || scripts[task].length === 0) {
+        tasks.delete(task)
+      }
+    }
+  }
+
+  if (tasksByWorkspace.size === 0 && rootTasks.size === 0) {
+    return
+  }
+
+  for (const [workspace, tasks] of [...tasksByWorkspace.entries()].sort(([left], [right]) => left.localeCompare(right))) {
+    for (const task of ['build', 'test', 'tsd']) {
+      if (!tasks.has(task)) {
+        continue
+      }
+      runPnpmCommand(cwd, `[pre-push:${task}] ${workspace}`, ['--dir', workspace, task], spawn)
+    }
+  }
+
+  for (const task of ['build', 'test', 'tsd']) {
+    if (!rootTasks.has(task)) {
+      continue
+    }
+    runPnpmCommand(cwd, `[pre-push:${task}] .`, [task], spawn)
+  }
+}
+
+export function verifyStagedTypecheck(stagedFiles: string[], options: StagedTypecheckOptions = {}) {
+  const cwd = options.cwd ?? process.cwd()
+  const spawn = options.spawn ?? spawnSync
+  const workspaceDirs = [...new Set(
+    stagedFiles
+      .filter(file => typecheckExtensions.has(path.extname(file)))
+      .map(file => resolveTypecheckWorkspaceDir(file, cwd)),
+  )]
+
+  if (workspaceDirs.length === 0) {
+    return
+  }
+
+  for (const workspaceDir of workspaceDirs) {
+    const label = path.relative(cwd, workspaceDir) || '.'
+    runPnpmCommand(cwd, `[lint-staged:typecheck] ${label}`, ['--dir', workspaceDir, 'typecheck'], spawn)
+  }
+}
+
+export type VerifySpawnResult = SpawnSyncReturns<Buffer>

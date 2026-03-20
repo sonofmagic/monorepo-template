@@ -12,6 +12,8 @@ describe('commander program', () => {
     const syncMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
+    const verifyPrePushMock = vi.fn(async () => {})
+    const verifyStagedTypecheckMock = vi.fn(() => {})
     const createMock = vi.fn(async () => {})
     const aiTemplateMock = vi.fn(async () => {})
     const syncSkillsMock = vi.fn(async () => ([
@@ -60,6 +62,8 @@ describe('commander program', () => {
       syncSkills: syncSkillsMock,
       templateMap: { unbuild: { source: 'unbuild', target: 'packages/unbuild' } },
       upgradeMonorepo: upgradeMock,
+      verifyPrePush: verifyPrePushMock,
+      verifyStagedTypecheck: verifyStagedTypecheckMock,
     }))
 
     vi.doMock('@/commands/create', () => ({
@@ -82,6 +86,8 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'sync'])
     await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
+    await program.parseAsync(['node', 'monorepo', 'verify', 'pre-push'])
+    await program.parseAsync(['node', 'monorepo', 'verify', 'staged-typecheck', 'packages/monorepo/src/index.ts'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'new'])
     await program.parseAsync(['node', 'monorepo', 'new'])
@@ -96,6 +102,10 @@ describe('commander program', () => {
       pinnedVersion: 'next',
     })
     expect(mirrorMock).toHaveBeenCalled()
+    expect(verifyPrePushMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
+    expect(verifyStagedTypecheckMock).toHaveBeenCalledWith(['packages/monorepo/src/index.ts'], {
+      cwd: expect.any(String),
+    })
     expect(aiTemplateMock).toHaveBeenNthCalledWith(1, expect.objectContaining({
       cwd: expect.any(String),
       output: 'agentic.md',

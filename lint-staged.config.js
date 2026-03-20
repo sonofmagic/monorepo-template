@@ -15,7 +15,7 @@ export default {
     if (uniqueFiles.length === 0) {
       return []
     }
-    return `node scripts/lint-staged-typecheck.mjs ${uniqueFiles.map(escapeForShell).join(' ')}`
+    return `node packages/monorepo/dist/cli.mjs verify staged-typecheck ${uniqueFiles.map(escapeForShell).join(' ')}`
   },
   '*.{json,md,mdx,html,yml,yaml}': [
     // 'prettier --with-node-modules --ignore-path .prettierignore --write',

@@ -2,6 +2,7 @@ import type { GetWorkspacePackagesOptions } from '../types'
 import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplateOptions } from './ai'
 import type { CreateNewProjectOptions } from './create'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
+import type { PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
@@ -12,6 +13,7 @@ import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
 import { syncNpmMirror } from './sync'
 import { upgradeMonorepo } from './upgrade'
+import { verifyPrePush, verifyStagedTypecheck } from './verify'
 
 export type {
   AgenticTemplateFormat,
@@ -19,8 +21,11 @@ export type {
   CreateNewProjectOptions,
   GenerateAgenticTemplateOptions,
   GetWorkspacePackagesOptions,
+  PrePushVerifyOptions,
   SkillTarget,
+  StagedTypecheckOptions,
   SyncSkillsOptions,
+  VerifyCommandOptions,
 }
 
 export {
@@ -44,4 +49,6 @@ export {
   syncSkills,
   templateMap,
   upgradeMonorepo,
+  verifyPrePush,
+  verifyStagedTypecheck,
 }
