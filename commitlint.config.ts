@@ -1,12 +1,3 @@
-import type { MonorepoCommitlintConfig } from '@icebreakers/monorepo/tooling'
 import { defineCommitlintConfig } from '@icebreakers/monorepo/tooling'
 
-/**
- * Root commitlint config.
- *
- * Loaded from `monorepo.config.ts -> tooling.commitlint`.
- * See `defineCommitlintConfig()` JSDoc for supported defaults and examples.
- */
-const config: MonorepoCommitlintConfig = await defineCommitlintConfig()
-
-export default config
+export default await defineCommitlintConfig()

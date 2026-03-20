@@ -1,15 +1,3 @@
-// @ts-check
-
 import { defineStylelintConfig } from '@icebreakers/monorepo/tooling'
 
-/**
- * Root Stylelint config.
- *
- * Loaded from `monorepo.config.ts -> tooling.stylelint`.
- * Hover `defineStylelintConfig()` for the shared defaults and extension points.
- *
- * @type {import('@icebreakers/monorepo/tooling').MonorepoStylelintConfig}
- */
-const config = await defineStylelintConfig()
-
-export default config
+export default await defineStylelintConfig()

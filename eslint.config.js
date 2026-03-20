@@ -1,15 +1,3 @@
-// @ts-check
-
 import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
 
-/**
- * Root ESLint flat config.
- *
- * Loaded from `monorepo.config.ts -> tooling.eslint`.
- * Hover `defineEslintConfig()` or `MonorepoEslintConfig` for full defaults and usage notes.
- *
- * @type {import('@icebreakers/monorepo/tooling').MonorepoEslintConfig}
- */
-const config = await defineEslintConfig()
-
-export default config
+export default await defineEslintConfig()

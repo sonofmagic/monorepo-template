@@ -1,11 +1,6 @@
 import type { MonorepoConfig } from '@icebreakers/monorepo'
 
-/**
- * Scaffolded monorepo defaults.
- *
- * Keep this file focused on project-specific overrides and rely on runtime defaults elsewhere.
- */
-const config: MonorepoConfig = {
+export default {
   commands: {
     create: {
       defaultTemplate: 'tsdown',
@@ -25,6 +20,4 @@ const config: MonorepoConfig = {
       includeWorkspaceRootConfig: false,
     },
   },
-}
-
-export default config
+} satisfies MonorepoConfig
