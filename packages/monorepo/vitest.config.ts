@@ -1,7 +1,15 @@
 import path from 'node:path'
 import { configDefaults, defineProject } from 'vitest/config'
 
-export default defineProject({
+/**
+ * Package-local Vitest config for `@icebreakers/monorepo`.
+ *
+ * This package needs a richer setup than the scaffolded defaults because it also:
+ * - aliases the in-repo `@icebreakers/monorepo-templates` source
+ * - loads `vitest.setup.ts`
+ * - keeps coverage on source + scripts files only
+ */
+const config = defineProject({
   test: {
     alias: [
       {
@@ -37,3 +45,5 @@ export default defineProject({
     },
   },
 })
+
+export default config

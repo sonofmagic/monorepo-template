@@ -17,6 +17,25 @@ import YAML from 'yaml'
 import { loadMonorepoConfig } from '../core/config'
 
 /**
+ * `commitlint.config.*` 最终导出的配置类型。
+ *
+ * 目前 commitlint 上游未暴露更细的结构化类型时，按对象配置处理。
+ */
+export type MonorepoCommitlintConfig = Record<string, unknown>
+
+/**
+ * `eslint.config.js` 最终导出的 flat config 类型。
+ */
+export type MonorepoEslintConfig = ReturnType<typeof createEslint>
+
+/**
+ * `stylelint.config.js` 最终导出的配置类型。
+ *
+ * 目前 stylelint 上游未暴露更细的结构化类型时，按对象配置处理。
+ */
+export type MonorepoStylelintConfig = Record<string, unknown>
+
+/**
  * `lint-staged` 最终配置对象。
  *
  * key 为 glob pattern，value 为命令数组或命令生成函数。
@@ -57,6 +76,21 @@ export interface MonorepoVitestConfigResult {
       exclude?: string[]
     }
     forceRerunTriggers: string[]
+  }
+}
+
+/**
+ * 单个 package/app 的 `vitest.config.*` 最终导出结构。
+ */
+export interface MonorepoVitestProjectConfigResult {
+  test: {
+    alias?: Array<{
+      find: string | RegExp
+      replacement: string
+    }>
+    globals: boolean
+    testTimeout: number
+    environment?: string
   }
 }
 
@@ -222,7 +256,7 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
  * })
  * ```
  */
-export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig = {}): object {
+export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig = {}): MonorepoCommitlintConfig {
   return {
     ...createCommitlint(),
     ...options,
@@ -242,7 +276,7 @@ export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig 
  * export default await defineMonorepoCommitlintConfig()
  * ```
  */
-export async function defineMonorepoCommitlintConfig(cwd = process.cwd()) {
+export async function defineMonorepoCommitlintConfig(cwd = process.cwd()): Promise<MonorepoCommitlintConfig> {
   return createMonorepoCommitlintConfig(await loadToolingSection('commitlint', cwd))
 }
 
@@ -254,7 +288,7 @@ export async function defineMonorepoCommitlintConfig(cwd = process.cwd()) {
  * @param options 额外 ESLint 配置；`ignores` 默认会忽略 `fixtures` 目录
  * @returns 可直接作为 `eslint.config.js` 默认导出的 flat config
  */
-export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): object {
+export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): MonorepoEslintConfig {
   const { ignores = ['**/fixtures/**'], ...rest } = options
   return createEslint({
     ignores,
@@ -275,7 +309,7 @@ export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): o
  * export default await defineMonorepoEslintConfig()
  * ```
  */
-export async function defineMonorepoEslintConfig(cwd = process.cwd()) {
+export async function defineMonorepoEslintConfig(cwd = process.cwd()): Promise<MonorepoEslintConfig> {
   return createMonorepoEslintConfig(await loadToolingSection('eslint', cwd))
 }
 
@@ -285,7 +319,7 @@ export async function defineMonorepoEslintConfig(cwd = process.cwd()) {
  * @param options 额外合并到默认 stylelint 配置上的字段
  * @returns 可直接作为 `stylelint.config.js` 默认导出的配置对象
  */
-export function createMonorepoStylelintConfig(options: StylelintToolingConfig = {}): object {
+export function createMonorepoStylelintConfig(options: StylelintToolingConfig = {}): MonorepoStylelintConfig {
   return {
     ...createStylelint(),
     ...options,
@@ -298,7 +332,7 @@ export function createMonorepoStylelintConfig(options: StylelintToolingConfig = 
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 Stylelint 配置对象
  */
-export async function defineMonorepoStylelintConfig(cwd = process.cwd()) {
+export async function defineMonorepoStylelintConfig(cwd = process.cwd()): Promise<MonorepoStylelintConfig> {
   return createMonorepoStylelintConfig(await loadToolingSection('stylelint', cwd))
 }
 
@@ -355,7 +389,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 `lint-staged` 配置对象
  */
-export async function defineMonorepoLintStagedConfig(cwd = process.cwd()) {
+export async function defineMonorepoLintStagedConfig(cwd = process.cwd()): Promise<MonorepoLintStagedConfig> {
   return createMonorepoLintStagedConfig(await loadToolingSection('lintStaged', cwd))
 }
 
@@ -476,7 +510,7 @@ export async function defineMonorepoVitestConfig(
   options: MonorepoVitestConfigOptions = {},
   overrides: MonorepoVitestConfigOverrides = {},
   cwd = process.cwd(),
-) {
+): Promise<MonorepoVitestConfigResult> {
   const toolingOptions = await loadToolingSection('vitest', cwd)
   return mergeMonorepoVitestConfig(
     createMonorepoVitestConfig({
@@ -498,17 +532,7 @@ export async function defineMonorepoVitestConfig(
  * @param options 单个 package/app 的 Vitest 配置项
  * @returns 可直接给项目内 `vitest.config.ts` 使用的 `test` 配置片段
  */
-export function createMonorepoVitestProjectConfig(options: MonorepoVitestProjectConfigOptions = {}): {
-  test: {
-    alias?: Array<{
-      find: string | RegExp
-      replacement: string
-    }>
-    globals: boolean
-    testTimeout: number
-    environment?: string
-  }
-} {
+export function createMonorepoVitestProjectConfig(options: MonorepoVitestProjectConfigOptions = {}): MonorepoVitestProjectConfigResult {
   return {
     test: {
       ...(options.alias ? { alias: options.alias } : {}),
