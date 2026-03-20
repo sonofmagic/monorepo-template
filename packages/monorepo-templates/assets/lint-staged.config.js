@@ -1,3 +1,6 @@
-import { createMonorepoLintStagedConfig } from '@icebreakers/monorepo/tooling'
+import process from 'node:process'
+import { createMonorepoLintStagedConfig, loadMonorepoToolingConfig } from '@icebreakers/monorepo/tooling'
 
-export default createMonorepoLintStagedConfig()
+const toolingConfig = await loadMonorepoToolingConfig(process.cwd())
+
+export default createMonorepoLintStagedConfig(toolingConfig.lintStaged)
