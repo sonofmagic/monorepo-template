@@ -26,6 +26,25 @@ export interface MonorepoVitestConfigOptions extends VitestToolingConfig {}
 
 export interface MonorepoVitestProjectConfigOptions extends VitestProjectToolingConfig {}
 
+export interface MonorepoVitestConfigResult {
+  test: {
+    projects: string[]
+    coverage: {
+      enabled: boolean
+      all: boolean
+      skipFull: boolean
+      exclude?: string[]
+    }
+    forceRerunTriggers: string[]
+  }
+}
+
+export interface MonorepoVitestConfigOverrides {
+  test?: Partial<Omit<MonorepoVitestConfigResult['test'], 'coverage'>> & {
+    coverage?: Partial<MonorepoVitestConfigResult['test']['coverage']>
+  }
+}
+
 const defaultProjectRoots = ['packages', 'apps']
 const defaultConfigCandidates = [
   'vitest.config.ts',
@@ -206,18 +225,7 @@ export async function defineMonorepoLintStagedConfig(cwd = process.cwd()) {
   return createMonorepoLintStagedConfig(await loadToolingSection('lintStaged', cwd))
 }
 
-export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions = {}): {
-  test: {
-    projects: string[]
-    coverage: {
-      enabled: boolean
-      all: boolean
-      skipFull: boolean
-      exclude?: string[]
-    }
-    forceRerunTriggers: string[]
-  }
-} {
+export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions = {}): MonorepoVitestConfigResult {
   const rootDir = options.rootDir ?? process.cwd()
   const workspaceFile = options.workspaceFile ?? 'pnpm-workspace.yaml'
   const workspaceProjectRoots = loadProjectRootsFromWorkspace(rootDir, workspaceFile)
@@ -249,8 +257,37 @@ export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions 
   }
 }
 
-export async function defineMonorepoVitestConfig(cwd = process.cwd()) {
-  return createMonorepoVitestConfig(await loadToolingSection('vitest', cwd))
+function mergeMonorepoVitestConfig(
+  base: MonorepoVitestConfigResult,
+  overrides: MonorepoVitestConfigOverrides = {},
+): MonorepoVitestConfigResult {
+  return {
+    ...base,
+    ...overrides,
+    test: {
+      ...base.test,
+      ...overrides.test,
+      coverage: {
+        ...base.test.coverage,
+        ...overrides.test?.coverage,
+      },
+    },
+  }
+}
+
+export async function defineMonorepoVitestConfig(
+  options: MonorepoVitestConfigOptions = {},
+  overrides: MonorepoVitestConfigOverrides = {},
+  cwd = process.cwd(),
+) {
+  const toolingOptions = await loadToolingSection('vitest', cwd)
+  return mergeMonorepoVitestConfig(
+    createMonorepoVitestConfig({
+      ...toolingOptions,
+      ...options,
+    }),
+    overrides,
+  )
 }
 
 export function createMonorepoVitestProjectConfig(options: MonorepoVitestProjectConfigOptions = {}): {

@@ -44,6 +44,25 @@ describe('tooling factories', () => {
     expect(Array.isArray(config.test.projects)).toBe(true)
   })
 
+  it('defines vitest config with inline overrides', async () => {
+    const config = await defineMonorepoVitestConfig(
+      {
+        includeWorkspaceRootConfig: false,
+      },
+      {
+        test: {
+          coverage: {
+            exclude: ['**/dist/**'],
+            skipFull: false,
+          },
+        },
+      },
+    )
+
+    expect(config.test.coverage.exclude).toEqual(['**/dist/**'])
+    expect(config.test.coverage.skipFull).toBe(false)
+  })
+
   it('creates project-level vitest config with shared defaults', () => {
     const config = createMonorepoVitestProjectConfig({
       environment: 'node',
