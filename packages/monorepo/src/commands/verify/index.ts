@@ -4,6 +4,7 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { resolveToolingConfig } from '../../core/config'
 
 const zeroSha = '0'.repeat(40)
 const typecheckExtensions = new Set(['.ts', '.tsx', '.mts', '.cts', '.vue'])
@@ -37,6 +38,15 @@ export interface StagedTypecheckOptions extends VerifyCommandOptions {
   spawn?: typeof spawnSync
 }
 
+export interface CommitMsgVerifyOptions extends VerifyCommandOptions {
+  editFile: string
+  spawn?: typeof spawnSync
+}
+
+export interface PreCommitVerifyOptions extends VerifyCommandOptions {
+  spawn?: typeof spawnSync
+}
+
 function getPackageScripts(dir: string, cwd: string) {
   const packageJsonPath = path.join(cwd, dir, 'package.json')
   if (!fs.existsSync(packageJsonPath)) {
@@ -51,10 +61,21 @@ function getRootLevelTasksForFile(filePath: string) {
   if (filePath.startsWith('.github/')) {
     return ['build', 'test', 'tsd']
   }
+  if (filePath.startsWith('.husky/')) {
+    return ['build', 'test', 'tsd']
+  }
   if (filePath === 'package.json' || filePath === 'pnpm-lock.yaml' || filePath === 'turbo.json' || filePath === 'pnpm-workspace.yaml') {
     return ['build', 'test', 'tsd']
   }
-  if (basename.startsWith('tsconfig') || filePath === 'lint-staged.config.js' || filePath.startsWith('scripts/')) {
+  if (
+    basename.startsWith('tsconfig')
+    || filePath === 'commitlint.config.ts'
+    || filePath === 'eslint.config.js'
+    || filePath === 'lint-staged.config.js'
+    || filePath === 'stylelint.config.js'
+    || filePath === 'vitest.config.ts'
+    || filePath.startsWith('scripts/')
+  ) {
     return ['build', 'test', 'tsd']
   }
   return []
@@ -103,6 +124,17 @@ function runPnpmCommand(
     stdio: 'inherit',
   }
   const result = spawn('pnpm', args, options)
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1)
+  }
+}
+
+function runShellCommand(cwd: string, label: string, command: string, spawn: typeof spawnSync) {
+  process.stdout.write(`${label}\n`)
+  const result = spawn('sh', ['-lc', command], {
+    cwd,
+    stdio: 'inherit',
+  })
   if (result.status !== 0) {
     process.exit(result.status ?? 1)
   }
@@ -249,6 +281,34 @@ export function verifyStagedTypecheck(stagedFiles: string[], options: StagedType
     const label = path.relative(cwd, workspaceDir) || '.'
     runPnpmCommand(cwd, `[lint-staged:typecheck] ${label}`, ['--dir', workspaceDir, 'typecheck'], spawn)
   }
+}
+
+export async function verifyCommitMsg(options: CommitMsgVerifyOptions) {
+  const cwd = options.cwd ?? process.cwd()
+  const spawn = options.spawn ?? spawnSync
+  const toolingConfig = await resolveToolingConfig(cwd)
+  const command = toolingConfig.husky?.commitMsgCommand?.replaceAll('{editFile}', options.editFile)
+
+  if (command) {
+    runShellCommand(cwd, `[commit-msg] ${options.editFile}`, command, spawn)
+    return
+  }
+
+  runPnpmCommand(cwd, `[commit-msg] ${options.editFile}`, ['exec', 'commitlint', '--edit', options.editFile], spawn)
+}
+
+export async function verifyPreCommit(options: PreCommitVerifyOptions = {}) {
+  const cwd = options.cwd ?? process.cwd()
+  const spawn = options.spawn ?? spawnSync
+  const toolingConfig = await resolveToolingConfig(cwd)
+  const command = toolingConfig.husky?.preCommitCommand
+
+  if (command) {
+    runShellCommand(cwd, '[pre-commit] lint-staged', command, spawn)
+    return
+  }
+
+  runPnpmCommand(cwd, '[pre-commit] lint-staged', ['exec', 'lint-staged'], spawn)
 }
 
 export type VerifySpawnResult = SpawnSyncReturns<Buffer>

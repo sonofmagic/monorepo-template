@@ -85,8 +85,12 @@ async function copyEntry(from: string, to: string, overwriteExisting: boolean, f
 }
 
 async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
+  const monorepoAssetRoot = path.resolve(repoRoot, 'packages/monorepo/assets')
+
   for (const target of assetTargets) {
-    const from = path.join(repoRoot, target)
+    const packageAsset = path.join(monorepoAssetRoot, toPublishGitignorePath(target))
+    const repoAsset = path.join(repoRoot, target)
+    const from = await pathExists(packageAsset) ? packageAsset : repoAsset
     if (!await pathExists(from)) {
       continue
     }

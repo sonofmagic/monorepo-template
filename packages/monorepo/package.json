@@ -42,6 +42,17 @@
         "default": "./dist/cli.cjs"
       }
     },
+    "./tooling": {
+      "types": "./dist/tooling-entry.d.mts",
+      "import": {
+        "types": "./dist/tooling-entry.d.mts",
+        "default": "./dist/tooling-entry.mjs"
+      },
+      "require": {
+        "types": "./dist/tooling-entry.d.cts",
+        "default": "./dist/tooling-entry.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
@@ -71,7 +82,10 @@
     "bin": "bin/monorepo.js"
   },
   "dependencies": {
+    "@icebreakers/commitlint-config": "^1.2.12",
+    "@icebreakers/eslint-config": "^2.0.1",
     "@icebreakers/monorepo-templates": "workspace:*",
+    "@icebreakers/stylelint-config": "^2.1.0",
     "@pnpm/find-workspace-dir": "^1000.1.4",
     "@pnpm/logger": "^1001.0.1",
     "@pnpm/types": "^1001.3.0",

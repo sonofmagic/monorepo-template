@@ -19,4 +19,13 @@ export default defineMonorepoConfig({
       mergeTargets: true,
     },
   },
+  tooling: {
+    lintStaged: {
+      monorepoCommand: 'pnpm exec monorepo',
+    },
+    vitest: {
+      includeWorkspaceRootConfig: false,
+      coverageExclude: ['**/dist/**'],
+    },
+  },
 })

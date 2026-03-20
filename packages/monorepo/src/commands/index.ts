@@ -2,7 +2,7 @@ import type { GetWorkspacePackagesOptions } from '../types'
 import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplateOptions } from './ai'
 import type { CreateNewProjectOptions } from './create'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
-import type { PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
+import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
@@ -13,14 +13,16 @@ import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
 import { syncNpmMirror } from './sync'
 import { upgradeMonorepo } from './upgrade'
-import { verifyPrePush, verifyStagedTypecheck } from './verify'
+import { verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from './verify'
 
 export type {
   AgenticTemplateFormat,
   AgenticTemplateTask,
+  CommitMsgVerifyOptions,
   CreateNewProjectOptions,
   GenerateAgenticTemplateOptions,
   GetWorkspacePackagesOptions,
+  PreCommitVerifyOptions,
   PrePushVerifyOptions,
   SkillTarget,
   StagedTypecheckOptions,
@@ -49,6 +51,8 @@ export {
   syncSkills,
   templateMap,
   upgradeMonorepo,
+  verifyCommitMsg,
+  verifyPreCommit,
   verifyPrePush,
   verifyStagedTypecheck,
 }

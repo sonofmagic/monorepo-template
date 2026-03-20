@@ -2,7 +2,7 @@ import type { Buffer } from 'node:buffer'
 import type { SpawnSyncReturns } from 'node:child_process'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { verifyPrePush, verifyStagedTypecheck } from '@/commands'
+import { verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '@/commands'
 
 function createSpawnResult(status = 0) {
   return { status } as SpawnSyncReturns<Buffer>
@@ -54,6 +54,33 @@ describe('verify commands', () => {
     expect(spawnMock.mock.calls).toEqual([
       ['pnpm', ['--dir', path.join(repoRoot, 'packages/monorepo'), 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
       ['pnpm', ['--dir', repoRoot, 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
+    ])
+  })
+
+  it('runs commitlint for commit message verification', async () => {
+    const spawnMock = vi.fn(() => createSpawnResult())
+
+    await verifyCommitMsg({
+      cwd: repoRoot,
+      editFile: '.git/COMMIT_EDITMSG',
+      spawn: spawnMock as unknown as typeof import('node:child_process').spawnSync,
+    })
+
+    expect(spawnMock.mock.calls).toEqual([
+      ['pnpm', ['exec', 'commitlint', '--edit', '.git/COMMIT_EDITMSG'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
+    ])
+  })
+
+  it('runs lint-staged for pre-commit verification', async () => {
+    const spawnMock = vi.fn(() => createSpawnResult())
+
+    await verifyPreCommit({
+      cwd: repoRoot,
+      spawn: spawnMock as unknown as typeof import('node:child_process').spawnSync,
+    })
+
+    expect(spawnMock.mock.calls).toEqual([
+      ['pnpm', ['exec', 'lint-staged'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
     ])
   })
 })

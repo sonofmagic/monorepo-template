@@ -19,4 +19,9 @@ export default defineMonorepoConfig({
       mergeTargets: true,
     },
   },
+  tooling: {
+    vitest: {
+      includeWorkspaceRootConfig: false,
+    },
+  },
 })

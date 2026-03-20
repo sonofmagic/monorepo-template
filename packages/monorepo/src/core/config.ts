@@ -64,15 +64,27 @@ export async function resolveCommandConfig<Name extends keyof NonNullable<Monore
   return (commandConfig ?? {}) as NonNullable<MonorepoConfig['commands']>[Name]
 }
 
+export async function resolveToolingConfig(cwd: string): Promise<NonNullable<MonorepoConfig['tooling']>> {
+  const config = await loadMonorepoConfig(cwd)
+  return (config.tooling ?? {}) as NonNullable<MonorepoConfig['tooling']>
+}
+
 export type {
   AiCommandConfig,
   CleanCommandConfig,
   CliOpts,
+  CommitlintToolingConfig,
   CreateChoiceOption,
   CreateCommandConfig,
+  EslintToolingConfig,
+  HuskyToolingConfig,
   InitCommandConfig,
+  LintStagedToolingConfig,
   MirrorCommandConfig,
   MonorepoConfig,
+  StylelintToolingConfig,
   SyncCommandConfig,
+  ToolingConfig,
   UpgradeCommandConfig,
+  VitestToolingConfig,
 } from '../types'

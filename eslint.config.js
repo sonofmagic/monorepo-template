@@ -1,7 +1,6 @@
-import { icebreaker } from '@icebreakers/eslint-config'
+import process from 'node:process'
+import { createMonorepoEslintConfig, loadMonorepoToolingConfig } from '@icebreakers/monorepo/tooling'
 
-export default icebreaker(
-  {
-    ignores: ['**/fixtures/**'],
-  },
-)
+const toolingConfig = await loadMonorepoToolingConfig(process.cwd())
+
+export default createMonorepoEslintConfig(toolingConfig.eslint)

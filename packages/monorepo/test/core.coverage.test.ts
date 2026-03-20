@@ -50,9 +50,11 @@ describe('core module coverage', () => {
 
     const resolvedClean = await configModule.resolveCommandConfig('clean', '/repo')
     const resolvedMirror = await configModule.resolveCommandConfig('mirror', '/repo')
+    const resolvedTooling = await configModule.resolveToolingConfig('/repo')
     expect(resolvedClean).toBeDefined()
     expect(resolvedClean?.autoConfirm).toBe(true)
     expect(resolvedMirror).toEqual({})
+    expect(resolvedTooling).toEqual({})
 
     class GitClientMock {
       async getGitUrl() {

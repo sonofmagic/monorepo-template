@@ -199,6 +199,48 @@ export interface MirrorCommandConfig {
   env?: Record<string, string>
 }
 
+export interface CommitlintToolingConfig extends Record<string, unknown> {
+  rules?: Record<string, unknown>
+}
+
+export interface EslintToolingConfig extends Record<string, unknown> {
+  ignores?: string[]
+}
+
+export interface StylelintToolingConfig extends Record<string, unknown> {
+  rules?: Record<string, unknown>
+}
+
+export interface LintStagedToolingConfig {
+  monorepoCommand?: string
+}
+
+export interface VitestToolingConfig {
+  rootDir?: string
+  projectRoots?: string[]
+  configCandidates?: string[]
+  workspaceFile?: string
+  includeWorkspaceRootConfig?: boolean
+  coverageExclude?: string[]
+  coverageEnabled?: boolean
+  coverageAll?: boolean
+  coverageSkipFull?: boolean
+}
+
+export interface HuskyToolingConfig {
+  preCommitCommand?: string
+  commitMsgCommand?: string
+}
+
+export interface ToolingConfig {
+  commitlint?: CommitlintToolingConfig
+  eslint?: EslintToolingConfig
+  stylelint?: StylelintToolingConfig
+  lintStaged?: LintStagedToolingConfig
+  vitest?: VitestToolingConfig
+  husky?: HuskyToolingConfig
+}
+
 /**
  * 项目级配置入口，按命令划分可插拔的配置块。
  */
@@ -216,4 +258,5 @@ export interface MonorepoConfig {
     init?: InitCommandConfig
     mirror?: MirrorCommandConfig
   }
+  tooling?: ToolingConfig
 }

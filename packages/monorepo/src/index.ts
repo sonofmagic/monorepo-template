@@ -1,4 +1,5 @@
 export * from './commands'
 export * from './core'
+export * from './tooling/index'
 export * from './types'
 export * from './utils'

@@ -1,29 +1,9 @@
-function escapeForShell(value) {
-  return `'${value.replaceAll('\'', '\'\\\'\'')}'`
-}
+import process from 'node:process'
+import { createMonorepoLintStagedConfig, loadMonorepoToolingConfig } from '@icebreakers/monorepo/tooling'
 
-export default {
-  '*.{js,jsx,mjs,ts,tsx,mts,cts}': [
-    'eslint --fix',
-  ],
-  '*.vue': [
-    'eslint --fix',
-    'stylelint --fix --allow-empty-input',
-  ],
-  '*.{ts,tsx,mts,cts,vue}': (files) => {
-    const uniqueFiles = [...new Set(files)]
-    if (uniqueFiles.length === 0) {
-      return []
-    }
-    return `node packages/monorepo/dist/cli.mjs verify staged-typecheck ${uniqueFiles.map(escapeForShell).join(' ')}`
-  },
-  '*.{json,md,mdx,html,yml,yaml}': [
-    // 'prettier --with-node-modules --ignore-path .prettierignore --write',
-    'eslint --fix',
-  ],
-  '*.{css,scss,sass,less}': [
-    'stylelint --fix --allow-empty-input',
-  ],
-  // for rust
-  // '*.rs': ['cargo fmt --'],
-}
+const toolingConfig = await loadMonorepoToolingConfig(process.cwd())
+
+export default createMonorepoLintStagedConfig({
+  ...toolingConfig.lintStaged,
+  monorepoCommand: toolingConfig.lintStaged?.monorepoCommand ?? 'pnpm exec monorepo',
+})

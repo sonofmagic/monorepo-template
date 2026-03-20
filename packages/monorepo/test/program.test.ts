@@ -12,6 +12,8 @@ describe('commander program', () => {
     const syncMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
+    const verifyCommitMsgMock = vi.fn(() => {})
+    const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
     const verifyStagedTypecheckMock = vi.fn(() => {})
     const createMock = vi.fn(async () => {})
@@ -62,6 +64,8 @@ describe('commander program', () => {
       syncSkills: syncSkillsMock,
       templateMap: { unbuild: { source: 'unbuild', target: 'packages/unbuild' } },
       upgradeMonorepo: upgradeMock,
+      verifyCommitMsg: verifyCommitMsgMock,
+      verifyPreCommit: verifyPreCommitMock,
       verifyPrePush: verifyPrePushMock,
       verifyStagedTypecheck: verifyStagedTypecheckMock,
     }))
@@ -86,6 +90,8 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'sync'])
     await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
+    await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
+    await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-push'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'staged-typecheck', 'packages/monorepo/src/index.ts'])
     await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
@@ -102,6 +108,11 @@ describe('commander program', () => {
       pinnedVersion: 'next',
     })
     expect(mirrorMock).toHaveBeenCalled()
+    expect(verifyPreCommitMock).toHaveBeenCalledWith({ cwd: expect.any(String) })
+    expect(verifyCommitMsgMock).toHaveBeenCalledWith({
+      cwd: expect.any(String),
+      editFile: '.git/COMMIT_EDITMSG',
+    })
     expect(verifyPrePushMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(verifyStagedTypecheckMock).toHaveBeenCalledWith(['packages/monorepo/src/index.ts'], {
       cwd: expect.any(String),

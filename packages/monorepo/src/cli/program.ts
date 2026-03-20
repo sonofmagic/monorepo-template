@@ -2,7 +2,7 @@ import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../c
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import { input, program, select } from '@icebreakers/monorepo-templates'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo, verifyPrePush, verifyStagedTypecheck } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
 import { defaultTemplate } from '../commands/create'
 import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -133,6 +133,19 @@ verifyCommand.command('pre-push')
   .description('按推送变更范围执行 build/test/tsd 校验')
   .action(async () => {
     await verifyPrePush({ cwd })
+  })
+
+verifyCommand.command('pre-commit')
+  .description('执行 lint-staged 校验')
+  .action(async () => {
+    await verifyPreCommit({ cwd })
+  })
+
+verifyCommand.command('commit-msg')
+  .description('执行 commitlint 校验')
+  .argument('<edit-file>')
+  .action(async (editFile: string) => {
+    await verifyCommitMsg({ cwd, editFile })
   })
 
 verifyCommand.command('staged-typecheck')
