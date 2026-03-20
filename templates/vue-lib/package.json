@@ -16,8 +16,12 @@
   "keywords": [],
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -28,7 +32,8 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "vue-tsc -b"
+    "typecheck": "vue-tsc -b",
+    "tsd": "pnpm build && tsd --typings dist/index.d.ts --files test-d/**/*.test-d.ts"
   },
   "publishConfig": {
     "exports": {

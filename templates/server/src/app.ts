@@ -117,13 +117,13 @@ const grads: ColorStop[][] = [
 ]
 
 // Convert hour to CSS gradient
-async function toCSSGradient(hour: number): Promise<string> {
+function toCSSGradient(hour: number): string {
   let css = 'linear-gradient(to bottom,'
-  const data = grads[hour]
+  const data = grads[hour] ?? grads[0]!
   const len = data.length
 
   for (let i = 0; i < len; i++) {
-    const item = data[i]
+    const item = data[i]!
     css += ` #${item.color} ${item.position}%`
     if (i < len - 1) {
       css += ','
@@ -168,7 +168,7 @@ app.get('*', async (c) => {
   html_content += `<p>${timezone}<br/></p>`
 
   // Add background gradient based on hour
-  html_style += `body{background:${await toCSSGradient(hour)};}`
+  html_style += `body{background:${toCSSGradient(hour)};}`
 
   // Complete HTML document
   const html = `
