@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [22, 24]
+        node-version: [20, 22, 24]
     runs-on: ${{ matrix.os }}
     # Remote Caching enabled - configure TURBO_TOKEN and TURBO_TEAM in repository settings
     env:
@@ -31,7 +31,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v4
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v6
