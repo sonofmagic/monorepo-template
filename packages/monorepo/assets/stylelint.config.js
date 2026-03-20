@@ -3,10 +3,9 @@
 import { defineStylelintConfig } from '@icebreakers/monorepo/tooling'
 
 /**
- * Root Stylelint config.
+ * Scaffolded Stylelint config.
  *
- * Loaded from `monorepo.config.ts -> tooling.stylelint`.
- * Hover `defineStylelintConfig()` for the shared defaults and extension points.
+ * Generated projects inherit shared defaults from `defineStylelintConfig()`.
  *
  * @type {import('@icebreakers/monorepo/tooling').MonorepoStylelintConfig}
  */

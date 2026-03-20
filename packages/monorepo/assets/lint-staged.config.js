@@ -3,10 +3,9 @@
 import { defineLintStagedConfig } from '@icebreakers/monorepo/tooling'
 
 /**
- * Root `lint-staged` config.
+ * Scaffolded `lint-staged` config.
  *
- * Loaded from `monorepo.config.ts -> tooling.lintStaged`.
- * The shared helper already wires ESLint, Stylelint and staged typecheck defaults.
+ * Generated projects inherit the shared staged lint + staged typecheck pipeline.
  *
  * @type {import('@icebreakers/monorepo/tooling').MonorepoLintStagedConfig}
  */

@@ -6,11 +6,11 @@ import {
   createMonorepoStylelintConfig,
   createMonorepoVitestConfig,
   createMonorepoVitestProjectConfig,
-  defineMonorepoCommitlintConfig,
-  defineMonorepoEslintConfig,
-  defineMonorepoLintStagedConfig,
-  defineMonorepoStylelintConfig,
-  defineMonorepoVitestConfig,
+  defineCommitlintConfig,
+  defineEslintConfig,
+  defineLintStagedConfig,
+  defineStylelintConfig,
+  defineVitestConfig,
   loadMonorepoToolingConfig,
 } from '@/index'
 
@@ -45,7 +45,7 @@ describe('tooling factories', () => {
   })
 
   it('defines vitest config with inline overrides', async () => {
-    const config = await defineMonorepoVitestConfig(
+    const config = await defineVitestConfig(
       {
         includeWorkspaceRootConfig: false,
       },
@@ -81,10 +81,10 @@ describe('tooling factories', () => {
   })
 
   it('defines wrapper configs internally from monorepo config', async () => {
-    expect(await defineMonorepoCommitlintConfig()).toBeTruthy()
-    expect(await defineMonorepoEslintConfig()).toBeTruthy()
-    expect(await defineMonorepoStylelintConfig()).toBeTruthy()
-    expect(await defineMonorepoLintStagedConfig()).toBeTruthy()
-    expect(await defineMonorepoVitestConfig()).toBeTruthy()
+    expect(await defineCommitlintConfig()).toBeTruthy()
+    expect(await defineEslintConfig()).toBeTruthy()
+    expect(await defineStylelintConfig()).toBeTruthy()
+    expect(await defineLintStagedConfig()).toBeTruthy()
+    expect(await defineVitestConfig()).toBeTruthy()
   })
 })

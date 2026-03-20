@@ -2,10 +2,9 @@ import type { MonorepoCommitlintConfig } from '@icebreakers/monorepo/tooling'
 import { defineCommitlintConfig } from '@icebreakers/monorepo/tooling'
 
 /**
- * Root commitlint config.
+ * Scaffolded commitlint config.
  *
- * Loaded from `monorepo.config.ts -> tooling.commitlint`.
- * See `defineCommitlintConfig()` JSDoc for supported defaults and examples.
+ * Generated projects can override shared defaults via `monorepo.config.ts -> tooling.commitlint`.
  */
 const config: MonorepoCommitlintConfig = await defineCommitlintConfig()
 

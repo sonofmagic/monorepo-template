@@ -45,12 +45,12 @@ export interface MonorepoLintStagedConfig {
 }
 
 /**
- * `createMonorepoLintStagedConfig()` 与 `defineMonorepoLintStagedConfig()` 的配置项。
+ * `createMonorepoLintStagedConfig()` 与 `defineLintStagedConfig()` 的配置项。
  */
 export interface MonorepoLintStagedConfigOptions extends LintStagedToolingConfig {}
 
 /**
- * `createMonorepoVitestConfig()` 与 `defineMonorepoVitestConfig()` 的共享配置项。
+ * `createMonorepoVitestConfig()` 与 `defineVitestConfig()` 的共享配置项。
  *
  * 这些值会先参与 monorepo 级默认配置计算，再产出最终的 Vitest `test` 配置。
  */
@@ -95,7 +95,7 @@ export interface MonorepoVitestProjectConfigResult {
 }
 
 /**
- * `defineMonorepoVitestConfig()` 的最终覆盖项。
+ * `defineVitestConfig()` 的最终覆盖项。
  *
  * 适合在 `vitest.config.ts` 中只覆写少量字段，而不是手动展开整个
  * `config.test.coverage` 结构。
@@ -240,7 +240,7 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
  * 基于 `@icebreakers/commitlint-config` 创建 commitlint 配置。
  *
  * 适合在需要手动传入覆盖项时使用；如果只想读取 `monorepo.config.ts` 默认值，
- * 优先使用 `defineMonorepoCommitlintConfig()`。
+ * 优先使用 `defineCommitlintConfig()`。
  *
  * @param options 额外合并到默认 commitlint 配置上的字段
  * @returns 可直接作为 `commitlint.config.ts` 默认导出的配置对象
@@ -271,14 +271,19 @@ export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig 
  *
  * @example
  * ```ts
- * import { defineMonorepoCommitlintConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineCommitlintConfig } from '@icebreakers/monorepo/tooling'
  *
- * export default await defineMonorepoCommitlintConfig()
+ * export default await defineCommitlintConfig()
  * ```
  */
-export async function defineMonorepoCommitlintConfig(cwd = process.cwd()): Promise<MonorepoCommitlintConfig> {
+export async function defineCommitlintConfig(cwd = process.cwd()): Promise<MonorepoCommitlintConfig> {
   return createMonorepoCommitlintConfig(await loadToolingSection('commitlint', cwd))
 }
+
+/**
+ * @deprecated 请改用 `defineCommitlintConfig()`
+ */
+export const defineMonorepoCommitlintConfig = defineCommitlintConfig
 
 /**
  * 基于 `@icebreakers/eslint-config` 创建 ESLint 配置。
@@ -304,14 +309,19 @@ export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): M
  *
  * @example
  * ```js
- * import { defineMonorepoEslintConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
  *
- * export default await defineMonorepoEslintConfig()
+ * export default await defineEslintConfig()
  * ```
  */
-export async function defineMonorepoEslintConfig(cwd = process.cwd()): Promise<MonorepoEslintConfig> {
+export async function defineEslintConfig(cwd = process.cwd()): Promise<MonorepoEslintConfig> {
   return createMonorepoEslintConfig(await loadToolingSection('eslint', cwd))
 }
+
+/**
+ * @deprecated 请改用 `defineEslintConfig()`
+ */
+export const defineMonorepoEslintConfig = defineEslintConfig
 
 /**
  * 基于 `@icebreakers/stylelint-config` 创建 Stylelint 配置。
@@ -332,9 +342,14 @@ export function createMonorepoStylelintConfig(options: StylelintToolingConfig = 
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 Stylelint 配置对象
  */
-export async function defineMonorepoStylelintConfig(cwd = process.cwd()): Promise<MonorepoStylelintConfig> {
+export async function defineStylelintConfig(cwd = process.cwd()): Promise<MonorepoStylelintConfig> {
   return createMonorepoStylelintConfig(await loadToolingSection('stylelint', cwd))
 }
+
+/**
+ * @deprecated 请改用 `defineStylelintConfig()`
+ */
+export const defineMonorepoStylelintConfig = defineStylelintConfig
 
 /**
  * 创建适用于当前仓库约定的 `lint-staged` 配置。
@@ -389,9 +404,14 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 可直接导出的 `lint-staged` 配置对象
  */
-export async function defineMonorepoLintStagedConfig(cwd = process.cwd()): Promise<MonorepoLintStagedConfig> {
+export async function defineLintStagedConfig(cwd = process.cwd()): Promise<MonorepoLintStagedConfig> {
   return createMonorepoLintStagedConfig(await loadToolingSection('lintStaged', cwd))
 }
+
+/**
+ * @deprecated 请改用 `defineLintStagedConfig()`
+ */
+export const defineMonorepoLintStagedConfig = defineLintStagedConfig
 
 /**
  * 创建 monorepo 根级 Vitest 配置。
@@ -488,10 +508,10 @@ function mergeMonorepoVitestConfig(
  *
  * @example
  * ```ts
- * import { defineMonorepoVitestConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineVitestConfig } from '@icebreakers/monorepo/tooling'
  * import { defineConfig } from 'vitest/config'
  *
- * export default defineConfig(async () => await defineMonorepoVitestConfig(
+ * export default defineConfig(async () => await defineVitestConfig(
  *   {
  *     includeWorkspaceRootConfig: false,
  *   },
@@ -506,7 +526,7 @@ function mergeMonorepoVitestConfig(
  * ))
  * ```
  */
-export async function defineMonorepoVitestConfig(
+export async function defineVitestConfig(
   options: MonorepoVitestConfigOptions = {},
   overrides: MonorepoVitestConfigOverrides = {},
   cwd = process.cwd(),
@@ -520,6 +540,11 @@ export async function defineMonorepoVitestConfig(
     overrides,
   )
 }
+
+/**
+ * @deprecated 请改用 `defineVitestConfig()`
+ */
+export const defineMonorepoVitestConfig = defineVitestConfig
 
 /**
  * 创建项目级 Vitest 配置。

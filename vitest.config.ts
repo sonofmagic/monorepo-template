@@ -1,5 +1,5 @@
 import type { MonorepoVitestConfigResult } from '@icebreakers/monorepo/tooling'
-import { defineMonorepoVitestConfig } from '@icebreakers/monorepo/tooling'
+import { defineVitestConfig } from '@icebreakers/monorepo/tooling'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig(async () => {
@@ -9,7 +9,7 @@ export default defineConfig(async () => {
    * Defaults come from `monorepo.config.ts -> tooling.vitest`, then this file applies
    * the final inline overrides needed by the workspace root test runner.
    */
-  const config: MonorepoVitestConfigResult = await defineMonorepoVitestConfig(
+  const config: MonorepoVitestConfigResult = await defineVitestConfig(
     {
       includeWorkspaceRootConfig: false,
     },

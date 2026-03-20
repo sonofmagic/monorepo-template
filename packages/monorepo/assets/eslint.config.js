@@ -3,10 +3,9 @@
 import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
 
 /**
- * Root ESLint flat config.
+ * Scaffolded ESLint flat config.
  *
- * Loaded from `monorepo.config.ts -> tooling.eslint`.
- * Hover `defineEslintConfig()` or `MonorepoEslintConfig` for full defaults and usage notes.
+ * Generated projects inherit shared defaults from `defineEslintConfig()`.
  *
  * @type {import('@icebreakers/monorepo/tooling').MonorepoEslintConfig}
  */
