@@ -137,11 +137,20 @@ export async function loadMonorepoToolingConfig(cwd = process.cwd()): Promise<No
   return config.tooling ?? {}
 }
 
+async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(key: K, cwd = process.cwd()) {
+  const config = await loadMonorepoToolingConfig(cwd)
+  return config[key]
+}
+
 export function createMonorepoCommitlintConfig(options: CommitlintToolingConfig = {}): object {
   return {
     ...createCommitlint(),
     ...options,
   }
+}
+
+export async function defineMonorepoCommitlintConfig(cwd = process.cwd()) {
+  return createMonorepoCommitlintConfig(await loadToolingSection('commitlint', cwd))
 }
 
 export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): object {
@@ -152,11 +161,19 @@ export function createMonorepoEslintConfig(options: EslintToolingConfig = {}): o
   })
 }
 
+export async function defineMonorepoEslintConfig(cwd = process.cwd()) {
+  return createMonorepoEslintConfig(await loadToolingSection('eslint', cwd))
+}
+
 export function createMonorepoStylelintConfig(options: StylelintToolingConfig = {}): object {
   return {
     ...createStylelint(),
     ...options,
   }
+}
+
+export async function defineMonorepoStylelintConfig(cwd = process.cwd()) {
+  return createMonorepoStylelintConfig(await loadToolingSection('stylelint', cwd))
 }
 
 export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfigOptions = {}): MonorepoLintStagedConfig {
@@ -183,6 +200,10 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
       'stylelint --fix --allow-empty-input',
     ],
   }
+}
+
+export async function defineMonorepoLintStagedConfig(cwd = process.cwd()) {
+  return createMonorepoLintStagedConfig(await loadToolingSection('lintStaged', cwd))
 }
 
 export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions = {}): {
@@ -226,6 +247,10 @@ export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions 
       ],
     },
   }
+}
+
+export async function defineMonorepoVitestConfig(cwd = process.cwd()) {
+  return createMonorepoVitestConfig(await loadToolingSection('vitest', cwd))
 }
 
 export function createMonorepoVitestProjectConfig(options: MonorepoVitestProjectConfigOptions = {}): {

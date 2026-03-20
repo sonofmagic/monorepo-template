@@ -6,6 +6,11 @@ import {
   createMonorepoStylelintConfig,
   createMonorepoVitestConfig,
   createMonorepoVitestProjectConfig,
+  defineMonorepoCommitlintConfig,
+  defineMonorepoEslintConfig,
+  defineMonorepoLintStagedConfig,
+  defineMonorepoStylelintConfig,
+  defineMonorepoVitestConfig,
   loadMonorepoToolingConfig,
 } from '@/index'
 
@@ -54,5 +59,13 @@ describe('tooling factories', () => {
   it('loads tooling config from monorepo config', async () => {
     const config = await loadMonorepoToolingConfig(process.cwd())
     expect(config).toBeTruthy()
+  })
+
+  it('defines wrapper configs internally from monorepo config', async () => {
+    expect(await defineMonorepoCommitlintConfig()).toBeTruthy()
+    expect(await defineMonorepoEslintConfig()).toBeTruthy()
+    expect(await defineMonorepoStylelintConfig()).toBeTruthy()
+    expect(await defineMonorepoLintStagedConfig()).toBeTruthy()
+    expect(await defineMonorepoVitestConfig()).toBeTruthy()
   })
 })
