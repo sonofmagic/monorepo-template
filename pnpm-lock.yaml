@@ -161,6 +161,9 @@ importers:
       klaw:
         specifier: ^4.1.0
         version: 4.1.0
+      lint-staged:
+        specifier: ^16.4.0
+        version: 16.4.0
       p-queue:
         specifier: ^9.1.0
         version: 9.1.0
@@ -176,6 +179,9 @@ importers:
       simple-git:
         specifier: ^3.33.0
         version: 3.33.0
+      vitest:
+        specifier: ~4.1.0
+        version: 4.1.0(@types/node@25.5.0)(jsdom@29.0.1)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
       yaml:
         specifier: ^2.8.2
         version: 2.8.2
@@ -14195,8 +14201,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@5.9.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.57.1(typescript@5.9.3)
+      '@typescript-eslint/types': 8.57.1
       debug: 4.4.3
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -14446,7 +14452,6 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.0.1(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
-    optional: true
 
   '@vitest/pretty-format@4.1.0':
     dependencies:
@@ -21058,7 +21063,6 @@ snapshots:
       jsdom: 29.0.1
     transitivePeerDependencies:
       - msw
-    optional: true
 
   vscode-jsonrpc@8.2.0: {}
 

@@ -1,7 +1,12 @@
 import type { IcebreakerCommitlintOptions } from '@icebreakers/commitlint-config'
-import type { UserDefinedOptions as IcebreakerEslintOptions } from '@icebreakers/eslint-config'
+import type {
+  UserDefinedOptions as IcebreakerEslintOptions,
+  UserConfigItem as IcebreakerEslintUserConfigItem,
+} from '@icebreakers/eslint-config'
 import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
 import type { StylelintConfig as IcebreakerStylelintConfigOptions } from '@icebreakers/stylelint-config'
+import type { Configuration as LintStagedConfiguration } from 'lint-staged'
+import type { ViteUserConfig } from 'vitest/config'
 import type { AgenticTemplateFormat } from '../commands/ai'
 import type { CreateNewProjectOptions } from '../commands/create'
 import type { CliOpts } from './cli'
@@ -221,10 +226,10 @@ export interface CommitlintToolingConfig extends IcebreakerCommitlintOptions {
  */
 export interface EslintToolingConfig extends IcebreakerEslintOptions {
   /**
-   * 额外的 ignore pattern。
-   * 默认会忽略 `fixtures` 目录。
-   * @default 包含 `fixtures` 目录的忽略规则
+   * 额外传给 `createEslint(...userConfigs)` 的后续配置项。
+   * @default []
    */
+  configs?: IcebreakerEslintUserConfigItem[]
 }
 
 /**
@@ -249,6 +254,12 @@ export interface LintStagedToolingConfig {
    * @default 'pnpm exec monorepo'
    */
   monorepoCommand?: string
+  /**
+   * 直接透传完整的 lint-staged 原生配置。
+   * 一旦提供，monorepo 默认规则将不再自动注入。
+   * @default undefined
+   */
+  config?: LintStagedConfiguration
 }
 
 /**
@@ -303,6 +314,12 @@ export interface VitestToolingConfig {
    * @default true
    */
   coverageSkipFull?: boolean
+  /**
+   * 直接透传到最终 `vitest.config.*` 返回值的完整配置覆盖项。
+   * 适合配置 `test.coverage`、`resolve.alias`、`plugins` 等原生 Vitest/Vite 字段。
+   * @default undefined
+   */
+  overrides?: ViteUserConfig
 }
 
 /**

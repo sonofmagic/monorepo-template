@@ -34,14 +34,26 @@ describe('tooling factories', () => {
     expect(command(['src/index.ts'])).toContain('pnpm exec monorepo verify staged-typecheck')
   })
 
+  it('passes through complete lint-staged config when provided', () => {
+    const config = createMonorepoLintStagedConfig({
+      config: {
+        '*.md': ['prettier --write'],
+      },
+    })
+
+    expect(config).toEqual({
+      '*.md': ['prettier --write'],
+    })
+  })
+
   it('creates vitest config from explicit project roots', () => {
     const config = createMonorepoVitestConfig({
       rootDir: process.cwd(),
       projectRoots: ['packages'],
     })
 
-    expect(config.test.coverage.enabled).toBe(true)
-    expect(Array.isArray(config.test.projects)).toBe(true)
+    expect(config.test?.coverage?.enabled).toBe(true)
+    expect(Array.isArray(config.test?.projects)).toBe(true)
   })
 
   it('defines vitest config with inline overrides', async () => {
@@ -59,8 +71,27 @@ describe('tooling factories', () => {
       },
     )
 
-    expect(config.test.coverage.exclude).toEqual(['**/dist/**'])
-    expect(config.test.coverage.skipFull).toBe(false)
+    expect(config.test?.coverage?.exclude).toEqual(['**/dist/**'])
+    expect(config.test?.coverage?.skipFull).toBe(false)
+  })
+
+  it('merges complete vitest overrides into final config', async () => {
+    const config = await defineVitestConfig(
+      {
+        includeWorkspaceRootConfig: false,
+      },
+      {
+        resolve: {
+          alias: {
+            '@': '/tmp/src',
+          },
+        },
+      },
+    )
+
+    expect(config.resolve?.alias).toMatchObject({
+      '@': '/tmp/src',
+    })
   })
 
   it('defines wrapper configs with inline overrides', async () => {
@@ -69,6 +100,13 @@ describe('tooling factories', () => {
     })
     const eslint = await defineEslintConfig({
       ignores: ['custom-ignore/**'],
+      configs: [
+        {
+          rules: {
+            'no-console': 'off',
+          },
+        },
+      ],
     })
     const stylelint = await defineStylelintConfig({
       rules: {
@@ -86,6 +124,7 @@ describe('tooling factories', () => {
 
     expect(commitlint['extends']).toEqual(['@custom/commitlint-config'])
     expect(eslintIgnores).toContain('custom-ignore/**')
+    expect(eslint.some(config => config.rules?.['no-console'] === 'off')).toBe(true)
     expect(stylelint['rules']).toMatchObject({
       'selector-class-pattern': null,
     })

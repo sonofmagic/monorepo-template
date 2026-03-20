@@ -5,11 +5,13 @@ import type {
 import type {
   IcebreakerEslintConfig,
   UserDefinedOptions as IcebreakerEslintOptions,
+  UserConfigItem as IcebreakerEslintUserConfigItem,
 } from '@icebreakers/eslint-config'
 import type {
   IcebreakerStylelintConfig,
   StylelintConfig as IcebreakerStylelintOptions,
 } from '@icebreakers/stylelint-config'
+import type { ViteUserConfig } from 'vitest/config'
 import type {
   CommitlintToolingConfig,
   EslintToolingConfig,
@@ -25,6 +27,7 @@ import process from 'node:process'
 import { icebreaker as createCommitlint } from '@icebreakers/commitlint-config'
 import { icebreaker as createEslint } from '@icebreakers/eslint-config'
 import { icebreaker as createStylelint } from '@icebreakers/stylelint-config'
+import { mergeConfig } from 'vitest/config'
 import YAML from 'yaml'
 import { loadMonorepoConfig } from '../core/config'
 
@@ -76,16 +79,16 @@ export interface MonorepoVitestProjectConfigOptions extends VitestProjectTooling
  *
  * 该类型可用于约束自定义封装或二次 merge 的返回值。
  */
-export interface MonorepoVitestConfigResult {
-  test: {
-    projects: string[]
-    coverage: {
-      enabled: boolean
-      all: boolean
-      skipFull: boolean
+export interface MonorepoVitestConfigResult extends Omit<ViteUserConfig, 'test'> {
+  test?: NonNullable<ViteUserConfig['test']> & {
+    projects?: NonNullable<ViteUserConfig['test']>['projects']
+    coverage?: NonNullable<NonNullable<ViteUserConfig['test']>['coverage']> & {
+      enabled?: boolean
+      all?: boolean
+      skipFull?: boolean
       exclude?: string[]
     }
-    forceRerunTriggers: string[]
+    forceRerunTriggers?: string[]
   }
 }
 
@@ -106,15 +109,8 @@ export interface MonorepoVitestProjectConfigResult {
 
 /**
  * `defineVitestConfig()` 的最终覆盖项。
- *
- * 适合在 `vitest.config.ts` 中只覆写少量字段，而不是手动展开整个
- * `config.test.coverage` 结构。
  */
-export interface MonorepoVitestConfigOverrides {
-  test?: Partial<Omit<MonorepoVitestConfigResult['test'], 'coverage'>> & {
-    coverage?: Partial<MonorepoVitestConfigResult['test']['coverage']>
-  }
-}
+export type MonorepoVitestConfigOverrides = ViteUserConfig
 
 const defaultProjectRoots = ['packages', 'apps']
 const defaultConfigCandidates = [
@@ -332,11 +328,15 @@ export const defineMonorepoCommitlintConfig = defineCommitlintConfig
 export function createMonorepoEslintConfig(
   options: EslintToolingConfig = {},
 ): MonorepoEslintConfig {
-  const { ignores = ['**/fixtures/**'], ...rest } = options
+  const {
+    configs = [],
+    ignores = ['**/fixtures/**'],
+    ...rest
+  } = options
   return createEslint({
     ignores,
     ...rest,
-  } as IcebreakerEslintOptions)
+  } as IcebreakerEslintOptions, ...(configs as IcebreakerEslintUserConfigItem[]))
 }
 
 /**
@@ -430,6 +430,10 @@ export const defineMonorepoStylelintConfig = defineStylelintConfig
  * ```
  */
 export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfigOptions = {}): MonorepoLintStagedConfig {
+  if (options.config) {
+    return options.config as MonorepoLintStagedConfig
+  }
+
   const monorepoCommand = options.monorepoCommand ?? 'pnpm exec monorepo'
   return {
     '*.{js,jsx,mjs,ts,tsx,mts,cts}': [
@@ -531,7 +535,7 @@ export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions 
         all: options.coverageAll ?? false,
         skipFull: options.coverageSkipFull ?? true,
         ...(options.coverageExclude ? { exclude: options.coverageExclude } : {}),
-      },
+      } as NonNullable<NonNullable<MonorepoVitestConfigResult['test']>['coverage']>,
       forceRerunTriggers: [
         '**/{vitest,vite}.config.*/**',
       ],
@@ -540,21 +544,10 @@ export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions 
 }
 
 function mergeMonorepoVitestConfig(
-  base: MonorepoVitestConfigResult,
+  base: ViteUserConfig,
   overrides: MonorepoVitestConfigOverrides = {},
 ): MonorepoVitestConfigResult {
-  return {
-    ...base,
-    ...overrides,
-    test: {
-      ...base.test,
-      ...overrides.test,
-      coverage: {
-        ...base.test.coverage,
-        ...overrides.test?.coverage,
-      },
-    },
-  }
+  return mergeConfig(base, overrides) as MonorepoVitestConfigResult
 }
 
 /**
@@ -599,12 +592,15 @@ export async function defineVitestConfig(
   cwd = process.cwd(),
 ): Promise<MonorepoVitestConfigResult> {
   const toolingOptions = await loadToolingSection('vitest', cwd)
+  const toolingOverrides = toolingOptions?.overrides ?? {}
+  const { overrides: _ignoredToolingOverrides, ...toolingBaseOptions } = toolingOptions ?? {}
+
   return mergeMonorepoVitestConfig(
     createMonorepoVitestConfig({
-      ...toolingOptions,
+      ...toolingBaseOptions,
       ...options,
     }),
-    overrides,
+    mergeMonorepoVitestConfig(toolingOverrides, overrides),
   )
 }
 
