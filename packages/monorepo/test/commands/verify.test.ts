@@ -57,6 +57,23 @@ describe('verify commands', () => {
     ])
   })
 
+  it('resolves asset template files back to the owning workspace', () => {
+    const spawnMock = vi.fn(() => createSpawnResult())
+    const assetsDir = path.join(repoRoot, 'packages/monorepo/assets')
+
+    verifyStagedTypecheck([
+      'commitlint.config.ts',
+      'vitest.config.ts',
+    ], {
+      cwd: assetsDir,
+      spawn: spawnMock as unknown as typeof import('node:child_process').spawnSync,
+    })
+
+    expect(spawnMock.mock.calls).toEqual([
+      ['pnpm', ['--dir', path.join(repoRoot, 'packages/monorepo'), 'typecheck'], expect.objectContaining({ cwd: assetsDir, stdio: 'inherit' })],
+    ])
+  })
+
   it('runs commitlint for commit message verification', async () => {
     const spawnMock = vi.fn(() => createSpawnResult())
 

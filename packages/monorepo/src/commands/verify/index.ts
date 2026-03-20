@@ -9,6 +9,7 @@ import { resolveToolingConfig } from '../../core/config'
 const zeroSha = '0'.repeat(40)
 const typecheckExtensions = new Set(['.ts', '.tsx', '.mts', '.cts', '.vue'])
 const whitespacePattern = /\s+/
+const gitDirName = '.git'
 const defaultWorkspaceOrder = [
   'packages/create-icebreaker',
   'packages/monorepo',
@@ -214,10 +215,27 @@ function hasTypecheckScript(dir: string) {
   }
 }
 
+function findRepositoryRoot(startDir: string) {
+  let current = path.resolve(startDir)
+
+  while (true) {
+    if (fs.existsSync(path.join(current, gitDirName))) {
+      return current
+    }
+
+    const next = path.dirname(current)
+    if (next === current) {
+      return path.resolve(startDir)
+    }
+    current = next
+  }
+}
+
 function resolveTypecheckWorkspaceDir(filePath: string, cwd: string) {
+  const workspaceRoot = findRepositoryRoot(cwd)
   let current = path.dirname(path.resolve(cwd, filePath))
 
-  while (current.startsWith(cwd)) {
+  while (current.startsWith(workspaceRoot)) {
     if (current !== cwd && hasTypecheckScript(current)) {
       return current
     }
@@ -229,7 +247,7 @@ function resolveTypecheckWorkspaceDir(filePath: string, cwd: string) {
     current = next
   }
 
-  return cwd
+  return workspaceRoot
 }
 
 /**
