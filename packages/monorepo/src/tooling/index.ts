@@ -1,4 +1,12 @@
-import type { CommitlintToolingConfig, EslintToolingConfig, LintStagedToolingConfig, StylelintToolingConfig, ToolingConfig, VitestToolingConfig } from '../types'
+import type {
+  CommitlintToolingConfig,
+  EslintToolingConfig,
+  LintStagedToolingConfig,
+  StylelintToolingConfig,
+  ToolingConfig,
+  VitestProjectToolingConfig,
+  VitestToolingConfig,
+} from '../types'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -15,6 +23,8 @@ export interface MonorepoLintStagedConfig {
 export interface MonorepoLintStagedConfigOptions extends LintStagedToolingConfig {}
 
 export interface MonorepoVitestConfigOptions extends VitestToolingConfig {}
+
+export interface MonorepoVitestProjectConfigOptions extends VitestProjectToolingConfig {}
 
 const defaultProjectRoots = ['packages', 'apps']
 const defaultConfigCandidates = [
@@ -214,6 +224,27 @@ export function createMonorepoVitestConfig(options: MonorepoVitestConfigOptions 
       forceRerunTriggers: [
         '**/{vitest,vite}.config.*/**',
       ],
+    },
+  }
+}
+
+export function createMonorepoVitestProjectConfig(options: MonorepoVitestProjectConfigOptions = {}): {
+  test: {
+    alias?: Array<{
+      find: string | RegExp
+      replacement: string
+    }>
+    globals: boolean
+    testTimeout: number
+    environment?: string
+  }
+} {
+  return {
+    test: {
+      ...(options.alias ? { alias: options.alias } : {}),
+      globals: options.globals ?? true,
+      testTimeout: options.testTimeout ?? 60_000,
+      ...(options.environment ? { environment: options.environment } : {}),
     },
   }
 }

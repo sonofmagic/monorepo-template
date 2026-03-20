@@ -86,5 +86,6 @@ export type {
   SyncCommandConfig,
   ToolingConfig,
   UpgradeCommandConfig,
+  VitestProjectToolingConfig,
   VitestToolingConfig,
 } from '../types'

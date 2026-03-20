@@ -5,6 +5,7 @@ import {
   createMonorepoLintStagedConfig,
   createMonorepoStylelintConfig,
   createMonorepoVitestConfig,
+  createMonorepoVitestProjectConfig,
   loadMonorepoToolingConfig,
 } from '@/index'
 
@@ -36,6 +37,18 @@ describe('tooling factories', () => {
 
     expect(config.test.coverage.enabled).toBe(true)
     expect(Array.isArray(config.test.projects)).toBe(true)
+  })
+
+  it('creates project-level vitest config with shared defaults', () => {
+    const config = createMonorepoVitestProjectConfig({
+      environment: 'node',
+      alias: [{ find: '@', replacement: '/tmp/src' }],
+    })
+
+    expect(config.test.globals).toBe(true)
+    expect(config.test.testTimeout).toBe(60_000)
+    expect(config.test.environment).toBe('node')
+    expect(config.test.alias).toEqual([{ find: '@', replacement: '/tmp/src' }])
   })
 
   it('loads tooling config from monorepo config', async () => {

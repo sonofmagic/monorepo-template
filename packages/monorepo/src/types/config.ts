@@ -227,6 +227,16 @@ export interface VitestToolingConfig {
   coverageSkipFull?: boolean
 }
 
+export interface VitestProjectToolingConfig {
+  alias?: Array<{
+    find: string | RegExp
+    replacement: string
+  }>
+  globals?: boolean
+  testTimeout?: number
+  environment?: string
+}
+
 export interface HuskyToolingConfig {
   preCommitCommand?: string
   commitMsgCommand?: string
@@ -238,6 +248,7 @@ export interface ToolingConfig {
   stylelint?: StylelintToolingConfig
   lintStaged?: LintStagedToolingConfig
   vitest?: VitestToolingConfig
+  vitestProject?: VitestProjectToolingConfig
   husky?: HuskyToolingConfig
 }
 
