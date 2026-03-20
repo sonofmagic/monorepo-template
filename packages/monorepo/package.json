@@ -22,40 +22,19 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "default": "./dist/index.mjs"
     },
     "./cli": {
       "types": "./dist/cli.d.mts",
-      "import": {
-        "types": "./dist/cli.d.mts",
-        "default": "./dist/cli.mjs"
-      },
-      "require": {
-        "types": "./dist/cli.d.cts",
-        "default": "./dist/cli.cjs"
-      }
+      "default": "./dist/cli.mjs"
     },
     "./tooling": {
       "types": "./dist/tooling-entry.d.mts",
-      "import": {
-        "types": "./dist/tooling-entry.d.mts",
-        "default": "./dist/tooling-entry.mjs"
-      },
-      "require": {
-        "types": "./dist/tooling-entry.d.cts",
-        "default": "./dist/tooling-entry.cjs"
-      }
+      "default": "./dist/tooling-entry.mjs"
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "bin": "dev/bin.js",

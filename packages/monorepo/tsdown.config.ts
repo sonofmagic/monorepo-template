@@ -3,7 +3,7 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: ['src/index.ts', 'src/cli.ts', 'src/tooling-entry.ts'],
   shims: true,
-  format: ['cjs', 'esm'],
+  format: ['esm'],
   clean: true,
   dts: true,
   deps: {
