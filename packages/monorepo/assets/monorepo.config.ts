@@ -1,6 +1,6 @@
-import { defineMonorepoConfig } from '@icebreakers/monorepo'
+import type { MonorepoConfig } from '@icebreakers/monorepo'
 
-export default defineMonorepoConfig({
+export default {
   commands: {
     create: {
       defaultTemplate: 'unbuild',
@@ -24,4 +24,4 @@ export default defineMonorepoConfig({
       includeWorkspaceRootConfig: false,
     },
   },
-})
+} satisfies MonorepoConfig

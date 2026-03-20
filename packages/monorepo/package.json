@@ -37,7 +37,7 @@
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
-  "bin": "dev/bin.js",
+  "bin": "bin/monorepo.js",
   "files": [
     "bin",
     "dist",
@@ -56,9 +56,6 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
-  },
-  "publishConfig": {
-    "bin": "bin/monorepo.js"
   },
   "dependencies": {
     "@icebreakers/commitlint-config": "^1.2.12",
