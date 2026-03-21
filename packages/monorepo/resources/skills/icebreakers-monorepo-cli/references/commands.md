@@ -20,13 +20,6 @@ Usage:
 
 - npx repoctl init
 
-## sync
-
-Purpose: sync workspace packages to npmmirror.
-Usage:
-
-- npx repoctl sync
-
 ## clean
 
 Purpose: remove selected packages and update the repo helper package version.
@@ -44,6 +37,16 @@ Purpose: set VSCode binary mirror env.
 Usage:
 
 - npx repoctl mirror
+
+## skills sync
+
+Purpose: sync built-in skill files into global Codex or Claude directories.
+Usage:
+
+- npx repoctl skills sync
+- npx repoctl skills sync --codex
+- npx repoctl skills sync --claude
+- npx repoctl skills sync --all
 
 ## ai create (alias: ai new)
 

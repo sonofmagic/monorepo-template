@@ -3,7 +3,6 @@
  */
 export const scripts = {
   'script:init': 'repoctl init',
-  'script:sync': 'repoctl sync',
   'script:clean': 'repoctl clean',
   'script:mirror': 'repoctl mirror',
   'commitlint': 'commitlint --edit',

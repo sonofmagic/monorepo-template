@@ -41,8 +41,8 @@ describe('core module coverage', () => {
     expect(workspaceData.workspaceDir).toBe('/repo/sub')
 
     const configModule = await import('@/core/config')
-    const definition = configModule.defineMonorepoConfig({ commands: { sync: { concurrency: 4 } } })
-    expect(definition.commands?.sync?.concurrency).toBe(4)
+    const definition = configModule.defineMonorepoConfig({ commands: { clean: { autoConfirm: true } } })
+    expect(definition.commands?.clean?.autoConfirm).toBe(true)
 
     const config = await configModule.loadMonorepoConfig('/repo')
     expect(config.commands?.clean?.autoConfirm).toBe(true)

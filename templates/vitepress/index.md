@@ -36,12 +36,11 @@ layout: doc
 
 ## 常用脚本
 
-| 命令                 | 说明                                                |
-| -------------------- | --------------------------------------------------- |
-| `pnpm script:clean`  | 清理演示仓库，保留最小模板                          |
-| `pnpm script:init`   | 同步初始化 `package.json`、`README.md` 等基础信息   |
-| `pnpm script:sync`   | 使用 `cnpm` 同步所有包到 npmmirror（需预装 `cnpm`） |
-| `pnpm script:mirror` | 为 VS Code 终端写入国内镜像环境变量                 |
+| 命令                 | 说明                                              |
+| -------------------- | ------------------------------------------------- |
+| `pnpm script:clean`  | 清理演示仓库，保留最小模板                        |
+| `pnpm script:init`   | 同步初始化 `package.json`、`README.md` 等基础信息 |
+| `pnpm script:mirror` | 为 VS Code 终端写入国内镜像环境变量               |
 
 更多脚本可在根目录 `package.json` 中查看，命令介绍详见 [工具区](./tools/turborepo.md)。
 
@@ -50,8 +49,8 @@ layout: doc
 ```bash
 npx repoctl new            # 创建子包/应用
 npx -y repoctl@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
-npx repoctl sync           # 同步所有包到 npmmirror
 npx repoctl mirror         # 写入 VS Code 镜像配置
+npx repoctl skills sync    # 同步内置技能到全局目录
 npx repoctl up             # 从最新模板同步配置文件
 npx repoctl ai create      # 生成 Agentic 任务提示词模板（支持输出到文件，可用别名 ai new）
 ```

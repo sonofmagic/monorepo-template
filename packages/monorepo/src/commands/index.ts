@@ -11,7 +11,6 @@ import { createNewProject, getCreateChoices, getTemplateMap, templateMap } from 
 import { init } from './init'
 import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
-import { syncNpmMirror } from './sync'
 import { upgradeMonorepo } from './upgrade'
 import { verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from './verify'
 
@@ -47,7 +46,6 @@ export {
   loadAgenticTasks,
   setVscodeBinaryMirror,
   skillTargets,
-  syncNpmMirror,
   syncSkills,
   templateMap,
   upgradeMonorepo,

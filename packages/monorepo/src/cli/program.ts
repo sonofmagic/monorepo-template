@@ -2,7 +2,7 @@ import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../c
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import { input, program, select } from '@icebreakers/monorepo-templates'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncNpmMirror, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
 import { defaultTemplate } from '../commands/create'
 import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -60,11 +60,6 @@ program
 program.command('init').description('初始化 package.json 和 README.md').action(async () => {
   await init(cwd)
   logger.success('init finished!')
-})
-
-program.command('sync').description('向 npmmirror 同步所有子包').action(async () => {
-  await syncNpmMirror(cwd)
-  logger.success('sync npm mirror finished!')
 })
 
 program.command('clean')

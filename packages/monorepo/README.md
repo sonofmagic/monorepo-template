@@ -91,7 +91,7 @@ export default defineMonorepoConfig({
 })
 ```
 
-目前支持 `ai`、`create`、`clean`、`sync`、`upgrade`、`init` 与 `mirror` 七类命令的默认参数覆写。
+目前支持 `ai`、`create`、`clean`、`upgrade`、`init` 与 `mirror` 六类命令的默认参数覆写。
 
 ## 文档地址
 

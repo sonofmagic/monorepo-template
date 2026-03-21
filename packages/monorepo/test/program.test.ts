@@ -9,7 +9,6 @@ describe('commander program', () => {
   it('wires each command to the corresponding handler', async () => {
     const upgradeMock = vi.fn(async () => {})
     const initMock = vi.fn(async () => {})
-    const syncMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
     const verifyCommitMsgMock = vi.fn(() => {})
@@ -60,7 +59,6 @@ describe('commander program', () => {
       init: initMock,
       setVscodeBinaryMirror: mirrorMock,
       skillTargets: ['codex', 'claude'],
-      syncNpmMirror: syncMock,
       syncSkills: syncSkillsMock,
       templateMap: { unbuild: { source: 'unbuild', target: 'packages/unbuild' } },
       upgradeMonorepo: upgradeMock,
@@ -87,7 +85,6 @@ describe('commander program', () => {
 
     await program.parseAsync(['node', 'monorepo', 'upgrade'])
     await program.parseAsync(['node', 'monorepo', 'init'])
-    await program.parseAsync(['node', 'monorepo', 'sync'])
     await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
@@ -101,7 +98,6 @@ describe('commander program', () => {
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMock).toHaveBeenCalled()
-    expect(syncMock).toHaveBeenCalled()
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
       includePrivate: true,
@@ -140,6 +136,6 @@ describe('commander program', () => {
       cwd: expect.any(String),
       targets: ['codex'],
     }))
-    expect(successMock).toHaveBeenCalledTimes(7)
+    expect(successMock).toHaveBeenCalledTimes(6)
   })
 })

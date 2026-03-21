@@ -10,7 +10,6 @@ import type { ViteUserConfig } from 'vitest/config'
 import type { AgenticTemplateFormat } from '../commands/ai'
 import type { CreateNewProjectOptions } from '../commands/create'
 import type { CliOpts } from './cli'
-import type { GetWorkspacePackagesOptions } from './workspace'
 
 export interface AiCommandConfig {
   /**
@@ -121,27 +120,6 @@ export interface CleanCommandConfig {
    * @default 当前依赖版本
    */
   pinnedVersion?: string
-}
-
-/**
- * `monorepo sync` 命令配置，可覆盖 workspace 过滤规则或同步命令模板。
- */
-export interface SyncCommandConfig extends Partial<GetWorkspacePackagesOptions> {
-  /**
-   * 并发执行同步命令的最大数量。
-   * @default os.cpus().length
-   */
-  concurrency?: number
-  /**
-   * 自定义执行的同步命令模板，使用 {name} 占位。
-   * @default 'cnpm sync {name}'
-   */
-  command?: string
-  /**
-   * 仅同步指定的包（按名称过滤）。
-   * @default 同步全部可见包
-   */
-  packages?: string[]
 }
 
 /**
@@ -446,7 +424,6 @@ export interface MonorepoConfig {
     ai?: AiCommandConfig
     create?: CreateCommandConfig
     clean?: CleanCommandConfig
-    sync?: SyncCommandConfig
     upgrade?: UpgradeCommandConfig
     init?: InitCommandConfig
     mirror?: MirrorCommandConfig

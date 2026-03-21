@@ -18,16 +18,16 @@ describe('monorepo config integration', () => {
 
     await writeConfig(
       root,
-      `export default {\n  commands: {\n    sync: {\n      concurrency: 7,\n    },\n  },\n}\n`,
+      `export default {\n  commands: {\n    clean: {\n      autoConfirm: true,\n    },\n  },\n}\n`,
       'repoctl.config.ts',
     )
 
     const { loadMonorepoConfig, resolveCommandConfig } = await import('@/core/config')
     const config = await loadMonorepoConfig(root)
 
-    expect(config.commands?.sync?.concurrency).toBe(7)
-    expect(await resolveCommandConfig('sync', root)).toMatchObject({
-      concurrency: 7,
+    expect(config.commands?.clean?.autoConfirm).toBe(true)
+    expect(await resolveCommandConfig('clean', root)).toMatchObject({
+      autoConfirm: true,
     })
 
     await fs.remove(root)

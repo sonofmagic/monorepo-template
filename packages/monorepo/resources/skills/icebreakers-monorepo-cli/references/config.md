@@ -37,11 +37,6 @@ export default defineMonorepoConfig({
       includePrivate: true,
       pinnedVersion: 'latest',
     },
-    sync: {
-      concurrency: 4,
-      command: 'cnpm sync {name}',
-      patterns: ['apps/*', 'packages/*', 'templates/*'],
-    },
     upgrade: {
       skipOverwrite: false,
       targets: ['.github', 'repoctl.config.ts'],
@@ -67,7 +62,6 @@ Key areas:
 - ai: default output, format, batch tasks
 - create: default template and template directory
 - clean: auto confirm and pinned version control
-- sync: workspace selection and concurrency
 - upgrade: overwrite behavior and extra targets
 - init: skip steps for README/package.json/changeset
 - mirror: add or override env mirrors

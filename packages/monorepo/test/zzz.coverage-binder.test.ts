@@ -129,13 +129,13 @@ describe('coverage binder', () => {
   it('executes core config helpers', async () => {
     await vi.resetModules()
     const { loadMonorepoConfig, resolveCommandConfig, defineMonorepoConfig } = await vi.importActual<typeof import('@/core/config')>('@/core/config')
-    defineMonorepoConfig({ commands: { sync: { concurrency: 3 } } })
+    defineMonorepoConfig({ commands: { clean: { autoConfirm: true } } })
     const tempDir = await mkdtemp(path.join(tmpdir(), 'monorepo-config-'))
     const config = await loadMonorepoConfig(tempDir)
     expect(config.commands?.clean).toBeUndefined()
     // second call should hit cache
     await loadMonorepoConfig(tempDir)
-    expect(await resolveCommandConfig('sync', tempDir)).toEqual({})
+    expect(await resolveCommandConfig('clean', tempDir)).toEqual({})
     expect(await resolveCommandConfig('mirror', tempDir)).toEqual({})
   })
 

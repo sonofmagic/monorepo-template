@@ -1,6 +1,6 @@
 ---
 name: icebreakers-monorepo-cli
-description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, sync, clean, mirror, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing repoctl.config.ts or monorepo.config.ts defaults.
+description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, clean, mirror, skills sync, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing repoctl.config.ts or monorepo.config.ts defaults.
 ---
 
 # Icebreakers Monorepo Cli
@@ -34,7 +34,7 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 ### Maintenance tasks
 
-- Use `repoctl clean`, `sync`, `mirror`, or `init` from `references/commands.md`.
+- Use `repoctl clean`, `mirror`, `skills sync`, or `init` from `references/commands.md`.
 - Confirm destructive actions (clean) and note repo-wide effects.
 
 ## References

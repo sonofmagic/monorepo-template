@@ -4,11 +4,11 @@
 
 ## 基础设施速览
 
-| 能力           | 工具                | 要点                                                                                                  |
-| -------------- | ------------------- | ----------------------------------------------------------------------------------------------------- |
-| Workspace 管理 | `pnpm`              | 内容寻址、硬链接，安装速度快、占用小；严格依赖隔离杜绝“幽灵依赖”                                      |
-| 任务编排       | `turborepo`         | 基于依赖图调度任务，支持并行与缓存，`turbo run build --filter=...` 精准执行                           |
-| 命令自定义     | `repoctl.config.ts` | 使用 `c12` 加载，可对 create/clean/sync/upgrade/init/mirror 覆写默认行为，也兼容 `monorepo.config.ts` |
+| 能力           | 工具                | 要点                                                                                             |
+| -------------- | ------------------- | ------------------------------------------------------------------------------------------------ |
+| Workspace 管理 | `pnpm`              | 内容寻址、硬链接，安装速度快、占用小；严格依赖隔离杜绝“幽灵依赖”                                 |
+| 任务编排       | `turborepo`         | 基于依赖图调度任务，支持并行与缓存，`turbo run build --filter=...` 精准执行                      |
+| 命令自定义     | `repoctl.config.ts` | 使用 `c12` 加载，可对 create/clean/upgrade/init/mirror 覆写默认行为，也兼容 `monorepo.config.ts` |
 
 ## 日常操作流程
 
@@ -72,10 +72,6 @@ export default defineMonorepoConfig({
         { value: 'cloud-function', name: '云函数模板' },
       ],
     },
-    sync: {
-      command: 'cnpm sync {name}',
-      concurrency: 4,
-    },
     clean: {
       autoConfirm: true,
       pinnedVersion: '^2.0.0',
@@ -90,7 +86,6 @@ export default defineMonorepoConfig({
 | --------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `create`  | `templatesDir` / `templateMap` / `choices` / `defaultTemplate`                     | 扩展模板来源、修改提示内容                                                                  |
 | `clean`   | `autoConfirm` / `ignorePackages` / `includePrivate` / `pinnedVersion`              | 控制交互、过滤包、锁定依赖版本                                                              |
-| `sync`    | `concurrency` / `command` / `packages`                                             | 定义同步命令与并发度                                                                        |
 | `upgrade` | `targets` / `mergeTargets` / `scripts` / `skipChangesetMarkdown` / `skipOverwrite` | 改写配置同步策略                                                                            |
 | `init`    | `skipReadme` / `skipPkgJson` / `skipChangeset`                                     | 按需跳过初始化步骤                                                                          |
 | `mirror`  | `env`                                                                              | 注入镜像环境变量                                                                            |

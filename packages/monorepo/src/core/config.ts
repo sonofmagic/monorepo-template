@@ -131,7 +131,6 @@ export type {
   MirrorCommandConfig,
   MonorepoConfig,
   StylelintToolingConfig,
-  SyncCommandConfig,
   ToolingConfig,
   UpgradeCommandConfig,
   VitestProjectToolingConfig,
