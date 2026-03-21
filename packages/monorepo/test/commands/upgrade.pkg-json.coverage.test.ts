@@ -15,7 +15,7 @@ describe('upgrade pkg-json helpers coverage', () => {
         'dep-catalog': '^1.3.0',
       },
       devDependencies: {
-        '@icebreakers/monorepo': '^0.0.1',
+        'repoctl': '^0.0.1',
         'dep-dev-update': '^2.0.0',
         'dep-dev-stale': '^2.0.0',
       },
@@ -30,7 +30,7 @@ describe('upgrade pkg-json helpers coverage', () => {
         'dep-catalog': 'catalog:crossEnv',
       },
       devDependencies: {
-        '@icebreakers/monorepo': '^0.2.0',
+        'repoctl': '^0.2.0',
         'dep-dev-update': 'workspace:^2.0.0',
         'dep-dev-stale': '^1.0.0',
       },
@@ -55,11 +55,30 @@ describe('upgrade pkg-json helpers coverage', () => {
     })
     expect(target.devDependencies?.['dep-dev-update']).toBe('workspace:^2.0.0')
     expect(target.devDependencies?.['dep-dev-stale']).toBe('^2.0.0')
-    expect(target.devDependencies?.['@icebreakers/monorepo']).toBe(`^${pkgVersion}`)
+    expect(target.devDependencies?.['repoctl']).toBe(`^${pkgVersion}`)
     expect(target.scripts).toMatchObject({
       test: 'vitest',
       build: 'turbo run build',
     })
+  })
+
+  it('preserves legacy scoped helper dependency when target already uses it', () => {
+    const source: PackageJson = {
+      devDependencies: {
+        'repoctl': '^0.0.1',
+        '@icebreakers/monorepo': '^0.0.1',
+      },
+    }
+    const target: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '^0.2.0',
+      },
+    }
+
+    setPkgJson(source, target)
+
+    expect(target.devDependencies?.['@icebreakers/monorepo']).toBe(`^${pkgVersion}`)
+    expect(target.devDependencies?.['repoctl']).toBeUndefined()
   })
 
   it('exposes scripts list for consumers', () => {

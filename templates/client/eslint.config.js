@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { createMonorepoEslintConfig } from '@icebreakers/monorepo/tooling'
+import { createMonorepoEslintConfig } from 'repoctl/tooling'
 
 const tailwindEntryPoint = fileURLToPath(new URL('./src/style.css', import.meta.url))
 

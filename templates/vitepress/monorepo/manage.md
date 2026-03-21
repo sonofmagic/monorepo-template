@@ -55,7 +55,7 @@ Turborepo 会缓存任务输出：
 使用 `defineMonorepoConfig` 即可集中覆写：
 
 ```ts
-import { defineMonorepoConfig } from '@icebreakers/monorepo'
+import { defineMonorepoConfig } from 'repoctl'
 
 export default defineMonorepoConfig({
   commands: {
@@ -101,8 +101,8 @@ export default defineMonorepoConfig({
 ### 4. 依赖升级 / 配置同步
 
 ```bash
-npx monorepo up           # 使用本地 CLI
-npx @icebreakers/monorepo@latest up  # 直接使用远端 CLI
+npx repoctl up            # 使用本地 CLI
+npx @icebreakers/monorepo@latest up  # 直接使用兼容的远端 CLI
 
 # 常用参数
 # -c, --core  仅同步核心配置，排除 GitHub 相关文件

@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { createMonorepoVitestProjectConfig } from '@icebreakers/monorepo/tooling'
+import { createMonorepoVitestProjectConfig } from 'repoctl/tooling'
 import { defineProject } from 'vitest/config'
 
 export default defineProject({

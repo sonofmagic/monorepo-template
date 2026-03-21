@@ -1,3 +1,3 @@
-import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
+import { defineEslintConfig } from 'repoctl/tooling'
 
 export default await defineEslintConfig()

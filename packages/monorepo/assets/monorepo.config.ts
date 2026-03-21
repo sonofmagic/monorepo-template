@@ -1,4 +1,4 @@
-import type { MonorepoConfig } from '@icebreakers/monorepo'
+import type { MonorepoConfig } from 'repoctl'
 
 export default {
   commands: {

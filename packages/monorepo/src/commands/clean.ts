@@ -7,6 +7,23 @@ import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
 import { getSkillTargetPaths } from './skills'
 
+const preferredPackageNames = ['repoctl', '@icebreakers/monorepo'] as const
+
+function resolvePreferredToolPackageName(pkgJson: Record<string, unknown>) {
+  const devDependencies = pkgJson['devDependencies']
+  if (!devDependencies || typeof devDependencies !== 'object') {
+    return 'repoctl'
+  }
+
+  for (const packageName of preferredPackageNames) {
+    if (Object.hasOwn(devDependencies, packageName)) {
+      return packageName
+    }
+  }
+
+  return 'repoctl'
+}
+
 function mergeCleanConfig(base?: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>): CleanCommandConfig {
   const normalizedBase = base ?? {}
   if (!overrides) {
@@ -83,8 +100,9 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
   const name = path.resolve(workspaceDir, 'package.json')
   const pkgJson = await fs.readJson(name)
   // fix https://github.com/sonofmagic/monorepo-template/issues/76
-  // 确保根目录仍旧依赖 @icebreakers/monorepo，避免删除后被 package manager 清空。
-  setByPath(pkgJson, 'devDependencies.@icebreakers/monorepo', cleanConfig?.pinnedVersion ?? 'latest')
+  // 确保根目录仍旧依赖工具包，优先保留已存在的依赖名，否则默认使用 repoctl。
+  const toolPackageName = resolvePreferredToolPackageName(pkgJson)
+  setByPath(pkgJson, `devDependencies.${toolPackageName.replaceAll('.', '\\.')}`, cleanConfig?.pinnedVersion ?? 'latest')
   await fs.outputJson(name, pkgJson, {
     spaces: 2,
   })

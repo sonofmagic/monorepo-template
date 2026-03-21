@@ -4,6 +4,7 @@ import { name as pkgName, version as pkgVersion } from '../../constants'
 import { scriptsEntries } from './scripts'
 
 const NON_OVERRIDABLE_PREFIXES = ['workspace:', 'catalog:']
+const toolPackageNames = ['repoctl', pkgName] as const
 
 function parseVersion(input: unknown) {
   if (typeof input !== 'string' || input.trim().length === 0) {
@@ -42,6 +43,25 @@ function shouldAssignVersion(currentVersion: unknown, nextVersion: string) {
   return !gte(current, next)
 }
 
+function resolvePreferredToolPackageName(
+  sourceDevDeps: Record<string, string>,
+  targetDevDeps: Record<string, string>,
+) {
+  for (const depName of toolPackageNames) {
+    if (typeof targetDevDeps[depName] === 'string' && targetDevDeps[depName].length > 0) {
+      return depName
+    }
+  }
+
+  for (const depName of toolPackageNames) {
+    if (typeof sourceDevDeps[depName] === 'string' && sourceDevDeps[depName].length > 0) {
+      return depName
+    }
+  }
+
+  return 'repoctl'
+}
+
 /**
  * 将内置 package.json 内容合并进目标工程：
  * - 同步依赖（保留 workspace: 前缀的版本）
@@ -61,6 +81,7 @@ export function setPkgJson(
 
   const targetDeps = { ...(targetPkgJson.dependencies ?? {}) }
   const targetDevDeps = { ...(targetPkgJson.devDependencies ?? {}) }
+  const preferredToolPackageName = resolvePreferredToolPackageName(sourceDevDeps, targetDevDeps)
 
   if (packageManager) {
     targetPkgJson.packageManager = packageManager
@@ -88,7 +109,10 @@ export function setPkgJson(
       continue
     }
 
-    if (depName === pkgName) {
+    if (toolPackageNames.includes(depName as (typeof toolPackageNames)[number])) {
+      if (depName !== preferredToolPackageName) {
+        continue
+      }
       const nextVersion = `^${pkgVersion}`
       const targetVersion = targetDevDeps[depName]
       if (!hasNonOverridablePrefix(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
@@ -103,6 +127,11 @@ export function setPkgJson(
       if (shouldAssignVersion(targetVersion, depVersion)) {
         targetDevDeps[depName] = depVersion
       }
+    }
+  }
+  for (const depName of toolPackageNames) {
+    if (depName !== preferredToolPackageName && depName in targetDevDeps && preferredToolPackageName in targetDevDeps) {
+      delete targetDevDeps[depName]
     }
   }
   if (Object.keys(targetDevDeps).length) {

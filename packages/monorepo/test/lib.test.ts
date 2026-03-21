@@ -80,17 +80,17 @@ describe('lib', () => {
   it('setPkgJson casae 4', () => {
     const t: PackageJson = {
       devDependencies: {
-        '@icebreakers/monorepo': '1',
+        repoctl: '1',
       },
     }
     const o: PackageJson = {
       devDependencies: {
-        '@icebreakers/monorepo': '2',
+        repoctl: '2',
       },
     }
     setPkgJson(t, o)
     if (o.devDependencies) {
-      expect(o.devDependencies['@icebreakers/monorepo']).toBe(`^${version}`)
+      expect(o.devDependencies['repoctl']).toBe(`^${version}`)
     }
   })
 
@@ -108,6 +108,25 @@ describe('lib', () => {
     setPkgJson(t, o)
     if (o.devDependencies) {
       expect(o.devDependencies['@icebreakers/monorepo']).toBe('^999.0.0')
+    }
+  })
+
+  it('setPkgJson casae 5.1 preserves legacy scoped package when already used', () => {
+    const t: PackageJson = {
+      devDependencies: {
+        'repoctl': '^1.0.0',
+        '@icebreakers/monorepo': '^1.0.0',
+      },
+    }
+    const o: PackageJson = {
+      devDependencies: {
+        '@icebreakers/monorepo': '^2.0.0',
+      },
+    }
+    setPkgJson(t, o)
+    if (o.devDependencies) {
+      expect(o.devDependencies['@icebreakers/monorepo']).toBe(`^${version}`)
+      expect(o.devDependencies['repoctl']).toBeUndefined()
     }
   })
 

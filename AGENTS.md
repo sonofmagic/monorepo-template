@@ -15,11 +15,11 @@ This pnpm + Turbo monorepo keeps template sources under `templates/` (`cli`, `cl
 
 ## Coding Style & Naming Conventions
 
-Follow the root `.editorconfig`: two-space indentation, LF line endings, UTF-8. Prefer TypeScript (`.ts`/`.tsx`) and Vue SFCs; name files with kebab-case (`user-table.vue`) and exported symbols with PascalCase for components or camelCase for utilities. ESLint (`@icebreakers/eslint-config`) and Stylelint enforce formatting; run `pnpm lint` before committing, and rely on Husky + lint-staged to auto-fix staged files. Any style-related code changes (CSS, SCSS, Less, Vue style blocks, and similar files) must pass Stylelint checks before commit. All changed code must pass ESLint checks before commit.
+Follow the root `.editorconfig`: two-space indentation, LF line endings, UTF-8. Prefer TypeScript (`.ts`/`.tsx`) and Vue SFCs; name files with kebab-case (`user-table.vue`) and exported symbols with PascalCase for components or camelCase for utilities. ESLint (`@icebreakers/eslint-config`) and Stylelint enforce formatting; run `pnpm lint` before committing, and rely on Husky + lint-staged to auto-fix staged files. Any style-related code changes (CSS, SCSS, Less, Vue style blocks, and similar files) must pass Stylelint checks before commit. All changed JavaScript, TypeScript, and Vue code must pass ESLint checks before commit.
 
-`lint-staged.config.js` must include Stylelint checks for staged style files so style validation also runs during pre-commit.
+`lint-staged.config.js` must include Stylelint checks for staged style files so style validation also runs during pre-commit. It must also route staged TypeScript and Vue files into workspace `typecheck` scripts so Vue workspaces run `vue-tsc` and non-Vue TypeScript workspaces run `tsc`.
 
-When a single code file exceeds 300 lines, treat it as a refactor signal and split it into smaller modules.
+When a single code file exceeds 300 lines, treat it as a refactor signal and split it into smaller modules before commit whenever the change touches that area. Do not keep appending responsibilities to an already large file when a folder-based split would make the design clearer.
 
 When splitting code, do not create suffix-based sibling files such as `xxx.config.ts` or `xxx.filter.ts` just to move logic around. Create a dedicated folder (for example `xxx/`) and place the split modules inside it with clear responsibilities.
 
@@ -34,7 +34,7 @@ Before running tests, build the packages first and run tests against build artif
 
 TypeScript issues must be fixed before commit. Do not commit with unresolved TypeScript compile or type-check errors.
 
-TypeScript code must be validated with `tsc` (`pnpm typecheck` or the relevant workspace `typecheck` script) and must not contain type errors.
+TypeScript code must be validated with the relevant workspace `typecheck` script and must not contain type errors. Pure TypeScript workspaces are expected to validate with `tsc` (`pnpm typecheck` or `tsc -p tsconfig.json`). Vue workspaces are expected to validate with `vue-tsc` (typically `vue-tsc -b`).
 
 When building TypeScript libraries (type-focused APIs or public type definitions), add and maintain `tsd` type tests to verify exported type behavior.
 
@@ -45,7 +45,8 @@ Commits must conform to Conventional Commit syntax; recent history uses prefixes
 For AI-generated or AI-assisted changes, use this verification order before commit or PR:
 
 1. Run build first (`pnpm build` or the relevant workspace build command).
-2. Run lint checks, ensuring all changed code passes ESLint and style-related code passes Stylelint.
-3. Run TypeScript checks and fix all type errors before proceeding.
+2. Run lint checks, ensuring all changed JavaScript, TypeScript, and Vue code passes ESLint and all style-related code passes Stylelint.
+3. Run TypeScript checks and fix all type errors before proceeding. Vue workspaces must pass `vue-tsc`; TypeScript workspaces must pass `tsc`.
 4. For TypeScript libraries, run `tsd` type tests and fix all failures before proceeding.
 5. Run tests against built artifacts, including unit, integration, and E2E suites (when available in the affected workspace).
+6. Before commit, review whether the touched files need splitting or refactoring; do not commit avoidable large-file growth when a clearer module boundary is apparent.

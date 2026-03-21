@@ -5,8 +5,8 @@
 Purpose: sync monorepo assets and scripts into the workspace.
 Usage:
 
-- npx monorepo up
-- npx monorepo upgrade
+- npx repoctl up
+- npx repoctl upgrade
   Options:
 - --interactive: prompt for overwrites
 - --core: sync core config only (skip GitHub assets)
@@ -18,21 +18,21 @@ Usage:
 Purpose: initialize package.json and README.md.
 Usage:
 
-- npx monorepo init
+- npx repoctl init
 
 ## sync
 
 Purpose: sync workspace packages to npmmirror.
 Usage:
 
-- npx monorepo sync
+- npx repoctl sync
 
 ## clean
 
-Purpose: remove selected packages and update the @icebreakers/monorepo version.
+Purpose: remove selected packages and update the repo helper package version.
 Usage:
 
-- npx monorepo clean
+- npx repoctl clean
   Options:
 - --yes: auto confirm
 - --include-private
@@ -43,16 +43,16 @@ Usage:
 Purpose: set VSCode binary mirror env.
 Usage:
 
-- npx monorepo mirror
+- npx repoctl mirror
 
 ## ai create (alias: ai new)
 
 Purpose: generate agentic prompt templates.
 Usage:
 
-- npx monorepo ai create
-- npx monorepo ai create --name checkout
-- npx monorepo ai create --tasks agentic/tasks.json --format md -f
+- npx repoctl ai create
+- npx repoctl ai create --name checkout
+- npx repoctl ai create --tasks agentic/tasks.json --format md -f
   Options:
 - --output <path>
 - --force
@@ -70,6 +70,6 @@ Usage:
 Purpose: create a new package from a template.
 Usage:
 
-- npx monorepo new [path]
+- npx repoctl new [path]
   Notes:
 - Prompts for a template choice unless defaults are set in monorepo.config.ts.

@@ -16,7 +16,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 - **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
 - **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
-- **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `@icebreakers/monorepo` keep dependencies and scaffolding aligned.
+- **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `repoctl` keep dependencies and scaffolding aligned, while `@icebreakers/monorepo` remains available as a compatible published package.
 - **CI/CD Ready**: Sample GitHub Actions configuration, Codecov integration, and `secrets.NPM_TOKEN` support automated publishing and coverage reporting.
 
 ## Quick Start
@@ -29,7 +29,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 
 ### Bootstrap shortcuts
 
-- Zero-install cleanup on a fresh clone: `pnpm dlx @icebreakers/monorepo@latest clean --yes` (add `--include-private` to keep private packages in scope).
+- Zero-install cleanup on a fresh clone: `pnpm dlx repoctl@latest clean --yes` (add `--include-private` to keep private packages in scope).
 - One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsup,vue-hono` or `--templates 2,5` to preselect.
 
 ## Repository Layout
@@ -45,7 +45,8 @@ templates/
   unbuild/      # Library template powered by unbuild
   vue-lib/      # Vue component library template
 packages/
-  monorepo/           # @icebreakers/monorepo helper scripts
+  monorepo/           # @icebreakers/monorepo compatibility package
+  repoctl/            # preferred repo toolchain entrypoint
   create-icebreaker/  # npm create flow
   monorepo-templates/ # template and asset bundle for npm
 ```
@@ -72,7 +73,7 @@ packages/
 | `pnpm lint`                   | Apply ESLint and Stylelint checks across the monorepo.        |
 | `pnpm changeset`              | Create an interactive Changeset for version bumps.            |
 | `pnpm publish-packages`       | Build, lint, test, then version and publish changed packages. |
-| `pnpm script:init`            | Initialise template settings via `@icebreakers/monorepo`.     |
+| `pnpm script:init`            | Initialise template settings via `repoctl`.                   |
 | `pnpm script:sync`            | Synchronise dependency and script versions.                   |
 | `pnpm script:clean`           | Remove sample packages and generated artifacts.               |
 
@@ -95,7 +96,7 @@ Leverage Changesets plus GitHub Actions for automated versioning:
 - **Code style**: `.editorconfig` enforces two-space indentation and LF line endings, while ESLint and Stylelint maintain consistency across packages.
 - **Commit hooks**: Husky and lint-staged run staged-file ESLint/Stylelint autofixes before commits.
 - **Testing & coverage**: Run `pnpm test -- --coverage` to export coverage reports into the `coverage/` directory.
-- **Staying current**: Use `npx @icebreakers/monorepo@latest` to upgrade this template when new features ship.
+- **Staying current**: Use `npx repoctl@latest` to upgrade this template when new features ship.
 
 ## More Resources
 

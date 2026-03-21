@@ -1,4 +1,4 @@
-import { createMonorepoEslintConfig } from '@icebreakers/monorepo/tooling'
+import { createMonorepoEslintConfig } from 'repoctl/tooling'
 
 export default createMonorepoEslintConfig({
   vue: true,

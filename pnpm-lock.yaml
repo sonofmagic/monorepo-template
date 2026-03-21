@@ -68,6 +68,9 @@ importers:
       pkg-types:
         specifier: ^2.3.0
         version: 2.3.0
+      repoctl:
+        specifier: workspace:*
+        version: link:packages/repoctl
       stylelint:
         specifier: ^17.5.0
         version: 17.5.0(typescript@5.9.3)
@@ -216,6 +219,12 @@ importers:
       nanoexec:
         specifier: ^1.1.0
         version: 1.1.0(@types/node@25.5.0)
+
+  packages/repoctl:
+    dependencies:
+      '@icebreakers/monorepo':
+        specifier: workspace:*
+        version: link:../monorepo
 
   templates/cli:
     dependencies:

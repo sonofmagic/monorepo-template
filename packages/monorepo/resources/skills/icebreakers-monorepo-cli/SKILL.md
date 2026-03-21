@@ -1,13 +1,13 @@
 ---
 name: icebreakers-monorepo-cli
-description: Use when working with @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, sync, clean, mirror, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (monorepo ai create/new), and editing monorepo.config.ts defaults.
+description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, sync, clean, mirror, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing monorepo.config.ts defaults.
 ---
 
 # Icebreakers Monorepo Cli
 
 ## Overview
 
-Map user requests to the correct `monorepo` CLI command, templates, and configuration defaults.
+Map user requests to the correct `repoctl` CLI command, templates, and configuration defaults.
 
 ## Quick Workflow
 
@@ -19,21 +19,21 @@ Map user requests to the correct `monorepo` CLI command, templates, and configur
 
 ### Create a template package
 
-- Use `monorepo new [path]` (alias `create`) and pick a template from `references/templates.md`.
-- Example: for "create a tsdown app in apps/my-app", run `npx monorepo new apps/my-app` and select `tsdown`.
+- Use `repoctl new [path]` (alias `create`) and pick a template from `references/templates.md`.
+- Example: for "create a tsdown app in apps/my-app", run `npx repoctl new apps/my-app` and select `tsdown`.
 - For non-interactive defaults, set `commands.create.defaultTemplate` in `monorepo.config.ts`.
 
 ### Upgrade or sync monorepo assets
 
-- Use `monorepo up` (`upgrade`) and options from `references/commands.md`.
+- Use `repoctl up` (`upgrade`) and options from `references/commands.md`.
 
 ### Generate agentic prompt templates
 
-- Use `monorepo ai create` (`ai new`) and options from `references/commands.md`.
+- Use `repoctl ai create` (`ai new`) and options from `references/commands.md`.
 
 ### Maintenance tasks
 
-- Use `monorepo clean`, `sync`, `mirror`, or `init` from `references/commands.md`.
+- Use `repoctl clean`, `sync`, `mirror`, or `init` from `references/commands.md`.
 - Confirm destructive actions (clean) and note repo-wide effects.
 
 ## References

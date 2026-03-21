@@ -14,6 +14,7 @@ const defaultWorkspaceOrder = [
   'packages/create-icebreaker',
   'packages/monorepo',
   'packages/monorepo-templates',
+  'packages/repoctl',
   'templates/cli',
   'templates/client',
   'templates/server',

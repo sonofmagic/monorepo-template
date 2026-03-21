@@ -6,7 +6,7 @@ Only include the fields you need.
 Example:
 
 ```ts
-import { defineMonorepoConfig } from '@icebreakers/monorepo'
+import { defineMonorepoConfig } from 'repoctl'
 
 export default defineMonorepoConfig({
   commands: {

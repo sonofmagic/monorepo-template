@@ -63,7 +63,7 @@ npx lint-staged
 export default {
   '*.{js,jsx,mjs,ts,tsx,mts,cts}': ['eslint --fix'],
   '*.vue': ['eslint --fix', 'stylelint --fix --allow-empty-input'],
-  '*.{ts,tsx,mts,cts,vue}': files => `pnpm exec monorepo verify staged-typecheck ${files.join(' ')}`,
+  '*.{ts,tsx,mts,cts,vue}': files => `pnpm exec repoctl verify staged-typecheck ${files.join(' ')}`,
   '*.{json,md,mdx,html,yml,yaml}': ['eslint --fix'],
   '*.{css,scss,sass,less}': ['stylelint --fix --allow-empty-input'],
 }

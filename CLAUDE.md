@@ -90,11 +90,20 @@ Workspaces use `workspace:*` protocol for internal dependencies. Root `package.j
 
 ## Quality & Standards
 
-- **ESLint**: `@icebreakers/eslint-config` - auto-fixes staged files via lint-staged
-- **Stylelint**: `@icebreakers/stylelint-config` for CSS/SCSS
+- **ESLint**: `@icebreakers/eslint-config` - all changed JavaScript, TypeScript, and Vue code must pass ESLint before commit
+- **Stylelint**: `@icebreakers/stylelint-config` for CSS/SCSS and Vue style blocks; all style-related changes must pass Stylelint before commit
 - **Testing**: Vitest with v8 coverage (reports to `coverage/`)
 - **Commits**: Conventional Commits required (enforced by commitlint + Husky)
-- **Pre-commit Hooks**: Husky + lint-staged run staged-file lint and autofix tasks
+- **Pre-commit Hooks**: Husky + lint-staged run staged-file ESLint/Stylelint checks and workspace typechecks
+- **Type Checking**: TypeScript workspaces must pass `tsc` via their `typecheck` script; Vue workspaces must pass `vue-tsc` via their `typecheck` script
+- **Pre-push Hooks**: pushes must pass repository-wide `pnpm lint` and `pnpm typecheck`, with additional `build` / `test` / `tsd` runs based on changed files
+
+## Refactoring Expectations
+
+- Treat any code file above roughly 300 lines as a refactor signal.
+- Do not keep extending already-large files when responsibilities can be split cleanly.
+- Prefer folder-based decomposition over suffix-only sibling files such as `xxx.config.ts` or `xxx.filter.ts`.
+- Before commit, review touched large files and split or restructure them when the new change would otherwise make them harder to maintain.
 
 ## Publishing Workflow
 

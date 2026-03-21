@@ -145,7 +145,7 @@ describe('clean coverage', () => {
     expect(readJsonMock).toHaveBeenCalledWith('/repo/package.json')
     expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
       devDependencies: {
-        '@icebreakers/monorepo': '1.2.3',
+        repoctl: '1.2.3',
       },
     }, { spaces: 2 })
 
@@ -158,7 +158,7 @@ describe('clean coverage', () => {
     expect(removeMock).toHaveBeenCalledWith('/repo/packages/a')
     expect(outputJsonMock).toHaveBeenNthCalledWith(2, '/repo/package.json', {
       devDependencies: {
-        '@icebreakers/monorepo': 'latest',
+        repoctl: 'latest',
       },
     }, { spaces: 2 })
 
@@ -171,7 +171,35 @@ describe('clean coverage', () => {
     expect(removeMock).toHaveBeenCalledWith('/repo/packages/a')
     expect(outputJsonMock).toHaveBeenNthCalledWith(3, '/repo/package.json', {
       devDependencies: {
-        '@icebreakers/monorepo': 'canary',
+        repoctl: 'canary',
+      },
+    }, { spaces: 2 })
+  })
+
+  it('preserves legacy scoped helper dependency when already installed', async () => {
+    resolveCommandConfigMock.mockResolvedValue({
+      autoConfirm: true,
+      pinnedVersion: '3.0.0',
+    })
+    getWorkspaceDataMock.mockResolvedValue({
+      workspaceDir: '/repo',
+      packages: [],
+    })
+    pathExistsMock.mockResolvedValue(false)
+    readJsonMock.mockResolvedValue({
+      devDependencies: {
+        '@icebreakers/monorepo': '^2.0.0',
+      },
+    })
+    outputJsonMock.mockResolvedValue(undefined)
+
+    const { cleanProjects } = await import('@/commands/clean')
+
+    await cleanProjects('/repo')
+
+    expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
+      devDependencies: {
+        '@icebreakers/monorepo': '3.0.0',
       },
     }, { spaces: 2 })
   })

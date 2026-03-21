@@ -1,22 +1,23 @@
 {
-  "name": "@icebreakers/monorepo",
+  "name": "repoctl",
   "type": "module",
   "version": "3.2.18",
-  "description": "The icebreaker's monorepo manager",
+  "description": "One-command repo toolchain control built on @icebreakers/monorepo",
   "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
   "homepage": "https://monorepo.icebreaker.top",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sonofmagic/monorepo-template.git",
-    "directory": "packages/monorepo"
+    "directory": "packages/repoctl"
   },
   "bugs": {
     "url": "https://github.com/sonofmagic/monorepo-template/issues"
   },
   "keywords": [
-    "monorepo",
-    "icebreaker"
+    "repo",
+    "toolchain",
+    "monorepo"
   ],
   "sideEffects": false,
   "exports": {
@@ -47,7 +48,6 @@
   "files": [
     "bin",
     "dist",
-    "resources",
     "tsconfig.base.json"
   ],
   "engines": {
@@ -56,8 +56,7 @@
   "scripts": {
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
-    "test": "vitest run",
-    "test:dev": "vitest",
+    "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
@@ -65,34 +64,6 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@icebreakers/commitlint-config": "^1.2.13",
-    "@icebreakers/eslint-config": "^2.0.2",
-    "@icebreakers/monorepo-templates": "workspace:*",
-    "@icebreakers/stylelint-config": "^2.1.1",
-    "@pnpm/find-workspace-dir": "^1000.1.4",
-    "@pnpm/logger": "^1001.0.1",
-    "@pnpm/types": "^1001.3.0",
-    "@pnpm/worker": "^1000.6.6",
-    "@pnpm/workspace.find-packages": "^1000.0.64",
-    "@pnpm/workspace.read-manifest": "^1000.3.0",
-    "c12": "^3.3.3",
-    "comment-json": "^4.6.2",
-    "consola": "^3.4.2",
-    "git-url-parse": "^16.1.0",
-    "klaw": "^4.1.0",
-    "lint-staged": "^16.4.0",
-    "p-queue": "^9.1.0",
-    "pathe": "^2.0.3",
-    "picocolors": "^1.1.1",
-    "semver": "^7.7.4",
-    "simple-git": "^3.33.0",
-    "vitest": "~4.1.0",
-    "yaml": "^2.8.2"
-  },
-  "devDependencies": {
-    "@types/klaw": "^3.0.7",
-    "@types/micromatch": "^4.0.10",
-    "fdir": "^6.5.0",
-    "micromatch": "^4.0.8"
+    "@icebreakers/monorepo": "workspace:*"
   }
 }

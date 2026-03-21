@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -e
 
-pnpm exec monorepo verify commit-msg "$1"
+pnpm exec repoctl verify commit-msg "$1"

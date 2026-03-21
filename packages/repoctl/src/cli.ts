@@ -1,0 +1,1 @@
+import '@icebreakers/monorepo/cli'

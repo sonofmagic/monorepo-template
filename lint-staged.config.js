@@ -1,3 +1,3 @@
-import { defineLintStagedConfig } from '@icebreakers/monorepo/tooling'
+import { defineLintStagedConfig } from 'repoctl/tooling'
 
 export default await defineLintStagedConfig()

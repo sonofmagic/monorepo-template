@@ -250,8 +250,8 @@ export interface StylelintToolingConfig extends IcebreakerStylelintConfigOptions
 export interface LintStagedToolingConfig {
   /**
    * 调用 monorepo CLI 的基础命令。
-   * 通常保持为 `pnpm exec monorepo`，以便 Husky 与 lint-staged 入口统一。
-   * @default 'pnpm exec monorepo'
+   * 通常保持为 `pnpm exec repoctl`，以便 Husky 与 lint-staged 入口统一。
+   * @default 'pnpm exec repoctl'
    */
   monorepoCommand?: string
   /**

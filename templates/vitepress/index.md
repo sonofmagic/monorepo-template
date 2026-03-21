@@ -12,13 +12,13 @@ layout: doc
 - **全链路 TypeScript**：所有模板（应用、类库、CLI）均使用 TS，并自带基础测试脚手架（`vitest`）。
 - **质量与规范**：集成 `eslint`、`stylelint`、`husky`、`commitlint`、`lint-staged`，提交前会校验样式、ESLint 与 workspace typecheck，推送前会强制执行整仓 `lint` 与 `typecheck`。
 - **自动化发布**：`changesets` + GitHub Actions + Dockerfile 模板，实现语义化发版和部署。
-- **命令行助手**：`@icebreakers/monorepo` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为。
+- **命令行助手**：`repoctl` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为；`@icebreakers/monorepo` 保持兼容发布。
 
 ## 快速上手
 
 1. **拉取模板**：[GitHub](https://github.com/sonofmagic/monorepo-template) 右上角 `Use this template`，或克隆源码。
 2. **安装依赖**：在 `pnpm-workspace.yaml` 所在目录执行 `pnpm install`（需要 Node.js ≥ 20，推荐 `npm i -g pnpm`）。
-3. **可选清理**：直接运行 `npx -y @icebreakers/monorepo@latest clean` 远程执行清理，移除演示包后再执行 `pnpm install`（避免依赖本地构建 `monorepo`）；如已安装依赖，也可使用 `pnpm script:clean`。
+3. **可选清理**：直接运行 `npx -y repoctl@latest clean` 远程执行清理，移除演示包后再执行 `pnpm install`（避免依赖本地构建 CLI）；如已安装依赖，也可使用 `pnpm script:clean`。
 4. **初始化元数据**：`pnpm script:init` 会批量更新 `package.json`、`README.md` 等公共信息。
 
 ## 仓库结构速览
@@ -48,27 +48,27 @@ layout: doc
 ## CLI 命令概览
 
 ```bash
-npx monorepo new           # 创建子包/应用
-npx -y @icebreakers/monorepo@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
-npx monorepo sync          # 同步所有包到 npmmirror
-npx monorepo mirror        # 写入 VS Code 镜像配置
-npx monorepo up            # 从最新模板同步配置文件
-npx monorepo ai create     # 生成 Agentic 任务提示词模板（支持输出到文件，可用别名 ai new）
+npx repoctl new            # 创建子包/应用
+npx -y repoctl@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
+npx repoctl sync           # 同步所有包到 npmmirror
+npx repoctl mirror         # 写入 VS Code 镜像配置
+npx repoctl up             # 从最新模板同步配置文件
+npx repoctl ai create      # 生成 Agentic 任务提示词模板（支持输出到文件，可用别名 ai new）
 ```
 
-示例：`npx monorepo ai create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx monorepo ai new`.
+示例：`npx repoctl ai create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx repoctl ai new`.
 
 多文件场景：
 
-- `npx monorepo ai create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
-- `npx monorepo ai create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
+- `npx repoctl ai create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
+- `npx repoctl ai create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
 
 所有命令都支持在 `monorepo.config.ts` 中覆写默认行为，例如新增模板、修改同步命令、跳过 README 初始化等。配置示例见下文和 [配置中心说明](./monorepo/manage.md#使用-monorepo-configts-定制命令行为)。
 
 ## 自定义配置：`monorepo.config.ts`
 
 ```ts
-import { defineMonorepoConfig } from '@icebreakers/monorepo'
+import { defineMonorepoConfig } from 'repoctl'
 
 export default defineMonorepoConfig({
   commands: {

@@ -17,9 +17,12 @@ export async function updateRootPackageJson(targetDir: string, projectName: stri
   const devDependencies = pkg.devDependencies
   if (devDependencies && devDependencies['@icebreakers/monorepo']) {
     delete devDependencies['@icebreakers/monorepo']
-    if (Object.keys(devDependencies).length === 0) {
-      delete pkg.devDependencies
-    }
+  }
+  if (devDependencies && devDependencies['repoctl']) {
+    delete devDependencies['repoctl']
+  }
+  if (devDependencies && Object.keys(devDependencies).length === 0) {
+    delete pkg.devDependencies
   }
 
   const scripts = pkg.scripts
