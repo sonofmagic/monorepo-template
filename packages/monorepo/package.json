@@ -63,8 +63,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "pnpm build && pnpm --filter repoctl build && eslint .",
+    "lint:fix": "pnpm build && pnpm --filter repoctl build && eslint . --fix"
   },
   "dependencies": {
     "@icebreakers/commitlint-config": "^1.2.13",

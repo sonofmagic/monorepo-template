@@ -141,6 +141,11 @@ export interface DefineVitestConfigOptions {
   overrides?: MonorepoVitestConfigOverrides
 }
 
+export interface DefineVitestProjectConfigOptions {
+  cwd?: string
+  config?: MonorepoVitestProjectConfigOptions
+}
+
 const defaultProjectRoots = ['packages', 'apps']
 const defaultConfigCandidates = [
   'vitest.config.ts',
@@ -683,4 +688,27 @@ export function createMonorepoVitestProjectConfig(options: MonorepoVitestProject
       ...(options.environment ? { environment: options.environment } : {}),
     },
   }
+}
+
+/**
+ * 从 `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `config`
+ * 生成单个 package/app 的项目级 Vitest 配置。
+ *
+ * 优先级从低到高：
+ * 1. `monorepo.config.ts -> tooling.vitestProject`
+ * 2. `config`
+ *
+ * @param input `cwd` 用于配置文件解析起点，`config` 用于追加项目内局部覆盖项
+ * @returns 可直接传给 `defineProject()` 或与其他 Vite/Vitest 配置 merge 的项目级配置片段
+ */
+export async function defineVitestProjectConfig(
+  input: DefineVitestProjectConfigOptions = {},
+): Promise<MonorepoVitestProjectConfigResult> {
+  const cwd = input.cwd ?? process.cwd()
+  const toolingOptions = await loadToolingSection('vitestProject', cwd)
+
+  return createMonorepoVitestProjectConfig({
+    ...toolingOptions,
+    ...input.config,
+  })
 }

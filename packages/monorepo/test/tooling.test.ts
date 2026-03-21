@@ -13,6 +13,7 @@ import {
   defineStylelintConfig,
   defineTsconfigConfig,
   defineVitestConfig,
+  defineVitestProjectConfig,
   loadMonorepoToolingConfig,
 } from '@/index'
 
@@ -154,6 +155,7 @@ describe('tooling factories', () => {
     expect(await defineStylelintConfig({ cwd: process.cwd() })).toBeTruthy()
     expect(await defineLintStagedConfig({ cwd: process.cwd() })).toBeTruthy()
     expect(await defineTsconfigConfig({ cwd: process.cwd() })).toBeTruthy()
+    expect(await defineVitestProjectConfig({ cwd: process.cwd() })).toBeTruthy()
   })
 
   it('creates project-level vitest config with shared defaults', () => {
@@ -166,6 +168,20 @@ describe('tooling factories', () => {
     expect(config.test.testTimeout).toBe(60_000)
     expect(config.test.environment).toBe('node')
     expect(config.test.alias).toEqual([{ find: '@', replacement: '/tmp/src' }])
+  })
+
+  it('defines project-level vitest config with inline overrides', async () => {
+    const config = await defineVitestProjectConfig({
+      config: {
+        environment: 'jsdom',
+        alias: [{ find: '@', replacement: '/tmp/project-src' }],
+      },
+    })
+
+    expect(config.test.globals).toBe(true)
+    expect(config.test.testTimeout).toBe(60_000)
+    expect(config.test.environment).toBe('jsdom')
+    expect(config.test.alias).toEqual([{ find: '@', replacement: '/tmp/project-src' }])
   })
 
   it('loads tooling config from monorepo config', async () => {
@@ -195,5 +211,6 @@ describe('tooling factories', () => {
     expect(await defineLintStagedConfig()).toBeTruthy()
     expect(await defineTsconfigConfig()).toBeTruthy()
     expect(await defineVitestConfig()).toBeTruthy()
+    expect(await defineVitestProjectConfig()).toBeTruthy()
   })
 })

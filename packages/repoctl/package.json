@@ -59,8 +59,8 @@
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc -p tsconfig.json",
-    "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
+    "typecheck": "pnpm --filter @icebreakers/monorepo build && tsc -p tsconfig.json",
+    "tsd": "pnpm --filter @icebreakers/monorepo build && pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

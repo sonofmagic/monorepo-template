@@ -1,7 +1,9 @@
-import { createMonorepoEslintConfig } from 'repoctl/tooling'
+import { defineEslintConfig } from 'repoctl/tooling'
 
-export default createMonorepoEslintConfig({
-  vue: true,
-  typescript: true,
-  ignores: ['**/fixtures/**'],
+export default await defineEslintConfig({
+  config: {
+    vue: true,
+    typescript: true,
+    ignores: ['**/fixtures/**'],
+  },
 })

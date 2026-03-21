@@ -16,8 +16,27 @@ export default {
     },
   },
   tooling: {
+    commitlint: {
+      extends: ['@commitlint/config-conventional'],
+    },
+    eslint: {
+      ignores: ['**/fixtures/**'],
+    },
+    stylelint: {
+      rules: {},
+    },
+    lintStaged: {
+      monorepoCommand: 'pnpm exec repoctl',
+    },
+    tsconfig: {
+      compilerOptions: {},
+    },
     vitest: {
       includeWorkspaceRootConfig: false,
+    },
+    vitestProject: {
+      globals: true,
+      testTimeout: 60_000,
     },
   },
 } satisfies MonorepoConfig
