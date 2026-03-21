@@ -1,14 +1,14 @@
 # 如何管理 monorepo
 
-本节结合模板实践，总结一套围绕 **pnpm + Turborepo + monorepo.config** 的管理方法：从依赖安装、任务调度到命令覆写，帮助团队高效协作。
+本节结合模板实践，总结一套围绕 **pnpm + Turborepo + repoctl.config** 的管理方法：从依赖安装、任务调度到命令覆写，帮助团队高效协作。
 
 ## 基础设施速览
 
-| 能力           | 工具                 | 要点                                                                        |
-| -------------- | -------------------- | --------------------------------------------------------------------------- |
-| Workspace 管理 | `pnpm`               | 内容寻址、硬链接，安装速度快、占用小；严格依赖隔离杜绝“幽灵依赖”            |
-| 任务编排       | `turborepo`          | 基于依赖图调度任务，支持并行与缓存，`turbo run build --filter=...` 精准执行 |
-| 命令自定义     | `monorepo.config.ts` | 使用 `c12` 加载，可对 create/clean/sync/upgrade/init/mirror 覆写默认行为    |
+| 能力           | 工具                | 要点                                                                                                  |
+| -------------- | ------------------- | ----------------------------------------------------------------------------------------------------- |
+| Workspace 管理 | `pnpm`              | 内容寻址、硬链接，安装速度快、占用小；严格依赖隔离杜绝“幽灵依赖”                                      |
+| 任务编排       | `turborepo`         | 基于依赖图调度任务，支持并行与缓存，`turbo run build --filter=...` 精准执行                           |
+| 命令自定义     | `repoctl.config.ts` | 使用 `c12` 加载，可对 create/clean/sync/upgrade/init/mirror 覆写默认行为，也兼容 `monorepo.config.ts` |
 
 ## 日常操作流程
 
@@ -96,6 +96,8 @@ export default defineMonorepoConfig({
 | `mirror`  | `env`                                                                              | 注入镜像环境变量                                                                            |
 | `ai`      | `output` / `format` / `force` / `baseDir` / `tasksFile`                            | 预设 Agentic 模板输出目录、格式与批量任务，默认写入 `agentic/prompts/<timestamp>/prompt.md` |
 
+推荐优先使用 `repoctl.config.ts` 作为配置文件名；已有仓库若仍使用 `monorepo.config.ts` 也能继续工作。但两个文件不能同时存在，否则 CLI 会直接报错，避免隐式覆盖。
+
 更多细节可参考 CLI 命令文档或源码中的 `commands/*`。
 
 ### 4. 依赖升级 / 配置同步
@@ -117,7 +119,7 @@ npx @icebreakers/monorepo@latest up  # 直接使用兼容的远端 CLI
 - **依赖冲突**：使用 `pnpm why <pkg>` 定位冲突来源，优先升级上游依赖或将共享依赖提升到顶层。
 - **缓存命中率低**：确认是否使用了 `turbo run <task> --filter` 以及 `dependsOn` 配置是否准确，必要时开启远程缓存。
 - **CI 时间长**：结合 `pnpm fetch` 预拉取依赖，配合 `turbo` 缓存，通常能把 pipeline 压缩到原来的 1/3。
-- **命令行为差异**：将所有自定义行为写入 `monorepo.config.ts`，避免脚本散落多处难以维护。
+- **命令行为差异**：将所有自定义行为写入 `repoctl.config.ts`，避免脚本散落多处难以维护；旧仓库可继续沿用 `monorepo.config.ts`。
 
 ## 进一步阅读
 
@@ -126,4 +128,4 @@ npx @icebreakers/monorepo@latest up  # 直接使用兼容的远端 CLI
 - [工具篇：pnpm、Turborepo、Changesets 等](../tools/turborepo.md)
 - [常见思考与实践](../thinking.md)
 
-> 小提示：在迁移现有项目时，可以先把最常变的模块放进 monorepo，再逐步收拢其它仓库，配合 `monorepo.config.ts` 就能实现平滑衔接。
+> 小提示：在迁移现有项目时，可以先把最常变的模块放进 monorepo，再逐步收拢其它仓库，配合 `repoctl.config.ts` 就能实现平滑衔接。

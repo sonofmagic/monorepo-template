@@ -7,11 +7,46 @@ import { createNewProject } from '@/commands/create'
 import fs from '@/utils/fs'
 
 const templatesRoot = path.resolve(__dirname, '../../..', 'templates')
-function writeConfig(dir: string, content: string) {
-  return fs.writeFile(path.join(dir, 'monorepo.config.ts'), content, 'utf8')
+function writeConfig(dir: string, content: string, filename = 'repoctl.config.ts') {
+  return fs.writeFile(path.join(dir, filename), content, 'utf8')
 }
 
 describe('monorepo config integration', () => {
+  it.skipIf(isCI)('prefers repoctl config when present', async () => {
+    await vi.resetModules()
+    const root = await fs.mkdtemp(path.join(tmpdir(), 'repoctl-config-prefer-'))
+
+    await writeConfig(
+      root,
+      `export default {\n  commands: {\n    sync: {\n      concurrency: 7,\n    },\n  },\n}\n`,
+      'repoctl.config.ts',
+    )
+
+    const { loadMonorepoConfig, resolveCommandConfig } = await import('@/core/config')
+    const config = await loadMonorepoConfig(root)
+
+    expect(config.commands?.sync?.concurrency).toBe(7)
+    expect(await resolveCommandConfig('sync', root)).toMatchObject({
+      concurrency: 7,
+    })
+
+    await fs.remove(root)
+  })
+
+  it.skipIf(isCI)('throws when repoctl and monorepo config coexist', async () => {
+    await vi.resetModules()
+    const root = await fs.mkdtemp(path.join(tmpdir(), 'repoctl-config-conflict-'))
+
+    await writeConfig(root, `export default { commands: { clean: { autoConfirm: true } } }\n`, 'repoctl.config.ts')
+    await writeConfig(root, `export default { commands: { clean: { autoConfirm: false } } }\n`, 'monorepo.config.ts')
+
+    const { loadMonorepoConfig } = await import('@/core/config')
+
+    await expect(loadMonorepoConfig(root)).rejects.toThrow(/Found both repoctl and monorepo config files/)
+
+    await fs.remove(root)
+  })
+
   it.skipIf(isCI)('overrides create command defaults', async () => {
     await vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-create-'))

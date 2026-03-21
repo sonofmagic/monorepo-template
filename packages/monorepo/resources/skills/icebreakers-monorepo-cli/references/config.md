@@ -1,4 +1,14 @@
-# monorepo.config.ts
+# repoctl.config.ts
+
+Preferred filename: `repoctl.config.ts`
+
+Compatible legacy filename: `monorepo.config.ts`
+
+Rule:
+
+- `repoctl.config.*` has higher priority
+- `monorepo.config.*` remains supported
+- if both exist at the same time, CLI loading fails fast with an error
 
 Use `defineMonorepoConfig` to set default options for CLI commands.
 Only include the fields you need.

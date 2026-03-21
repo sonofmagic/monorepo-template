@@ -1,6 +1,6 @@
 ---
 name: icebreakers-monorepo-cli
-description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, sync, clean, mirror, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing monorepo.config.ts defaults.
+description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, sync, clean, mirror, creating new template packages (tsdown/tsup/unbuild/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing repoctl.config.ts or monorepo.config.ts defaults.
 ---
 
 # Icebreakers Monorepo Cli
@@ -13,7 +13,7 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 ## Quick Workflow
 
 1. Confirm the workspace root (look for `pnpm-workspace.yaml` and `package.json`).
-2. Check `monorepo.config.ts` for command defaults or overrides.
+2. Check `repoctl.config.ts` first, then `monorepo.config.ts` for command defaults or overrides.
 3. Select the task below and follow the linked reference.
 
 ## Tasks
@@ -22,7 +22,7 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 - Use `repoctl new [path]` (alias `create`) and pick a template from `references/templates.md`.
 - Example: for "create a tsdown app in apps/my-app", run `npx repoctl new apps/my-app` and select `tsdown`.
-- For non-interactive defaults, set `commands.create.defaultTemplate` in `monorepo.config.ts`.
+- For non-interactive defaults, set `commands.create.defaultTemplate` in `repoctl.config.ts` or `monorepo.config.ts`.
 
 ### Upgrade or sync monorepo assets
 
@@ -41,4 +41,4 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 - `references/commands.md` for CLI options and flags.
 - `references/templates.md` for template mapping and placement.
-- `references/config.md` for `monorepo.config.ts` defaults.
+- `references/config.md` for `repoctl.config.ts` / `monorepo.config.ts` defaults.

@@ -12,7 +12,7 @@ layout: doc
 - **全链路 TypeScript**：所有模板（应用、类库、CLI）均使用 TS，并自带基础测试脚手架（`vitest`）。
 - **质量与规范**：集成 `eslint`、`stylelint`、`husky`、`commitlint`、`lint-staged`，提交前会校验样式、ESLint 与 workspace typecheck，推送前会强制执行整仓 `lint` 与 `typecheck`。
 - **自动化发布**：`changesets` + GitHub Actions + Dockerfile 模板，实现语义化发版和部署。
-- **命令行助手**：`repoctl` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为；`repo` 是推荐的短别名，`rc` 与 `@icebreakers/monorepo` 保持兼容发布。
+- **命令行助手**：`repoctl` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `repoctl.config.ts` 自定义行为；`repo` 是推荐的短别名，`rc` 与 `@icebreakers/monorepo` 保持兼容发布。
 
 ## 快速上手
 
@@ -65,9 +65,9 @@ npx repoctl ai create      # 生成 Agentic 任务提示词模板（支持输出
 - `npx repoctl ai create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
 - `npx repoctl ai create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
 
-所有命令都支持在 `monorepo.config.ts` 中覆写默认行为，例如新增模板、修改同步命令、跳过 README 初始化等。配置示例见下文和 [配置中心说明](./monorepo/manage.md#使用-monorepo-configts-定制命令行为)。
+所有命令都支持在 `repoctl.config.ts` 中覆写默认行为，例如新增模板、修改同步命令、跳过 README 初始化等。也兼容 `monorepo.config.ts`，但两者不能同时存在。配置示例见下文和 [配置中心说明](./monorepo/manage.md#使用-repoctlconfigts-定制命令行为)。
 
-## 自定义配置：`monorepo.config.ts`
+## 自定义配置：`repoctl.config.ts`
 
 ```ts
 import { defineMonorepoConfig } from 'repoctl'
@@ -126,4 +126,4 @@ pnpm up -rLi
 - [工具链介绍](./tools/turborepo.md)
 - [常见思考与 FAQ](./thinking.md)
 
-> 欢迎结合自己的业务场景对模板做进一步裁剪与扩展，建议在自定义后保留 `monorepo.config.ts` 以便集中管理命令默认值。
+> 欢迎结合自己的业务场景对模板做进一步裁剪与扩展，建议优先使用 `repoctl.config.ts` 统一管理命令默认值；已有项目的 `monorepo.config.ts` 也继续兼容。
