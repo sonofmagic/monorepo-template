@@ -34,11 +34,11 @@
 2. **逐步迁移模块**：按照业务领域或团队边界迁移子模块，保留原 CI 作为兜底。
 3. **引入构建缓存**：配置 Turborepo，使用 `turbo run <task> --filter=<scope>` 控制任务范围。
 4. **接入 changesets**：在迁移过程中就开始记录版本与变更，养成可发布的节奏。
-5. **通过 monorepo.config.ts 定制命令**：按团队习惯调整 `create` 模板、`clean` 行为、`upgrade` 目标等，提高可维护性。
+5. **通过 repoctl.config.ts 定制命令**：按团队习惯调整 `create` 模板、`clean` 行为、`upgrade` 目标等，提高可维护性。
 
 ## 进一步阅读
 
-- [仓库管理实践](./manage.md) —— 如何将 pnpm + Turborepo + monorepo.config 协同使用。
+- [仓库管理实践](./manage.md) —— 如何将 pnpm + Turborepo + repoctl.config 协同使用。
 - [发包与变更日志](./publish.md) —— 使用 changesets 管理版本、自动化发布。
 - [工具专题](../tools/turborepo.md) —— 常用工具的配置与技巧。
 - [常见思考](../thinking.md) —— 关于模块拆分、包结构的经验分享。

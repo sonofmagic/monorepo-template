@@ -8,7 +8,7 @@ describe('core module coverage', () => {
           clean: { autoConfirm: true },
         },
       },
-      configFile: '/repo/monorepo.config.ts',
+      configFile: '/repo/repoctl.config.ts',
     }))
     const findWorkspacePackagesMock = vi.fn(async () => [
       { rootDir: '/repo', manifest: { name: 'root', private: false }, rootDirRealPath: '/repo' },

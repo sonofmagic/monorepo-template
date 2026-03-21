@@ -17,5 +17,5 @@ Built-in template map:
 Notes:
 
 - The command prompts for template selection unless defaults are set in
-  monorepo.config.ts.
+  repoctl.config.ts or monorepo.config.ts.
 - Override mappings with `commands.create.templateMap` and `commands.create.templatesDir`.

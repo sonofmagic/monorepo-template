@@ -418,7 +418,7 @@ export interface HuskyToolingConfig {
 }
 
 /**
- * `monorepo.config.ts` 中 `tooling` 总配置。
+ * `repoctl.config.ts` / `monorepo.config.ts` 中 `tooling` 总配置。
  *
  * 每个字段分别映射到对应的配置工厂与验证命令。
  */

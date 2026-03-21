@@ -10,7 +10,7 @@ const coreAssetTargets = [
   'eslint.config.js',
   'lint-staged.config.js',
   'stylelint.config.js',
-  'monorepo.config.ts',
+  'repoctl.config.ts',
   'package.json',
   'AGENTS.md',
   // pnpm

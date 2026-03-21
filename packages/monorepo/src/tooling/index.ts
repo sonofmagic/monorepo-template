@@ -314,7 +314,7 @@ function loadBundledTsconfig(): MonorepoTsconfig {
 /**
  * 基于 `@icebreakers/commitlint-config` 创建 commitlint 配置。
  *
- * 适合在需要手动传入覆盖项时使用；如果只想读取 `monorepo.config.ts` 默认值，
+ * 适合在需要手动传入覆盖项时使用；如果只想读取 `repoctl.config.ts` / `monorepo.config.ts` 默认值，
  * 优先使用 `defineCommitlintConfig()`。
  *
  * @param options 额外合并到默认 commitlint 配置上的字段
@@ -338,7 +338,7 @@ export function createMonorepoCommitlintConfig(
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.commitlint`，并生成 commitlint 配置。
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.commitlint`，并生成 commitlint 配置。
  *
  * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 commitlint 配置对象
@@ -384,7 +384,7 @@ export function createMonorepoEslintConfig(
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.eslint`，并生成 ESLint 配置。
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.eslint`，并生成 ESLint 配置。
  *
  * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 ESLint flat config
@@ -420,7 +420,7 @@ export function createMonorepoStylelintConfig(
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.stylelint`，并生成 Stylelint 配置。
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.stylelint`，并生成 Stylelint 配置。
  *
  * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 Stylelint 配置对象
@@ -449,7 +449,7 @@ export function createMonorepoTsconfig(
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.tsconfig`，并生成最终的 TypeScript 配置对象。
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.tsconfig`，并生成最终的 TypeScript 配置对象。
  *
  * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接写入或导出的 `tsconfig.json` 配置对象
@@ -514,7 +514,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.lintStaged`，并生成 `lint-staged` 配置。
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.lintStaged`，并生成 `lint-staged` 配置。
  *
  * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 `lint-staged` 配置对象
@@ -616,11 +616,11 @@ function mergeMonorepoVitestConfig(
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.vitest`，再叠加运行时 `options` 与 `overrides`
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitest`，再叠加运行时 `options` 与 `overrides`
  * 生成最终 Vitest 配置。
  *
  * 优先级从低到高：
- * 1. `monorepo.config.ts -> tooling.vitest`
+ * 1. `repoctl.config.ts` / `monorepo.config.ts -> tooling.vitest`
  * 2. `options`
  * 3. `overrides`
  *
@@ -691,11 +691,11 @@ export function createMonorepoVitestProjectConfig(options: MonorepoVitestProject
 }
 
 /**
- * 从 `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `config`
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `config`
  * 生成单个 package/app 的项目级 Vitest 配置。
  *
  * 优先级从低到高：
- * 1. `monorepo.config.ts -> tooling.vitestProject`
+ * 1. `repoctl.config.ts` / `monorepo.config.ts -> tooling.vitestProject`
  * 2. `config`
  *
  * @param input `cwd` 用于配置文件解析起点，`config` 用于追加项目内局部覆盖项

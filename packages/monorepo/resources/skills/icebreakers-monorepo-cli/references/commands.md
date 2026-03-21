@@ -72,4 +72,4 @@ Usage:
 
 - npx repoctl new [path]
   Notes:
-- Prompts for a template choice unless defaults are set in monorepo.config.ts.
+- Prompts for a template choice unless defaults are set in repoctl.config.ts or monorepo.config.ts.

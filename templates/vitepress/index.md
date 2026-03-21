@@ -90,7 +90,7 @@ export default defineMonorepoConfig({
     },
     upgrade: {
       skipOverwrite: true,
-      targets: ['.github', 'monorepo.config.ts'],
+      targets: ['.github', 'repoctl.config.ts'],
     },
   },
 })

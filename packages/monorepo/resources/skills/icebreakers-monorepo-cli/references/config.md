@@ -44,7 +44,7 @@ export default defineMonorepoConfig({
     },
     upgrade: {
       skipOverwrite: false,
-      targets: ['.github', 'monorepo.config.ts'],
+      targets: ['.github', 'repoctl.config.ts'],
       mergeTargets: true,
     },
     init: {

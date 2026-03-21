@@ -43,7 +43,7 @@ npx monorepo skills sync --claude
 `monorepo ai create` 支持批量生成：
 
 ```bash
-# 基于名称自动落盘到 agentic/prompts/checkout.md（默认目录可在 monorepo.config.ts 中设置）
+# 基于名称自动落盘到 agentic/prompts/checkout.md（默认目录可在 repoctl.config.ts 中设置）
 npx monorepo ai create --name checkout
 
 # 使用任务清单一次生成多个文件（tasks.json 为字符串或对象数组）
@@ -61,11 +61,11 @@ npx monorepo ai create --tasks agentic/tasks.json --format md -f
 
 ### 配置文件
 
-在工作区根目录下创建 `monorepo.config.ts`（内容可为普通 ESM），即可覆盖每个命令的默认行为。例如：
+在工作区根目录下创建 `repoctl.config.ts`（内容可为普通 ESM），即可覆盖每个命令的默认行为。已有项目若使用 `monorepo.config.ts` 也兼容，但两个文件不能同时存在。例如：
 
 ```ts
-// monorepo.config.ts
-import { defineMonorepoConfig } from '@icebreakers/monorepo'
+// repoctl.config.ts
+import { defineMonorepoConfig } from 'repoctl'
 
 export default defineMonorepoConfig({
   commands: {
@@ -85,7 +85,7 @@ export default defineMonorepoConfig({
     },
     upgrade: {
       skipOverwrite: true,
-      targets: ['.github', 'monorepo.config.ts'],
+      targets: ['.github', 'repoctl.config.ts'],
     },
   },
 })

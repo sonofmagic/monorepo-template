@@ -157,7 +157,7 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
  * 根据模板生成一个新项目目录，并自动补写 `package.json` 常用字段。
  *
  * 默认行为：
- * - 优先读取 `monorepo.config.ts -> commands.create`
+ * - 优先读取 `repoctl.config.ts -> commands.create`，兼容 `monorepo.config.ts`
  * - 模板类型默认回退到 `'tsdown'`
  * - 若目标目录已存在则直接抛错
  * - 若模板包含 `package.json`，会自动写入 `name`、`version` 与 Git 仓库信息
@@ -187,7 +187,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
   const templateDefinition = templateDefinitions[bundlerName]
 
   if (!templateDefinition) {
-    throw new Error(`未找到名为 ${bundlerName} 的模板，请检查 monorepo.config.ts`)
+    throw new Error(`未找到名为 ${bundlerName} 的模板，请检查 repoctl.config.ts 或 monorepo.config.ts`)
   }
 
   const from = path.join(templatesRoot, templateDefinition.source)
