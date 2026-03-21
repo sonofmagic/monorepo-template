@@ -15,8 +15,8 @@
    在提交前运行 `prettier --write .`，确保代码风格一致。
 2. **Lint 检查**
    在 `pre-commit` 时执行 `eslint`，防止有 lint 错误的代码被提交。
-3. **运行测试**
-   在 `pre-push` 时执行 `npm test`，防止未通过测试的代码被推送。
+3. **推送前执行整仓校验**
+   在 `pre-push` 时执行整仓 `lint`、`typecheck`，并按需补跑 `build`、`test`、`tsd`，防止未通过校验的代码被推送。
 4. **Commit 信息校验**
    在 `commit-msg` hook 中使用 [commitlint](https://github.com/conventional-changelog/commitlint) 强制提交信息符合规范（如 Conventional Commits）。
 
@@ -100,6 +100,11 @@ npx husky add .husky/commit-msg "npx --no-install commitlint --edit $1"
 ```bash
 npx lint-staged
 ```
+
+在本仓库默认实现里，`pre-commit` 和 `pre-push` 的职责拆分是：
+
+- `pre-commit`：只针对 staged 文件执行 `eslint`、`stylelint` 和 workspace `typecheck`
+- `pre-push`：强制执行整仓 `pnpm lint`、`pnpm typecheck`，并根据改动范围补跑 `build`、`test`、`tsd`
 
 ## 总结
 

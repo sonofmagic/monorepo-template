@@ -10,7 +10,7 @@ layout: doc
 
 - **工作区管理**：`pnpm` workspace + Turborepo 任务编排，内置缓存和过滤能力。
 - **全链路 TypeScript**：所有模板（应用、类库、CLI）均使用 TS，并自带基础测试脚手架（`vitest`）。
-- **质量与规范**：集成 `eslint`、`stylelint`、`husky`、`commitlint`、`lint-staged`，开箱即用。
+- **质量与规范**：集成 `eslint`、`stylelint`、`husky`、`commitlint`、`lint-staged`，提交前会校验样式、ESLint 与 workspace typecheck，推送前会强制执行整仓 `lint` 与 `typecheck`。
 - **自动化发布**：`changesets` + GitHub Actions + Dockerfile 模板，实现语义化发版和部署。
 - **命令行助手**：`@icebreakers/monorepo` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为。
 

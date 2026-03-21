@@ -256,6 +256,7 @@ function resolveTypecheckWorkspaceDir(filePath: string, cwd: string) {
  * 该函数会根据 push 范围内的改动文件，推导需要运行的 workspace 任务：
  * - workspace 内改动：按包执行 `build` / `test` / `tsd`
  * - 根级配置改动：在仓库根执行 `build` / `test` / `tsd`
+ * - 无论改动范围如何，都会强制在仓库根执行整仓 `lint` 与 `typecheck`
  *
  * @param options pre-push 运行参数
  * @returns Promise<void>
@@ -269,7 +270,7 @@ export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
   const hookLines = hookStdin.length > 0 ? hookStdin.split('\n') : []
 
   const tasksByWorkspace = new Map<string, Set<string>>()
-  const rootTasks = new Set<string>()
+  const rootTasks = new Set<string>(['lint', 'typecheck'])
 
   for (const line of hookLines) {
     const [, localSha, , remoteSha] = line.trim().split(whitespacePattern)
@@ -320,7 +321,7 @@ export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
     }
   }
 
-  for (const task of ['build', 'test', 'tsd']) {
+  for (const task of ['lint', 'typecheck', 'build', 'test', 'tsd']) {
     if (!rootTasks.has(task)) {
       continue
     }

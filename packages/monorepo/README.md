@@ -28,6 +28,18 @@ npx monorepo skills sync --claude
 
 `monorepo skills sync` 会将包内 `resources/skills/icebreakers-monorepo-cli` 同步到 `~/.codex/skills/icebreakers-monorepo-cli` 或 `~/.claude/skills/icebreakers-monorepo-cli`；未指定目标时会交互选择。
 
+## 默认提交校验
+
+如果你采用包内默认生成的 `.husky` 与 `lint-staged.config.js`，提交链路会自动包含下面这些校验：
+
+- `pre-commit` 只检查 staged 文件
+- 样式文件会执行 `stylelint --fix --allow-empty-input`
+- `js`、`jsx`、`mjs`、`ts`、`tsx`、`mts`、`cts`、`vue` 文件会执行 `eslint --fix`
+- `ts` / `tsx` / `mts` / `cts` / `vue` staged 文件会按最近的 workspace 执行 `typecheck`
+- Vue workspace 的 `typecheck` 通常是 `vue-tsc -b`
+- 纯 TypeScript workspace 的 `typecheck` 通常是 `tsc -p tsconfig.json`
+- `pre-push` 会强制执行整仓 `pnpm lint` 与 `pnpm typecheck`，再按改动范围补跑 `build`、`test`、`tsd`
+
 `monorepo ai create` 支持批量生成：
 
 ```bash
