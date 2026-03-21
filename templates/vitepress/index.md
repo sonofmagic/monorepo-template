@@ -12,7 +12,7 @@ layout: doc
 - **全链路 TypeScript**：所有模板（应用、类库、CLI）均使用 TS，并自带基础测试脚手架（`vitest`）。
 - **质量与规范**：集成 `eslint`、`stylelint`、`husky`、`commitlint`、`lint-staged`，提交前会校验样式、ESLint 与 workspace typecheck，推送前会强制执行整仓 `lint` 与 `typecheck`。
 - **自动化发布**：`changesets` + GitHub Actions + Dockerfile 模板，实现语义化发版和部署。
-- **命令行助手**：`repoctl` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为；`@icebreakers/monorepo` 保持兼容发布。
+- **命令行助手**：`repoctl` CLI 提供创建、同步、升级、镜像等常用命令，可通过 `monorepo.config.ts` 自定义行为；`repo` 是推荐的短别名，`rc` 与 `@icebreakers/monorepo` 保持兼容发布。
 
 ## 快速上手
 
@@ -57,6 +57,8 @@ npx repoctl ai create      # 生成 Agentic 任务提示词模板（支持输出
 ```
 
 示例：`npx repoctl ai create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx repoctl ai new`.
+
+如果你更偏好短命令，也可以把上面的 `repoctl` 换成 `repo`。`rc` 同样可用，但因为和其他 CLI 发生命令名冲突的概率更高，这里不把它作为主文档入口。
 
 多文件场景：
 

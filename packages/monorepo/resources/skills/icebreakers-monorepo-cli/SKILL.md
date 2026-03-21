@@ -8,6 +8,7 @@ description: Use when working with repoctl or @icebreakers/monorepo in this pnpm
 ## Overview
 
 Map user requests to the correct `repoctl` CLI command, templates, and configuration defaults.
+Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as a compatibility alias rather than the primary recommendation.
 
 ## Quick Workflow
 
