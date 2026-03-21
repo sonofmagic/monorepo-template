@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 afterEach(async () => {
@@ -13,5 +16,17 @@ describe('CLI entrypoint', () => {
     await import('@/cli')
 
     expect(parseMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('publishes both monorepo and mo bin commands', () => {
+    const packageJsonPath = path.resolve(import.meta.dirname, '../package.json')
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {
+      bin: Record<string, string>
+    }
+
+    expect(packageJson.bin).toEqual({
+      monorepo: 'bin/monorepo.js',
+      mo: 'bin/mo.js',
+    })
   })
 })
