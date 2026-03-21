@@ -3,15 +3,17 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig(async () => await defineVitestConfig(
   {
-    includeWorkspaceRootConfig: false,
-  },
-  {
-    test: {
-      coverage: {
-        exclude: [
-          '**/dist/**',
-        ],
-        skipFull: true,
+    options: {
+      includeWorkspaceRootConfig: false,
+    },
+    overrides: {
+      test: {
+        coverage: {
+          exclude: [
+            '**/dist/**',
+          ],
+          skipFull: true,
+        },
       },
     },
   },

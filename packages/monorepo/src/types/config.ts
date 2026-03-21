@@ -263,6 +263,51 @@ export interface LintStagedToolingConfig {
 }
 
 /**
+ * `tooling.tsconfig` 配置块。
+ *
+ * 该对象会与 monorepo 内置的 TypeScript 基线配置合并。
+ */
+export interface TsconfigToolingConfig {
+  /**
+   * 顶层 `extends` 字段。
+   * @default undefined
+   */
+  extends?: string | string[]
+  /**
+   * TypeScript `compilerOptions` 配置。
+   * @default undefined
+   */
+  compilerOptions?: Record<string, unknown>
+  /**
+   * 顶层 `include` 字段。
+   * @default undefined
+   */
+  include?: string[]
+  /**
+   * 顶层 `exclude` 字段。
+   * @default undefined
+   */
+  exclude?: string[]
+  /**
+   * 顶层 `files` 字段。
+   * @default undefined
+   */
+  files?: string[]
+  /**
+   * 顶层 `references` 字段。
+   * @default undefined
+   */
+  references?: Array<{
+    path: string
+  }>
+  /**
+   * 顶层 `compileOnSave` 字段。
+   * @default undefined
+   */
+  compileOnSave?: boolean
+}
+
+/**
  * `tooling.vitest` 配置块。
  *
  * 这些字段会参与根级 Vitest 配置的自动推导。
@@ -382,6 +427,7 @@ export interface ToolingConfig {
   eslint?: EslintToolingConfig
   stylelint?: StylelintToolingConfig
   lintStaged?: LintStagedToolingConfig
+  tsconfig?: TsconfigToolingConfig
   vitest?: VitestToolingConfig
   vitestProject?: VitestProjectToolingConfig
   husky?: HuskyToolingConfig

@@ -4,12 +4,14 @@ import {
   createMonorepoEslintConfig,
   createMonorepoLintStagedConfig,
   createMonorepoStylelintConfig,
+  createMonorepoTsconfig,
   createMonorepoVitestConfig,
   createMonorepoVitestProjectConfig,
   defineCommitlintConfig,
   defineEslintConfig,
   defineLintStagedConfig,
   defineStylelintConfig,
+  defineTsconfigConfig,
   defineVitestConfig,
   loadMonorepoToolingConfig,
 } from '@/index'
@@ -19,6 +21,7 @@ describe('tooling factories', () => {
     expect(createMonorepoCommitlintConfig()).toBeTruthy()
     expect(createMonorepoEslintConfig()).toBeTruthy()
     expect(createMonorepoStylelintConfig()).toBeTruthy()
+    expect(createMonorepoTsconfig()).toBeTruthy()
   })
 
   it('creates lint-staged config with overridable monorepo command', () => {
@@ -52,16 +55,16 @@ describe('tooling factories', () => {
       projectRoots: ['packages'],
     })
 
-    expect(config.test?.coverage?.enabled).toBe(true)
-    expect(Array.isArray(config.test?.projects)).toBe(true)
+    expect(config.test.coverage?.enabled).toBe(true)
+    expect(Array.isArray(config.test.projects)).toBe(true)
   })
 
   it('defines vitest config with inline overrides', async () => {
-    const config = await defineVitestConfig(
-      {
+    const config = await defineVitestConfig({
+      options: {
         includeWorkspaceRootConfig: false,
       },
-      {
+      overrides: {
         test: {
           coverage: {
             exclude: ['**/dist/**'],
@@ -69,25 +72,25 @@ describe('tooling factories', () => {
           },
         },
       },
-    )
+    })
 
-    expect(config.test?.coverage?.exclude).toEqual(['**/dist/**'])
-    expect(config.test?.coverage?.skipFull).toBe(false)
+    expect(config.test.coverage?.exclude).toEqual(['**/dist/**'])
+    expect(config.test.coverage?.skipFull).toBe(false)
   })
 
   it('merges complete vitest overrides into final config', async () => {
-    const config = await defineVitestConfig(
-      {
+    const config = await defineVitestConfig({
+      options: {
         includeWorkspaceRootConfig: false,
       },
-      {
+      overrides: {
         resolve: {
           alias: {
             '@': '/tmp/src',
           },
         },
       },
-    )
+    })
 
     expect(config.resolve?.alias).toMatchObject({
       '@': '/tmp/src',
@@ -96,25 +99,33 @@ describe('tooling factories', () => {
 
   it('defines wrapper configs with inline overrides', async () => {
     const commitlint = await defineCommitlintConfig({
-      extends: ['@custom/commitlint-config'],
+      config: {
+        extends: ['@custom/commitlint-config'],
+      },
     })
     const eslint = await defineEslintConfig({
-      ignores: ['custom-ignore/**'],
-      configs: [
-        {
-          rules: {
-            'no-console': 'off',
+      config: {
+        ignores: ['custom-ignore/**'],
+        configs: [
+          {
+            rules: {
+              'no-console': 'off',
+            },
           },
-        },
-      ],
+        ],
+      },
     })
     const stylelint = await defineStylelintConfig({
-      rules: {
-        'selector-class-pattern': null,
+      config: {
+        rules: {
+          'selector-class-pattern': null,
+        },
       },
     })
     const lintStaged = await defineLintStagedConfig({
-      monorepoCommand: 'monorepo',
+      config: {
+        monorepoCommand: 'monorepo',
+      },
     })
     const eslintIgnores = eslint
       .flatMap((config) => {
@@ -137,11 +148,12 @@ describe('tooling factories', () => {
     expect(command(['src/index.ts'])).toContain('monorepo verify staged-typecheck')
   })
 
-  it('keeps define wrapper cwd-only shorthand working', async () => {
-    expect(await defineCommitlintConfig(process.cwd())).toBeTruthy()
-    expect(await defineEslintConfig(process.cwd())).toBeTruthy()
-    expect(await defineStylelintConfig(process.cwd())).toBeTruthy()
-    expect(await defineLintStagedConfig(process.cwd())).toBeTruthy()
+  it('reads define wrapper cwd from object input', async () => {
+    expect(await defineCommitlintConfig({ cwd: process.cwd() })).toBeTruthy()
+    expect(await defineEslintConfig({ cwd: process.cwd() })).toBeTruthy()
+    expect(await defineStylelintConfig({ cwd: process.cwd() })).toBeTruthy()
+    expect(await defineLintStagedConfig({ cwd: process.cwd() })).toBeTruthy()
+    expect(await defineTsconfigConfig({ cwd: process.cwd() })).toBeTruthy()
   })
 
   it('creates project-level vitest config with shared defaults', () => {
@@ -161,11 +173,27 @@ describe('tooling factories', () => {
     expect(config).toBeTruthy()
   })
 
+  it('creates tsconfig with merged compilerOptions', async () => {
+    const config = await defineTsconfigConfig({
+      config: {
+        compilerOptions: {
+          baseUrl: '.',
+        },
+        include: ['src'],
+      },
+    })
+
+    expect(config.compilerOptions?.['target']).toBe('ESNext')
+    expect(config.compilerOptions?.['baseUrl']).toBe('.')
+    expect(config.include).toEqual(['src'])
+  })
+
   it('defines wrapper configs internally from monorepo config', async () => {
     expect(await defineCommitlintConfig()).toBeTruthy()
     expect(await defineEslintConfig()).toBeTruthy()
     expect(await defineStylelintConfig()).toBeTruthy()
     expect(await defineLintStagedConfig()).toBeTruthy()
+    expect(await defineTsconfigConfig()).toBeTruthy()
     expect(await defineVitestConfig()).toBeTruthy()
   })
 })

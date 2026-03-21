@@ -18,15 +18,18 @@ import type {
   LintStagedToolingConfig,
   StylelintToolingConfig,
   ToolingConfig,
+  TsconfigToolingConfig,
   VitestProjectToolingConfig,
   VitestToolingConfig,
 } from '../types'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 import { icebreaker as createCommitlint } from '@icebreakers/commitlint-config'
 import { icebreaker as createEslint } from '@icebreakers/eslint-config'
 import { icebreaker as createStylelint } from '@icebreakers/stylelint-config'
+import { parse as parseJsonc } from 'comment-json'
 import { mergeConfig } from 'vitest/config'
 import YAML from 'yaml'
 import { loadMonorepoConfig } from '../core/config'
@@ -58,6 +61,26 @@ export interface MonorepoLintStagedConfig {
 }
 
 /**
+ * `tsconfig.json` 最终导出的配置对象。
+ */
+export interface MonorepoTsconfig {
+  extends?: string | string[]
+  compilerOptions?: Record<string, unknown>
+  include?: string[]
+  exclude?: string[]
+  files?: string[]
+  references?: Array<{
+    path: string
+  }>
+  compileOnSave?: boolean
+}
+
+export interface DefineConfigOptions<TConfig> {
+  cwd?: string
+  config?: TConfig
+}
+
+/**
  * `createMonorepoLintStagedConfig()` 与 `defineLintStagedConfig()` 的配置项。
  */
 export interface MonorepoLintStagedConfigOptions extends LintStagedToolingConfig {}
@@ -80,7 +103,7 @@ export interface MonorepoVitestProjectConfigOptions extends VitestProjectTooling
  * 该类型可用于约束自定义封装或二次 merge 的返回值。
  */
 export interface MonorepoVitestConfigResult extends Omit<ViteUserConfig, 'test'> {
-  test?: NonNullable<ViteUserConfig['test']> & {
+  test: NonNullable<ViteUserConfig['test']> & {
     projects?: NonNullable<ViteUserConfig['test']>['projects']
     coverage?: NonNullable<NonNullable<ViteUserConfig['test']>['coverage']> & {
       enabled?: boolean
@@ -112,6 +135,12 @@ export interface MonorepoVitestProjectConfigResult {
  */
 export type MonorepoVitestConfigOverrides = ViteUserConfig
 
+export interface DefineVitestConfigOptions {
+  cwd?: string
+  options?: MonorepoVitestConfigOptions
+  overrides?: MonorepoVitestConfigOverrides
+}
+
 const defaultProjectRoots = ['packages', 'apps']
 const defaultConfigCandidates = [
   'vitest.config.ts',
@@ -133,6 +162,7 @@ const windowsPathSeparatorPattern = /\\/g
 const relativeCurrentDirPattern = /^\.\//
 const globTokenPattern = /[*?[{]/
 const trailingSlashPattern = /\/+$/
+const monorepoTsconfigPath = fileURLToPath(new URL('../../tsconfig.base.json', import.meta.url))
 
 function escapeForShell(value: string) {
   return `'${value.replaceAll('\'', '\'\\\'\'')}'`
@@ -242,21 +272,38 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
   return config[key]
 }
 
-function resolveDefineInput<T extends object>(
-  optionsOrCwd?: T | string,
-  cwd = process.cwd(),
-) {
-  if (typeof optionsOrCwd === 'string') {
-    return {
-      cwd: optionsOrCwd,
-      options: undefined as T | undefined,
-    }
+function resolveConfigInput<TConfig>(input?: DefineConfigOptions<TConfig>) {
+  return {
+    cwd: input?.cwd ?? process.cwd(),
+    config: input?.config,
+  }
+}
+
+function mergeTsconfig(
+  base: MonorepoTsconfig,
+  override?: TsconfigToolingConfig | MonorepoTsconfig,
+): MonorepoTsconfig {
+  if (!override) {
+    return base
   }
 
   return {
-    cwd,
-    options: optionsOrCwd,
+    ...base,
+    ...override,
+    ...(base.compilerOptions || override.compilerOptions
+      ? {
+          compilerOptions: {
+            ...(base.compilerOptions ?? {}),
+            ...(override.compilerOptions ?? {}),
+          },
+        }
+      : {}),
   }
+}
+
+function loadBundledTsconfig(): MonorepoTsconfig {
+  const configContent = fs.readFileSync(monorepoTsconfigPath, 'utf8')
+  return parseJsonc(configContent) as MonorepoTsconfig
 }
 
 /**
@@ -288,7 +335,7 @@ export function createMonorepoCommitlintConfig(
 /**
  * 从 `monorepo.config.ts` 读取 `tooling.commitlint`，并生成 commitlint 配置。
  *
- * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
+ * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 commitlint 配置对象
  *
  * @example
@@ -298,24 +345,16 @@ export function createMonorepoCommitlintConfig(
  * export default await defineCommitlintConfig()
  * ```
  */
-export async function defineCommitlintConfig(options?: CommitlintToolingConfig, cwd?: string): Promise<MonorepoCommitlintConfig>
-export async function defineCommitlintConfig(cwd?: string): Promise<MonorepoCommitlintConfig>
 export async function defineCommitlintConfig(
-  optionsOrCwd?: CommitlintToolingConfig | string,
-  cwd = process.cwd(),
+  input: DefineConfigOptions<CommitlintToolingConfig> = {},
 ): Promise<MonorepoCommitlintConfig> {
-  const resolved = resolveDefineInput<CommitlintToolingConfig>(optionsOrCwd, cwd)
+  const resolved = resolveConfigInput(input)
   const toolingOptions = await loadToolingSection('commitlint', resolved.cwd)
   return createMonorepoCommitlintConfig({
     ...toolingOptions,
-    ...resolved.options,
+    ...resolved.config,
   })
 }
-
-/**
- * @deprecated 请改用 `defineCommitlintConfig()`
- */
-export const defineMonorepoCommitlintConfig = defineCommitlintConfig
 
 /**
  * 基于 `@icebreakers/eslint-config` 创建 ESLint 配置。
@@ -342,7 +381,7 @@ export function createMonorepoEslintConfig(
 /**
  * 从 `monorepo.config.ts` 读取 `tooling.eslint`，并生成 ESLint 配置。
  *
- * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
+ * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 ESLint flat config
  *
  * @example
@@ -352,24 +391,16 @@ export function createMonorepoEslintConfig(
  * export default await defineEslintConfig()
  * ```
  */
-export async function defineEslintConfig(options?: EslintToolingConfig, cwd?: string): Promise<MonorepoEslintConfig>
-export async function defineEslintConfig(cwd?: string): Promise<MonorepoEslintConfig>
 export async function defineEslintConfig(
-  optionsOrCwd?: EslintToolingConfig | string,
-  cwd = process.cwd(),
+  input: DefineConfigOptions<EslintToolingConfig> = {},
 ): Promise<MonorepoEslintConfig> {
-  const resolved = resolveDefineInput<EslintToolingConfig>(optionsOrCwd, cwd)
+  const resolved = resolveConfigInput(input)
   const toolingOptions = await loadToolingSection('eslint', resolved.cwd)
   return createMonorepoEslintConfig({
     ...toolingOptions,
-    ...resolved.options,
+    ...resolved.config,
   })
 }
-
-/**
- * @deprecated 请改用 `defineEslintConfig()`
- */
-export const defineMonorepoEslintConfig = defineEslintConfig
 
 /**
  * 基于 `@icebreakers/stylelint-config` 创建 Stylelint 配置。
@@ -386,27 +417,45 @@ export function createMonorepoStylelintConfig(
 /**
  * 从 `monorepo.config.ts` 读取 `tooling.stylelint`，并生成 Stylelint 配置。
  *
- * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
+ * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 Stylelint 配置对象
  */
-export async function defineStylelintConfig(options?: StylelintToolingConfig, cwd?: string): Promise<MonorepoStylelintConfig>
-export async function defineStylelintConfig(cwd?: string): Promise<MonorepoStylelintConfig>
 export async function defineStylelintConfig(
-  optionsOrCwd?: StylelintToolingConfig | string,
-  cwd = process.cwd(),
+  input: DefineConfigOptions<StylelintToolingConfig> = {},
 ): Promise<MonorepoStylelintConfig> {
-  const resolved = resolveDefineInput<StylelintToolingConfig>(optionsOrCwd, cwd)
+  const resolved = resolveConfigInput(input)
   const toolingOptions = await loadToolingSection('stylelint', resolved.cwd)
   return createMonorepoStylelintConfig({
     ...toolingOptions,
-    ...resolved.options,
+    ...resolved.config,
   })
 }
 
 /**
- * @deprecated 请改用 `defineStylelintConfig()`
+ * 创建 monorepo 内置的 TypeScript 基线配置。
+ *
+ * @param options 额外覆盖项，会与包内置 `tsconfig.base.json` 合并
+ * @returns 可直接写入或二次扩展的 `tsconfig.json` 配置对象
  */
-export const defineMonorepoStylelintConfig = defineStylelintConfig
+export function createMonorepoTsconfig(
+  options: TsconfigToolingConfig = {},
+): MonorepoTsconfig {
+  return mergeTsconfig(loadBundledTsconfig(), options)
+}
+
+/**
+ * 从 `monorepo.config.ts` 读取 `tooling.tsconfig`，并生成最终的 TypeScript 配置对象。
+ *
+ * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @returns 可直接写入或导出的 `tsconfig.json` 配置对象
+ */
+export async function defineTsconfigConfig(
+  input: DefineConfigOptions<TsconfigToolingConfig> = {},
+): Promise<MonorepoTsconfig> {
+  const resolved = resolveConfigInput(input)
+  const toolingOptions = await loadToolingSection('tsconfig', resolved.cwd)
+  return createMonorepoTsconfig(mergeTsconfig(toolingOptions ?? {}, resolved.config))
+}
 
 /**
  * 创建适用于当前仓库约定的 `lint-staged` 配置。
@@ -462,27 +511,19 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
 /**
  * 从 `monorepo.config.ts` 读取 `tooling.lintStaged`，并生成 `lint-staged` 配置。
  *
- * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
+ * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
  * @returns 可直接导出的 `lint-staged` 配置对象
  */
-export async function defineLintStagedConfig(options?: MonorepoLintStagedConfigOptions, cwd?: string): Promise<MonorepoLintStagedConfig>
-export async function defineLintStagedConfig(cwd?: string): Promise<MonorepoLintStagedConfig>
 export async function defineLintStagedConfig(
-  optionsOrCwd?: MonorepoLintStagedConfigOptions | string,
-  cwd = process.cwd(),
+  input: DefineConfigOptions<MonorepoLintStagedConfigOptions> = {},
 ): Promise<MonorepoLintStagedConfig> {
-  const resolved = resolveDefineInput<MonorepoLintStagedConfigOptions>(optionsOrCwd, cwd)
+  const resolved = resolveConfigInput(input)
   const toolingOptions = await loadToolingSection('lintStaged', resolved.cwd)
   return createMonorepoLintStagedConfig({
     ...toolingOptions,
-    ...resolved.options,
+    ...resolved.config,
   })
 }
-
-/**
- * @deprecated 请改用 `defineLintStagedConfig()`
- */
-export const defineMonorepoLintStagedConfig = defineLintStagedConfig
 
 /**
  * 创建 monorepo 根级 Vitest 配置。
@@ -547,7 +588,26 @@ function mergeMonorepoVitestConfig(
   base: ViteUserConfig,
   overrides: MonorepoVitestConfigOverrides = {},
 ): MonorepoVitestConfigResult {
-  return mergeConfig(base, overrides) as MonorepoVitestConfigResult
+  const merged = mergeConfig(base, overrides) as MonorepoVitestConfigResult
+  if (!merged.test) {
+    return merged
+  }
+
+  const coverageExclude = merged.test.coverage?.exclude
+  const projects = merged.test.projects
+
+  if (coverageExclude) {
+    merged.test.coverage = {
+      ...merged.test.coverage,
+      exclude: [...new Set(coverageExclude)],
+    }
+  }
+
+  if (projects) {
+    merged.test.projects = [...new Set(projects)]
+  }
+
+  return merged
 }
 
 /**
@@ -561,9 +621,7 @@ function mergeMonorepoVitestConfig(
  *
  * 推荐把“参与默认值推导”的字段放在 `options`，把“最终局部覆盖”放在 `overrides`。
  *
- * @param options 先与 `tooling.vitest` 合并的配置项
- * @param overrides 最终返回值上的局部覆盖项，适合覆盖 `test.coverage`
- * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
+ * @param input `options` 会先与 `tooling.vitest` 合并；`overrides` 用于最终局部覆盖；`cwd` 用于配置文件解析起点
  * @returns 可直接作为 `defineConfig()` 返回值的 Vitest 配置对象
  *
  * @example
@@ -571,11 +629,11 @@ function mergeMonorepoVitestConfig(
  * import { defineVitestConfig } from '@icebreakers/monorepo/tooling'
  * import { defineConfig } from 'vitest/config'
  *
- * export default defineConfig(async () => await defineVitestConfig(
- *   {
+ * export default defineConfig(async () => await defineVitestConfig({
+ *   options: {
  *     includeWorkspaceRootConfig: false,
  *   },
- *   {
+ *   overrides: {
  *     test: {
  *       coverage: {
  *         exclude: ['dist output glob'],
@@ -583,14 +641,15 @@ function mergeMonorepoVitestConfig(
  *       },
  *     },
  *   },
- * ))
+ * }))
  * ```
  */
 export async function defineVitestConfig(
-  options: MonorepoVitestConfigOptions = {},
-  overrides: MonorepoVitestConfigOverrides = {},
-  cwd = process.cwd(),
+  input: DefineVitestConfigOptions = {},
 ): Promise<MonorepoVitestConfigResult> {
+  const cwd = input.cwd ?? process.cwd()
+  const options = input.options ?? {}
+  const overrides = input.overrides ?? {}
   const toolingOptions = await loadToolingSection('vitest', cwd)
   const toolingOverrides = toolingOptions?.overrides ?? {}
   const { overrides: _ignoredToolingOverrides, ...toolingBaseOptions } = toolingOptions ?? {}
@@ -603,11 +662,6 @@ export async function defineVitestConfig(
     mergeMonorepoVitestConfig(toolingOverrides, overrides),
   )
 }
-
-/**
- * @deprecated 请改用 `defineVitestConfig()`
- */
-export const defineMonorepoVitestConfig = defineVitestConfig
 
 /**
  * 创建项目级 Vitest 配置。

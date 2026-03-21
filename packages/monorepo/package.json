@@ -32,6 +32,8 @@
       "types": "./dist/tooling-entry.d.mts",
       "default": "./dist/tooling-entry.mjs"
     },
+    "./tsconfig": "./tsconfig.base.json",
+    "./tsconfig.json": "./tsconfig.base.json",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
@@ -44,7 +46,8 @@
   "files": [
     "bin",
     "dist",
-    "resources"
+    "resources",
+    "tsconfig.base.json"
   ],
   "engines": {
     "node": ">=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0"
