@@ -18,13 +18,15 @@ describe('CLI entrypoint', () => {
     expect(parseMock).toHaveBeenCalledTimes(1)
   })
 
-  it('publishes repoctl, monorepo, and mo bin commands', () => {
+  it('publishes repoctl, repo, rc, monorepo, and mo bin commands', () => {
     const packageJsonPath = path.resolve(import.meta.dirname, '../package.json')
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {
       bin: Record<string, string>
     }
 
     expect(packageJson.bin).toEqual({
+      rc: 'bin/rc.js',
+      repo: 'bin/repo.js',
       repoctl: 'bin/repoctl.js',
       monorepo: 'bin/monorepo.js',
       mo: 'bin/mo.js',
