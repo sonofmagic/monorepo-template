@@ -28,12 +28,12 @@ function createLintStagedConfig(monorepoCommand: string) {
 export default {
   commands: {
     create: {
-      defaultTemplate: 'unbuild',
+      defaultTemplate: 'tsdown',
       renameJson: false,
     },
     clean: {
       autoConfirm: false,
-      ignorePackages: ['@icebreakers/website'],
+      includePrivate: true,
     },
     upgrade: {
       skipOverwrite: false,
@@ -53,11 +53,9 @@ export default {
     lintStaged: {
       config: createLintStagedConfig('pnpm exec repoctl'),
     },
-    tsconfig: {
-      compilerOptions: {},
-    },
     vitest: {
       includeWorkspaceRootConfig: false,
+      coverageExclude: ['**/dist/**'],
       coverageSkipFull: true,
     },
     vitestProject: {

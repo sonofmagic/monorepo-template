@@ -374,13 +374,12 @@ export function createMonorepoEslintConfig(
 ): MonorepoEslintConfig {
   const {
     configs = [],
-    ignores = ['**/fixtures/**'],
     ...rest
   } = options
-  return createEslint({
-    ignores,
-    ...rest,
-  } as IcebreakerEslintOptions, ...(configs as IcebreakerEslintUserConfigItem[]))
+  return createEslint(
+    rest as IcebreakerEslintOptions,
+    ...(configs as IcebreakerEslintUserConfigItem[]),
+  )
 }
 
 /**
