@@ -77,6 +77,10 @@ export interface MonorepoTsconfig {
 
 export interface DefineConfigOptions<TConfig> {
   cwd?: string
+  options?: TConfig
+  /**
+   * @deprecated 使用 `options` 代替，避免与 `tooling.lintStaged.config` 语义冲突。
+   */
   config?: TConfig
 }
 
@@ -280,7 +284,7 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
 function resolveConfigInput<TConfig>(input?: DefineConfigOptions<TConfig>) {
   return {
     cwd: input?.cwd ?? process.cwd(),
-    config: input?.config,
+    options: input?.options ?? input?.config,
   }
 }
 
@@ -357,7 +361,7 @@ export async function defineCommitlintConfig(
   const toolingOptions = await loadToolingSection('commitlint', resolved.cwd)
   return createMonorepoCommitlintConfig({
     ...toolingOptions,
-    ...resolved.config,
+    ...resolved.options,
   })
 }
 
@@ -402,7 +406,7 @@ export async function defineEslintConfig(
   const toolingOptions = await loadToolingSection('eslint', resolved.cwd)
   return createMonorepoEslintConfig({
     ...toolingOptions,
-    ...resolved.config,
+    ...resolved.options,
   })
 }
 
@@ -431,7 +435,7 @@ export async function defineStylelintConfig(
   const toolingOptions = await loadToolingSection('stylelint', resolved.cwd)
   return createMonorepoStylelintConfig({
     ...toolingOptions,
-    ...resolved.config,
+    ...resolved.options,
   })
 }
 
@@ -458,7 +462,7 @@ export async function defineTsconfigConfig(
 ): Promise<MonorepoTsconfig> {
   const resolved = resolveConfigInput(input)
   const toolingOptions = await loadToolingSection('tsconfig', resolved.cwd)
-  return createMonorepoTsconfig(mergeTsconfig(toolingOptions ?? {}, resolved.config))
+  return createMonorepoTsconfig(mergeTsconfig(toolingOptions ?? {}, resolved.options))
 }
 
 /**
@@ -525,7 +529,7 @@ export async function defineLintStagedConfig(
   const toolingOptions = await loadToolingSection('lintStaged', resolved.cwd)
   return createMonorepoLintStagedConfig({
     ...toolingOptions,
-    ...resolved.config,
+    ...resolved.options,
   })
 }
 

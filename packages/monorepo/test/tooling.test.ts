@@ -100,12 +100,12 @@ describe('tooling factories', () => {
 
   it('defines wrapper configs with inline overrides', async () => {
     const commitlint = await defineCommitlintConfig({
-      config: {
+      options: {
         extends: ['@custom/commitlint-config'],
       },
     })
     const eslint = await defineEslintConfig({
-      config: {
+      options: {
         ignores: ['custom-ignore/**'],
         configs: [
           {
@@ -117,14 +117,14 @@ describe('tooling factories', () => {
       },
     })
     const stylelint = await defineStylelintConfig({
-      config: {
+      options: {
         rules: {
           'selector-class-pattern': null,
         },
       },
     })
     const lintStaged = await defineLintStagedConfig({
-      config: {
+      options: {
         monorepoCommand: 'monorepo',
       },
     })
@@ -191,7 +191,7 @@ describe('tooling factories', () => {
 
   it('creates tsconfig with merged compilerOptions', async () => {
     const config = await defineTsconfigConfig({
-      config: {
+      options: {
         compilerOptions: {
           baseUrl: '.',
         },
@@ -202,6 +202,21 @@ describe('tooling factories', () => {
     expect(config.compilerOptions?.['target']).toBe('ESNext')
     expect(config.compilerOptions?.['baseUrl']).toBe('.')
     expect(config.include).toEqual(['src'])
+  })
+
+  it('keeps legacy config input working for define wrappers', async () => {
+    const lintStaged = await defineLintStagedConfig({
+      config: {
+        monorepoCommand: 'legacy-monorepo',
+      },
+    })
+
+    const command = lintStaged['*.{ts,tsx,mts,cts,vue}']
+    expect(typeof command).toBe('function')
+    if (typeof command !== 'function') {
+      throw new TypeError('expected lint-staged rule to be callable')
+    }
+    expect(command(['src/index.ts'])).toContain('legacy-monorepo verify staged-typecheck')
   })
 
   it('defines wrapper configs internally from monorepo config', async () => {

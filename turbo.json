@@ -14,7 +14,8 @@
       ],
       "outputs": [
         "dist/**",
-        "bin/**"
+        "bin/**",
+        ".vitepress/dist/**"
       ]
     },
     "lint": {
@@ -22,12 +23,12 @@
         "^lint"
       ],
       "inputs": [
-        "src/**",
-        "lib/**",
-        "test/**",
-        "*.config.{js,ts}",
+        "**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts,vue}",
+        "**/*.{json,html,md,mdx,yml,yaml}",
+        "*.config.{js,ts,mjs,mts}",
         ".eslintrc*",
-        ".stylelintrc*"
+        ".stylelintrc*",
+        "package.json"
       ],
       "outputs": []
     },
