@@ -18,8 +18,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2(encoding@0.1.13)
       '@icebreakers/commitlint-config':
-        specifier: ^1.2.13
-        version: 1.2.13(conventional-changelog-conventionalcommits@9.3.0)
+        specifier: ^2.0.0
+        version: 2.0.0(conventional-changelog-conventionalcommits@9.3.0)
       '@icebreakers/eslint-config':
         specifier: ^2.0.3
         version: 2.0.3(@typescript-eslint/rule-tester@8.56.1(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/typescript-estree@8.57.1(typescript@6.0.2))(@typescript-eslint/utils@8.57.1(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@vue/compiler-sfc@3.5.31)(eslint-plugin-pnpm@1.6.0(eslint@10.1.0(jiti@2.6.1)))(eslint@10.1.0(jiti@2.6.1))(globals@17.4.0)(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)(typescript@6.0.2)(vitest@4.1.1(@types/node@25.5.0)(jsdom@29.0.1)(vite@8.0.2(@types/node@25.5.0)(esbuild@0.27.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
@@ -120,8 +120,8 @@ importers:
   packages/monorepo:
     dependencies:
       '@icebreakers/commitlint-config':
-        specifier: ^1.2.13
-        version: 1.2.13(conventional-changelog-conventionalcommits@9.3.0)
+        specifier: ^2.0.0
+        version: 2.0.0(conventional-changelog-conventionalcommits@9.3.0)
       '@icebreakers/eslint-config':
         specifier: ^2.0.3
         version: 2.0.3(@typescript-eslint/rule-tester@8.56.1(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/typescript-estree@8.57.1(typescript@6.0.2))(@typescript-eslint/utils@8.57.1(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@vue/compiler-sfc@3.5.31)(eslint-plugin-pnpm@1.6.0(eslint@10.1.0(jiti@2.6.1)))(eslint@10.1.0(jiti@2.6.1))(globals@17.4.0)(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)(typescript@6.0.2)(vitest@4.1.1(@types/node@25.5.0)(jsdom@29.0.1)(vite@8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
@@ -2005,8 +2005,9 @@ packages:
   '@icebreakers/changelog-github@0.2.2':
     resolution: {integrity: sha512-NHC8pula+7S57kkvZKbxXuddg9n01Aqpw2GUxHp0S2GjdcoGD3Vtrvn0kLa6iZfIpSSFL+5oAJ5oeeB9x5SuUA==}
 
-  '@icebreakers/commitlint-config@1.2.13':
-    resolution: {integrity: sha512-KkKc6+GMYUFWtaZsP2BcrL5a7dI7wH3yhDYNBWPeIwS8k17elbbSV0uod6/iZ7X01kaHru/w0uLucHgEpr8xKQ==}
+  '@icebreakers/commitlint-config@2.0.0':
+    resolution: {integrity: sha512-zK8RnbkTFxxAioKzOp6+2ng0y2UbU69eEOAaQJsbWPnW8y83l2xpCpVGoeFNBLibMmrHPr2XztlEeuQYdZj+tA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       conventional-changelog-conventionalcommits: '>=9.0.0'
 
@@ -11624,7 +11625,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@icebreakers/commitlint-config@1.2.13(conventional-changelog-conventionalcommits@9.3.0)':
+  '@icebreakers/commitlint-config@2.0.0(conventional-changelog-conventionalcommits@9.3.0)':
     dependencies:
       '@commitlint/config-conventional': 20.5.0
       '@commitlint/types': 20.5.0
