@@ -1,6 +1,10 @@
 import path from 'node:path'
-import { defineVitestProjectConfig } from 'repoctl/tooling'
 import { defineProject } from 'vitest/config'
+import { ensureToolingBuilt } from '../../tooling/ensure-tooling-built.mjs'
+
+await ensureToolingBuilt()
+
+const { defineVitestProjectConfig } = await import('repoctl/tooling')
 
 export default defineProject(await defineVitestProjectConfig({
   config: {

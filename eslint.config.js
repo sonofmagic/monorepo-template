@@ -1,4 +1,8 @@
-import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
+import { ensureToolingBuilt } from './tooling/ensure-tooling-built.mjs'
+
+await ensureToolingBuilt()
+
+const { defineEslintConfig } = await import('@icebreakers/monorepo/tooling')
 
 const config = await defineEslintConfig()
 

@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "tooling:build": "turbo run build --filter=@icebreakers/monorepo --filter=repoctl",
     "dev": "turbo run dev --parallel",
     "test": "vitest run",
     "test:dev": "vitest",
