@@ -141,6 +141,45 @@ export default defineMonorepoConfig({
 
 目前支持 `ai`、`create`、`clean`、`upgrade`、`init` 与 `mirror` 六类配置覆写；新的分组命令会映射到这些既有配置键。
 
+## Tooling Wrapper API
+
+如果你希望在生成后的配置文件基础上继续手写覆盖，可以直接使用 `@icebreakers/monorepo/tooling` 或 `repoctl/tooling` 暴露的 wrapper。
+
+- `defineCommitlintConfig` / `defineEslintConfig` / `defineStylelintConfig` / `defineLintStagedConfig` / `defineTsconfigConfig` 统一使用 `options`
+- `defineVitestConfig` 使用 `options` 加 `overrides`
+- `defineVitestProjectConfig` 也已统一使用 `options`
+- 旧的 `config` 入参仍兼容，但只建议用于存量代码迁移
+
+```ts
+import { defineEslintConfig, defineVitestConfig, defineVitestProjectConfig } from '@icebreakers/monorepo/tooling'
+import { defineConfig, defineProject } from 'vitest/config'
+
+export const eslintConfig = await defineEslintConfig({
+  options: {
+    ignores: ['fixtures/**'],
+  },
+})
+
+export const vitestConfig = defineConfig(async () => await defineVitestConfig({
+  options: {
+    includeWorkspaceRootConfig: false,
+  },
+  overrides: {
+    test: {
+      coverage: {
+        exclude: ['dist/**'],
+      },
+    },
+  },
+}))
+
+export const vitestProject = defineProject(await defineVitestProjectConfig({
+  options: {
+    environment: 'jsdom',
+  },
+}))
+```
+
 ## 文档地址
 
 https://monorepo.icebreaker.top/

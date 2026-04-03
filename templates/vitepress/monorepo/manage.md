@@ -95,6 +95,45 @@ export default defineMonorepoConfig({
 
 更多细节可参考 CLI 命令文档或源码中的 `commands/*`。
 
+### Tooling Wrapper 参数约定
+
+如果你不只想生成默认配置文件，而是要在项目里手写调用 `repoctl/tooling` 或 `@icebreakers/monorepo/tooling`，建议遵守下面这套参数约定：
+
+- `defineCommitlintConfig` / `defineEslintConfig` / `defineStylelintConfig` / `defineLintStagedConfig` / `defineTsconfigConfig`：使用 `options`
+- `defineVitestConfig`：使用 `options` 与 `overrides`
+- `defineVitestProjectConfig`：使用 `options`
+- 历史上的 `config` 字段仍兼容，但只建议作为迁移过渡
+
+```ts
+import { defineEslintConfig, defineVitestConfig, defineVitestProjectConfig } from 'repoctl/tooling'
+import { defineConfig, defineProject } from 'vitest/config'
+
+export default await defineEslintConfig({
+  options: {
+    ignores: ['fixtures/**'],
+  },
+})
+
+export const vitestRoot = defineConfig(async () => await defineVitestConfig({
+  options: {
+    includeWorkspaceRootConfig: false,
+  },
+  overrides: {
+    test: {
+      coverage: {
+        exclude: ['dist/**'],
+      },
+    },
+  },
+}))
+
+export const vitestProject = defineProject(await defineVitestProjectConfig({
+  options: {
+    environment: 'jsdom',
+  },
+}))
+```
+
 ### 4. 依赖升级 / 配置同步
 
 ```bash
