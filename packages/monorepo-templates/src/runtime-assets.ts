@@ -35,7 +35,7 @@ async function isPrepared() {
   const checks = [
     path.join(assetsDir, 'AGENTS.md'),
     path.join(assetsDir, 'LICENSE'),
-    path.join(templatesDir, 'unbuild'),
+    path.join(templatesDir, 'tsdown'),
   ]
   const results = await Promise.all(checks.map(pathExists))
   return results.every(Boolean)

@@ -18,8 +18,6 @@ By default this:
 
 Available template keys:
 
-- `unbuild`
-- `tsup`
 - `tsdown`
 - `vue-lib`
 - `vue-hono`
@@ -29,5 +27,5 @@ Available template keys:
 
 ## Flags
 
-- `--templates <list>`: comma-separated template keys or indexes to keep (e.g. `tsup,vue-hono` or `1,5`)
+- `--templates <list>`: comma-separated template keys or indexes to keep (e.g. `tsdown,vue-hono` or `1,4`)
 - `--force`: overwrite a non-empty target directory

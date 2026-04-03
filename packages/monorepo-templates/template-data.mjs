@@ -1,6 +1,4 @@
 export const templateChoices = [
-  { key: 'unbuild', label: 'unbuild 打包', source: 'unbuild', target: 'packages/unbuild' },
-  { key: 'tsup', label: 'tsup 打包', source: 'tsup', target: 'packages/tsup' },
   { key: 'tsdown', label: 'tsdown 打包', source: 'tsdown', target: 'packages/tsdown' },
   { key: 'vue-lib', label: 'vue 组件', source: 'vue-lib', target: 'packages/vue-lib' },
   { key: 'vue-hono', label: 'vue hono 全栈', source: 'client', target: 'apps/client' },

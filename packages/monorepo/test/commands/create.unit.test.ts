@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 interface TemplateMapSubset {
   custom: TemplateDefinition
-  unbuild: TemplateDefinition
   tsdown: TemplateDefinition
 }
 
@@ -109,7 +108,7 @@ describe('createNewProject unit scenarios', () => {
   it('getCreateChoices returns defaults when override omitted', async () => {
     const { getCreateChoices } = await import('@/commands/create')
     const defaults = getCreateChoices()
-    expect(defaults).toHaveLength(8)
+    expect(defaults).toHaveLength(6)
     expect(defaults.some(choice => choice.value === 'tsdown')).toBe(true)
     const customChoices = [{ name: 'custom', value: 'custom' }]
     expect(getCreateChoices(customChoices)).toBe(customChoices)
@@ -119,7 +118,6 @@ describe('createNewProject unit scenarios', () => {
     const { getTemplateMap } = await import('@/commands/create')
     const merged = getTemplateMap({ custom: 'custom-template' }) as unknown as TemplateMapSubset
     expect(merged.custom).toEqual({ source: 'custom-template', target: 'custom-template' })
-    expect(merged.unbuild).toEqual({ source: 'unbuild', target: 'packages/unbuild' })
     expect(merged.tsdown).toEqual({ source: 'tsdown', target: 'packages/tsdown' })
   })
 
@@ -134,14 +132,14 @@ describe('createNewProject unit scenarios', () => {
 
   it('falls back to default template when requested type is unknown', async () => {
     resolveCommandConfigMock.mockResolvedValue({
-      defaultTemplate: 'tsup',
+      defaultTemplate: 'tsdown',
       renameJson: false,
     })
 
     const { createNewProject } = await import('@/commands/create')
     await createNewProject({ cwd: '/repo', name: 'demo-app', type: 'unknown-template' })
 
-    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('[tsup]'))
+    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('[tsdown]'))
     const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.json'))
     expect(outputCall).toBeDefined()
     const pkgJson = outputCall?.[1] as { name?: string } | undefined
@@ -153,7 +151,7 @@ describe('createNewProject unit scenarios', () => {
 
   it('writes package.mock.json when renameJson option is enabled', async () => {
     const { createNewProject } = await import('@/commands/create')
-    await createNewProject({ cwd: '/repo', name: '@scope/demo', renameJson: true, type: 'tsup' })
+    await createNewProject({ cwd: '/repo', name: '@scope/demo', renameJson: true, type: 'tsdown' })
 
     const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.mock.json'))
     expect(outputCall).toBeDefined()

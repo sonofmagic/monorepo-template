@@ -48,30 +48,6 @@ describe.skipIf(isCI)('createNewProject', () => {
     expect(files).toMatchSnapshot()
   })
 
-  it('createNewProject demo unbuild case', async () => {
-    await resetFixtureDir('demo/case-unbuild')
-    await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
-      name: 'demo/case-unbuild',
-      renameJson: true,
-      type: 'unbuild',
-    })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-unbuild'))
-    expect(files).toMatchSnapshot()
-  })
-
-  it('createNewProject demo tsup case', async () => {
-    await resetFixtureDir('demo/case-tsup')
-    await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
-      name: 'demo/case-tsup',
-      renameJson: true,
-      type: 'tsup',
-    })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-tsup'))
-    expect(files).toMatchSnapshot()
-  })
-
   it('createNewProject demo vue-ui case', async () => {
     await resetFixtureDir('demo/case-vue-ui')
     await createNewProject({
@@ -129,7 +105,7 @@ describe.skipIf(isCI)('createNewProject', () => {
         cwd,
         name: scopedName,
         renameJson: true,
-        type: 'unbuild',
+        type: 'tsdown',
       })
       const pkgJsonPath = path.join(targetDir, 'package.mock.json')
       const pkgJson = await fs.readJson(pkgJsonPath)

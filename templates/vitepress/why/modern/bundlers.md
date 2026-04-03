@@ -7,64 +7,26 @@
 - `webpack` 我不用，因为打出来的产物代码丑，配置复杂
 - `rollup` 我最早用的就是这个，现在不用因为要装的包太多了，而且需要你对打包器有一定的理解，在打包复杂需要高度自定义的场景下使用
 - `esbuild` 用的少，直接用不是很方便，但是可以基于它做高度自定义(写插件)
-- `tsup` 基于 `esbuild` 的傻瓜无脑式的打包器，非常好用
-- `unbuild` 基于 `rollup` 的傻瓜无脑式的打包器，众多 `vite plugin` 源代码的御用打包器，还有基于 `jiti` 的 `stub` 模式，非常好用
 - `vite` 在 Vite 8 中默认基于 `rolldown` + `oxc`，假如你需要构建前端组件，这个就是首选，毕竟你也懒得去自己处理各种各样的样式文件吧，比如打包新版本 `vue` 组件，只能使用这个的库模式进行打包。
 - `rolldown`/`tsdown` 适合更偏向库构建和工具链场景，但生态兼容面和迁移经验仍然不如 `vite`/`rollup` 成熟，是否采用要看你的实际约束
 
-所以本篇文章，主要介绍 `tsup` 和 `unbuild` 这两个通用打包器的使用和配置方式，以及 `vite` 库模式进行打包 `vue` 组件，其他的请自行查看对应的文档。
+当前这个仓库已经把通用类库模板收敛到 `tsdown`，组件库则继续使用 `vite` 库模式。
 
-## tsup
+## tsdown
 
-本项目的模板之一 [tsup](https://github.com/sonofmagic/monorepo-template/tree/main/templates/tsup)
+本项目当前的通用类库模板是 [tsdown](https://github.com/sonofmagic/monorepo-template/tree/main/templates/tsdown)
 
 :::code-group
 
-```ts [tsup.config.ts]
-import { defineConfig } from 'tsup'
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['src/index.ts'], // , 'src/cli.ts'],
-  shims: true,
+  entry: ['./src/index.ts'],
   format: ['cjs', 'esm'],
-  clean: true,
   dts: true,
-  cjsInterop: true,
-  splitting: true,
-  outExtension({ format }) {
-    return {
-      js: `.${format === 'esm' ? 'mjs' : 'cjs'}`,
-    }
-  },
-})
-```
-
-:::
-
-## unbuild
-
-本项目的模板之一 [unbuild](https://github.com/sonofmagic/monorepo-template/tree/main/templates/unbuild)
-
-:::code-group
-
-```ts [build.config.ts]
-import path from 'node:path'
-import { defineBuildConfig } from 'unbuild'
-
-export default defineBuildConfig({
-  entries: ['./src/index'],
-  rollup: {
-    inlineDependencies: true,
-    emitCJS: true,
-    cjsBridge: true,
-    dts: {
-      respectExternal: false,
-    },
-  },
-  alias: {
-    '@': path.resolve(__dirname, './src'),
-  },
-  declaration: true,
+  clean: true,
+  target: 'node18',
 })
 ```
 

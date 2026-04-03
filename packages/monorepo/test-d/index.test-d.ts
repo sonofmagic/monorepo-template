@@ -4,12 +4,12 @@ import { createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonor
 import { expectAssignable, expectType } from 'tsd'
 
 expectType<string>(getFileHash('demo'))
-expectType<'tsup'>(templateMap.tsup.source)
+expectType<'tsdown'>(templateMap.tsdown.source)
 expectAssignable<CreateChoiceOption[]>(getCreateChoices())
 
 const templates = getTemplateMap()
 
-expectType<string | undefined>(templates['unbuild']?.source)
+expectType<string | undefined>(templates['tsdown']?.source)
 expectAssignable<CliOpts>({ cwd: '.', core: true })
 expectAssignable<PackageJson>({ name: 'demo' })
 expectAssignable<object>(createMonorepoCommitlintConfig())

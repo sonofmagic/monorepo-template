@@ -31,7 +31,7 @@
 
 ### 语言与打包
 
-我选择使用纯 `TypeScript` 来编写所有类库项目，并使用 `tsup` / `unbuild` 进行打包，默认输出格式为 `cjs` 和 `esm`，并利用 `package.json` 中的 `exports` 字段进行分发。
+我选择使用纯 `TypeScript` 来编写所有类库项目，并统一使用 `tsdown` 进行打包，默认输出格式为 `cjs` 和 `esm`，并利用 `package.json` 中的 `exports` 字段进行分发。
 
 ### 直接调试
 

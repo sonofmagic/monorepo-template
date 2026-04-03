@@ -19,8 +19,6 @@ const defaultWorkspaceOrder = [
   'templates/client',
   'templates/server',
   'templates/tsdown',
-  'templates/tsup',
-  'templates/unbuild',
   'templates/vitepress',
   'templates/vue-lib',
 ].sort((left, right) => right.length - left.length)

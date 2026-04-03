@@ -15,9 +15,7 @@ import { logger } from '../core/logger'
  * 内置模板映射表，source 指向 templates 根目录下的来源目录，target 为生成路径。
  */
 export const templateMap = {
-  'tsup': { source: 'tsup', target: 'packages/tsup' },
   'tsdown': { source: 'tsdown', target: 'packages/tsdown' },
-  'unbuild': { source: 'unbuild', target: 'packages/unbuild' },
   'vue-lib': { source: 'vue-lib', target: 'packages/vue-lib' },
   'hono-server': { source: 'server', target: 'apps/server' },
   'vue-hono': { source: 'client', target: 'apps/client' },
@@ -69,8 +67,6 @@ export const defaultTemplate: CreateNewProjectType = 'tsdown'
  * 交互式选择模板时的默认选项列表。
  */
 const baseChoices = [
-  { name: 'unbuild 打包', value: 'unbuild' },
-  { name: 'tsup 打包', value: 'tsup' },
   { name: 'tsdown 打包', value: 'tsdown' },
   { name: 'vue 组件', value: 'vue-lib' },
   { name: 'vue hono 全栈', value: 'vue-hono' },

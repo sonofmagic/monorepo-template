@@ -29,8 +29,7 @@ layout: doc
 | `templates/client`    | Vue 3 + Vite 客户端示例          |
 | `templates/server`    | 基于 Hono 的服务端模板           |
 | `templates/vitepress` | VitePress 文档站（即本网站源码） |
-| `templates/tsup`      | 使用 `tsup` 打包的库模板         |
-| `templates/unbuild`   | 使用 `unbuild` 打包的库模板      |
+| `templates/tsdown`    | 使用 `tsdown` 打包的库模板       |
 | `templates/vue-lib`   | Vue 组件库模板                   |
 | `packages/monorepo`   | CLI 及配置同步工具，支持独立升级 |
 

@@ -31,7 +31,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 
 - Zero-install cleanup on a fresh clone: `pnpm dlx repoctl@latest clean --yes` (add `--include-private` to keep private packages in scope).
   Short alias: `pnpm dlx repo@latest clean --yes`. `rc` is intentionally not the primary recommendation because short global commands are easier to collide with other CLIs.
-- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsup,vue-hono` or `--templates 2,5` to preselect.
+- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsdown,vue-hono` or `--templates 1,3` to preselect.
 
 ## Repository Layout
 
@@ -41,9 +41,7 @@ templates/
   client/       # Web client (e.g., Vue/React)
   server/       # Server or API layer
   vitepress/    # Static site or documentation portal
-  tsup/         # Library template powered by tsup
   tsdown/       # Library template powered by tsdown
-  unbuild/      # Library template powered by unbuild
   vue-lib/      # Vue component library template
 packages/
   monorepo/           # @icebreakers/monorepo compatibility package
@@ -56,9 +54,7 @@ packages/
 - `templates/client`: Sample rich web client application.
 - `templates/server`: Entry point for server or API services.
 - `templates/vitepress`: Static marketing or documentation site starter.
-- `templates/tsup`: Library template powered by tsup.
 - `templates/tsdown`: Library template powered by tsdown.
-- `templates/unbuild`: Library template powered by unbuild.
 - `templates/vue-lib`: Vue component library template.
 - `packages/*`: Reusable packages and scaffolding shared across apps.
 - Root configuration files (`turbo.json`, `tsconfig.json`, `eslint.config.js`, etc.) enforce consistent settings across the monorepo.
