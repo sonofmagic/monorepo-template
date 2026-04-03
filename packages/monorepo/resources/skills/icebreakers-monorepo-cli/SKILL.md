@@ -1,6 +1,6 @@
 ---
 name: icebreakers-monorepo-cli
-description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like upgrade/up, init, clean, mirror, skills sync, creating new template packages (tsdown/vitepress/etc), generating agentic prompt templates (repoctl ai create/new), and editing repoctl.config.ts or monorepo.config.ts defaults.
+description: Use when working with repoctl or @icebreakers/monorepo in this pnpm/turbo monorepo. Covers CLI tasks like workspace upgrade/ws up, init, clean, mirror, skills sync, creating new template packages (tsdown/vitepress/etc), generating agentic prompt templates (repoctl ai prompt create / ai p new), and editing repoctl.config.ts or monorepo.config.ts defaults.
 ---
 
 # Icebreakers Monorepo Cli
@@ -20,17 +20,17 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 ### Create a template package
 
-- Use `repoctl new [path]` (alias `create`) and pick a template from `references/templates.md`.
-- Example: for "create a tsdown app in apps/my-app", run `npx repoctl new apps/my-app` and select `tsdown`.
+- Use `repoctl package create [path]` (alias `pkg new`) and pick a template from `references/templates.md`.
+- Example: for "create a tsdown app in apps/my-app", run `npx repoctl pkg new apps/my-app` and select `tsdown`.
 - For non-interactive defaults, set `commands.create.defaultTemplate` in `repoctl.config.ts` or `monorepo.config.ts`.
 
 ### Upgrade or sync monorepo assets
 
-- Use `repoctl up` (`upgrade`) and options from `references/commands.md`.
+- Use `repoctl workspace upgrade` (`ws up`) and options from `references/commands.md`.
 
 ### Generate agentic prompt templates
 
-- Use `repoctl ai create` (`ai new`) and options from `references/commands.md`.
+- Use `repoctl ai prompt create` (`ai p new`) and options from `references/commands.md`.
 
 ### Maintenance tasks
 

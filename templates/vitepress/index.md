@@ -46,22 +46,25 @@ layout: doc
 ## CLI 命令概览
 
 ```bash
-npx repoctl new            # 创建子包/应用
+npx repoctl package create # 创建子包/应用
+npx repoctl pkg new        # 短别名
 npx -y repoctl@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
 npx repoctl mirror         # 写入 VS Code 镜像配置
 npx repoctl skills sync    # 同步内置技能到全局目录
-npx repoctl up             # 从最新模板同步配置文件
-npx repoctl ai create      # 生成 Agentic 任务提示词模板（支持输出到文件，可用别名 ai new）
+npx repoctl workspace upgrade # 从最新模板同步配置文件
+npx repoctl ws up             # 短别名
+npx repoctl ai prompt create  # 生成 Agentic 任务提示词模板
+npx repoctl ai p new          # 短别名
 ```
 
-示例：`npx repoctl ai create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx repoctl ai new`.
+示例：`npx repoctl ai prompt create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx repoctl ai p new`.
 
 如果你更偏好短命令，也可以把上面的 `repoctl` 换成 `repo`。`rc` 同样可用，但因为和其他 CLI 发生命令名冲突的概率更高，这里不把它作为主文档入口。
 
 多文件场景：
 
-- `npx repoctl ai create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
-- `npx repoctl ai create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
+- `npx repoctl ai prompt create --name checkout` 自动落盘到 `agentic/prompts/checkout.md`（默认目录可改）。
+- `npx repoctl ai prompt create --tasks agentic/tasks.json -f` 读取 JSON 数组批量生成，适合多人协作收口任务。
 
 所有命令都支持在 `repoctl.config.ts` 中覆写默认行为，例如新增模板、修改同步命令、跳过 README 初始化等。也兼容 `monorepo.config.ts`，但两者不能同时存在。配置示例见下文和 [配置中心说明](./monorepo/manage.md#使用-repoctlconfigts-定制命令行为)。
 

@@ -137,8 +137,9 @@ export const vitestProject = defineProject(await defineVitestProjectConfig({
 ### 4. 依赖升级 / 配置同步
 
 ```bash
-npx repoctl up            # 使用本地 CLI
-npx @icebreakers/monorepo@latest up  # 直接使用兼容的远端 CLI
+npx repoctl workspace upgrade              # 使用本地 CLI
+npx repoctl ws up                          # 短别名
+npx @icebreakers/monorepo@latest workspace upgrade  # 直接使用兼容的远端 CLI
 
 # 常用参数
 # -c, --core  仅同步核心配置，排除 GitHub 相关文件
@@ -146,7 +147,7 @@ npx @icebreakers/monorepo@latest up  # 直接使用兼容的远端 CLI
 # -s          跳过新增，仅覆盖已存在文件
 ```
 
-升级 CLI 后再执行 `up`，可以同步获得模板最新的工作流、脚手架与配置。
+升级 CLI 后再执行 `workspace upgrade`（或 `ws up`），可以同步获得模板最新的工作流、脚手架与配置。
 
 ## 常见问题与建议
 
