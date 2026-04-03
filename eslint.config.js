@@ -1,4 +1,4 @@
-import { defineEslintConfig } from 'repoctl/tooling'
+import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
 
 const config = await defineEslintConfig()
 

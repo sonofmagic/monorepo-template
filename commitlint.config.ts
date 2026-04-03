@@ -1,3 +1,3 @@
-import { defineCommitlintConfig } from 'repoctl/tooling'
+import { defineCommitlintConfig } from '@icebreakers/monorepo/tooling'
 
 export default await defineCommitlintConfig()

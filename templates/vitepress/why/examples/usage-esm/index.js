@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import c from 'chalk'
 import { sayHello } from 'icebreaker-npm-basic-package'
 import { sayHello as sayHello2 } from 'icebreaker-npm-basic-package-multiple-exports'
+import pc from 'picocolors'
 
 sayHello()
 sayHello2()
-console.log(c.green('Hello World!'))
+console.log(pc.green('Hello World!'))

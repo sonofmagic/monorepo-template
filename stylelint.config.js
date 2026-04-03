@@ -1,3 +1,3 @@
-import { defineStylelintConfig } from 'repoctl/tooling'
+import { defineStylelintConfig } from '@icebreakers/monorepo/tooling'
 
 export default await defineStylelintConfig()
