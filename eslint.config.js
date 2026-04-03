@@ -6,6 +6,7 @@ export default [
   ...config,
   {
     ignores: [
+      'packages/monorepo/test/fixtures/demo/**',
       'templates/vitepress/.vitepress/config.ts.timestamp-*.mjs',
     ],
   },

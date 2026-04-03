@@ -1,3 +1,5 @@
+import { mkdtemp } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
 import { isCI } from 'ci-info'
 import { fdir as Fdir } from 'fdir'
@@ -24,14 +26,22 @@ async function scanFiles(root: string) {
     .sort((a, b) => a.localeCompare(b))
 }
 
-async function resetFixtureDir(relativePath: string) {
-  await fs.remove(path.resolve(__dirname, './fixtures', relativePath))
+let testRoot = ''
+
+function resolveTestPath(relativePath = '') {
+  return path.resolve(testRoot, relativePath)
 }
 
 describe.skipIf(isCI)('createNewProject', () => {
   beforeAll(async () => {
     await prepareAssets({ overwriteExisting: false })
-    await resetFixtureDir('demo')
+    testRoot = await mkdtemp(path.join(tmpdir(), 'monorepo-create-project-'))
+  })
+
+  afterAll(async () => {
+    if (testRoot) {
+      await fs.remove(testRoot)
+    }
   })
 
   it('assets', async () => {
@@ -40,67 +50,61 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('upgradeMonorepo', async () => {
-    await resetFixtureDir('demo/upgrade')
     await upgradeMonorepo({
-      outDir: path.resolve(__dirname, './fixtures/demo/upgrade'),
+      outDir: resolveTestPath('demo/upgrade'),
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/upgrade'))
+    const files = await scanFiles(resolveTestPath('demo/upgrade'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo vue-ui case', async () => {
-    await resetFixtureDir('demo/case-vue-ui')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/case-vue-ui',
       renameJson: true,
       type: 'vue-lib',
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-vue-ui'))
+    const files = await scanFiles(resolveTestPath('demo/case-vue-ui'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo default case', async () => {
-    await resetFixtureDir('demo/case-default')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/case-default',
       renameJson: true,
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/case-default'))
+    const files = await scanFiles(resolveTestPath('demo/case-default'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo cli case', async () => {
-    await resetFixtureDir('demo/cli')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/cli',
       renameJson: true,
       type: 'cli',
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/cli'))
+    const files = await scanFiles(resolveTestPath('demo/cli'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo client case', async () => {
-    await resetFixtureDir('demo/client')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/client',
       renameJson: true,
       type: 'vue-hono',
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/client'))
+    const files = await scanFiles(resolveTestPath('demo/client'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject keeps scoped package names', async () => {
-    const cwd = path.resolve(__dirname, './fixtures')
+    const cwd = testRoot
     const scopedName = '@demo/scoped-case'
     const targetDir = path.resolve(cwd, scopedName)
     try {
-      await resetFixtureDir('@demo')
       await createNewProject({
         cwd,
         name: scopedName,
@@ -117,26 +121,24 @@ describe.skipIf(isCI)('createNewProject', () => {
   })
 
   it('createNewProject demo server case', async () => {
-    await resetFixtureDir('demo/server')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/server',
       renameJson: true,
       type: 'hono-server',
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/server'))
+    const files = await scanFiles(resolveTestPath('demo/server'))
     expect(files).toMatchSnapshot()
   })
 
   it('createNewProject demo website case', async () => {
-    await resetFixtureDir('demo/website')
     await createNewProject({
-      cwd: path.resolve(__dirname, './fixtures'),
+      cwd: testRoot,
       name: 'demo/website',
       renameJson: true,
       type: 'vitepress',
     })
-    const files = await scanFiles(path.resolve(__dirname, './fixtures/demo/website'))
+    const files = await scanFiles(resolveTestPath('demo/website'))
     expect(files).toMatchSnapshot()
   })
 })
