@@ -41,7 +41,7 @@ export interface AiCommandConfig {
 }
 
 /**
- * `monorepo new` 命令的配置项，允许外部覆写模板目录、模板清单等。
+ * `monorepo package create` 命令的配置项，兼容旧入口 `monorepo new/create`。
  */
 export interface CreateCommandConfig extends Partial<Omit<CreateNewProjectOptions, 'cwd'>> {
   /**
@@ -98,7 +98,7 @@ export interface CreateChoiceOption {
 }
 
 /**
- * `monorepo clean` 命令配置，可控制自动选择、排除包等行为。
+ * `monorepo workspace clean` 命令配置，可控制自动选择、排除包等行为。
  */
 export interface CleanCommandConfig {
   /**
@@ -124,7 +124,7 @@ export interface CleanCommandConfig {
 }
 
 /**
- * `monorepo upgrade` 命令配置，覆盖脚本、目标文件等能力。
+ * `monorepo workspace upgrade` 命令配置，覆盖脚本、目标文件等能力。
  */
 export interface UpgradeCommandConfig extends Partial<CliOpts> {
   /**
@@ -150,7 +150,7 @@ export interface UpgradeCommandConfig extends Partial<CliOpts> {
 }
 
 /**
- * `monorepo init` 命令配置，用于跳过部分初始化步骤。
+ * `monorepo workspace init` / `monorepo tooling init` 共享配置，用于跳过部分初始化步骤并配置 tooling 默认目标。
  */
 export interface InitCommandConfig {
   /**
@@ -186,7 +186,7 @@ export interface InitCommandConfig {
 }
 
 /**
- * `monorepo mirror` 命令配置，可增加额外的环境变量镜像。
+ * `monorepo env mirror` 命令配置，可增加额外的环境变量镜像。
  */
 export interface MirrorCommandConfig {
   /**

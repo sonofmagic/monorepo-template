@@ -8,7 +8,8 @@ afterEach(async () => {
 describe('commander program', () => {
   it('wires each command to the corresponding handler', async () => {
     const upgradeMock = vi.fn(async () => {})
-    const initMock = vi.fn(async () => {})
+    const initMetadataMock = vi.fn(async () => {})
+    const initToolingMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
     const verifyCommitMsgMock = vi.fn(() => {})
@@ -56,7 +57,8 @@ describe('commander program', () => {
       cleanProjects: cleanMock,
       createNewProject: createMock,
       getCreateChoices: vi.fn(() => choices),
-      init: initMock,
+      initMetadata: initMetadataMock,
+      initTooling: initToolingMock,
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
       setVscodeBinaryMirror: mirrorMock,
@@ -85,24 +87,22 @@ describe('commander program', () => {
 
     const { default: program } = await import('@/cli/program')
 
-    await program.parseAsync(['node', 'monorepo', 'upgrade'])
-    await program.parseAsync(['node', 'monorepo', 'init', 'eslint', 'vitest', '--force'])
-    await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
-    await program.parseAsync(['node', 'monorepo', 'mirror'])
+    await program.parseAsync(['node', 'monorepo', 'workspace', 'upgrade'])
+    await program.parseAsync(['node', 'monorepo', 'workspace', 'init'])
+    await program.parseAsync(['node', 'monorepo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
+    await program.parseAsync(['node', 'monorepo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
+    await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-push'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'staged-typecheck', 'packages/monorepo/src/index.ts'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'new'])
-    await program.parseAsync(['node', 'monorepo', 'new'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'prompt', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
+    await program.parseAsync(['node', 'monorepo', 'ai', 'prompt', 'new'])
+    await program.parseAsync(['node', 'monorepo', 'package', 'create'])
     await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
-    expect(initMock).toHaveBeenCalledWith(expect.any(String), {
-      tooling: ['eslint', 'vitest'],
-      force: true,
-    })
+    expect(initMetadataMock).toHaveBeenCalledWith(expect.any(String))
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
       includePrivate: true,
@@ -141,6 +141,10 @@ describe('commander program', () => {
       cwd: expect.any(String),
       targets: ['codex'],
     }))
-    expect(successMock).toHaveBeenCalledTimes(6)
+    expect(initToolingMock).toHaveBeenCalledWith(expect.any(String), {
+      targets: ['eslint', 'vitest'],
+      force: true,
+    })
+    expect(successMock).toHaveBeenCalledTimes(7)
   })
 })

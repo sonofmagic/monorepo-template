@@ -16,10 +16,7 @@ export interface InitCommandRuntimeOptions {
   force?: boolean
 }
 
-/**
- * 初始化命令入口，根据配置逐步生成基础文件。
- */
-export async function init(cwd: string, options: InitCommandRuntimeOptions = {}) {
+async function runInitMetadata(cwd: string) {
   const ctx = await createContext(cwd)
   const initConfig = ctx.config.commands?.init ?? {}
 
@@ -35,6 +32,19 @@ export async function init(cwd: string, options: InitCommandRuntimeOptions = {})
   if (!initConfig.skipIssueTemplateConfig) {
     await setIssueTemplateConfig(ctx)
   }
+
+  return { ctx, initConfig }
+}
+
+export async function initMetadata(cwd: string) {
+  await runInitMetadata(cwd)
+}
+
+/**
+ * 初始化命令入口，根据配置逐步生成基础文件。
+ */
+export async function init(cwd: string, options: InitCommandRuntimeOptions = {}) {
+  const { initConfig } = await runInitMetadata(cwd)
 
   const configuredTargets = initConfig.tooling ?? []
   const targets = options.all

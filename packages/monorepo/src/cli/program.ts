@@ -3,7 +3,7 @@ import type { InitToolingTarget } from '../commands/init'
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import { input, program, select } from '@icebreakers/monorepo-templates'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, initToolingTargets, loadAgenticTasks, normalizeInitToolingTargets, setVscodeBinaryMirror, skillTargets, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, initMetadata, initTooling, initToolingTargets, loadAgenticTasks, normalizeInitToolingTargets, setVscodeBinaryMirror, skillTargets, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
 import { defaultTemplate } from '../commands/create'
 import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -42,71 +42,131 @@ const cwd = process.cwd()
 
 program.name(cliName).version(version)
 
-/**
- * 升级子命令：同步 assets 模板到当前仓库。
- */
-program
-  .command('upgrade')
+function normalizeCliOpts(opts: CliOpts): CliOpts {
+  return {
+    ...opts,
+    core: opts.core ?? false,
+    cwd,
+  }
+}
+
+function normalizeCleanOptions(opts: CleanCommandOptions) {
+  const overrides: Partial<CleanCommandConfig> = {}
+  if (opts.yes) {
+    overrides.autoConfirm = true
+  }
+  if (opts.includePrivate) {
+    overrides.includePrivate = true
+  }
+  if (opts.pinnedVersion) {
+    overrides.pinnedVersion = opts.pinnedVersion
+  }
+  return overrides
+}
+
+function normalizeToolingTargets(tooling: string[]) {
+  return tooling.length ? normalizeInitToolingTargets(tooling) : undefined
+}
+
+async function handleWorkspaceUpgrade(opts: CliOpts) {
+  await upgradeMonorepo(normalizeCliOpts(opts))
+  logger.success('workspace upgrade finished!')
+}
+
+async function handleWorkspaceInit() {
+  await initMetadata(cwd)
+  logger.success('workspace init finished!')
+}
+
+async function handleToolingInit(tooling: string[] = [], opts: InitCommandOptions) {
+  const normalizedTooling: InitToolingTarget[] | undefined = normalizeToolingTargets(tooling)
+  await initTooling(cwd, {
+    ...(normalizedTooling ? { targets: normalizedTooling } : {}),
+    ...(opts.all !== undefined ? { all: opts.all } : {}),
+    ...(opts.force !== undefined ? { force: opts.force } : {}),
+  })
+  logger.success('tooling init finished!')
+}
+
+async function handleWorkspaceClean(opts: CleanCommandOptions) {
+  await cleanProjects(cwd, normalizeCleanOptions(opts))
+  logger.success('workspace clean finished!')
+}
+
+async function handleEnvMirror() {
+  await setVscodeBinaryMirror(cwd)
+  logger.success('env mirror finished!')
+}
+
+async function handlePackageCreate(inputName: string) {
+  const createConfig = await resolveCommandConfig('create', cwd)
+  let packageName = inputName
+  if (!packageName) {
+    packageName = await input({
+      message: '请输入包名',
+      default: createConfig?.name ?? 'my-package',
+    })
+  }
+  const type: CreateNewProjectOptions['type'] = await select({
+    message: '请选择模板类型',
+    choices: getCreateChoices(createConfig?.choices),
+    default: createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate,
+  })
+
+  await createNewProject({
+    name: packageName,
+    cwd,
+    type,
+  })
+  logger.success('package create finished!')
+}
+
+const workspaceCommand = program.command('workspace').alias('ws').description('工作区命令')
+
+workspaceCommand.command('upgrade')
   .description('升级/同步 monorepo 相关包')
   .alias('up')
   .option('-i,--interactive')
   .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
   .option('--outDir <dir>', 'Output directory')
   .option('-s,--skip-overwrite', 'skip overwrite')
-  .action(async (opts: CliOpts) => {
-    const normalized: CliOpts = {
-      ...opts,
-      core: opts.core ?? false,
-      cwd,
-    }
-    await upgradeMonorepo(normalized)
-    logger.success('upgrade @icebreakers/monorepo ok!')
-  })
+  .action(handleWorkspaceUpgrade)
 
-program.command('init')
-  .description(`初始化仓库元信息，并按需生成 tooling 配置（可选值：${initToolingTargets.join(', ')}）`)
-  .argument('[tooling...]')
-  .option('-a, --all', '生成全部 tooling 配置')
-  .option('-f, --force', '覆盖已存在的 tooling 配置文件')
-  .action(async (tooling: string[] = [], opts: InitCommandOptions) => {
-    const normalizedTooling: InitToolingTarget[] | undefined = tooling.length ? normalizeInitToolingTargets(tooling) : undefined
-    await init(cwd, {
-      ...(normalizedTooling ? { tooling: normalizedTooling } : {}),
-      ...(opts.all !== undefined ? { all: opts.all } : {}),
-      ...(opts.force !== undefined ? { force: opts.force } : {}),
-    })
-    logger.success('init finished!')
-  })
+workspaceCommand.command('init')
+  .description('初始化工作区元信息（README、package.json、changeset、issue template）')
+  .alias('i')
+  .action(handleWorkspaceInit)
 
-program.command('clean')
+workspaceCommand.command('clean')
   .description('清除选中的包')
+  .alias('rm')
   .option('-y, --yes', '跳过交互直接清理（等价 autoConfirm）')
   .option('--include-private', '包含 private 包')
   .option('--pinned-version <version>', '覆盖写入的 @icebreakers/monorepo 版本')
-  .action(async (opts: CleanCommandOptions) => {
-    const overrides: Partial<CleanCommandConfig> = {}
-    if (opts.yes) {
-      overrides.autoConfirm = true
-    }
-    if (opts.includePrivate) {
-      overrides.includePrivate = true
-    }
-    if (opts.pinnedVersion) {
-      overrides.pinnedVersion = opts.pinnedVersion
-    }
-    await cleanProjects(cwd, overrides)
-    logger.success('clean projects finished!')
-  })
+  .action(handleWorkspaceClean)
 
-program.command('mirror').description('设置 VscodeBinaryMirror').action(async () => {
-  await setVscodeBinaryMirror(cwd)
-  logger.success('set vscode binary mirror finished!')
-})
+const toolingCommand = program.command('tooling').alias('tg').description('工程化配置命令')
 
-const skillsCommand = program.command('skills').description('技能工具集')
+toolingCommand.command('init')
+  .description(`生成 tooling 配置（可选值：${initToolingTargets.join(', ')}）`)
+  .alias('i')
+  .argument('[tooling...]')
+  .option('-a, --all', '生成全部 tooling 配置')
+  .option('-f, --force', '覆盖已存在的 tooling 配置文件')
+  .action(handleToolingInit)
+
+const envCommand = program.command('env').alias('e').description('环境命令')
+
+envCommand.command('mirror')
+  .description('设置 VS Code binary mirror')
+  .alias('m')
+  .action(handleEnvMirror)
+
+const skillsCommand = program.command('skills').alias('sk').description('技能工具集')
 
 skillsCommand.command('sync')
   .description('同步 resources/skills/icebreakers-monorepo-cli 到全局目录')
+  .alias('s')
   .option('--codex', '同步到 ~/.codex/skills')
   .option('--claude', '同步到 ~/.claude/skills')
   .option('--all', '同步全部目标')
@@ -138,22 +198,25 @@ skillsCommand.command('sync')
     logger.success('skills sync finished!')
   })
 
-const verifyCommand = program.command('verify').description('本地校验工具集')
+const verifyCommand = program.command('verify').alias('v').description('本地校验工具集')
 
 verifyCommand.command('pre-push')
   .description('按推送变更范围执行 build/test/tsd 校验')
+  .alias('push')
   .action(async () => {
     await verifyPrePush({ cwd })
   })
 
 verifyCommand.command('pre-commit')
   .description('执行 lint-staged 校验')
+  .alias('commit')
   .action(async () => {
     await verifyPreCommit({ cwd })
   })
 
 verifyCommand.command('commit-msg')
   .description('执行 commitlint 校验')
+  .alias('msg')
   .argument('<edit-file>')
   .action(async (editFile: string) => {
     await verifyCommitMsg({ cwd, editFile })
@@ -161,14 +224,70 @@ verifyCommand.command('commit-msg')
 
 verifyCommand.command('staged-typecheck')
   .description('按暂存文件所在 workspace 执行 typecheck')
+  .alias('tc')
   .argument('[files...]')
   .action((files: string[] = []) => {
     verifyStagedTypecheck(files, { cwd })
   })
 
 const aiCommand = program.command('ai').description('AI 助手工具集')
+const aiPromptCommand = aiCommand.command('prompt').alias('p').description('Prompt 模板命令')
 
-aiCommand.command('create')
+async function handleAiPromptCreate(opts: AiTemplateCommandOptions) {
+  const aiConfig = await resolveCommandConfig('ai', cwd)
+  const format = opts.format ?? aiConfig?.format ?? 'md'
+  const force = opts.force ?? aiConfig?.force ?? false
+  const output = opts.output ?? aiConfig?.output
+  const baseDir = opts.dir ?? aiConfig?.baseDir ?? defaultAgenticBaseDir
+  const tasksFile = opts.tasks ?? aiConfig?.tasksFile
+  const templateName = opts.name
+
+  const shouldUseTasks = Boolean(tasksFile && !opts.output && !opts.name)
+
+  if (shouldUseTasks) {
+    if (!tasksFile) {
+      throw new Error('tasks file path is required when using tasks mode')
+    }
+    const tasks = await loadAgenticTasks(tasksFile, cwd)
+    await generateAgenticTemplates(tasks, {
+      cwd,
+      baseDir,
+      force,
+      format,
+    })
+    return
+  }
+
+  let folderName: string | undefined
+  if (!output && !templateName) {
+    const generated = createTimestampFolderName()
+    const answer = await input({
+      message: '提示词将写入哪个文件夹？（可回车确认或自定义）',
+      default: generated,
+    })
+    folderName = (answer?.trim?.() ?? generated) || generated
+  }
+
+  const templateOptions: GenerateAgenticTemplateOptions = {
+    cwd,
+    force,
+    format,
+    baseDir,
+  }
+  if (output !== undefined) {
+    templateOptions.output = output
+  }
+  if (templateName !== undefined) {
+    templateOptions.name = templateName
+  }
+  if (folderName !== undefined) {
+    templateOptions.folderName = folderName
+  }
+
+  await generateAgenticTemplate(templateOptions)
+}
+
+aiPromptCommand.command('create')
   .alias('new')
   .description('生成 Agentic 任务提示词模板')
   .option('-o, --output <path>', '输出到指定文件')
@@ -177,85 +296,14 @@ aiCommand.command('create')
   .option('-d, --dir <path>', '默认输出目录（默认 agentic/prompts，下级自动创建时间文件夹），配合 --name / --tasks 使用')
   .option('-n, --name <name>', '使用名称快速生成文件，自动添加后缀')
   .option('-t, --tasks <file>', '从 JSON 数组批量生成模板')
-  .action(async (opts: AiTemplateCommandOptions) => {
-    const aiConfig = await resolveCommandConfig('ai', cwd)
-    const format = opts.format ?? aiConfig?.format ?? 'md'
-    const force = opts.force ?? aiConfig?.force ?? false
-    const output = opts.output ?? aiConfig?.output
-    const baseDir = opts.dir ?? aiConfig?.baseDir ?? defaultAgenticBaseDir
-    const tasksFile = opts.tasks ?? aiConfig?.tasksFile
-    const templateName = opts.name
+  .action(handleAiPromptCreate)
 
-    const shouldUseTasks = Boolean(tasksFile && !opts.output && !opts.name)
+const packageCommand = program.command('package').alias('pkg').description('子包命令')
 
-    if (shouldUseTasks) {
-      if (!tasksFile) {
-        throw new Error('tasks file path is required when using tasks mode')
-      }
-      const tasks = await loadAgenticTasks(tasksFile, cwd)
-      await generateAgenticTemplates(tasks, {
-        cwd,
-        baseDir,
-        force,
-        format,
-      })
-      return
-    }
-
-    let folderName: string | undefined
-    if (!output && !templateName) {
-      const generated = createTimestampFolderName()
-      const answer = await input({
-        message: '提示词将写入哪个文件夹？（可回车确认或自定义）',
-        default: generated,
-      })
-      folderName = (answer?.trim?.() ?? generated) || generated
-    }
-
-    const templateOptions: GenerateAgenticTemplateOptions = {
-      cwd,
-      force,
-      format,
-      baseDir,
-    }
-    if (output !== undefined) {
-      templateOptions.output = output
-    }
-    if (templateName !== undefined) {
-      templateOptions.name = templateName
-    }
-    if (folderName !== undefined) {
-      templateOptions.folderName = folderName
-    }
-
-    await generateAgenticTemplate(templateOptions)
-  })
-
-program.command('new')
+packageCommand.command('create')
   .description('创建一个新的子包')
-  .alias('create')
+  .alias('new')
   .argument('[name]')
-  .action(async (inputName: string) => {
-    const createConfig = await resolveCommandConfig('create', cwd)
-    let packageName = inputName
-    if (!packageName) {
-      packageName = await input({
-        message: '请输入包名',
-        default: createConfig?.name ?? 'my-package',
-      })
-    }
-    const type: CreateNewProjectOptions['type'] = await select({
-      message: '请选择模板类型',
-      choices: getCreateChoices(createConfig?.choices),
-      default: createConfig?.type ?? createConfig?.defaultTemplate ?? defaultTemplate,
-    })
-
-    await createNewProject({
-      name: packageName,
-      cwd,
-      type,
-    })
-    logger.success('create a package')
-  })
+  .action(handlePackageCreate)
 
 export default program
