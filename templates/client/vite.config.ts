@@ -8,7 +8,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 import VueRouter from 'vue-router/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   build: {
     target: 'baseline-widely-available',
   },
@@ -22,12 +22,13 @@ export default defineConfig({
     VueRouter(
       {
         dts: path.resolve(import.meta.dirname, 'src/route-map.d.ts'),
+        watch: command === 'serve',
       },
     ),
     Vue(),
     VueJsx(),
     Tailwindcss(),
     cloudflare(),
-    VueDevTools(),
+    command === 'serve' ? VueDevTools() : null,
   ],
-})
+}))

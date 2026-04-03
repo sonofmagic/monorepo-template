@@ -1,3 +1,12 @@
 import { defineEslintConfig } from 'repoctl/tooling'
 
-export default await defineEslintConfig()
+const config = await defineEslintConfig()
+
+export default [
+  ...config,
+  {
+    ignores: [
+      'templates/vitepress/.vitepress/config.ts.timestamp-*.mjs',
+    ],
+  },
+]

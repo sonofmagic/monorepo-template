@@ -1,19 +1,18 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "repoctl": [
-        "src/index.ts"
+        "./src/index.ts"
       ],
       "repoctl/cli": [
-        "src/cli.ts"
+        "./src/cli.ts"
       ],
       "repoctl/tooling": [
-        "src/tooling-entry.ts"
+        "./src/tooling-entry.ts"
       ],
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     }
   },

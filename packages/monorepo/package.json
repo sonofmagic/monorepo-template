@@ -63,14 +63,14 @@
     "typecheck": "tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
-    "lint": "pnpm build && pnpm --filter repoctl build && eslint .",
-    "lint:fix": "pnpm build && pnpm --filter repoctl build && eslint . --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@icebreakers/commitlint-config": "^1.2.13",
-    "@icebreakers/eslint-config": "^2.0.3",
+    "@icebreakers/commitlint-config": "^2.0.0",
+    "@icebreakers/eslint-config": "^4.0.0",
     "@icebreakers/monorepo-templates": "workspace:*",
-    "@icebreakers/stylelint-config": "^2.1.2",
+    "@icebreakers/stylelint-config": "^3.0.0",
     "@pnpm/find-workspace-dir": "^1000.1.5",
     "@pnpm/logger": "^1001.0.1",
     "@pnpm/types": "^1001.3.0",
@@ -83,12 +83,12 @@
     "git-url-parse": "^16.1.0",
     "klaw": "^4.1.0",
     "lint-staged": "^16.4.0",
-    "p-queue": "^9.1.0",
+    "p-queue": "^9.1.1",
     "pathe": "^2.0.3",
     "picocolors": "^1.1.1",
     "semver": "^7.7.4",
     "simple-git": "^3.33.0",
-    "vitest": "~4.1.1",
+    "vitest": "~4.1.2",
     "yaml": "^2.8.3"
   },
   "devDependencies": {
