@@ -9,24 +9,50 @@ const toolingEntryPaths = {
   repoctl: path.join(rootDir, 'packages', 'repoctl', 'dist', 'tooling-entry.mjs'),
 }
 
-async function importToolingEntry(entryPath, cacheBust = false) {
+function getToolingImportSpecifier(entryPath, cacheBust = false) {
   const fileUrl = pathToFileURL(entryPath)
-  const specifier = cacheBust ? `${fileUrl.href}?t=${Date.now()}` : fileUrl.href
+  return cacheBust ? `${fileUrl.href}?t=${Date.now()}` : fileUrl.href
+}
 
+export function isRecoverableToolingLoadError(error) {
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const nodeError = /** @type {NodeJS.ErrnoException} */ (error)
+  return nodeError.code === 'ERR_MODULE_NOT_FOUND'
+    || nodeError.code === 'ENOENT'
+    || error.message.includes('Cannot find module')
+    || error.message.includes('No such file or directory')
+}
+
+async function importToolingEntry(entryPath, cacheBust = false) {
+  const specifier = getToolingImportSpecifier(entryPath, cacheBust)
   return import(specifier)
 }
 
-async function loadToolingModule(entryPath) {
-  await ensureToolingBuilt()
+export function createToolingModuleLoader({
+  ensureBuilt = ensureToolingBuilt,
+  importModule = importToolingEntry,
+} = {}) {
+  return async function loadToolingModule(entryPath) {
+    await ensureBuilt()
 
-  try {
-    return await importToolingEntry(entryPath)
-  }
-  catch {
-    await ensureToolingBuilt()
-    return importToolingEntry(entryPath, true)
+    try {
+      return await importModule(entryPath)
+    }
+    catch (error) {
+      if (!isRecoverableToolingLoadError(error)) {
+        throw error
+      }
+
+      await ensureBuilt()
+      return importModule(entryPath, true)
+    }
   }
 }
+
+const loadToolingModule = createToolingModuleLoader()
 
 export function loadMonorepoToolingModule() {
   return loadToolingModule(toolingEntryPaths.monorepo)
@@ -36,7 +62,10 @@ export async function loadRepoctlToolingModule() {
   try {
     return await loadToolingModule(toolingEntryPaths.repoctl)
   }
-  catch {
+  catch (error) {
+    if (!isRecoverableToolingLoadError(error)) {
+      throw error
+    }
     return loadToolingModule(toolingEntryPaths.monorepo)
   }
 }
