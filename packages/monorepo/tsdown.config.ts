@@ -12,7 +12,7 @@ export default defineConfig({
   clean: true,
   dts: true,
   deps: {
-    onlyBundle: ['defu', 'is-primitive', 'isobject', 'is-plain-object', 'pkg-types'],
+    onlyBundle: ['defu', 'pkg-types'],
   },
   inputOptions(options) {
     const baseOnLog = options.onLog
