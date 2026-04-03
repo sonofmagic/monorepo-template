@@ -9,6 +9,7 @@ import type { Configuration as LintStagedConfiguration } from 'lint-staged'
 import type { ViteUserConfig } from 'vitest/config'
 import type { AgenticTemplateFormat } from '../commands/ai'
 import type { CreateNewProjectOptions } from '../commands/create'
+import type { InitToolingTarget } from '../commands/init'
 import type { CliOpts } from './cli'
 
 export interface AiCommandConfig {
@@ -172,6 +173,16 @@ export interface InitCommandConfig {
    * @default false
    */
   skipIssueTemplateConfig?: boolean
+  /**
+   * 额外要生成的 tooling 配置文件列表。
+   * @default []
+   */
+  tooling?: InitToolingTarget[]
+  /**
+   * 是否覆盖已存在的 tooling 配置文件。
+   * @default false
+   */
+  force?: boolean
 }
 
 /**

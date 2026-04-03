@@ -1,8 +1,9 @@
 import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../commands/ai'
+import type { InitToolingTarget } from '../commands/init'
 import type { CleanCommandConfig, CliOpts } from '../types'
 import process from 'node:process'
 import { input, program, select } from '@icebreakers/monorepo-templates'
-import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, loadAgenticTasks, setVscodeBinaryMirror, skillTargets, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
+import { cleanProjects, createNewProject, createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, getCreateChoices, init, initToolingTargets, loadAgenticTasks, normalizeInitToolingTargets, setVscodeBinaryMirror, skillTargets, syncSkills, upgradeMonorepo, verifyCommitMsg, verifyPreCommit, verifyPrePush, verifyStagedTypecheck } from '../commands'
 import { defaultTemplate } from '../commands/create'
 import { name as cliName, version } from '../constants'
 import { resolveCommandConfig } from '../core/config'
@@ -24,6 +25,11 @@ interface CleanCommandOptions {
   yes?: boolean
   includePrivate?: boolean
   pinnedVersion?: string
+}
+
+interface InitCommandOptions {
+  all?: boolean
+  force?: boolean
 }
 
 interface SkillsSyncCommandOptions {
@@ -57,10 +63,20 @@ program
     logger.success('upgrade @icebreakers/monorepo ok!')
   })
 
-program.command('init').description('初始化 package.json 和 README.md').action(async () => {
-  await init(cwd)
-  logger.success('init finished!')
-})
+program.command('init')
+  .description(`初始化仓库元信息，并按需生成 tooling 配置（可选值：${initToolingTargets.join(', ')}）`)
+  .argument('[tooling...]')
+  .option('-a, --all', '生成全部 tooling 配置')
+  .option('-f, --force', '覆盖已存在的 tooling 配置文件')
+  .action(async (tooling: string[] = [], opts: InitCommandOptions) => {
+    const normalizedTooling: InitToolingTarget[] | undefined = tooling.length ? normalizeInitToolingTargets(tooling) : undefined
+    await init(cwd, {
+      ...(normalizedTooling ? { tooling: normalizedTooling } : {}),
+      ...(opts.all !== undefined ? { all: opts.all } : {}),
+      ...(opts.force !== undefined ? { force: opts.force } : {}),
+    })
+    logger.success('init finished!')
+  })
 
 program.command('clean')
   .description('清除选中的包')

@@ -57,6 +57,8 @@ describe('commander program', () => {
       createNewProject: createMock,
       getCreateChoices: vi.fn(() => choices),
       init: initMock,
+      initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
+      normalizeInitToolingTargets: vi.fn((input: string[]) => input),
       setVscodeBinaryMirror: mirrorMock,
       skillTargets: ['codex', 'claude'],
       syncSkills: syncSkillsMock,
@@ -84,7 +86,7 @@ describe('commander program', () => {
     const { default: program } = await import('@/cli/program')
 
     await program.parseAsync(['node', 'monorepo', 'upgrade'])
-    await program.parseAsync(['node', 'monorepo', 'init'])
+    await program.parseAsync(['node', 'monorepo', 'init', 'eslint', 'vitest', '--force'])
     await program.parseAsync(['node', 'monorepo', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
@@ -97,7 +99,10 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
 
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
-    expect(initMock).toHaveBeenCalled()
+    expect(initMock).toHaveBeenCalledWith(expect.any(String), {
+      tooling: ['eslint', 'vitest'],
+      force: true,
+    })
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
       includePrivate: true,

@@ -153,6 +153,12 @@ describe('init helpers coverage', () => {
     const setPkgJsonMock = vi.fn(async () => {})
     const setIssueTemplateConfigMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
+    const initToolingMock = vi.fn(async () => ({
+      selectedTargets: [],
+      writtenFiles: [],
+      skippedFiles: [],
+      updatedPackageJson: false,
+    }))
 
     await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
@@ -160,6 +166,13 @@ describe('init helpers coverage', () => {
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
     vi.doMock('@/commands/init/setIssueTemplateConfig', () => ({ default: setIssueTemplateConfigMock }))
     vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
+    vi.doMock('@/commands/init/tooling', () => ({
+      initTooling: initToolingMock,
+      normalizeInitToolingTargets: (input: string[]) => input,
+    }))
+    vi.doMock('@/commands/init/tooling/types', () => ({
+      initToolingTargets: ['eslint', 'vitest'],
+    }))
 
     const { init } = await import('@/commands/init')
     await init('/repo')
@@ -167,11 +180,16 @@ describe('init helpers coverage', () => {
     expect(setPkgJsonMock).toHaveBeenCalled()
     expect(setIssueTemplateConfigMock).toHaveBeenCalled()
     expect(setReadmeMock).toHaveBeenCalled()
+    expect(initToolingMock).toHaveBeenCalledWith('/repo', {
+      targets: [],
+      force: false,
+    })
 
     setChangesetMock.mockClear()
     setPkgJsonMock.mockClear()
     setIssueTemplateConfigMock.mockClear()
     setReadmeMock.mockClear()
+    initToolingMock.mockClear()
     createContextMock.mockResolvedValueOnce({
       cwd: '/repo',
       config: {
@@ -181,15 +199,21 @@ describe('init helpers coverage', () => {
             skipPkgJson: true,
             skipIssueTemplateConfig: true,
             skipReadme: true,
+            tooling: ['eslint'],
+            force: true,
           },
         },
       },
     })
 
-    await init('/repo')
+    await init('/repo', { tooling: ['vitest'] })
     expect(setChangesetMock).not.toHaveBeenCalled()
     expect(setPkgJsonMock).not.toHaveBeenCalled()
     expect(setIssueTemplateConfigMock).not.toHaveBeenCalled()
     expect(setReadmeMock).not.toHaveBeenCalled()
+    expect(initToolingMock).toHaveBeenCalledWith('/repo', {
+      targets: ['vitest'],
+      force: true,
+    })
   })
 })

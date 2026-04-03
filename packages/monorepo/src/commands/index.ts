@@ -8,7 +8,7 @@ import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
 import { cleanProjects } from './clean'
 import { createNewProject, getCreateChoices, getTemplateMap, templateMap } from './create'
-import { init } from './init'
+import { init, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
 import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
 import { upgradeMonorepo } from './upgrade'
@@ -43,7 +43,10 @@ export {
   getWorkspacePackages,
   GitClient,
   init,
+  initTooling,
+  initToolingTargets,
   loadAgenticTasks,
+  normalizeInitToolingTargets,
   setVscodeBinaryMirror,
   skillTargets,
   syncSkills,

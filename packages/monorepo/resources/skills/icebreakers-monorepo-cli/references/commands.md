@@ -15,10 +15,18 @@ Usage:
 
 ## init
 
-Purpose: initialize package.json and README.md.
+Purpose: initialize repo metadata and optionally generate tooling config files plus matching devDependencies.
 Usage:
 
 - npx repoctl init
+- npx repoctl init eslint tsconfig vitest
+- npx repoctl init --all
+  Options:
+- --all: generate every built-in tooling config
+- --force: overwrite existing tooling config files
+  Notes:
+- Built-in tooling targets: commitlint, eslint, stylelint, lint-staged, tsconfig, vitest
+- Generated files also update root package.json devDependencies
 
 ## clean
 

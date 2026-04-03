@@ -11,6 +11,10 @@ pnpm add -D @icebreakers/monorepo@latest
 npx monorepo up
 # 帮助文档
 npx monorepo -h
+# 生成 eslint / tsconfig / vitest 等工程化配置
+npx monorepo init eslint tsconfig vitest
+# 一次生成全部内置 tooling 配置
+npx monorepo init --all
 # 生成 Agentic 任务模板
 npx monorepo ai create -o agentic-task.md -f
 # 或使用别名
@@ -86,6 +90,33 @@ export default defineMonorepoConfig({
     upgrade: {
       skipOverwrite: true,
       targets: ['.github', 'repoctl.config.ts'],
+    },
+  },
+})
+```
+
+`init` 现在除了同步 README / package.json / changeset 等元信息，也支持生成工程化配置文件，并自动补充根 `package.json` 的 `devDependencies`。当前内置的目标有：`commitlint`、`eslint`、`stylelint`、`lint-staged`、`tsconfig`、`vitest`。
+
+例如：
+
+```bash
+# 只生成指定配置
+npx monorepo init eslint stylelint lint-staged
+
+# 生成全部内置配置，并覆盖已存在文件
+npx monorepo init --all --force
+```
+
+也可以在 `repoctl.config.ts` / `monorepo.config.ts` 里为 `init` 配默认项：
+
+```ts
+import { defineMonorepoConfig } from 'repoctl'
+
+export default defineMonorepoConfig({
+  commands: {
+    init: {
+      tooling: ['eslint', 'tsconfig', 'vitest'],
+      force: false,
     },
   },
 })
