@@ -1,7 +1,5 @@
-import { ensureToolingBuilt } from './tooling/ensure-tooling-built.mjs'
+import { loadMonorepoToolingModule } from './tooling/load-tooling-module.mjs'
 
-await ensureToolingBuilt()
-
-const { defineLintStagedConfig } = await import('@icebreakers/monorepo/tooling')
+const { defineLintStagedConfig } = await loadMonorepoToolingModule()
 
 export default await defineLintStagedConfig()

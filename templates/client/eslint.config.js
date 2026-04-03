@@ -1,9 +1,7 @@
 import { fileURLToPath } from 'node:url'
-import { ensureToolingBuilt } from '../../tooling/ensure-tooling-built.mjs'
+import { loadRepoctlToolingModule } from '../../tooling/load-tooling-module.mjs'
 
-await ensureToolingBuilt()
-
-const { defineEslintConfig } = await import('repoctl/tooling')
+const { defineEslintConfig } = await loadRepoctlToolingModule()
 
 const tailwindEntryPoint = fileURLToPath(new URL('./src/style.css', import.meta.url))
 

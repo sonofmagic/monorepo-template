@@ -1,11 +1,9 @@
 import Vue from '@vitejs/plugin-vue'
 import { mergeConfig } from 'vitest/config'
-import { ensureToolingBuilt } from '../../tooling/ensure-tooling-built.mjs'
+import { loadRepoctlToolingModule } from '../../tooling/load-tooling-module.mjs'
 import { sharedConfig } from './vite.shared.config'
 
-await ensureToolingBuilt()
-
-const { defineVitestProjectConfig } = await import('repoctl/tooling')
+const { defineVitestProjectConfig } = await loadRepoctlToolingModule()
 
 export default mergeConfig(sharedConfig, {
   ...await defineVitestProjectConfig({

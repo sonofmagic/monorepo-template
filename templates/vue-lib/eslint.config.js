@@ -1,8 +1,6 @@
-import { ensureToolingBuilt } from '../../tooling/ensure-tooling-built.mjs'
+import { loadRepoctlToolingModule } from '../../tooling/load-tooling-module.mjs'
 
-await ensureToolingBuilt()
-
-const { defineEslintConfig } = await import('repoctl/tooling')
+const { defineEslintConfig } = await loadRepoctlToolingModule()
 
 export default await defineEslintConfig({
   options: {

@@ -1,8 +1,6 @@
 import { defineConfig } from 'vitest/config'
-import { ensureToolingBuilt } from './tooling/ensure-tooling-built.mjs'
+import { loadMonorepoToolingModule } from './tooling/load-tooling-module.mjs'
 
-await ensureToolingBuilt()
-
-const { defineVitestConfig } = await import('@icebreakers/monorepo/tooling')
+const { defineVitestConfig } = await loadMonorepoToolingModule()
 
 export default defineConfig(async () => await defineVitestConfig())
