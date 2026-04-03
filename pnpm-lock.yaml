@@ -27,8 +27,8 @@ importers:
         specifier: workspace:*
         version: link:packages/monorepo
       '@icebreakers/stylelint-config':
-        specifier: ^2.1.2
-        version: 2.1.2(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
+        specifier: ^3.0.0
+        version: 3.0.0(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
@@ -129,8 +129,8 @@ importers:
         specifier: workspace:*
         version: link:../monorepo-templates
       '@icebreakers/stylelint-config':
-        specifier: ^2.1.2
-        version: 2.1.2(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
+        specifier: ^3.0.0
+        version: 3.0.0(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
       '@pnpm/find-workspace-dir':
         specifier: ^1000.1.5
         version: 1000.1.5
@@ -2020,6 +2020,11 @@ packages:
 
   '@icebreakers/stylelint-config@2.1.2':
     resolution: {integrity: sha512-HSGV74jYph3CgHvGgnnyuIRFS+oszh9WtLgdyRc/zcLQM8FrBylZIe/CNv9mybHZ3+lSsVqvakSxUdGXBWrGxw==}
+    hasBin: true
+
+  '@icebreakers/stylelint-config@3.0.0':
+    resolution: {integrity: sha512-2FVeCVhrW/wBqwnL6ROfgq0LuQufHZtDbCfwJe2bgDaR6SvSk4Al5H5FgxYnIybxnt3Ydqc5uR13B/cf8FfQaw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
   '@iconify-json/simple-icons@1.2.51':
@@ -8316,6 +8321,10 @@ packages:
   postcss-tailwindcss@1.0.1:
     resolution: {integrity: sha512-jcnryejqaxBcU7IrD+HVT9h+ZZdOrfkAXPBF+jNUmhgZFEb4haocQ/zQDA2HR91u31Q/MTVdZtAYTm/djaiTgg==}
 
+  postcss-tailwindcss@2.0.0:
+    resolution: {integrity: sha512-+4i559D28yPpo/Ae296GUDF4954+UrHxmkkuufupL8DvMx8AgMnboxq/kd1K55xdeQNzoJ9rRM6TaR5U3VQiXw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+
   postcss-unique-selectors@7.0.4:
     resolution: {integrity: sha512-pmlZjsmEAG7cHd7uK3ZiNSW6otSZ13RHuZ/4cDN/bVglS5EpF2r2oxY99SuOHa8m7AWoBCelTS3JPpzsIs8skQ==}
     engines: {node: ^18.12.0 || ^20.9.0 || >=22.0}
@@ -9070,6 +9079,16 @@ packages:
 
   stylelint-plugin-tailwindcss@1.0.1:
     resolution: {integrity: sha512-4vgAfHBMTP6Btx6khYjOhXlzYU1DOsoUoi+sway6HlksnYGjb2unxUzo4iif92j/ZAObHWzEBDi1jCXJRxi3FA==}
+    peerDependencies:
+      stylelint: ^17.4.0
+      tailwindcss: ^3.4.0 || ^4.0.0
+    peerDependenciesMeta:
+      tailwindcss:
+        optional: true
+
+  stylelint-plugin-tailwindcss@2.0.0:
+    resolution: {integrity: sha512-+6mCi9IWtbsDNQz3DANq112g4TwO9SBi7wya5i2MQVFDURV1OLwG+a+7aWB/A8cmGAadyNIK8G9IirKJwUhqPg==}
+    engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       stylelint: ^17.4.0
       tailwindcss: ^3.4.0 || ^4.0.0
@@ -11739,6 +11758,21 @@ snapshots:
       stylelint-config-recommended-vue: 1.6.1(postcss-html@1.8.1)(stylelint@17.5.0(typescript@6.0.2))
       stylelint-config-standard-scss: 17.0.0(postcss@8.5.8)(stylelint@17.5.0(typescript@6.0.2))
       stylelint-plugin-tailwindcss: 1.0.1(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
+    transitivePeerDependencies:
+      - postcss
+      - stylelint
+      - stylelint-order
+      - tailwindcss
+
+  '@icebreakers/stylelint-config@3.0.0(postcss@8.5.8)(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)':
+    dependencies:
+      comment-json: 4.6.2
+      postcss-html: 1.8.1
+      stylelint-config-recess-order: 7.7.0(stylelint-order@7.0.0(stylelint@17.5.0(typescript@6.0.2)))(stylelint@17.5.0(typescript@6.0.2))
+      stylelint-config-recommended-scss: 17.0.0(postcss@8.5.8)(stylelint@17.5.0(typescript@6.0.2))
+      stylelint-config-recommended-vue: 1.6.1(postcss-html@1.8.1)(stylelint@17.5.0(typescript@6.0.2))
+      stylelint-config-standard-scss: 17.0.0(postcss@8.5.8)(stylelint@17.5.0(typescript@6.0.2))
+      stylelint-plugin-tailwindcss: 2.0.0(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2)
     transitivePeerDependencies:
       - postcss
       - stylelint
@@ -19102,6 +19136,14 @@ snapshots:
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
 
+  postcss-tailwindcss@2.0.0:
+    dependencies:
+      enhanced-resolve: 5.20.1
+      get-tsconfig: 4.13.7
+      postcss: 8.5.8
+      postcss-selector-parser: 7.1.1
+      postcss-value-parser: 4.2.0
+
   postcss-unique-selectors@7.0.4(postcss@8.5.8):
     dependencies:
       postcss: 8.5.8
@@ -20001,6 +20043,13 @@ snapshots:
   stylelint-plugin-tailwindcss@1.0.1(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2):
     dependencies:
       postcss-tailwindcss: 1.0.1
+      stylelint: 17.5.0(typescript@6.0.2)
+    optionalDependencies:
+      tailwindcss: 4.2.2
+
+  stylelint-plugin-tailwindcss@2.0.0(stylelint@17.5.0(typescript@6.0.2))(tailwindcss@4.2.2):
+    dependencies:
+      postcss-tailwindcss: 2.0.0
       stylelint: 17.5.0(typescript@6.0.2)
     optionalDependencies:
       tailwindcss: 4.2.2
