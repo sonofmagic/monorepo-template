@@ -7,7 +7,7 @@ afterEach(async () => {
   vi.useRealTimers()
 })
 
-describe('ai create command', () => {
+describe('ai prompt create command', () => {
   it('writes markdown template into timestamped folder by default', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2025-02-14T10:20:30.400Z'))
