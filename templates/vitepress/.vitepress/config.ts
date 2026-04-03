@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
-  outDir: '../../dist',
+  outDir: '.vitepress/dist',
   title: 'icebreaker\'s monorepo',
   description: 'icebreaker\'s monorepo. upgrade your monorepo',
   themeConfig: {
