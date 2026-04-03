@@ -147,6 +147,10 @@ export interface DefineVitestConfigOptions {
 
 export interface DefineVitestProjectConfigOptions {
   cwd?: string
+  options?: MonorepoVitestProjectConfigOptions
+  /**
+   * @deprecated 使用 `options` 代替，保持与其他 `define*Config()` 包装器一致。
+   */
   config?: MonorepoVitestProjectConfigOptions
 }
 
@@ -694,14 +698,14 @@ export function createMonorepoVitestProjectConfig(options: MonorepoVitestProject
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `config`
+ * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `options`
  * 生成单个 package/app 的项目级 Vitest 配置。
  *
  * 优先级从低到高：
  * 1. `repoctl.config.ts` / `monorepo.config.ts -> tooling.vitestProject`
- * 2. `config`
+ * 2. `options`
  *
- * @param input `cwd` 用于配置文件解析起点，`config` 用于追加项目内局部覆盖项
+ * @param input `cwd` 用于配置文件解析起点，`options` 用于追加项目内局部覆盖项
  * @returns 可直接传给 `defineProject()` 或与其他 Vite/Vitest 配置 merge 的项目级配置片段
  */
 export async function defineVitestProjectConfig(
@@ -712,6 +716,6 @@ export async function defineVitestProjectConfig(
 
   return createMonorepoVitestProjectConfig({
     ...toolingOptions,
-    ...input.config,
+    ...(input.options ?? input.config),
   })
 }

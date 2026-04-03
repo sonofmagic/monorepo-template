@@ -9,7 +9,7 @@ const { defineVitestProjectConfig } = await import('repoctl/tooling')
 
 export default mergeConfig(sharedConfig, {
   ...await defineVitestProjectConfig({
-    config: {
+    options: {
       environment: 'jsdom',
     },
   }),

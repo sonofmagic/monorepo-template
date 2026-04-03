@@ -7,7 +7,7 @@ await ensureToolingBuilt()
 const { defineVitestProjectConfig } = await import('repoctl/tooling')
 
 export default defineProject(await defineVitestProjectConfig({
-  config: {
+  options: {
     alias: [
       {
         find: '@',

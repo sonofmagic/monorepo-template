@@ -172,7 +172,7 @@ describe('tooling factories', () => {
 
   it('defines project-level vitest config with inline overrides', async () => {
     const config = await defineVitestProjectConfig({
-      config: {
+      options: {
         environment: 'jsdom',
         alias: [{ find: '@', replacement: '/tmp/project-src' }],
       },
@@ -217,6 +217,16 @@ describe('tooling factories', () => {
       throw new TypeError('expected lint-staged rule to be callable')
     }
     expect(command(['src/index.ts'])).toContain('legacy-monorepo verify staged-typecheck')
+  })
+
+  it('keeps legacy config input working for vitest project wrapper', async () => {
+    const config = await defineVitestProjectConfig({
+      config: {
+        environment: 'jsdom',
+      },
+    })
+
+    expect(config.test.environment).toBe('jsdom')
   })
 
   it('defines wrapper configs internally from monorepo config', async () => {
