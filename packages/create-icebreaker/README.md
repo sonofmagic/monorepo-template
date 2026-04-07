@@ -14,6 +14,25 @@ By default this:
 - asks which templates to keep (default keeps none)
 - updates the root `package.json` name
 
+## Next Steps
+
+After scaffolding finishes:
+
+```sh
+cd <your-project>
+pnpm install
+pnpm exec repoctl init
+pnpm exec repoctl new
+pnpm exec repoctl check
+```
+
+Recommended maintenance flow inside the generated workspace:
+
+- `pnpm exec repoctl init`: bootstrap recommended workspace metadata and tooling
+- `pnpm exec repoctl new`: create the next package or app through the guided flow
+- `pnpm exec repoctl check`: run recommended local verification
+- `pnpm dlx repoctl@latest clean --yes`: optional zero-install cleanup on a fresh clone
+
 ## Templates
 
 Available template keys:

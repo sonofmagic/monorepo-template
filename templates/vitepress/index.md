@@ -18,8 +18,10 @@ layout: doc
 
 1. **拉取模板**：[GitHub](https://github.com/sonofmagic/monorepo-template) 右上角 `Use this template`，或克隆源码。
 2. **安装依赖**：在 `pnpm-workspace.yaml` 所在目录执行 `pnpm install`（需要 Node.js ≥ 20，推荐 `npm i -g pnpm`）。
-3. **可选清理**：直接运行 `npx -y repoctl@latest clean` 远程执行清理，移除演示包后再执行 `pnpm install`（避免依赖本地构建 CLI）；如已安装依赖，也可使用 `pnpm script:clean`。
-4. **初始化元数据**：`pnpm script:init` 会批量更新 `package.json`、`README.md` 等公共信息。
+3. **初始化仓库默认值**：运行 `pnpm exec repoctl init`，同步推荐的 workspace 元数据与工程化配置。
+4. **创建下一个包或应用**：运行 `pnpm exec repoctl new`，通过引导式流程选择要创建的类型。
+5. **本地校验**：运行 `pnpm exec repoctl check`，执行推荐的本地校验。
+6. **可选清理**：直接运行 `npx -y repoctl@latest clean` 远程执行清理，移除演示包后再执行 `pnpm install`（避免依赖本地构建 CLI）；如已安装依赖，也可使用 `pnpm script:clean`。
 
 ## 仓库结构速览
 
@@ -35,27 +37,33 @@ layout: doc
 
 ## 常用脚本
 
-| 命令                 | 说明                                              |
-| -------------------- | ------------------------------------------------- |
-| `pnpm script:clean`  | 清理演示仓库，保留最小模板                        |
-| `pnpm script:init`   | 同步初始化 `package.json`、`README.md` 等基础信息 |
-| `pnpm script:mirror` | 为 VS Code 终端写入国内镜像环境变量               |
+| 命令                      | 说明                                              |
+| ------------------------- | ------------------------------------------------- |
+| `pnpm exec repoctl init`  | 初始化推荐的 workspace 元数据与 tooling 默认值    |
+| `pnpm exec repoctl new`   | 通过引导式流程创建新的包或应用                    |
+| `pnpm exec repoctl check` | 执行推荐的本地校验                                |
+| `pnpm script:clean`       | 清理演示仓库，保留最小模板                        |
+| `pnpm script:init`        | 同步初始化 `package.json`、`README.md` 等基础信息 |
+| `pnpm script:mirror`      | 为 VS Code 终端写入国内镜像环境变量               |
 
 更多脚本可在根目录 `package.json` 中查看，命令介绍详见 [工具区](./tools/turborepo.md)。
 
 ## CLI 命令概览
 
 ```bash
-npx repoctl package create # 创建子包/应用
-npx repoctl pkg new        # 短别名
+npx repoctl init              # 初始化推荐默认值
+npx repoctl new               # 引导式创建子包/应用
+npx repoctl check             # 推荐本地校验
 npx -y repoctl@latest clean  # 远程清理已勾选的子项目，避免依赖本地构建
 npx repoctl mirror         # 写入 VS Code 镜像配置
 npx repoctl skills sync    # 同步内置技能到全局目录
-npx repoctl workspace upgrade # 从最新模板同步配置文件
-npx repoctl ws up             # 短别名
+npx repoctl upgrade        # 从最新模板同步配置文件
+npx repoctl ws up          # 分组命令短别名
 npx repoctl ai prompt create  # 生成 Agentic 任务提示词模板
 npx repoctl ai p new          # 短别名
 ```
+
+如果你已经熟悉模板内部命令结构，也可以继续使用 `repoctl package create`、`repoctl workspace upgrade` 这类分组命令。
 
 示例：`npx repoctl ai prompt create -o agentic-task.md -f`，可直接生成 Markdown 模板并覆盖旧文件。默认会写入 `agentic/prompts/<timestamp>/prompt.md`，同时生成一个按时间排序的目录，并会提示你确认或修改目录名称，方便后续补充图片等素材；也可以用别名 `npx repoctl ai p new`.
 

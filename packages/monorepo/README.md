@@ -1,35 +1,40 @@
 # @icebreakers/monorepo
 
-[icebreaker](https://github.com/sonofmagic) 的 `monorepo` 升级同步工具
+`repoctl` 背后的 core engine 与 tooling wrapper。
 
-## 使用方式
+如果你只是想使用默认 CLI 体验，优先安装 `repoctl`：
 
 ```sh
-# 安装
+pnpm add -D repoctl
+pnpm exec repoctl init
+pnpm exec repoctl new
+pnpm exec repoctl check
+```
+
+`@icebreakers/monorepo` 适合下面两类场景：
+
+- 你需要直接使用 `@icebreakers/monorepo` / `@icebreakers/monorepo/tooling` 的程序化 API
+- 你在维护 `repoctl` 的底层实现、模板、升级资产或 wrapper 配置
+
+## CLI Compatibility
+
+`repoctl` 与 `@icebreakers/monorepo` 共享同一套 CLI 实现。若你仍希望直接安装 `@icebreakers/monorepo`，可继续使用兼容入口：
+
+```sh
 pnpm add -D @icebreakers/monorepo@latest
-# 工作区升级
-npx monorepo workspace upgrade
-# 短别名
+
+# 顶层任务命令
+npx monorepo init
+npx monorepo new
+npx monorepo check
+npx monorepo upgrade
+
+# 分组命令
 npx monorepo ws up
-# 帮助文档
-npx monorepo -h
-# 初始化工作区元信息
-npx monorepo workspace init
-# 生成 eslint / tsconfig / vitest 等工程化配置
-npx monorepo tooling init eslint tsconfig vitest
-# 一次生成全部内置 tooling 配置
 npx monorepo tg init --all
-# 生成 Agentic 任务模板
-npx monorepo ai prompt create -o agentic-task.md -f
-# 或使用别名
+npx monorepo pkg new
 npx monorepo ai p new --name checkout
-# 创建新子包
-npx monorepo package create
-# 同步技能到全局目录
-npx monorepo skills sync
-# 仅同步指定目标
 npx monorepo skills sync --codex
-npx monorepo skills sync --claude
 ```
 
 `monorepo ai prompt create`（短别名 `ai p new`，兼容旧写法 `ai create` / `ai new`）默认会把模板写入 `agentic/prompts/<timestamp>/prompt.md`，每次都会建一个以时间命名的目录，并在命令行提示可修改该目录名称，方便追加截图等素材；也可以通过参数自定义路径。
@@ -48,6 +53,25 @@ npx monorepo skills sync --claude
 - `ai prompt` / `ai p`: AI prompt 模板
 
 常用短写包括 `ws up`、`tg init`、`pkg new`、`e m`、`ai p new`。
+
+## 默认 CLI 配置
+
+工作区根目录推荐使用 `repoctl.config.ts` 覆盖默认行为。若你维护的是旧项目，也兼容 `monorepo.config.ts`，但两者不能同时存在。
+
+```ts
+import { defineMonorepoConfig } from 'repoctl'
+
+export default defineMonorepoConfig({
+  commands: {
+    init: {
+      preset: 'standard',
+    },
+    create: {
+      defaultTemplate: 'tsdown',
+    },
+  },
+})
+```
 
 ## 默认提交校验
 

@@ -168,6 +168,7 @@ describe('init helpers coverage', () => {
     vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
     vi.doMock('@/commands/init/tooling', () => ({
       initTooling: initToolingMock,
+      initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       normalizeInitToolingTargets: (input: string[]) => input,
     }))
     vi.doMock('@/commands/init/tooling/types', () => ({
@@ -182,6 +183,13 @@ describe('init helpers coverage', () => {
     expect(setReadmeMock).toHaveBeenCalled()
     expect(initToolingMock).toHaveBeenCalledWith('/repo', {
       targets: [],
+      force: false,
+    })
+
+    initToolingMock.mockClear()
+    await init('/repo', { preset: 'minimal' })
+    expect(initToolingMock).toHaveBeenCalledWith('/repo', {
+      targets: ['tsconfig'],
       force: false,
     })
 
@@ -200,6 +208,7 @@ describe('init helpers coverage', () => {
             skipIssueTemplateConfig: true,
             skipReadme: true,
             tooling: ['eslint'],
+            preset: 'standard',
             force: true,
           },
         },
@@ -213,6 +222,29 @@ describe('init helpers coverage', () => {
     expect(setReadmeMock).not.toHaveBeenCalled()
     expect(initToolingMock).toHaveBeenCalledWith('/repo', {
       targets: ['vitest'],
+      force: true,
+    })
+
+    initToolingMock.mockClear()
+    createContextMock.mockResolvedValueOnce({
+      cwd: '/repo',
+      config: {
+        commands: {
+          init: {
+            skipChangeset: true,
+            skipPkgJson: true,
+            skipIssueTemplateConfig: true,
+            skipReadme: true,
+            tooling: ['eslint'],
+            preset: 'standard',
+            force: true,
+          },
+        },
+      },
+    })
+    await init('/repo')
+    expect(initToolingMock).toHaveBeenCalledWith('/repo', {
+      targets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       force: true,
     })
   })

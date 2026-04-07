@@ -1,11 +1,13 @@
 import type { GetWorkspacePackagesOptions } from '../types'
 import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplateOptions } from './ai'
+import type { RecommendedCheckOptions } from './check'
 import type { CreateNewProjectOptions } from './create'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
 import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
+import { runRecommendedCheck } from './check'
 import { cleanProjects } from './clean'
 import { createNewProject, getCreateChoices, getTemplateMap, templateMap } from './create'
 import { init, initMetadata, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
@@ -23,6 +25,7 @@ export type {
   GetWorkspacePackagesOptions,
   PreCommitVerifyOptions,
   PrePushVerifyOptions,
+  RecommendedCheckOptions,
   SkillTarget,
   StagedTypecheckOptions,
   SyncSkillsOptions,
@@ -48,6 +51,7 @@ export {
   initToolingTargets,
   loadAgenticTasks,
   normalizeInitToolingTargets,
+  runRecommendedCheck,
   setVscodeBinaryMirror,
   skillTargets,
   syncSkills,

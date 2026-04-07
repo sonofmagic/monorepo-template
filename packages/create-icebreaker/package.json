@@ -33,7 +33,7 @@
   "scripts": {
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter @icebreakers/monorepo-templates build && tsc -p tsconfig.json",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests"
   },

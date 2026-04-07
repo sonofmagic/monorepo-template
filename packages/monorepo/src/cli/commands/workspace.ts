@@ -4,6 +4,12 @@ import { cleanProjects, initMetadata, upgradeMonorepo } from '../../commands'
 import { logger } from '../../core/logger'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
+interface WorkspaceCleanCliOptions {
+  yes?: boolean
+  includePrivate?: boolean
+  pinnedVersion?: string
+}
+
 export function registerWorkspaceCommands(program: Command, cwd: string) {
   const workspaceCommand = program.command('workspace').alias('ws').description('工作区命令')
 
@@ -33,7 +39,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .option('-y, --yes', '跳过交互直接清理（等价 autoConfirm）')
     .option('--include-private', '包含 private 包')
     .option('--pinned-version <version>', '覆盖写入的 @icebreakers/monorepo 版本')
-    .action(async (opts) => {
+    .action(async (opts: WorkspaceCleanCliOptions) => {
       await cleanProjects(cwd, normalizeCleanOptions(opts))
       logger.success('workspace clean finished!')
     })

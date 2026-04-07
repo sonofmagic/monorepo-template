@@ -1,5 +1,58 @@
 # Commands
 
+## init
+
+Purpose: bootstrap workspace metadata plus recommended tooling defaults.
+Usage:
+
+- npx repoctl init
+  Options:
+- --preset <minimal|standard>: choose a lighter or fuller setup
+- --force: overwrite existing tooling config files
+  Notes:
+- `standard` is the default preset
+- `minimal` currently focuses on the base TypeScript setup
+
+## new
+
+Purpose: create a new package or app through an intent-driven flow.
+Usage:
+
+- npx repoctl new
+- npx repoctl new my-lib
+  Notes:
+- Prompts for what you want to create first, then maps to a template
+- `library` defaults to `packages/<name>`
+- `web-app`, `api-service`, `docs-site`, and `cli-tool` default to `apps/<name>`
+- Advanced users can still use `repoctl package create` or `repoctl pkg new`
+
+## check
+
+Purpose: run recommended local checks.
+Usage:
+
+- npx repoctl check
+- npx repoctl check --staged
+- npx repoctl check --full
+  Notes:
+- default mode runs the lightweight local verification flow
+- `--staged` adds staged typecheck routing
+- `--full` maps to the heavier pre-push verification flow
+
+## upgrade
+
+Purpose: sync repo assets and scripts into the workspace.
+Usage:
+
+- npx repoctl upgrade
+- npx repoctl workspace upgrade
+- npx repoctl ws up
+  Options:
+- --interactive: prompt for overwrites
+- --core: sync core config only (skip GitHub assets)
+- --outDir <dir>: write to another directory
+- --skip-overwrite: never overwrite existing files
+
 ## workspace upgrade (alias: ws up)
 
 Purpose: sync monorepo assets and scripts into the workspace.
@@ -18,6 +71,7 @@ Usage:
 Purpose: initialize workspace metadata such as README, package.json, changeset, and issue template.
 Usage:
 
+- npx repoctl init
 - npx repoctl workspace init
 - npx repoctl ws init
 
@@ -91,7 +145,9 @@ Usage:
 Purpose: create a new package from a template.
 Usage:
 
+- npx repoctl new
 - npx repoctl package create [path]
 - npx repoctl pkg new [path]
   Notes:
+- Prefer `repoctl new` for the lower-cost guided flow.
 - Prompts for a template choice unless defaults are set in repoctl.config.ts or monorepo.config.ts.

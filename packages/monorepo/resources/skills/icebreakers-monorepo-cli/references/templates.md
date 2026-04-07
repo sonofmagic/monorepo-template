@@ -1,7 +1,18 @@
 # Templates
 
-`monorepo new [path]` copies a template into the target path. If you want an app
-under `apps/`, pass the path explicitly, e.g. `apps/my-app`.
+Prefer `repoctl new [name]` for the guided flow. It first asks what you want to
+create, then maps that intent to a template and default target directory.
+
+Intent defaults:
+
+- library -> `tsdown` -> `packages/<name>`
+- web-app -> `vue-hono` -> `apps/<name>`
+- api-service -> `hono-server` -> `apps/<name>`
+- docs-site -> `vitepress` -> `apps/<name>`
+- cli-tool -> `cli` -> `apps/<name>`
+
+Advanced users can still use `repoctl package create [path]` or `repoctl pkg new [path]`
+to select templates directly.
 
 Built-in template map:
 

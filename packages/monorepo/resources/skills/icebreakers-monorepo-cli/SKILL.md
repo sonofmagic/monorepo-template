@@ -20,13 +20,14 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 ### Create a template package
 
-- Use `repoctl package create [path]` (alias `pkg new`) and pick a template from `references/templates.md`.
-- Example: for "create a tsdown app in apps/my-app", run `npx repoctl pkg new apps/my-app` and select `tsdown`.
+- Prefer `repoctl new [name]` for the guided flow and use `references/templates.md` for intent-to-template mapping.
+- Use `repoctl package create [path]` (alias `pkg new`) when the user explicitly wants direct template selection.
+- Example: for "create a tsdown app in apps/my-app", run `npx repoctl new my-app`, choose `library`, then choose `tsdown`.
 - For non-interactive defaults, set `commands.create.defaultTemplate` in `repoctl.config.ts` or `monorepo.config.ts`.
 
 ### Upgrade or sync monorepo assets
 
-- Use `repoctl workspace upgrade` (`ws up`) and options from `references/commands.md`.
+- Prefer `repoctl upgrade`; use `repoctl workspace upgrade` (`ws up`) when matching existing scripts or user wording.
 
 ### Generate agentic prompt templates
 
@@ -34,7 +35,7 @@ Prefer `repoctl` in examples, allow `repo` as the short alias, and treat `rc` as
 
 ### Maintenance tasks
 
-- Use `repoctl clean`, `mirror`, `skills sync`, or `init` from `references/commands.md`.
+- Use `repoctl init`, `check`, `clean`, `mirror`, or `skills sync` from `references/commands.md`.
 - Confirm destructive actions (clean) and note repo-wide effects.
 
 ## References

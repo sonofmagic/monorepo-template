@@ -8,15 +8,17 @@ afterEach(async () => {
 describe('commander program', () => {
   it('wires each command to the corresponding handler', async () => {
     const upgradeMock = vi.fn(async () => {})
+    const initMock = vi.fn(async () => {})
     const initMetadataMock = vi.fn(async () => {})
     const initToolingMock = vi.fn(async () => {})
+    const runRecommendedCheckMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
     const verifyCommitMsgMock = vi.fn(() => {})
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
     const verifyStagedTypecheckMock = vi.fn(() => {})
-    const createMock = vi.fn(async () => {})
+    const runCreateFlowMock = vi.fn(async () => {})
     const aiTemplateMock = vi.fn(async () => {})
     const syncSkillsMock = vi.fn(async () => ([
       { target: 'codex', dest: '/home/.codex/skills/icebreakers-monorepo-cli' },
@@ -55,12 +57,14 @@ describe('commander program', () => {
       generateAgenticTemplates: aiBatchMock,
       loadAgenticTasks: loadTasksMock,
       cleanProjects: cleanMock,
-      createNewProject: createMock,
+      createNewProject: vi.fn(async () => {}),
       getCreateChoices: vi.fn(() => choices),
+      init: initMock,
       initMetadata: initMetadataMock,
       initTooling: initToolingMock,
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
+      runRecommendedCheck: runRecommendedCheckMock,
       setVscodeBinaryMirror: mirrorMock,
       skillTargets: ['codex', 'claude'],
       syncSkills: syncSkillsMock,
@@ -78,15 +82,26 @@ describe('commander program', () => {
         tsdown: { source: 'tsdown', target: 'packages/tsdown' },
       })),
     }))
+    vi.doMock('@/cli/commands/package/create-flow', () => ({
+      runCreateFlow: runCreateFlowMock,
+    }))
     vi.doMock('@/core/config', () => ({
       resolveCommandConfig: resolveCommandConfigMock,
     }))
 
     const successMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({ logger: { success: successMock, info: vi.fn() } }))
+    const infoMock = vi.fn()
+    vi.doMock('@/core/logger', () => ({ logger: { success: successMock, info: infoMock } }))
 
     const { default: program } = await import('@/cli/program')
 
+    await program.parseAsync(['node', 'repoctl', 'init', '--preset', 'minimal'])
+    await program.parseAsync(['node', 'repoctl', 'new', 'demo'])
+    await program.parseAsync(['node', 'repoctl', 'check', '--full'])
+    await program.parseAsync(['node', 'repoctl', 'upgrade'])
+    await program.parseAsync(['node', 'repoctl', 'sync'])
+    await program.parseAsync(['node', 'repoctl', 'clean', '--yes', '--include-private', '--pinned-version', 'canary'])
+    await program.parseAsync(['node', 'repoctl', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'upgrade'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'init'])
     await program.parseAsync(['node', 'monorepo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
@@ -101,8 +116,21 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'package', 'create'])
     await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
 
+    expect(initMock).toHaveBeenCalledWith(expect.any(String), { preset: 'minimal' })
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo')
+    expect(runRecommendedCheckMock).toHaveBeenCalledWith({
+      cwd: expect.any(String),
+      full: true,
+      staged: undefined,
+      editFile: undefined,
+    })
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMetadataMock).toHaveBeenCalledWith(expect.any(String))
+    expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
+      autoConfirm: true,
+      includePrivate: true,
+      pinnedVersion: 'canary',
+    })
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
       includePrivate: true,
@@ -132,11 +160,7 @@ describe('commander program', () => {
       force: false,
       format: 'md',
     }))
-    expect(createMock).toHaveBeenCalledWith({
-      name: 'my-package',
-      cwd: expect.any(String),
-      type: 'tsdown',
-    })
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined)
     expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
       cwd: expect.any(String),
       targets: ['codex'],
@@ -145,6 +169,8 @@ describe('commander program', () => {
       targets: ['eslint', 'vitest'],
       force: true,
     })
-    expect(successMock).toHaveBeenCalledTimes(7)
+    expect(successMock).toHaveBeenCalledTimes(14)
+    expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and `pnpm build`')
+    expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and start the new workspace package')
   })
 })

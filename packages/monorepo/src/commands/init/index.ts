@@ -10,10 +10,18 @@ export { initTooling, initToolingTargets } from './tooling'
 export { normalizeInitToolingTargets } from './tooling'
 export type { InitToolingExecutionOptions, InitToolingResult, InitToolingTarget } from './tooling/types'
 
+export type InitPreset = 'minimal' | 'standard'
+
 export interface InitCommandRuntimeOptions {
   tooling?: readonly InitToolingTarget[]
   all?: boolean
   force?: boolean
+  preset?: InitPreset
+}
+
+const presetToolingMap: Record<InitPreset, InitToolingTarget[]> = {
+  minimal: ['tsconfig'],
+  standard: [...initToolingTargets],
 }
 
 async function runInitMetadata(cwd: string) {
@@ -46,10 +54,15 @@ export async function initMetadata(cwd: string) {
 export async function init(cwd: string, options: InitCommandRuntimeOptions = {}) {
   const { initConfig } = await runInitMetadata(cwd)
 
+  const preset = options.preset ?? initConfig.preset
+  const presetTargets = preset ? presetToolingMap[preset] : undefined
   const configuredTargets = initConfig.tooling ?? []
+  const runtimeTargets = options.tooling?.length
+    ? [...options.tooling]
+    : presetTargets ?? configuredTargets
   const targets = options.all
     ? [...initToolingTargets]
-    : normalizeInitToolingTargets(options.tooling?.length ? [...options.tooling] : configuredTargets)
+    : normalizeInitToolingTargets(runtimeTargets)
 
   await initTooling(cwd, {
     targets,
