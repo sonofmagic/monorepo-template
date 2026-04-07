@@ -9,13 +9,36 @@ afterEach(async () => {
 })
 
 describe('CLI entrypoint', () => {
-  it('invokes program.parse on startup', async () => {
+  it('invokes program.parse on startup when arguments are present', async () => {
     const parseMock = vi.fn()
-    vi.doMock('@/cli/program', () => ({ default: { parse: parseMock } }))
+    const outputHelpMock = vi.fn()
+    vi.doMock('node:process', () => ({
+      default: {
+        argv: ['node', 'repoctl', 'init'],
+      },
+    }))
+    vi.doMock('@/cli/program', () => ({ default: { parse: parseMock, outputHelp: outputHelpMock } }))
 
     await import('@/cli')
 
     expect(parseMock).toHaveBeenCalledTimes(1)
+    expect(outputHelpMock).not.toHaveBeenCalled()
+  })
+
+  it('prints help instead of staying silent when no arguments are provided', async () => {
+    const parseMock = vi.fn()
+    const outputHelpMock = vi.fn()
+    vi.doMock('node:process', () => ({
+      default: {
+        argv: ['node', 'repoctl'],
+      },
+    }))
+    vi.doMock('@/cli/program', () => ({ default: { parse: parseMock, outputHelp: outputHelpMock } }))
+
+    await import('@/cli')
+
+    expect(outputHelpMock).toHaveBeenCalledTimes(1)
+    expect(parseMock).not.toHaveBeenCalled()
   })
 
   it('publishes repoctl, repo, rc, monorepo, and mo bin commands', () => {

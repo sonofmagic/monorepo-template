@@ -9,7 +9,16 @@ describe('program help surface', () => {
   it('exposes grouped commands and short aliases in help output', async () => {
     const { default: program } = await import('@/cli/program')
 
-    const rootHelp = program.helpInformation()
+    let renderedHelp = ''
+    program.configureOutput({
+      writeOut: (str) => {
+        renderedHelp += str
+      },
+      writeErr: () => {},
+    })
+    program.outputHelp()
+
+    const rootHelp = renderedHelp
     expect(rootHelp).toContain('workspace')
     expect(rootHelp).toContain('tooling')
     expect(rootHelp).toContain('package')
@@ -24,6 +33,11 @@ describe('program help surface', () => {
     expect(rootHelp).toContain('\n  sync [options]')
     expect(rootHelp).toContain('\n  clean [options]')
     expect(rootHelp).toContain('\n  mirror')
+    expect(rootHelp).toContain('Existing repo:')
+    expect(rootHelp).toContain('$ repoctl init')
+    expect(rootHelp).toContain('Zero-install cleanup:')
+    expect(rootHelp).toContain('$ pnpm dlx repoctl@latest clean --yes')
+    expect(rootHelp).toContain('$ repo init')
 
     const workspace = program.commands.find((command: Command) => command.name() === 'workspace')
     const tooling = program.commands.find((command: Command) => command.name() === 'tooling')

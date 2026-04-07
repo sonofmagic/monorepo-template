@@ -1,6 +1,6 @@
 import type { PackageJson } from '../../types'
 import { coerce, gte, minVersion } from 'semver'
-import { name as pkgName, version as pkgVersion } from '../../constants'
+import { packageName as pkgName, version as pkgVersion } from '../../constants'
 import { scriptsEntries } from './scripts'
 
 const NON_OVERRIDABLE_PREFIXES = ['workspace:', 'catalog:']

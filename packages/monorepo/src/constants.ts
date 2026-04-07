@@ -1,15 +1,20 @@
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
-import { name, version } from '../package.json'
+import { name as packageName, version } from '../package.json'
 
 /**
  * CLI 本身的基础信息，直接复用 package.json 里的 name/version，避免重复维护。
  */
 export {
-  name,
+  packageName,
   version,
 }
+
+/**
+ * 用户默认看到的 CLI 名称。兼容别名仍然可用，但帮助文案统一引导到 repoctl。
+ */
+export const cliName = 'repoctl'
 
 /**
  * 还原出 package.json 所在的绝对路径，方便后续按目录组织资源文件。

@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { program } from '@icebreakers/monorepo-templates'
-import { name as cliName, version } from '../constants'
+import { cliName, version } from '../constants'
 import { registerAiCommands } from './commands/ai'
 import { registerEnvCommands } from './commands/env'
 import { registerPackageCommands } from './commands/package'
@@ -28,12 +28,20 @@ registerPackageCommands(program, cwd)
 
 program.addHelpText('after', `
 Quick start:
-  $ ${cliName} init
-  $ ${cliName} new
-  $ ${cliName} check
-  $ ${cliName} upgrade
+  Existing repo:
+    $ ${cliName} init
+    $ ${cliName} new
+    $ ${cliName} check
+
+  Keep the repo current:
+    $ ${cliName} upgrade
+
+  Zero-install cleanup:
+    $ pnpm dlx repoctl@latest clean --yes
 
 Compatibility shortcuts:
+  $ repo init
+  $ repo new
   $ ${cliName} sync
   $ ${cliName} clean
   $ ${cliName} mirror
