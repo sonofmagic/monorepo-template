@@ -2,6 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { Command } from '@icebreakers/monorepo-templates'
 import { DEFAULT_TARGET } from './constants'
+import { formatNextSteps } from './next-steps'
 import { updateRootPackageJson } from './package-json'
 import { promptTargetDir, promptTemplates } from './prompts'
 import { scaffoldFromNpm } from './source-npm'
@@ -13,15 +14,7 @@ interface CreateOptions {
 }
 
 function printNextSteps(targetDir: string) {
-  const relative = path.relative(process.cwd(), targetDir) || '.'
-  process.stdout.write([
-    '',
-    'All set! Next steps:',
-    `  cd ${relative}`,
-    '  pnpm install',
-    '  pnpm dev',
-    '',
-  ].join('\n'))
+  process.stdout.write(formatNextSteps(targetDir))
 }
 
 async function runCreate(targetDirInput: string, options: CreateOptions) {
