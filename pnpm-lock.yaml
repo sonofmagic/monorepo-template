@@ -135,8 +135,8 @@ importers:
         specifier: ^1001.0.1
         version: 1001.0.1
       '@pnpm/types':
-        specifier: ^1001.3.0
-        version: 1001.3.0
+        specifier: ^1100.0.0
+        version: 1100.0.0
       '@pnpm/worker':
         specifier: ^1000.6.7
         version: 1000.6.7(@pnpm/logger@1001.0.1)(@types/node@25.6.0)
@@ -2673,6 +2673,10 @@ packages:
   '@pnpm/types@1001.3.0':
     resolution: {integrity: sha512-NLTXheat/u7OEGg5M5vF6Z85zx8uKUZE0+whtX/sbFV2XL48RdnOWGPTKYuVVkv8M+launaLUTgGEXNs/ess2w==}
     engines: {node: '>=18.12'}
+
+  '@pnpm/types@1100.0.0':
+    resolution: {integrity: sha512-3rxOdRJAcDk66fF7KQQ6uHA3D1kM5oKlUK163UdocyGGPqDJiKyAAbZuIg47l9/6muH5ujKrJstW65sDGQTr0g==}
+    engines: {node: '>=22.13'}
 
   '@pnpm/util.lex-comparator@3.0.2':
     resolution: {integrity: sha512-blFO4Ws97tWv/SNE6N39ZdGmZBrocXnBOfVp0ln4kELmns4pGPZizqyRtR8EjfOLMLstbmNCTReBoDvLz1isVg==}
@@ -12257,6 +12261,8 @@ snapshots:
 
   '@pnpm/types@1001.3.0': {}
 
+  '@pnpm/types@1100.0.0': {}
+
   '@pnpm/util.lex-comparator@3.0.2': {}
 
   '@pnpm/which@3.0.1':
@@ -13163,8 +13169,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.58.0(typescript@6.0.2)
-      '@typescript-eslint/types': 8.58.0
+      '@typescript-eslint/tsconfig-utils': 8.58.2(typescript@6.0.2)
+      '@typescript-eslint/types': 8.58.2
       debug: 4.4.3
       typescript: 6.0.2
     transitivePeerDependencies:
@@ -13268,7 +13274,7 @@ snapshots:
       debug: 4.4.3
       minimatch: 10.2.5
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ts-api-utils: 2.5.0(typescript@6.0.2)
       typescript: 6.0.2
     transitivePeerDependencies:
