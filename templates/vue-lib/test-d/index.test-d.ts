@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 import { expectAssignable } from 'tsd'
 // eslint-disable-next-line antfu/no-import-dist
-import { HelloWorld } from '../dist/index.js'
+import { HelloWorld } from '../dist/src/index'
 
 expectAssignable<Component>(HelloWorld)

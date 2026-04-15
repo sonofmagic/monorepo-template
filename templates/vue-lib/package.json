@@ -17,11 +17,11 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "default": "./src/index.ts"
     }
   },
-  "types": "./dist/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "files": [
     "dist"
   ],
@@ -33,12 +33,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "vue-tsc -b",
-    "tsd": "pnpm build && tsd --typings dist/index.d.ts --files test-d/**/*.test-d.ts"
+    "tsd": "pnpm build && tsd --typings dist/src/index.d.ts --files test-d/**/*.test-d.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/src/index.d.ts",
         "import": "./dist/index.js",
         "require": "./dist/index.umd.cjs"
       },
@@ -46,7 +46,7 @@
     },
     "main": "./dist/index.umd.cjs",
     "module": "./dist/index.js",
-    "types": "./dist/index.d.ts"
+    "types": "./dist/src/index.d.ts"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",
