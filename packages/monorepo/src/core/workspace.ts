@@ -1,4 +1,4 @@
-import type { GetWorkspacePackagesOptions } from '../types'
+import type { GetWorkspacePackagesOptions, WorkspaceData, WorkspacePackageWithJsonPath } from '../types'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
 import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
@@ -18,7 +18,10 @@ export type { GetWorkspacePackagesOptions } from '../types'
  * @param options 过滤选项
  * @returns 带有 `pkgJsonPath` 字段的 workspace package 列表
  */
-export async function getWorkspacePackages(workspaceDir: string, options?: GetWorkspacePackagesOptions) {
+export async function getWorkspacePackages(
+  workspaceDir: string,
+  options?: GetWorkspacePackagesOptions,
+): Promise<WorkspacePackageWithJsonPath[]> {
   const { ignoreRootPackage, ignorePrivatePackage, patterns } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
     ignoreRootPackage: true,
     ignorePrivatePackage: true,
@@ -30,7 +33,7 @@ export async function getWorkspacePackages(workspaceDir: string, options?: GetWo
     workspaceDir,
     workspacePatterns ? { patterns: workspacePatterns } : {},
   )
-  let pkgs = packages.filter((x) => {
+  let pkgs: WorkspacePackageWithJsonPath[] = packages.filter((x) => {
     if (ignorePrivatePackage && x.manifest.private) {
       return false
     }
@@ -57,7 +60,7 @@ export async function getWorkspacePackages(workspaceDir: string, options?: GetWo
  * @param cwd 当前工作目录
  * @param options 传给 `getWorkspacePackages()` 的过滤选项
  */
-export async function getWorkspaceData(cwd: string, options?: GetWorkspacePackagesOptions) {
+export async function getWorkspaceData(cwd: string, options?: GetWorkspacePackagesOptions): Promise<WorkspaceData> {
   const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
   const packages = await getWorkspacePackages(workspaceDir, options)
   return {

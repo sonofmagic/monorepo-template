@@ -2,12 +2,22 @@ import path from 'pathe'
 import { loadMonorepoConfig } from './config'
 import { GitClient } from './git'
 import { getWorkspaceData } from './workspace'
-import '@pnpm/types'
+
+export interface Context {
+  cwd: string
+  git: GitClient
+  gitUrl: Awaited<ReturnType<GitClient['getGitUrl']>>
+  gitUser: Awaited<ReturnType<GitClient['getUser']>>
+  workspaceDir: string
+  workspaceFilepath: string
+  packages: Awaited<ReturnType<typeof getWorkspaceData>>['packages']
+  config: Awaited<ReturnType<typeof loadMonorepoConfig>>
+}
 
 /**
  * 构建命令执行上下文，封装常用的工作区、Git、配置等信息。
  */
-export async function createContext(cwd: string) {
+export async function createContext(cwd: string): Promise<Context> {
   const { packages, workspaceDir } = await getWorkspaceData(cwd)
   const git = new GitClient({
     baseDir: workspaceDir,
@@ -27,8 +37,3 @@ export async function createContext(cwd: string) {
     config,
   }
 }
-
-/**
- * 统一导出的上下文类型，方便下游函数准确获知可用字段。
- */
-export type Context = Awaited<ReturnType<typeof createContext>>
