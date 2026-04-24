@@ -1,0 +1,53 @@
+{
+  "name": "@icebreakers/client",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vue-tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "postinstall": "pnpm cf-typegen",
+    "typecheck": "vue-tsc -b"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10.2.0",
+    "@tanstack/vue-query": "^5.92.6",
+    "@tanstack/vue-query-devtools": "^6.1.3",
+    "@tanstack/vue-table": "^8.21.3",
+    "@tanstack/vue-virtual": "^3.13.18",
+    "@trpc/client": "^11.8.1",
+    "clsx": "^2.1.1",
+    "pinia": "^3.0.4",
+    "tailwind-merge": "^3.4.0",
+    "tailwind-variants": "^3.2.2",
+    "vue": "^3.5.26",
+    "vue-i18n": "^11.2.8",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.20.3",
+    "@hono/node-server": "^1.19.9",
+    "@hono/trpc-server": "^0.4.2",
+    "@tailwindcss/vite": "^4.1.18",
+    "@trpc/server": "^11.8.1",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue-jsx": "^5.1.3",
+    "@vue/tsconfig": "^0.8.1",
+    "consola": "^3.4.2",
+    "hono": "^4.11.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "~5.9.3",
+    "unplugin-vue-router": "^0.19.2",
+    "vite": "^7.3.1",
+    "vite-plugin-vue-devtools": "^8.0.5",
+    "vite-tsconfig-paths": "^6.0.4",
+    "vue-tsc": "3.2.2",
+    "wrangler": "^4.59.1",
+    "zod": "^4.3.5"
+  }
+}

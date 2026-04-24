@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "description": "tsup(esbuild) build package template",
-  "author": "ice breaker <hi@sonofmagic.top>",
+  "author": "ice breaker <1324318532@qq.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,10 +25,8 @@
   ],
   "scripts": {
     "dev": "wrangler dev",
-    "build": "tsup",
-    "build:watch": "tsup --watch --sourcemap",
-    "node:build:watch": "pnpm build:watch",
-    "node:build": "pnpm build",
+    "node:build:watch": "tsup --watch --sourcemap",
+    "node:build": "tsup",
     "node:dev": "tsx watch src/node-entry.ts",
     "node:start": "node dist/node-entry.js",
     "test": "vitest run",
@@ -54,10 +52,10 @@
     "types": "./dist/index.d.ts"
   },
   "devDependencies": {
-    "@hono/node-server": "^2.0.0",
+    "@hono/node-server": "^1.19.9",
     "consola": "^3.4.2",
-    "hono": "^4.12.15",
-    "wrangler": "^4.85.0",
-    "zod": "^4.3.6"
+    "hono": "^4.11.4",
+    "wrangler": "^4.59.1",
+    "zod": "^4.3.5"
   }
 }
