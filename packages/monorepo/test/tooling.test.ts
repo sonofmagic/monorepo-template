@@ -27,7 +27,7 @@ describe('tooling factories', () => {
 
   it('creates lint-staged config with overridable monorepo command', () => {
     const config = createMonorepoLintStagedConfig({
-      monorepoCommand: 'pnpm exec repoctl',
+      monorepoCommand: 'pnpm exec repo',
     })
     const command = config['*.{ts,tsx,mts,cts,vue}']
 
@@ -35,7 +35,7 @@ describe('tooling factories', () => {
     if (typeof command !== 'function') {
       throw new TypeError('expected lint-staged rule to be callable')
     }
-    expect(command(['src/index.ts'])).toContain('pnpm exec repoctl verify staged-typecheck')
+    expect(command(['src/index.ts'])).toContain('pnpm exec repo verify staged-typecheck')
   })
 
   it('passes through complete lint-staged config when provided', () => {

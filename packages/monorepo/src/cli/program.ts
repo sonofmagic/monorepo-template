@@ -42,14 +42,12 @@ Quick start:
     $ ${cliName} upgrade
 
   Zero-install cleanup:
-    $ pnpm dlx repoctl@latest clean --yes
+    $ pnpm dlx repo@latest clean --yes
 
 Compatibility shortcuts:
-  $ repo setup
-  $ repo new
-  $ ${cliName} sync
-  $ ${cliName} clean
-  $ ${cliName} mirror
+  $ repoctl setup
+  $ repoctl new
+  $ repoctl check
 `)
 
 export default program

@@ -1,6 +1,6 @@
 # repoctl
 
-One-command repo setup and maintenance for pnpm/turbo workspaces.
+Package name: `repoctl`. Recommended command: `repo`.
 
 ## Install
 
@@ -11,9 +11,9 @@ pnpm add -D repoctl
 ## Quick Start
 
 ```sh
-pnpm exec repoctl setup
-pnpm exec repoctl new my-package
-pnpm exec repoctl check
+pnpm exec repo setup
+pnpm exec repo new my-package
+pnpm exec repo check
 ```
 
 Inside generated repos, the same workflow is available as shorter root scripts:
@@ -28,16 +28,16 @@ pnpm check
 
 ```sh
 # sync repo standards
-pnpm exec repoctl upgrade
+pnpm exec repo upgrade
 
 # create a specific template without extra prompts
-pnpm exec repoctl new dashboard --template vue-hono
+pnpm exec repo new dashboard --template vue-hono
 
 # advanced workspace upgrade
-pnpm exec repoctl ws up
+pnpm exec repo ws up
 
 # generate tooling configs
-pnpm exec repoctl tg init --all
+pnpm exec repo tg init --all
 ```
 
 ## Config
@@ -59,7 +59,7 @@ export default defineMonorepoConfig({
 })
 ```
 
-When `commands.create.defaultTemplate` is set, `repoctl new foo` now creates the package directly and places it under the conventional base directory inferred from the template, such as `packages/foo` or `apps/foo`.
+When `commands.create.defaultTemplate` is set, `repo new foo` now creates the package directly and places it under the conventional base directory inferred from the template, such as `packages/foo` or `apps/foo`. `repoctl new foo` remains supported as a compatibility alias.
 
 ## Advanced Usage
 

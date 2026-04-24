@@ -26,7 +26,7 @@ export default {
       rules: {},
     },
     lintStaged: {
-      monorepoCommand: 'pnpm exec repoctl',
+      monorepoCommand: 'pnpm exec repo',
     },
     vitest: {
       includeWorkspaceRootConfig: false,

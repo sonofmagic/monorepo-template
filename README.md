@@ -16,7 +16,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 - **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
 - **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
-- **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `repoctl` keep dependencies and scaffolding aligned. `repo` is available as a short alias, while `rc` and `@icebreakers/monorepo` remain compatibility entrypoints.
+- **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `repoctl` keep dependencies and scaffolding aligned. `repo` is the primary command, while `repoctl`, `rc`, and `@icebreakers/monorepo` remain compatibility entrypoints.
 - **CI/CD Ready**: Sample GitHub Actions configuration, Codecov integration, and `secrets.NPM_TOKEN` support automated publishing and coverage reporting.
 
 ## Quick Start
@@ -36,11 +36,11 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
   - `pnpm new my-package`
   - `pnpm check`
 - Direct CLI equivalents:
-  - `pnpm exec repoctl setup`
-  - `pnpm exec repoctl new my-package`
-  - `pnpm exec repoctl check`
-- Zero-install cleanup on a fresh clone: `pnpm dlx repoctl@latest clean --yes` (add `--include-private` to keep private packages in scope).
-  Short alias: `pnpm dlx repo@latest clean --yes`. `rc` is intentionally not the primary recommendation because short global commands are easier to collide with other CLIs.
+  - `pnpm exec repo setup`
+  - `pnpm exec repo new my-package`
+  - `pnpm exec repo check`
+- Zero-install cleanup on a fresh clone: `pnpm dlx repo@latest clean --yes` (add `--include-private` to keep private packages in scope).
+  `repoctl` is still supported, but `repo` is now the primary recommendation. `rc` is intentionally not the primary recommendation because short global commands are easier to collide with other CLIs.
 - One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsdown,vue-hono` or `--templates 1,3` to preselect.
 
 ## Repository Layout
@@ -55,7 +55,7 @@ templates/
   vue-lib/      # Vue component library template
 packages/
   monorepo/           # @icebreakers/monorepo compatibility package
-  repoctl/            # preferred repo toolchain entrypoint
+  repoctl/            # package name, exports the recommended `repo` command
   create-icebreaker/  # npm create flow
   monorepo-templates/ # template and asset bundle for npm
 ```
@@ -83,9 +83,9 @@ packages/
 | `pnpm setup`                  | Bootstrap recommended workspace metadata and tooling.                |
 | `pnpm new <name>`             | Create a new package or app with the guided flow.                    |
 | `pnpm check`                  | Run recommended local verification.                                  |
-| `pnpm exec repoctl setup`     | Direct CLI equivalent of `pnpm setup`.                               |
-| `pnpm exec repoctl new`       | CLI entrypoint for package/app creation.                             |
-| `pnpm exec repoctl check`     | CLI entrypoint for local verification.                               |
+| `pnpm exec repo setup`        | Direct CLI equivalent of `pnpm setup`.                               |
+| `pnpm exec repo new`          | CLI entrypoint for package/app creation.                             |
+| `pnpm exec repo check`        | CLI entrypoint for local verification.                               |
 | `pnpm script:init`            | Initialise template settings via the `repoctl` compatibility script. |
 | `pnpm script:sync`            | Synchronise repo assets and helper scripts via `repoctl`.            |
 | `pnpm script:clean`           | Remove sample packages and generated artifacts.                      |
@@ -111,7 +111,7 @@ Leverage Changesets plus GitHub Actions for automated versioning:
 - **Code style**: `.editorconfig` enforces two-space indentation and LF line endings, while ESLint and Stylelint maintain consistency across packages.
 - **Commit hooks**: Husky and lint-staged run staged-file ESLint/Stylelint autofixes before commits.
 - **Testing & coverage**: Run `pnpm test -- --coverage` to export coverage reports into the `coverage/` directory.
-- **Staying current**: Use `npx repoctl@latest` to upgrade this template when new features ship. If you prefer a shorter command, `npx repo@latest` is also supported.
+- **Staying current**: Use `npx repo@latest` to upgrade this template when new features ship. `npx repoctl@latest` remains supported for compatibility.
 
 ## More Resources
 

@@ -12,9 +12,9 @@ export {
 }
 
 /**
- * 用户默认看到的 CLI 名称。兼容别名仍然可用，但帮助文案统一引导到 repoctl。
+ * 用户默认看到的 CLI 名称。兼容别名仍然可用，但帮助文案统一引导到 repo。
  */
-export const cliName = 'repoctl'
+export const cliName = 'repo'
 
 /**
  * 还原出 package.json 所在的绝对路径，方便后续按目录组织资源文件。

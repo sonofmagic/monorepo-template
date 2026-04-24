@@ -2,13 +2,13 @@
 
 `repoctl` 背后的 core engine 与 tooling wrapper。
 
-如果你只是想使用默认 CLI 体验，优先安装 `repoctl`：
+如果你只是想使用默认 CLI 体验，优先安装 `repoctl`，但默认使用更短的 `repo` 命令：
 
 ```sh
 pnpm add -D repoctl
-pnpm exec repoctl setup
-pnpm exec repoctl new my-package
-pnpm exec repoctl check
+pnpm exec repo setup
+pnpm exec repo new my-package
+pnpm exec repo check
 ```
 
 `@icebreakers/monorepo` 适合下面两类场景：
@@ -18,7 +18,7 @@ pnpm exec repoctl check
 
 ## CLI Compatibility
 
-`repoctl` 与 `@icebreakers/monorepo` 共享同一套 CLI 实现。若你仍希望直接安装 `@icebreakers/monorepo`，可继续使用兼容入口：
+`repo`、`repoctl` 与 `@icebreakers/monorepo` 共享同一套 CLI 实现。若你仍希望直接安装 `@icebreakers/monorepo`，可继续使用兼容入口：
 
 ```sh
 pnpm add -D @icebreakers/monorepo@latest
@@ -54,7 +54,7 @@ npx monorepo skills sync --codex
 
 常用短写包括 `ws up`、`tg init`、`pkg new`、`e m`、`ai p new`。
 
-`repoctl new` / `monorepo new` 现在支持 `--template` 直接指定模板，例如 `repoctl new dashboard --template vue-hono`。当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。
+`repo new` / `monorepo new` 现在支持 `--template` 直接指定模板，例如 `repo new dashboard --template vue-hono`。当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。`repoctl new` 仍然兼容。
 
 ## 默认 CLI 配置
 

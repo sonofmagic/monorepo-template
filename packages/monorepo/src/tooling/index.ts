@@ -475,10 +475,10 @@ export async function defineTsconfigConfig(
  * 默认行为：
  * - `*.{js,jsx,mjs,ts,tsx,mts,cts}` 运行 `eslint --fix`
  * - `*.vue` 同时运行 `eslint --fix` 与 `stylelint --fix --allow-empty-input`
- * - `*.{ts,tsx,mts,cts,vue}` 调用 `pnpm exec repoctl verify staged-typecheck`
+ * - `*.{ts,tsx,mts,cts,vue}` 调用 `pnpm exec repo verify staged-typecheck`
  * - 样式文件运行 `stylelint --fix --allow-empty-input`
  *
- * @param options 仅支持 `monorepoCommand`，默认值为 `pnpm exec repoctl`
+ * @param options 仅支持 `monorepoCommand`，默认值为 `pnpm exec repo`
  * @returns 可直接导出的 `lint-staged` 配置对象
  *
  * @example
@@ -486,7 +486,7 @@ export async function defineTsconfigConfig(
  * import { createMonorepoLintStagedConfig } from '@icebreakers/monorepo/tooling'
  *
  * export default createMonorepoLintStagedConfig({
- *   monorepoCommand: 'pnpm exec repoctl',
+ *   monorepoCommand: 'pnpm exec repo',
  * })
  * ```
  */
@@ -495,7 +495,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
     return options.config as MonorepoLintStagedConfig
   }
 
-  const monorepoCommand = options.monorepoCommand ?? 'pnpm exec repoctl'
+  const monorepoCommand = options.monorepoCommand ?? 'pnpm exec repo'
   return {
     '*.{js,jsx,mjs,ts,tsx,mts,cts}': [
       'eslint --fix',
