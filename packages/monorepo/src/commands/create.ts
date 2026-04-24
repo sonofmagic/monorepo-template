@@ -1,5 +1,7 @@
 import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
+import type { Dirent } from 'node:fs'
 import type { CreateChoiceOption, PackageJson } from '@/types'
+import { readdir } from 'node:fs/promises'
 import process from 'node:process'
 import { scaffoldTemplate } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
@@ -24,6 +26,27 @@ export const templateMap = {
 } as const
 
 export type CreateNewProjectType = keyof typeof templateMap
+
+const rootReferenceExtensions = new Set([
+  '.cjs',
+  '.cts',
+  '.js',
+  '.json',
+  '.mjs',
+  '.mts',
+  '.ts',
+])
+
+const rootReferenceReplacements = [
+  {
+    from: '../../tsconfig.json',
+    to: 'tsconfig.json',
+  },
+  {
+    from: '../../tooling/load-tooling-module.mjs',
+    to: 'tooling/load-tooling-module.mjs',
+  },
+] as const
 
 function normalizeTemplateDefinition(value: string | TemplateDefinition) {
   if (typeof value === 'string') {
@@ -149,6 +172,57 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
   }
 }
 
+function normalizeRelativeSpecifier(fromDir: string, targetPath: string) {
+  const relativePath = path.relative(fromDir, targetPath).split(path.sep).join('/')
+  if (relativePath.startsWith('.')) {
+    return relativePath
+  }
+  return `./${relativePath}`
+}
+
+async function rewriteTemplateRootReferences(targetDir: string, workspaceDir: string) {
+  let entries: Dirent<string>[]
+  try {
+    entries = await readdir(targetDir, { withFileTypes: true })
+  }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return
+    }
+    throw error
+  }
+
+  await Promise.all(entries.map(async (entry) => {
+    const entryPath = path.join(targetDir, entry.name)
+
+    if (entry.isDirectory()) {
+      await rewriteTemplateRootReferences(entryPath, workspaceDir)
+      return
+    }
+
+    if (!entry.isFile() || !rootReferenceExtensions.has(path.extname(entry.name))) {
+      return
+    }
+
+    const originalContent = await fs.readFile(entryPath, 'utf8')
+    let nextContent = originalContent
+
+    for (const replacement of rootReferenceReplacements) {
+      if (!nextContent.includes(replacement.from)) {
+        continue
+      }
+
+      const targetPath = path.join(workspaceDir, replacement.to)
+      const rewrittenSpecifier = normalizeRelativeSpecifier(path.dirname(entryPath), targetPath)
+      nextContent = nextContent.replaceAll(replacement.from, rewrittenSpecifier)
+    }
+
+    if (nextContent !== originalContent) {
+      await fs.writeFile(entryPath, nextContent, 'utf8')
+    }
+  }))
+}
+
 /**
  * 根据模板生成一个新项目目录，并自动补写 `package.json` 常用字段。
  *
@@ -203,6 +277,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
     targetDir: to,
     skipRootBasenames: ['package.json'],
   })
+  await rewriteTemplateRootReferences(to, cwd)
 
   if (hasPackageJson) {
     const sourceJson = await fs.readJson(sourceJsonPath) as PackageJson
