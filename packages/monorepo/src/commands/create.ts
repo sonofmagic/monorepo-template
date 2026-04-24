@@ -172,6 +172,13 @@ async function applyGitMetadata(pkgJson: PackageJson, repoDir: string, targetDir
   }
 }
 
+function sanitizeTemplatePackageJson(pkgJson: PackageJson) {
+  delete pkgJson.author
+  delete pkgJson.bugs
+  delete pkgJson.homepage
+  delete pkgJson.repository
+}
+
 function normalizeRelativeSpecifier(fromDir: string, targetPath: string) {
   const relativePath = path.relative(fromDir, targetPath).split(path.sep).join('/')
   if (relativePath.startsWith('.')) {
@@ -281,6 +288,7 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
 
   if (hasPackageJson) {
     const sourceJson = await fs.readJson(sourceJsonPath) as PackageJson
+    sanitizeTemplatePackageJson(sourceJson)
     setByPath(sourceJson, 'version', '0.0.0')
     const packageName = name?.startsWith('@') ? name : path.basename(targetName)
     setByPath(sourceJson, 'name', packageName)

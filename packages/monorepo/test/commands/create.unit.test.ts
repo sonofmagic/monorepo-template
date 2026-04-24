@@ -20,6 +20,7 @@ interface OutputPackageJson {
   name?: string
   author?: string
   bugs?: PackageBugs
+  homepage?: string
   repository?: PackageRepo
 }
 
@@ -164,5 +165,36 @@ describe('createNewProject unit scenarios', () => {
       url: 'git+https://github.com/ice/awesome.git',
       directory: '@scope/demo',
     }))
+    expect(pkgJson?.homepage).toBeUndefined()
+  })
+
+  it('removes template-specific metadata when git info is unavailable', async () => {
+    readJsonMock.mockResolvedValue({
+      name: 'template',
+      version: '1.0.0',
+      author: 'ice breaker <hi@sonofmagic.top>',
+      homepage: 'https://monorepo.icebreaker.top',
+      bugs: {
+        url: 'https://github.com/sonofmagic/monorepo-template/issues',
+      },
+      repository: {
+        type: 'git',
+        url: 'git+https://github.com/sonofmagic/monorepo-template.git',
+      },
+    } as any)
+    getRepoNameMock.mockImplementation(async () => undefined as any)
+    getUserMock.mockImplementation(async () => undefined as any)
+    getRepoRootMock.mockImplementation(async () => undefined as any)
+
+    const { createNewProject } = await import('@/commands/create')
+    await createNewProject({ cwd: '/repo', name: 'clean-demo', renameJson: true, type: 'tsdown' })
+
+    const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.mock.json'))
+    const pkgJson = outputCall?.[1] as OutputPackageJson | undefined
+    expect(pkgJson?.name).toBe('clean-demo')
+    expect(pkgJson?.author).toBeUndefined()
+    expect(pkgJson?.homepage).toBeUndefined()
+    expect(pkgJson?.bugs).toBeUndefined()
+    expect(pkgJson?.repository).toBeUndefined()
   })
 })
