@@ -39,7 +39,7 @@
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
     "postinstall": "pnpm cf-typegen",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json"
   },
   "publishConfig": {
     "exports": {

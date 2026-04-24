@@ -63,7 +63,7 @@
     "build": "tsdown",
     "test": "vitest run",
     "test:dev": "vitest",
-    "typecheck": "pnpm --filter @icebreakers/monorepo-templates build && tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter @icebreakers/monorepo-templates build && node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
     "lint": "eslint .",

@@ -1,4 +1,4 @@
-import type { PackageJson } from 'pkg-types'
+import type { PackageJson } from '@/types'
 import { setPkgJson } from '@/commands/upgrade'
 import { version } from '@/constants'
 

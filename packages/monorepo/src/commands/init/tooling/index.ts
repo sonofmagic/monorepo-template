@@ -9,15 +9,17 @@ import { initToolingTargets } from './types'
 export { resolveToolingImportSource, resolveToolingPackageName } from './presets'
 export { initToolingTargets } from './types'
 
-function sortRecord(input: Record<string, string>) {
+function sortRecord(input: Record<string, string | undefined>) {
   return Object.fromEntries(
-    Object.entries(input).sort(([left], [right]) => left.localeCompare(right)),
+    Object.entries(input)
+      .filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1].length > 0)
+      .sort(([left], [right]) => left.localeCompare(right)),
   )
 }
 
 function mergeDevDependencies(
   pkgJson: PackageJson,
-  additions: Record<string, string>,
+  additions: Record<string, string | undefined>,
 ) {
   const current = { ...(pkgJson.devDependencies ?? {}) }
   let changed = false

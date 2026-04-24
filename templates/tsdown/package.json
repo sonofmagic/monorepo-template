@@ -42,7 +42,7 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts"
   },
   "publishConfig": {}

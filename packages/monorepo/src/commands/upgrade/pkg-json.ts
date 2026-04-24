@@ -44,8 +44,8 @@ function shouldAssignVersion(currentVersion: unknown, nextVersion: string) {
 }
 
 function resolvePreferredToolPackageName(
-  sourceDevDeps: Record<string, string>,
-  targetDevDeps: Record<string, string>,
+  sourceDevDeps: Record<string, string | undefined>,
+  targetDevDeps: Record<string, string | undefined>,
 ) {
   for (const depName of toolPackageNames) {
     if (typeof targetDevDeps[depName] === 'string' && targetDevDeps[depName].length > 0) {

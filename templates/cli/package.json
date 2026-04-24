@@ -23,7 +23,7 @@
     "build": "tsup",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json"
   },
   "dependencies": {
     "consola": "^3.4.2"
