@@ -16,6 +16,7 @@ const coreAssetTargets = [
   // pnpm
   'pnpm-workspace.yaml',
   'scripts',
+  'tooling',
   // base tsconfig
   'tsconfig.json',
   // turbo

@@ -36,6 +36,9 @@ describe('runDoctor', () => {
     await fs.writeFile(path.join(workspaceDir, 'repoctl.config.ts'), 'export default {}\n')
     await fs.writeFile(path.join(workspaceDir, '.husky/pre-commit'), 'pnpm exec lint-staged\n')
     await fs.writeFile(path.join(workspaceDir, 'lint-staged.config.js'), 'export default {}\n')
+    await fs.ensureDir(path.join(workspaceDir, 'tooling'))
+    await fs.writeFile(path.join(workspaceDir, 'tooling/load-tooling-module.mjs'), 'export async function loadRepoctlToolingModule() {}\n')
+    await fs.writeFile(path.join(workspaceDir, 'tooling/ensure-tooling-built.mjs'), 'export async function ensureToolingBuilt() {}\n')
 
     const { runDoctor } = await import('@/commands/doctor')
     const report = await runDoctor(pkgDir)
@@ -44,7 +47,7 @@ describe('runDoctor', () => {
     expect(report.workspaceDir).toBe(normalizedWorkspaceDir)
     expect(report.packageCount).toBe(1)
     expect(report.summary).toEqual({
-      pass: 7,
+      pass: 8,
       warn: 0,
       fail: 0,
     })
@@ -75,7 +78,7 @@ describe('runDoctor', () => {
 
     expect(report.summary).toEqual({
       pass: 2,
-      warn: 2,
+      warn: 3,
       fail: 3,
     })
     expect(report.checks.find(check => check.id === 'node-version')?.status).toBe('fail')
@@ -83,6 +86,7 @@ describe('runDoctor', () => {
     expect(report.checks.find(check => check.id === 'root-scripts')?.detail).toContain('new, check, doctor')
     expect(report.checks.find(check => check.id === 'config-file')?.status).toBe('fail')
     expect(report.checks.find(check => check.id === 'commit-hooks')?.status).toBe('warn')
+    expect(report.checks.find(check => check.id === 'tooling-loader')?.status).toBe('warn')
 
     await fs.remove(workspaceDir)
   })

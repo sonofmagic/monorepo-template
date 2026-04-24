@@ -88,6 +88,8 @@ export async function runDoctor(cwd: string) {
   const monorepoConfigPath = `${workspaceDir}/monorepo.config.ts`
   const huskyPreCommitPath = `${workspaceDir}/.husky/pre-commit`
   const lintStagedConfigPath = `${workspaceDir}/lint-staged.config.js`
+  const toolingLoaderPath = `${workspaceDir}/tooling/load-tooling-module.mjs`
+  const toolingEnsureBuiltPath = `${workspaceDir}/tooling/ensure-tooling-built.mjs`
 
   const [
     hasPackageJson,
@@ -96,6 +98,8 @@ export async function runDoctor(cwd: string) {
     hasMonorepoConfig,
     hasHuskyPreCommit,
     hasLintStagedConfig,
+    hasToolingLoader,
+    hasToolingEnsureBuilt,
   ] = await Promise.all([
     fs.pathExists(packageJsonPath),
     fs.pathExists(workspaceManifestPath),
@@ -103,6 +107,8 @@ export async function runDoctor(cwd: string) {
     fs.pathExists(monorepoConfigPath),
     fs.pathExists(huskyPreCommitPath),
     fs.pathExists(lintStagedConfigPath),
+    fs.pathExists(toolingLoaderPath),
+    fs.pathExists(toolingEnsureBuiltPath),
   ])
 
   const pkgJson = hasPackageJson
@@ -270,6 +276,28 @@ export async function runDoctor(cwd: string) {
       status: 'warn',
       detail: '当前仓库未检测到 Husky / lint-staged 提交校验入口。',
       fix: '如果你希望提交前自动做 eslint / stylelint / typecheck，建议运行 repo upgrade 或 repo init 同步默认配置。',
+    }))
+  }
+
+  if (hasToolingLoader && hasToolingEnsureBuilt) {
+    checks.push(createCheck({
+      id: 'tooling-loader',
+      title: '根 tooling 目录',
+      status: 'pass',
+      detail: '已检测到 tooling/load-tooling-module.mjs 与 tooling/ensure-tooling-built.mjs，模板内的 tooling wrapper 引用可正常工作。',
+    }))
+  }
+  else {
+    const missing = [
+      !hasToolingLoader ? 'tooling/load-tooling-module.mjs' : null,
+      !hasToolingEnsureBuilt ? 'tooling/ensure-tooling-built.mjs' : null,
+    ].filter(Boolean).join(', ')
+    checks.push(createCheck({
+      id: 'tooling-loader',
+      title: '根 tooling 目录',
+      status: 'warn',
+      detail: `缺少模板依赖的根 tooling 文件：${missing}。`,
+      fix: '建议运行 repo upgrade 同步根 tooling 目录，否则部分模板生成后的 eslint/vitest 配置可能引用到不存在的文件。',
     }))
   }
 
