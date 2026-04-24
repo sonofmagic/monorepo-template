@@ -29,9 +29,14 @@ registerPackageCommands(program, cwd)
 program.addHelpText('after', `
 Quick start:
   Existing repo:
-    $ ${cliName} init
-    $ ${cliName} new
+    $ ${cliName} setup
+    $ ${cliName} new my-package
     $ ${cliName} check
+
+  Faster in generated repos:
+    $ pnpm setup
+    $ pnpm new my-package
+    $ pnpm check
 
   Keep the repo current:
     $ ${cliName} upgrade
@@ -40,7 +45,7 @@ Quick start:
     $ pnpm dlx repoctl@latest clean --yes
 
 Compatibility shortcuts:
-  $ repo init
+  $ repo setup
   $ repo new
   $ ${cliName} sync
   $ ${cliName} clean

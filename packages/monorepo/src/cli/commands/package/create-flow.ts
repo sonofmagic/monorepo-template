@@ -12,9 +12,31 @@ function normalizeTargetName(name: string, baseDir: 'packages' | 'apps') {
   return `${baseDir}/${name}`
 }
 
-export async function runCreateFlow(cwd: string, inputName: string) {
+function resolveBaseDirFromTemplate(type: CreateNewProjectOptions['type']) {
+  const intentChoice = createIntentChoices.find(item => item.defaultTemplate === type)
+  return intentChoice?.defaultBaseDir
+}
+
+function normalizeNameForTemplate(name: string, type: CreateNewProjectOptions['type']) {
+  if (!type) {
+    return name
+  }
+
+  const baseDir = resolveBaseDirFromTemplate(type)
+  if (!baseDir) {
+    return name
+  }
+
+  return normalizeTargetName(name, baseDir)
+}
+
+export interface RunCreateFlowOptions {
+  template?: CreateNewProjectOptions['type']
+}
+
+export async function runCreateFlow(cwd: string, inputName: string | undefined, options: RunCreateFlowOptions = {}) {
   const createConfig = await resolveCommandConfig('create', cwd)
-  const explicitTemplate = createConfig?.type ?? createConfig?.defaultTemplate
+  const explicitTemplate = options.template ?? createConfig?.type ?? createConfig?.defaultTemplate
 
   let packageName = inputName
 
@@ -65,14 +87,14 @@ export async function runCreateFlow(cwd: string, inputName: string) {
     })
   }
 
-  const type: CreateNewProjectOptions['type'] = await select({
+  const type: CreateNewProjectOptions['type'] = explicitTemplate ?? await select({
     message: '请选择模板类型',
     choices: getCreateChoices(createConfig?.choices),
-    default: explicitTemplate ?? defaultTemplate,
+    default: defaultTemplate,
   })
 
   const createOptions = {
-    name: packageName,
+    name: normalizeNameForTemplate(packageName, type),
     cwd,
     ...(type !== undefined ? { type } : {}),
   }

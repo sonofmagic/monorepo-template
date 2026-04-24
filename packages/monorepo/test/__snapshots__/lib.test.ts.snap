@@ -4,10 +4,17 @@ exports[`lib > setPkgJson casae 0 1`] = `
 {
   "packageManager": "pnpm@9.12.1",
   "scripts": {
+    "check": "repoctl check",
+    "clean:repo": "repoctl clean",
     "commitlint": "commitlint --edit",
+    "mirror": "repoctl mirror",
+    "new": "repoctl new",
     "script:clean": "repoctl clean",
     "script:init": "repoctl init",
     "script:mirror": "repoctl mirror",
+    "script:sync": "repoctl sync",
+    "setup": "repoctl setup",
+    "sync": "repoctl sync",
   },
 }
 `;
@@ -16,10 +23,14 @@ exports[`lib > setPkgJson casae 1 1`] = `
 {
   "scripts": {
     "build": "turbo run build",
+    "check": "repoctl check",
+    "clean:repo": "repoctl clean",
     "commit": "commit",
     "commitlint": "commitlint --edit",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
+    "mirror": "repoctl mirror",
+    "new": "repoctl new",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "publish-packages": "turbo run build lint test && changeset version && changeset publish",
@@ -27,6 +38,9 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "script:clean": "repoctl clean",
     "script:init": "repoctl init",
     "script:mirror": "repoctl mirror",
+    "script:sync": "repoctl sync",
+    "setup": "repoctl setup",
+    "sync": "repoctl sync",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
   },
@@ -42,10 +56,17 @@ exports[`lib > setPkgJson casae 2 1`] = `
     "x": "workspace:*",
   },
   "scripts": {
+    "check": "repoctl check",
+    "clean:repo": "repoctl clean",
     "commitlint": "commitlint --edit",
+    "mirror": "repoctl mirror",
+    "new": "repoctl new",
     "script:clean": "repoctl clean",
     "script:init": "repoctl init",
     "script:mirror": "repoctl mirror",
+    "script:sync": "repoctl sync",
+    "setup": "repoctl setup",
+    "sync": "repoctl sync",
   },
 }
 `;
@@ -59,10 +80,17 @@ exports[`lib > setPkgJson casae 3 1`] = `
     "x": "1.1.1",
   },
   "scripts": {
+    "check": "repoctl check",
+    "clean:repo": "repoctl clean",
     "commitlint": "commitlint --edit",
+    "mirror": "repoctl mirror",
+    "new": "repoctl new",
     "script:clean": "repoctl clean",
     "script:init": "repoctl init",
     "script:mirror": "repoctl mirror",
+    "script:sync": "repoctl sync",
+    "setup": "repoctl setup",
+    "sync": "repoctl sync",
   },
 }
 `;

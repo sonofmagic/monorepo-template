@@ -11,9 +11,17 @@ pnpm add -D repoctl
 ## Quick Start
 
 ```sh
-pnpm exec repoctl init
-pnpm exec repoctl new
+pnpm exec repoctl setup
+pnpm exec repoctl new my-package
 pnpm exec repoctl check
+```
+
+Inside generated repos, the same workflow is available as shorter root scripts:
+
+```sh
+pnpm setup
+pnpm new my-package
+pnpm check
 ```
 
 ## Common Commands
@@ -21,6 +29,9 @@ pnpm exec repoctl check
 ```sh
 # sync repo standards
 pnpm exec repoctl upgrade
+
+# create a specific template without extra prompts
+pnpm exec repoctl new dashboard --template vue-hono
 
 # advanced workspace upgrade
 pnpm exec repoctl ws up
@@ -47,6 +58,8 @@ export default defineMonorepoConfig({
   },
 })
 ```
+
+When `commands.create.defaultTemplate` is set, `repoctl new foo` now creates the package directly and places it under the conventional base directory inferred from the template, such as `packages/foo` or `apps/foo`.
 
 ## Advanced Usage
 

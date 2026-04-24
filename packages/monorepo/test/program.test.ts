@@ -95,8 +95,8 @@ describe('commander program', () => {
 
     const { default: program } = await import('@/cli/program')
 
-    await program.parseAsync(['node', 'repoctl', 'init', '--preset', 'minimal'])
-    await program.parseAsync(['node', 'repoctl', 'new', 'demo'])
+    await program.parseAsync(['node', 'repoctl', 'setup', '--preset', 'minimal'])
+    await program.parseAsync(['node', 'repoctl', 'new', 'demo', '--template', 'tsdown'])
     await program.parseAsync(['node', 'repoctl', 'check', '--full'])
     await program.parseAsync(['node', 'repoctl', 'upgrade'])
     await program.parseAsync(['node', 'repoctl', 'sync'])
@@ -117,7 +117,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
 
     expect(initMock).toHaveBeenCalledWith(expect.any(String), { preset: 'minimal' })
-    expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo')
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo', { template: 'tsdown' })
     expect(runRecommendedCheckMock).toHaveBeenCalledWith({
       cwd: expect.any(String),
       full: true,
@@ -160,7 +160,7 @@ describe('commander program', () => {
       force: false,
       format: 'md',
     }))
-    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined)
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined, { template: undefined })
     expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
       cwd: expect.any(String),
       targets: ['codex'],

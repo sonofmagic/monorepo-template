@@ -92,16 +92,26 @@ describe('runCreateFlow', () => {
       defaultTemplate: 'cli',
       choices: [{ name: 'CLI', value: 'cli' }],
     })
-    selectMock.mockResolvedValueOnce('cli')
 
     const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
     await runCreateFlow('/repo', '')
 
-    expect(getCreateChoicesMock).toHaveBeenCalledWith([{ name: 'CLI', value: 'cli' }])
     expect(createNewProjectMock).toHaveBeenCalledWith({
-      name: 'demo',
+      name: 'apps/demo',
       cwd: '/repo',
       type: 'cli',
+    })
+  })
+
+  it('uses the explicit CLI template override without prompting for intent', async () => {
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    await runCreateFlow('/repo', 'dashboard', { template: 'vue-hono' })
+
+    expect(selectMock).not.toHaveBeenCalled()
+    expect(createNewProjectMock).toHaveBeenCalledWith({
+      name: 'apps/dashboard',
+      cwd: '/repo',
+      type: 'vue-hono',
     })
   })
 })

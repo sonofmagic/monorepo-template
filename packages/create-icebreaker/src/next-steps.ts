@@ -8,9 +8,9 @@ export function formatNextSteps(targetDir: string) {
     'All set! Next steps:',
     `  cd ${relative}`,
     '  pnpm install',
-    '  pnpm exec repoctl init',
-    '  pnpm exec repoctl new',
-    '  pnpm exec repoctl check',
+    '  pnpm setup',
+    '  pnpm new my-package',
+    '  pnpm check',
     '',
   ].join('\n')
 }

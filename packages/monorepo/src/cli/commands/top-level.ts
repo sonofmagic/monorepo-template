@@ -16,6 +16,10 @@ interface InitCliOptions {
   preset?: 'minimal' | 'standard'
 }
 
+interface NewCliOptions {
+  template?: string
+}
+
 interface CleanCliOptions {
   yes?: boolean
   includePrivate?: boolean
@@ -25,6 +29,7 @@ interface CleanCliOptions {
 export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('init')
     .description('初始化当前 workspace，并生成推荐配置')
+    .alias('setup')
     .option('--preset <preset>', '初始化预设：minimal / standard', 'standard')
     .option('-f, --force', '覆盖已存在的 tooling 配置文件')
     .action(async (opts: InitCliOptions) => {
@@ -39,8 +44,9 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('new')
     .description('创建新的 package / app')
     .argument('[name]')
-    .action(async (inputName: string) => {
-      await runCreateFlow(cwd, inputName)
+    .option('-t, --template <template>', '直接使用指定模板，跳过模板选择')
+    .action(async (inputName: string, opts: NewCliOptions) => {
+      await runCreateFlow(cwd, inputName, { template: opts.template })
       logger.success('new finished!')
       logger.info('next: run `pnpm install` and start the new workspace package')
     })

@@ -6,8 +6,8 @@
 
 ```sh
 pnpm add -D repoctl
-pnpm exec repoctl init
-pnpm exec repoctl new
+pnpm exec repoctl setup
+pnpm exec repoctl new my-package
 pnpm exec repoctl check
 ```
 
@@ -24,8 +24,8 @@ pnpm exec repoctl check
 pnpm add -D @icebreakers/monorepo@latest
 
 # 顶层任务命令
-npx monorepo init
-npx monorepo new
+npx monorepo setup
+npx monorepo new my-package
 npx monorepo check
 npx monorepo upgrade
 
@@ -53,6 +53,8 @@ npx monorepo skills sync --codex
 - `ai prompt` / `ai p`: AI prompt 模板
 
 常用短写包括 `ws up`、`tg init`、`pkg new`、`e m`、`ai p new`。
+
+`repoctl new` / `monorepo new` 现在支持 `--template` 直接指定模板，例如 `repoctl new dashboard --template vue-hono`。当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。
 
 ## 默认 CLI 配置
 

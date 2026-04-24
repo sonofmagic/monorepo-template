@@ -23,17 +23,21 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 
 1. **Prepare environment**: Ensure Node.js >= 20 and run `corepack enable` so pnpm is available.
 2. **Install dependencies**: Run `pnpm install` to fetch every workspace dependency.
-3. **Bootstrap repo defaults**: Run `pnpm exec repoctl init` to apply the recommended workspace metadata and tooling setup.
-4. **Create the next package or app**: Run `pnpm exec repoctl new` for the guided flow.
+3. **Bootstrap repo defaults**: Run `pnpm setup` to apply the recommended workspace metadata and tooling setup.
+4. **Create the next package or app**: Run `pnpm new my-package` for the guided flow.
 5. **Local development**: Use `pnpm dev` to launch Turbo parallel dev scripts and iterate within each app.
-6. **Build and verify**: Run `pnpm exec repoctl check`, `pnpm build`, `pnpm test`, and `pnpm lint`.
-7. **Template cleanup (optional)**: Use `pnpm script:clean` to prune sample packages when personalising the template.
+6. **Build and verify**: Run `pnpm check`, `pnpm build`, `pnpm test`, and `pnpm lint`.
+7. **Template cleanup (optional)**: Use `pnpm clean:repo` to prune sample packages when personalising the template.
 
 ### Bootstrap shortcuts
 
 - Guided repo setup:
-  - `pnpm exec repoctl init`
-  - `pnpm exec repoctl new`
+  - `pnpm setup`
+  - `pnpm new my-package`
+  - `pnpm check`
+- Direct CLI equivalents:
+  - `pnpm exec repoctl setup`
+  - `pnpm exec repoctl new my-package`
   - `pnpm exec repoctl check`
 - Zero-install cleanup on a fresh clone: `pnpm dlx repoctl@latest clean --yes` (add `--include-private` to keep private packages in scope).
   Short alias: `pnpm dlx repo@latest clean --yes`. `rc` is intentionally not the primary recommendation because short global commands are easier to collide with other CLIs.
@@ -76,9 +80,12 @@ packages/
 | `pnpm lint`                   | Apply ESLint and Stylelint checks across the monorepo.               |
 | `pnpm changeset`              | Create an interactive Changeset for version bumps.                   |
 | `pnpm publish-packages`       | Build, lint, test, then version and publish changed packages.        |
-| `pnpm exec repoctl init`      | Bootstrap recommended workspace metadata and tooling.                |
-| `pnpm exec repoctl new`       | Create a new package or app with the guided flow.                    |
-| `pnpm exec repoctl check`     | Run recommended local verification.                                  |
+| `pnpm setup`                  | Bootstrap recommended workspace metadata and tooling.                |
+| `pnpm new <name>`             | Create a new package or app with the guided flow.                    |
+| `pnpm check`                  | Run recommended local verification.                                  |
+| `pnpm exec repoctl setup`     | Direct CLI equivalent of `pnpm setup`.                               |
+| `pnpm exec repoctl new`       | CLI entrypoint for package/app creation.                             |
+| `pnpm exec repoctl check`     | CLI entrypoint for local verification.                               |
 | `pnpm script:init`            | Initialise template settings via the `repoctl` compatibility script. |
 | `pnpm script:sync`            | Synchronise repo assets and helper scripts via `repoctl`.            |
 | `pnpm script:clean`           | Remove sample packages and generated artifacts.                      |
@@ -87,7 +94,7 @@ packages/
 ## Template Workflow
 
 - Use `pnpm create icebreaker` to scaffold a trimmed workspace in a new directory.
-- In an existing workspace, use `pnpm exec repoctl init`, `pnpm exec repoctl new`, and `pnpm exec repoctl check` as the default maintenance path.
+- In an existing workspace, use `pnpm setup`, `pnpm new`, and `pnpm check` as the default maintenance path.
 - Install dependencies and start development with `pnpm install` and `pnpm dev`.
 - Add or remove apps/packages as your workspace evolves.
 
