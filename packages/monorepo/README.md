@@ -2,29 +2,42 @@
 
 `repoctl` 背后的 core engine 与 tooling wrapper。
 
-如果你只是想使用默认 CLI 体验，优先安装 `repoctl`，但默认使用更短的 `repo` 命令：
+如果你只是想使用默认 CLI 体验，优先安装 `repoctl`，并使用更短的 `repo` 命令：
 
 ```sh
 pnpm add -D repoctl
 pnpm exec repo setup
+pnpm exec repo doctor
 pnpm exec repo new my-package
 pnpm exec repo check
 ```
 
-`@icebreakers/monorepo` 适合下面两类场景：
+模板生成后的仓库还会带上更短的根脚本：
+
+```sh
+pnpm setup
+pnpm doctor
+pnpm new my-package
+pnpm check
+```
+
+## 什么时候直接用这个包
+
+`@icebreakers/monorepo` 更适合下面两类场景：
 
 - 你需要直接使用 `@icebreakers/monorepo` / `@icebreakers/monorepo/tooling` 的程序化 API
 - 你在维护 `repoctl` 的底层实现、模板、升级资产或 wrapper 配置
 
 ## CLI Compatibility
 
-`repo`、`repoctl` 与 `@icebreakers/monorepo` 共享同一套 CLI 实现。若你仍希望直接安装 `@icebreakers/monorepo`，可继续使用兼容入口：
+`repo`、`repoctl` 与 `@icebreakers/monorepo` 共享同一套 CLI 实现。
 
 ```sh
 pnpm add -D @icebreakers/monorepo@latest
 
 # 顶层任务命令
 npx monorepo setup
+npx monorepo doctor
 npx monorepo new my-package
 npx monorepo check
 npx monorepo upgrade
@@ -37,24 +50,25 @@ npx monorepo ai p new --name checkout
 npx monorepo skills sync --codex
 ```
 
-`monorepo ai prompt create`（短别名 `ai p new`，兼容旧写法 `ai create` / `ai new`）默认会把模板写入 `agentic/prompts/<timestamp>/prompt.md`，每次都会建一个以时间命名的目录，并在命令行提示可修改该目录名称，方便追加截图等素材；也可以通过参数自定义路径。
+推荐顺序仍然是：
 
-`@icebreakers/monorepo` 在运行时会从 `@icebreakers/monorepo-templates` 读取模板、骨架与升级资产。
+1. 生成仓库里的 `pnpm setup / pnpm doctor / pnpm new / pnpm check`
+2. `repo ...`
+3. `repoctl ...` / `monorepo ...` 兼容入口
 
-`monorepo skills sync` 会将包内 `resources/skills/icebreakers-monorepo-cli` 同步到 `~/.codex/skills/icebreakers-monorepo-cli` 或 `~/.claude/skills/icebreakers-monorepo-cli`；未指定目标时会交互选择。
+## `repo doctor`
 
-当前推荐的主命令分组如下：
+`doctor` 是这次 CLI 增强里最面向新人的入口。它会检查：
 
-- `workspace` / `ws`: 工作区元信息、升级、清理
-- `tooling` / `tg`: 工程化配置生成
-- `package` / `pkg`: 子包创建
-- `env` / `e`: 环境辅助命令
-- `verify` / `v`: 本地校验
-- `ai prompt` / `ai p`: AI prompt 模板
+- 根 `package.json`
+- `pnpm-workspace.yaml`
+- 当前 Node 版本是否满足 `engines.node`
+- 根依赖里是否安装了 `repoctl` 或 `@icebreakers/monorepo`
+- 推荐的根脚本 `setup / new / check / doctor` 是否齐全
+- `repoctl.config.ts` 与 `monorepo.config.ts` 是否冲突
+- `.husky/pre-commit` 与 `lint-staged.config.js` 是否同时存在
 
-常用短写包括 `ws up`、`tg init`、`pkg new`、`e m`、`ai p new`。
-
-`repo new` / `monorepo new` 现在支持 `--template` 直接指定模板，例如 `repo new dashboard --template vue-hono`。当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。`repoctl new` 仍然兼容。
+如果有阻塞项，命令会以非零状态结束。
 
 ## 默认 CLI 配置
 
@@ -87,85 +101,22 @@ export default defineMonorepoConfig({
 - 纯 TypeScript workspace 的 `typecheck` 通常是 `tsc -p tsconfig.json`
 - `pre-push` 会强制执行整仓 `pnpm lint` 与 `pnpm typecheck`，再按改动范围补跑 `build`、`test`、`tsd`
 
+## `new` 与 `ai prompt` 的常用用法
+
+`repo new` / `monorepo new` 支持 `--template` 直接指定模板，例如：
+
+```bash
+repo new dashboard --template vue-hono
+```
+
+当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。
+
 `monorepo ai prompt create` 支持批量生成：
 
 ```bash
-# 基于名称自动落盘到 agentic/prompts/checkout.md（默认目录可在 repoctl.config.ts 中设置）
 npx monorepo ai prompt create --name checkout
-
-# 使用任务清单一次生成多个文件（tasks.json 为字符串或对象数组）
 npx monorepo ai prompt create --tasks agentic/tasks.json --format md -f
 ```
-
-`agentic/tasks.json` 示例：
-
-```json
-[
-  "checkout",
-  { "name": "payments", "format": "json", "force": true }
-]
-```
-
-### 配置文件
-
-在工作区根目录下创建 `repoctl.config.ts`（内容可为普通 ESM），即可覆盖每个命令的默认行为。已有项目若使用 `monorepo.config.ts` 也兼容，但两个文件不能同时存在。例如：
-
-```ts
-// repoctl.config.ts
-import { defineMonorepoConfig } from 'repoctl'
-
-export default defineMonorepoConfig({
-  commands: {
-    ai: {
-      baseDir: 'agentic/custom-prompts',
-      format: 'json',
-      force: true,
-      tasksFile: 'agentic/tasks.json',
-    },
-    create: {
-      defaultTemplate: 'cli',
-      renameJson: true,
-    },
-    clean: {
-      autoConfirm: true,
-      ignorePackages: ['docs'],
-    },
-    upgrade: {
-      skipOverwrite: true,
-      targets: ['.github', 'repoctl.config.ts'],
-    },
-  },
-})
-```
-
-`workspace init` 用于同步 README / package.json / changeset / issue template 等元信息；`tooling init` 用于生成工程化配置文件，并自动补充根 `package.json` 的 `devDependencies`。当前内置的目标有：`commitlint`、`eslint`、`stylelint`、`lint-staged`、`tsconfig`、`vitest`。
-
-例如：
-
-```bash
-# 只生成指定配置
-npx monorepo tooling init eslint stylelint lint-staged
-
-# 生成全部内置配置，并覆盖已存在文件
-npx monorepo tooling init --all --force
-```
-
-也可以在 `repoctl.config.ts` / `monorepo.config.ts` 里为兼容命令 `init` 配默认项；`tooling init` 也会复用这组配置：
-
-```ts
-import { defineMonorepoConfig } from 'repoctl'
-
-export default defineMonorepoConfig({
-  commands: {
-    init: {
-      tooling: ['eslint', 'tsconfig', 'vitest'],
-      force: false,
-    },
-  },
-})
-```
-
-目前支持 `ai`、`create`、`clean`、`upgrade`、`init` 与 `mirror` 六类配置覆写；新的分组命令会映射到这些既有配置键。
 
 ## Tooling Wrapper API
 
@@ -212,4 +163,4 @@ https://monorepo.icebreaker.top/
 
 ## 需求环境
 
-Nodejs >= `v20.11.0`
+Node.js >= `v20.12.0`

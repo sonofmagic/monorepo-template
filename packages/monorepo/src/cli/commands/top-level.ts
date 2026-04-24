@@ -1,6 +1,8 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { CliOpts } from '../../types'
-import { cleanProjects, init, runRecommendedCheck, setVscodeBinaryMirror, upgradeMonorepo } from '../../commands'
+import process from 'node:process'
+import pc from 'picocolors'
+import { cleanProjects, init, runDoctor, runRecommendedCheck, setVscodeBinaryMirror, upgradeMonorepo } from '../../commands'
 import { logger } from '../../core/logger'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 import { runCreateFlow } from './package/create-flow'
@@ -24,6 +26,36 @@ interface CleanCliOptions {
   yes?: boolean
   includePrivate?: boolean
   pinnedVersion?: string
+}
+
+function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
+  if (status === 'pass') {
+    return pc.green('PASS')
+  }
+  if (status === 'warn') {
+    return pc.yellow('WARN')
+  }
+  return pc.red('FAIL')
+}
+
+function printDoctorReport(report: Awaited<ReturnType<typeof runDoctor>>) {
+  logger.log('')
+  logger.log(`workspace: ${report.workspaceDir}`)
+  logger.log(`packages: ${report.packageCount}`)
+  logger.log('')
+
+  for (const check of report.checks) {
+    logger.log(`[${formatDoctorStatus(check.status)}] ${check.title}`)
+    logger.log(`  ${check.detail}`)
+    if (check.fix) {
+      logger.log(`  fix: ${check.fix}`)
+    }
+  }
+
+  logger.log('')
+  logger.log(
+    `summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`,
+  )
 }
 
 export function registerTopLevelCommands(program: Command, cwd: string) {
@@ -65,6 +97,24 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
       }
       await runRecommendedCheck(options)
       logger.success('check finished!')
+    })
+
+  program.command('doctor')
+    .description('诊断当前仓库是否适合直接开始使用')
+    .action(async () => {
+      const report = await runDoctor(cwd)
+      printDoctorReport(report)
+
+      if (report.summary.fail > 0) {
+        logger.error(`doctor found ${report.summary.fail} blocking issue(s).`)
+        process.exitCode = 1
+        return
+      }
+
+      if (report.summary.warn > 0) {
+        logger.warn(`doctor found ${report.summary.warn} suggestion(s).`)
+      }
+      logger.success('doctor finished!')
     })
 
   program.command('upgrade')

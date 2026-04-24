@@ -30,11 +30,13 @@ program.addHelpText('after', `
 Quick start:
   Existing repo:
     $ ${cliName} setup
+    $ ${cliName} doctor
     $ ${cliName} new my-package
     $ ${cliName} check
 
   Faster in generated repos:
     $ pnpm setup
+    $ pnpm doctor
     $ pnpm new my-package
     $ pnpm check
 
@@ -46,6 +48,7 @@ Quick start:
 
 Compatibility shortcuts:
   $ repoctl setup
+  $ repoctl doctor
   $ repoctl new
   $ repoctl check
 `)

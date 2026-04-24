@@ -11,6 +11,13 @@ describe('commander program', () => {
     const initMock = vi.fn(async () => {})
     const initMetadataMock = vi.fn(async () => {})
     const initToolingMock = vi.fn(async () => {})
+    const doctorMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packageCount: 1,
+      checks: [],
+      summary: { pass: 7, warn: 0, fail: 0 },
+    }))
     const runRecommendedCheckMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
@@ -64,6 +71,7 @@ describe('commander program', () => {
       initTooling: initToolingMock,
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
+      runDoctor: doctorMock,
       runRecommendedCheck: runRecommendedCheckMock,
       setVscodeBinaryMirror: mirrorMock,
       skillTargets: ['codex', 'claude'],
@@ -91,13 +99,25 @@ describe('commander program', () => {
 
     const successMock = vi.fn()
     const infoMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({ logger: { success: successMock, info: infoMock } }))
+    const warnMock = vi.fn()
+    const errorMock = vi.fn()
+    const logMock = vi.fn()
+    vi.doMock('@/core/logger', () => ({
+      logger: {
+        success: successMock,
+        info: infoMock,
+        warn: warnMock,
+        error: errorMock,
+        log: logMock,
+      },
+    }))
 
     const { default: program } = await import('@/cli/program')
 
     await program.parseAsync(['node', 'repo', 'setup', '--preset', 'minimal'])
     await program.parseAsync(['node', 'repo', 'new', 'demo', '--template', 'tsdown'])
     await program.parseAsync(['node', 'repo', 'check', '--full'])
+    await program.parseAsync(['node', 'repo', 'doctor'])
     await program.parseAsync(['node', 'repo', 'upgrade'])
     await program.parseAsync(['node', 'repo', 'sync'])
     await program.parseAsync(['node', 'repo', 'clean', '--yes', '--include-private', '--pinned-version', 'canary'])
@@ -124,6 +144,7 @@ describe('commander program', () => {
       staged: undefined,
       editFile: undefined,
     })
+    expect(doctorMock).toHaveBeenCalledWith(expect.any(String))
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMetadataMock).toHaveBeenCalledWith(expect.any(String))
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
@@ -169,8 +190,92 @@ describe('commander program', () => {
       targets: ['eslint', 'vitest'],
       force: true,
     })
-    expect(successMock).toHaveBeenCalledTimes(14)
+    expect(successMock).toHaveBeenCalledTimes(15)
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and `pnpm build`')
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and start the new workspace package')
+    expect(warnMock).not.toHaveBeenCalled()
+    expect(errorMock).not.toHaveBeenCalled()
+    expect(logMock).toHaveBeenCalled()
+  })
+
+  it('marks the process as failed when doctor finds blocking issues', async () => {
+    const doctorMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packageCount: 0,
+      checks: [],
+      summary: { pass: 2, warn: 1, fail: 1 },
+    }))
+
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        program: new actual.Command(),
+      }
+    })
+    vi.doMock('@/commands', () => ({
+      cleanProjects: vi.fn(async () => {}),
+      createNewProject: vi.fn(async () => {}),
+      createTimestampFolderName: vi.fn(() => 'timestamp'),
+      defaultAgenticBaseDir: 'agentic',
+      generateAgenticTemplate: vi.fn(async () => {}),
+      generateAgenticTemplates: vi.fn(async () => {}),
+      getCreateChoices: vi.fn(() => []),
+      getSkillTargetPaths: vi.fn(() => []),
+      getTemplateMap: vi.fn(() => ({})),
+      getWorkspaceData: vi.fn(async () => ({ packages: [], workspaceDir: '/repo' })),
+      getWorkspacePackages: vi.fn(async () => []),
+      GitClient: class {},
+      init: vi.fn(async () => {}),
+      initMetadata: vi.fn(async () => {}),
+      initTooling: vi.fn(async () => {}),
+      initToolingTargets: [],
+      loadAgenticTasks: vi.fn(async () => []),
+      normalizeInitToolingTargets: vi.fn((input: string[]) => input),
+      runDoctor: doctorMock,
+      runRecommendedCheck: vi.fn(async () => {}),
+      setVscodeBinaryMirror: vi.fn(async () => {}),
+      skillTargets: [],
+      syncSkills: vi.fn(async () => []),
+      templateMap: {},
+      upgradeMonorepo: vi.fn(async () => {}),
+      verifyCommitMsg: vi.fn(async () => {}),
+      verifyPreCommit: vi.fn(async () => {}),
+      verifyPrePush: vi.fn(async () => {}),
+      verifyStagedTypecheck: vi.fn(() => {}),
+    }))
+    vi.doMock('@/commands/create', () => ({
+      defaultTemplate: 'tsdown',
+      getTemplateMap: vi.fn(() => ({})),
+    }))
+    vi.doMock('@/cli/commands/package/create-flow', () => ({
+      runCreateFlow: vi.fn(async () => {}),
+    }))
+    vi.doMock('@/core/config', () => ({
+      resolveCommandConfig: vi.fn(async () => ({})),
+    }))
+
+    const errorMock = vi.fn()
+    vi.doMock('@/core/logger', () => ({
+      logger: {
+        success: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: errorMock,
+        log: vi.fn(),
+      },
+    }))
+
+    const previousExitCode = process.exitCode
+    process.exitCode = undefined
+
+    const { default: program } = await import('@/cli/program')
+    await program.parseAsync(['node', 'repo', 'doctor'])
+
+    expect(process.exitCode).toBe(1)
+    expect(errorMock).toHaveBeenCalledWith('doctor found 1 blocking issue(s).')
+
+    process.exitCode = previousExitCode
   })
 })
