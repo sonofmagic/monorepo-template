@@ -1,5 +1,66 @@
 # @icebreakers/monorepo
 
+## 4.0.0
+
+### Major Changes
+
+- 🚀 **Remove the legacy `tsup` and `unbuild` library templates from the repository and scaffolding flow.** [`5a0dae9`](https://github.com/sonofmagic/monorepo-template/commit/5a0dae99cc3c0eef74f88c1c0da01c5f58552042) by @sonofmagic
+
+  - `monorepo new`, `repoctl new`, and `create-icebreaker` no longer offer `tsup` or `unbuild` as built-in template keys. The bundled template asset set and related docs have been updated to standardize on `tsdown` as the only generic TypeScript library template.
+
+- 🚀 **Refactor tooling config helpers to use object-style `define*Config` signatures only, and remove the legacy `defineMonorepo*Config` aliases.** [`a7fffa1`](https://github.com/sonofmagic/monorepo-template/commit/a7fffa149f5a6a4166226aa5fed284a906d29490) by @sonofmagic
+  - Add bundled `@icebreakers/monorepo/tsconfig` exports so repository and consumer `tsconfig.json` files can extend the package by name instead of using relative paths.
+
+### Minor Changes
+
+- ✨ **Add task-first `repoctl` entrypoints such as `init`, `new`, `check`, and `upgrade`, plus compatibility top-level commands for `sync`, `clean`, and `mirror`.** [`72ebd27`](https://github.com/sonofmagic/monorepo-template/commit/72ebd27b7498ee6f9176d984612a0496a201d140) by @sonofmagic
+
+  - Refresh the guided package creation flow to start from user intent, add `init --preset` support, and align package docs, template docs, and create-icebreaker guidance around the new lower-cost onboarding path.
+
+- ✨ **Add the new `repoctl` package as the preferred repo toolchain entrypoint while keeping `@icebreakers/monorepo` published and version-linked for compatibility. Template assets, docs, hooks, and config defaults now prefer `repoctl`, and cleanup/upgrade flows preserve whichever helper package a workspace already uses.** [`eb56ff6`](https://github.com/sonofmagic/monorepo-template/commit/eb56ff644072f18475914c8f2860747d1f96046b) by @sonofmagic
+
+- ✨ **Remove the legacy `sync` CLI command and its related config support from the monorepo toolchain.** [`e7e26eb`](https://github.com/sonofmagic/monorepo-template/commit/e7e26eb0e962ecb9ddbf6a1f69a36e28dedf9302) by @sonofmagic
+
+### Patch Changes
+
+- 🐛 **Allow `defineMonorepoVitestConfig()` to accept inline overrides so `vitest.config.ts` can customize shared defaults without manually spreading nested config objects.** [`9372a11`](https://github.com/sonofmagic/monorepo-template/commit/9372a117c744c073084e439efcefb4a5123b2e64) by @sonofmagic
+
+- 🐛 **Add stronger public types and richer config-entry JSDoc so monorepo tooling config files provide full editor hints, including defaults, usage notes, and override guidance.** [`24a6d4a`](https://github.com/sonofmagic/monorepo-template/commit/24a6d4a62ceedda64a68edb21235083ee3eccd64) by @sonofmagic
+
+- 🐛 **Support `repoctl.config.*` as the preferred config filename, keep `monorepo.config.*` compatible, and fail fast when both are present in the same workspace.** [`8f4dec9`](https://github.com/sonofmagic/monorepo-template/commit/8f4dec98100f121111ff9ca4d4fe6e8bef001abc) by @sonofmagic
+
+- 🐛 **Use `bin/monorepo.js` as the only CLI entry for local and published installs, and remove the legacy development bin wrapper.** [`b98361e`](https://github.com/sonofmagic/monorepo-template/commit/b98361ec4e59a5daf3f1f7dc92f5925f9d5c7367) by @sonofmagic
+
+- 🐛 **Drop CommonJS outputs from `@icebreakers/monorepo` and publish ESM-only package artifacts.** [`a0d232b`](https://github.com/sonofmagic/monorepo-template/commit/a0d232b99ed2a38c126258bc3298e13b4993a1b2) by @sonofmagic
+
+- 🐛 **Prefer `repoctl.config.ts` as the default generated config filename while keeping `monorepo.config.ts` compatible at runtime.** [`b66eccd`](https://github.com/sonofmagic/monorepo-template/commit/b66eccd34209de2713f490351f6f500501e44ef6) by @sonofmagic
+
+- 🐛 **Add detailed JSDoc to the public `@icebreakers/monorepo` API so editors can surface usage notes, defaults, and examples directly from generated type declarations.** [`caafbcd`](https://github.com/sonofmagic/monorepo-template/commit/caafbcd915121dbf89f6c66a6c2f75babd65692f) by @sonofmagic
+
+- 🐛 **Add thin `defineMonorepo*Config()` helpers so config entry files can delegate tooling config loading to `@icebreakers/monorepo/tooling`, and simplify shipped lint-staged and root config templates to use those wrappers.** [`be39aed`](https://github.com/sonofmagic/monorepo-template/commit/be39aed5751176004bd714088cf0a5b5e7f50722) by @sonofmagic
+
+- 🐛 **Slim generated tooling entry files so shared engineering configs can use minimal `@icebreakers/monorepo/tooling` exports such as `defineEslintConfig()` and `defineVitestConfig()` without inline config-loading boilerplate.** [`fa92d5c`](https://github.com/sonofmagic/monorepo-template/commit/fa92d5cc71856517767850e17aa06c722b34a438) by @sonofmagic
+
+- 🐛 **Add `rc` and `repo` bin aliases for the repo toolchain CLI.** [`437e738`](https://github.com/sonofmagic/monorepo-template/commit/437e738e19a9b006a84a32216016b65ed9bcaea0) by @sonofmagic
+
+- 🐛 **Fix staged typecheck workspace resolution so scaffold asset files under `packages/monorepo/assets` resolve back to the real package workspace instead of being treated as executable workspaces themselves.** [`a6ad8ac`](https://github.com/sonofmagic/monorepo-template/commit/a6ad8ac68e957b2fb8ab15aef7abfafe2bdb8ca3) by @sonofmagic
+
+- 🐛 **Add short `define*Config()` tooling helpers and switch config entrypoints to the simplified names while keeping `defineMonorepo*Config()` as backward-compatible aliases.** [`f148163`](https://github.com/sonofmagic/monorepo-template/commit/f1481639a53ff32033748a752b9c90059e3af6a7) by @sonofmagic
+
+- 🐛 **Allow all default engineering config entrypoints to inherit overrides from `monorepo.config.ts`, including project-level Vitest defaults through `tooling.vitestProject`.** [`74d49db`](https://github.com/sonofmagic/monorepo-template/commit/74d49db5f1009aa4fe39a65088ff31df3779f301) by @sonofmagic
+
+- 🐛 **Add a shared project-level Vitest helper in `@icebreakers/monorepo/tooling` and use it across template Vitest config entrypoints.** [`14ae14d`](https://github.com/sonofmagic/monorepo-template/commit/14ae14d7508dad2aa826d1a8227871c548a07f4b) by @sonofmagic
+
+- 🐛 **Switch scaffolded pre-commit support back to `lint-staged` and ship `lint-staged.config.js` in template assets again.** [`2e4fc06`](https://github.com/sonofmagic/monorepo-template/commit/2e4fc06f2e94d05906679f266581d279704c21dc) by @sonofmagic
+
+- 🐛 **Change the default `create` template from `unbuild` to `tsdown` and remove redundant `sync` defaults from scaffolded monorepo config examples.** [`caafbcd`](https://github.com/sonofmagic/monorepo-template/commit/caafbcd915121dbf89f6c66a6c2f75babd65692f) by @sonofmagic
+
+- 🐛 **Clarify npm package metadata so `repoctl` is presented as the default task-first CLI, while `@icebreakers/monorepo` is described as the underlying engine and compatibility package.** [`2584972`](https://github.com/sonofmagic/monorepo-template/commit/2584972528044fb8b2c5207581ba8b6cddcdbeba) by @sonofmagic
+
+- 🐛 **Add `tsd` type tests to library workspaces, wire a repository-level `tsd` task into Turbo validation, and fix the server template typecheck regression blocking full workspace checks.** [`15d7ac1`](https://github.com/sonofmagic/monorepo-template/commit/15d7ac1a2ef24a68ace40b2c41af2e491bb27a9f) by @sonofmagic
+- 📦 **Dependencies** [`eb56ff6`](https://github.com/sonofmagic/monorepo-template/commit/eb56ff644072f18475914c8f2860747d1f96046b)
+  → `@icebreakers/monorepo-templates@1.0.0`
+
 ## 3.2.18
 
 ### Patch Changes
