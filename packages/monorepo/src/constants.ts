@@ -1,7 +1,9 @@
+import { createRequire } from 'node:module'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { assetsDir, templatesDir } from '@icebreakers/monorepo-templates'
 import { name as packageName, version } from '../package.json'
+
+const require = createRequire(import.meta.url)
 
 /**
  * CLI 本身的基础信息，直接复用 package.json 里的 name/version，避免重复维护。
@@ -28,8 +30,11 @@ export const packageDir = path.dirname(packageJsonPath)
 
 /**
  * CLI 提供的模板/资产目录来源于 @icebreakers/monorepo-templates。
+ * 这里只解析 package.json 路径，避免 CLI 启动时加载模板包入口。
  */
-export { assetsDir, templatesDir }
+const templatesPackageDir = path.dirname(require.resolve('@icebreakers/monorepo-templates/package.json'))
+export const assetsDir = path.join(templatesPackageDir, 'assets')
+export const templatesDir = path.join(templatesPackageDir, 'templates')
 
 /**
  * monorepo 根目录，方便需要跳出当前包的逻辑（例如定位工作区文件）。

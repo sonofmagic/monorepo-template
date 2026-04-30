@@ -44,6 +44,7 @@ npx monorepo upgrade
 
 # 分组命令
 npx monorepo ws up
+npx monorepo ws ls --json --include-private
 npx monorepo tg init --all
 npx monorepo pkg new
 npx monorepo ai p new --name checkout
@@ -75,6 +76,8 @@ npx monorepo skills sync --codex
 CLI 启动时只注册命令树，具体命令实现会在 action 执行时懒加载。因此 `repo --help`、`repo doctor --help`、`repoctl` 等入口不会提前加载所有 workspace、Git、配置与模板处理逻辑。
 
 同一进程内的 workspace 发现会复用缓存，包括 workspace 根目录、`pnpm-workspace.yaml` 和 package 扫描结果。长期运行的程序化集成在修改 workspace 结构后，可以调用 `clearWorkspaceCache()` 强制后续读取重新扫描磁盘。
+
+`repo ws ls` 会使用同一套缓存快速列出 workspace 包，并支持 `--json`、`--include-private`、`--include-root` 和可重复的 `--pattern`。程序化场景可以直接调用 `getWorkspacePackageSummaries()` 获取相同的轻量摘要数据。
 
 ## 默认 CLI 配置
 

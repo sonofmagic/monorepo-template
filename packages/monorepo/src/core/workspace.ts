@@ -1,4 +1,4 @@
-import type { GetWorkspacePackagesOptions, WorkspaceData, WorkspacePackageWithJsonPath } from '../types'
+import type { GetWorkspacePackagesOptions, WorkspaceData, WorkspacePackageSummary, WorkspacePackageSummaryData, WorkspacePackageWithJsonPath } from '../types'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
 import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
@@ -19,6 +19,10 @@ function normalizeDir(dir: string) {
 
 function getPatternsCacheKey(patterns: string[] | undefined) {
   return patterns === undefined ? '<manifest>' : JSON.stringify(patterns)
+}
+
+function comparePackagePath(left: WorkspacePackageSummary, right: WorkspacePackageSummary) {
+  return left.relativeDir.localeCompare(right.relativeDir)
 }
 
 async function findWorkspaceDirCached(cwd: string) {
@@ -123,5 +127,31 @@ export async function getWorkspaceData(cwd: string, options?: GetWorkspacePackag
     cwd: normalizedCwd,
     workspaceDir,
     packages,
+  }
+}
+
+/**
+ * 返回适合展示和程序化消费的 workspace package 摘要。
+ */
+export async function getWorkspacePackageSummaries(
+  cwd: string,
+  options?: GetWorkspacePackagesOptions,
+): Promise<WorkspacePackageSummaryData> {
+  const { packages, workspaceDir } = await getWorkspaceData(cwd, options)
+  const summaries = packages
+    .map<WorkspacePackageSummary>(pkg => ({
+      ...(pkg.manifest.name ? { name: pkg.manifest.name } : {}),
+      ...(pkg.manifest.description ? { description: pkg.manifest.description } : {}),
+      private: pkg.manifest.private === true,
+      rootDir: pkg.rootDir,
+      relativeDir: path.relative(workspaceDir, pkg.rootDir) || '.',
+      pkgJsonPath: pkg.pkgJsonPath,
+    }))
+    .sort(comparePackagePath)
+
+  return {
+    cwd: normalizeDir(cwd),
+    workspaceDir,
+    packages: summaries,
   }
 }

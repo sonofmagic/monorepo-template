@@ -48,6 +48,10 @@ pnpm exec repo new dashboard --template vue-hono
 # advanced workspace upgrade
 pnpm exec repo ws up
 
+# inspect workspace packages
+pnpm exec repo ws ls
+pnpm exec repo ws ls --json --include-private
+
 # generate tooling configs
 pnpm exec repo tg init --all
 ```

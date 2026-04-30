@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { program } from '@icebreakers/monorepo-templates'
+import { Command } from 'commander'
 import { cliName, version } from '../constants'
 import { registerAiCommands } from './commands/ai'
 import { registerEnvCommands } from './commands/env'
@@ -11,6 +11,7 @@ import { registerVerifyCommands } from './commands/verify'
 import { registerWorkspaceCommands } from './commands/workspace'
 
 const cwd = process.cwd()
+const program = new Command()
 
 program
   .name(cliName)

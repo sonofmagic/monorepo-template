@@ -27,6 +27,19 @@ describe('commander program', () => {
     const verifyStagedTypecheckMock = vi.fn(() => {})
     const runCreateFlowMock = vi.fn(async () => {})
     const aiTemplateMock = vi.fn(async () => {})
+    const getWorkspacePackageSummariesMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packages: [
+        {
+          name: 'pkg-a',
+          private: false,
+          rootDir: '/repo/packages/a',
+          relativeDir: 'packages/a',
+          pkgJsonPath: '/repo/packages/a/package.json',
+        },
+      ],
+    }))
     const syncSkillsMock = vi.fn(async () => ([
       { target: 'codex', dest: '/home/.codex/skills/icebreakers-monorepo-cli' },
     ]))
@@ -98,6 +111,9 @@ describe('commander program', () => {
     vi.doMock('@/core/config', () => ({
       resolveCommandConfig: resolveCommandConfigMock,
     }))
+    vi.doMock('@/core/workspace', () => ({
+      getWorkspacePackageSummaries: getWorkspacePackageSummariesMock,
+    }))
 
     const successMock = vi.fn()
     const infoMock = vi.fn()
@@ -126,6 +142,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'repo', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'upgrade'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'init'])
+    await program.parseAsync(['node', 'monorepo', 'workspace', 'list', '--json', '--include-private', '--include-root', '--pattern', 'packages/*', '--pattern', 'apps/*'])
     await program.parseAsync(['node', 'monorepo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
@@ -149,6 +166,11 @@ describe('commander program', () => {
     expect(doctorMock).toHaveBeenCalledWith(expect.any(String))
     expect(upgradeMock).toHaveBeenCalledWith(expect.objectContaining({ cwd: expect.any(String) }))
     expect(initMetadataMock).toHaveBeenCalledWith(expect.any(String))
+    expect(getWorkspacePackageSummariesMock).toHaveBeenCalledWith(expect.any(String), {
+      ignorePrivatePackage: false,
+      ignoreRootPackage: false,
+      patterns: ['packages/*', 'apps/*'],
+    })
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
       includePrivate: true,
@@ -195,6 +217,7 @@ describe('commander program', () => {
     expect(successMock).toHaveBeenCalledTimes(15)
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and `pnpm build`')
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and start the new workspace package')
+    expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"packages"'))
     expect(warnMock).not.toHaveBeenCalled()
     expect(errorMock).not.toHaveBeenCalled()
     expect(logMock).toHaveBeenCalled()

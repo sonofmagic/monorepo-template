@@ -47,6 +47,27 @@ export interface WorkspacePackageWithJsonPath extends WorkspacePackage {
 }
 
 /**
+ * 适合 CLI 与 JSON 输出消费的 workspace package 摘要。
+ */
+export interface WorkspacePackageSummary {
+  name?: string
+  description?: string
+  private: boolean
+  rootDir: string
+  relativeDir: string
+  pkgJsonPath: string
+}
+
+/**
+ * workspace package 摘要集合。
+ */
+export interface WorkspacePackageSummaryData {
+  cwd: string
+  workspaceDir: string
+  packages: WorkspacePackageSummary[]
+}
+
+/**
  * 工作区基础信息与包集合。
  */
 export interface WorkspaceData {

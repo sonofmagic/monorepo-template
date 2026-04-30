@@ -48,6 +48,39 @@ describe('workspace helpers', () => {
     expect(result.map(pkg => pkg.manifest.name)).toEqual(['root', 'site'])
   })
 
+  it('returns sorted workspace package summaries for CLI and JSON consumers', async () => {
+    const findWorkspacePackagesMock = vi.fn(async () => [
+      { rootDir: '/repo/packages/b', manifest: { name: 'pkg-b', private: true }, rootDirRealPath: '/repo/packages/b' },
+      { rootDir: '/repo/packages/a', manifest: { name: 'pkg-a', description: 'Alpha', private: false }, rootDirRealPath: '/repo/packages/a' },
+    ])
+
+    vi.doMock('@pnpm/workspace.find-packages', () => ({ findWorkspacePackages: findWorkspacePackagesMock }))
+    vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: vi.fn(async () => ({ packages: ['packages/*'] })) }))
+    vi.doMock('@pnpm/find-workspace-dir', () => ({ findWorkspaceDir: vi.fn(async () => '/repo') }))
+
+    const { getWorkspacePackageSummaries } = await import('@/core/workspace')
+    const result = await getWorkspacePackageSummaries('/repo', { ignorePrivatePackage: false })
+
+    expect(result.workspaceDir).toBe('/repo')
+    expect(result.packages).toEqual([
+      {
+        name: 'pkg-a',
+        description: 'Alpha',
+        private: false,
+        rootDir: '/repo/packages/a',
+        relativeDir: 'packages/a',
+        pkgJsonPath: '/repo/packages/a/package.json',
+      },
+      {
+        name: 'pkg-b',
+        private: true,
+        rootDir: '/repo/packages/b',
+        relativeDir: 'packages/b',
+        pkgJsonPath: '/repo/packages/b/package.json',
+      },
+    ])
+  })
+
   it('falls back to cwd when workspace directory is not found', async () => {
     const findWorkspacePackagesMock = vi.fn(async () => [])
 

@@ -1,12 +1,34 @@
 import type { Command } from '@icebreakers/monorepo-templates'
-import type { CliOpts } from '../../types'
+import type { CliOpts, WorkspacePackageSummaryData } from '../../types'
 import { logger } from '../../core/logger'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
+
+interface WorkspaceListCliOptions {
+  json?: boolean
+  includePrivate?: boolean
+  includeRoot?: boolean
+  pattern?: string[]
+}
 
 interface WorkspaceCleanCliOptions {
   yes?: boolean
   includePrivate?: boolean
   pinnedVersion?: string
+}
+
+function collectValues(value: string, previous: string[] = []) {
+  return [...previous, value]
+}
+
+function printWorkspaceList(result: WorkspacePackageSummaryData) {
+  logger.log(`workspace: ${result.workspaceDir}`)
+  logger.log(`packages: ${result.packages.length}`)
+
+  for (const pkg of result.packages) {
+    const name = pkg.name ?? '(unnamed)'
+    const privateMark = pkg.private ? ' private' : ''
+    logger.log(`- ${name} ${pkg.relativeDir}${privateMark}`)
+  }
 }
 
 export function registerWorkspaceCommands(program: Command, cwd: string) {
@@ -32,6 +54,29 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
       const { initMetadata } = await import('@/commands')
       await initMetadata(cwd)
       logger.success('workspace init finished!')
+    })
+
+  workspaceCommand.command('list')
+    .description('列出 workspace 包')
+    .alias('ls')
+    .option('--json', '输出 JSON')
+    .option('--include-private', '包含 private 包')
+    .option('--include-root', '包含 workspace 根包')
+    .option('-p, --pattern <glob>', '追加自定义 workspace glob，可重复', collectValues)
+    .action(async (opts: WorkspaceListCliOptions) => {
+      const { getWorkspacePackageSummaries } = await import('@/core/workspace')
+      const result = await getWorkspacePackageSummaries(cwd, {
+        ignorePrivatePackage: !opts.includePrivate,
+        ignoreRootPackage: !opts.includeRoot,
+        ...(opts.pattern?.length ? { patterns: opts.pattern } : {}),
+      })
+
+      if (opts.json) {
+        logger.log(JSON.stringify(result, undefined, 2))
+        return
+      }
+
+      printWorkspaceList(result)
     })
 
   workspaceCommand.command('clean')

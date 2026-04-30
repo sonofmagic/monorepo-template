@@ -79,6 +79,7 @@ describe('program help surface', () => {
     expect(mirror?.aliases()).toEqual([])
 
     expect(workspace?.helpInformation()).toContain('up')
+    expect(workspace?.helpInformation()).toContain('ls')
     expect(tooling?.helpInformation()).toContain('i')
     expect(packageCommand?.helpInformation()).toContain('new')
     expect(env?.helpInformation()).toContain('m')
