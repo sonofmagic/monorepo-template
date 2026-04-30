@@ -1,11 +1,10 @@
 import type { Command } from '@icebreakers/monorepo-templates'
+import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
 import pc from 'picocolors'
-import { cleanProjects, init, runDoctor, runRecommendedCheck, setVscodeBinaryMirror, upgradeMonorepo } from '../../commands'
 import { logger } from '../../core/logger'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
-import { runCreateFlow } from './package/create-flow'
 
 interface CheckCliOptions {
   full?: boolean
@@ -38,7 +37,7 @@ function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
   return pc.red('FAIL')
 }
 
-function printDoctorReport(report: Awaited<ReturnType<typeof runDoctor>>) {
+function printDoctorReport(report: DoctorReport) {
   logger.log('')
   logger.log(`workspace: ${report.workspaceDir}`)
   logger.log(`packages: ${report.packageCount}`)
@@ -65,6 +64,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--preset <preset>', '初始化预设：minimal / standard', 'standard')
     .option('-f, --force', '覆盖已存在的 tooling 配置文件')
     .action(async (opts: InitCliOptions) => {
+      const { init } = await import('@/commands')
       await init(cwd, {
         ...(opts.preset !== undefined ? { preset: opts.preset } : {}),
         ...(opts.force !== undefined ? { force: opts.force } : {}),
@@ -78,6 +78,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .argument('[name]')
     .option('-t, --template <template>', '直接使用指定模板，跳过模板选择')
     .action(async (inputName: string, opts: NewCliOptions) => {
+      const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
       await runCreateFlow(cwd, inputName, { template: opts.template })
       logger.success('new finished!')
       logger.info('next: run `pnpm install` and start the new workspace package')
@@ -95,6 +96,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
         ...(opts.staged !== undefined ? { staged: opts.staged } : {}),
         ...(opts.editFile !== undefined ? { editFile: opts.editFile } : {}),
       }
+      const { runRecommendedCheck } = await import('@/commands')
       await runRecommendedCheck(options)
       logger.success('check finished!')
     })
@@ -102,6 +104,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('doctor')
     .description('诊断当前仓库是否适合直接开始使用')
     .action(async () => {
+      const { runDoctor } = await import('@/commands')
       const report = await runDoctor(cwd)
       printDoctorReport(report)
 
@@ -124,6 +127,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
     .action(async (opts: CliOpts) => {
+      const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))
       logger.success('upgrade finished!')
     })
@@ -135,6 +139,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
     .action(async (opts: CliOpts) => {
+      const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))
       logger.success('sync finished!')
     })
@@ -145,6 +150,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--include-private', '包含 private 包')
     .option('--pinned-version <version>', '覆盖写入的 @icebreakers/monorepo 版本')
     .action(async (opts: CleanCliOptions) => {
+      const { cleanProjects } = await import('@/commands')
       await cleanProjects(cwd, normalizeCleanOptions(opts))
       logger.success('clean finished!')
     })
@@ -152,6 +158,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('mirror')
     .description('兼容入口：设置 VS Code binary mirror')
     .action(async () => {
+      const { setVscodeBinaryMirror } = await import('@/commands')
       await setVscodeBinaryMirror(cwd)
       logger.success('mirror finished!')
     })

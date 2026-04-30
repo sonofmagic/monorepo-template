@@ -6,9 +6,6 @@ export default defineConfig({
   format: ['esm'],
   clean: true,
   dts: true,
-  deps: {
-    onlyBundle: ['defu'],
-  },
   // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_assignment
   target: 'node20',
   // https://github.com/egoist/tsdown/pull/1056

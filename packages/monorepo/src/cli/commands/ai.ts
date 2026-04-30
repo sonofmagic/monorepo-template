@@ -1,8 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { AgenticTemplateFormat, GenerateAgenticTemplateOptions } from '../../commands/ai'
-import { input } from '@icebreakers/monorepo-templates'
-import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from '../../commands'
-import { resolveCommandConfig } from '../../core/config'
 
 interface AiTemplateCommandOptions {
   output?: string
@@ -14,6 +11,15 @@ interface AiTemplateCommandOptions {
 }
 
 async function handleAiPromptCreate(cwd: string, opts: AiTemplateCommandOptions) {
+  const [
+    { input },
+    { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks },
+    { resolveCommandConfig },
+  ] = await Promise.all([
+    import('@icebreakers/monorepo-templates'),
+    import('@/commands'),
+    import('@/core/config'),
+  ])
   const aiConfig = await resolveCommandConfig('ai', cwd)
   const format = opts.format ?? aiConfig?.format ?? 'md'
   const force = opts.force ?? aiConfig?.force ?? false

@@ -2,10 +2,67 @@ import type { GetWorkspacePackagesOptions, WorkspaceData, WorkspacePackageWithJs
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import { findWorkspacePackages } from '@pnpm/workspace.find-packages'
 import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest'
-import { defu } from 'defu'
 import path from 'pathe'
 
 export type { GetWorkspacePackagesOptions } from '../types'
+
+type WorkspaceManifest = Awaited<ReturnType<typeof readWorkspaceManifest>>
+type WorkspacePackage = Awaited<ReturnType<typeof findWorkspacePackages>>[number]
+
+const workspaceDirCache = new Map<string, Promise<string | undefined>>()
+const workspaceManifestCache = new Map<string, Promise<WorkspaceManifest>>()
+const workspacePackagesCache = new Map<string, Promise<WorkspacePackage[]>>()
+
+function normalizeDir(dir: string) {
+  return path.resolve(dir)
+}
+
+function getPatternsCacheKey(patterns: string[] | undefined) {
+  return patterns === undefined ? '<manifest>' : JSON.stringify(patterns)
+}
+
+async function findWorkspaceDirCached(cwd: string) {
+  const key = normalizeDir(cwd)
+  if (!workspaceDirCache.has(key)) {
+    workspaceDirCache.set(key, findWorkspaceDir(key))
+  }
+  return workspaceDirCache.get(key)!
+}
+
+async function readWorkspaceManifestCached(workspaceDir: string) {
+  const key = normalizeDir(workspaceDir)
+  if (!workspaceManifestCache.has(key)) {
+    workspaceManifestCache.set(key, readWorkspaceManifest(key))
+  }
+  return workspaceManifestCache.get(key)!
+}
+
+async function findWorkspacePackagesCached(workspaceDir: string, patterns: string[] | undefined) {
+  const normalizedWorkspaceDir = normalizeDir(workspaceDir)
+  const key = `${normalizedWorkspaceDir}:${getPatternsCacheKey(patterns)}`
+  if (!workspacePackagesCache.has(key)) {
+    workspacePackagesCache.set(
+      key,
+      findWorkspacePackages(
+        normalizedWorkspaceDir,
+        patterns ? { patterns } : {},
+      ),
+    )
+  }
+  return workspacePackagesCache.get(key)!
+}
+
+/**
+ * 清空当前进程内的 workspace 发现缓存。
+ *
+ * 普通 CLI 命令执行后进程会退出；长期运行的集成测试或程序化调用在修改
+ * `pnpm-workspace.yaml` / package 目录后，可以调用它让后续扫描重新读磁盘。
+ */
+export function clearWorkspaceCache() {
+  workspaceDirCache.clear()
+  workspaceManifestCache.clear()
+  workspacePackagesCache.clear()
+}
 
 /**
  * 读取 pnpm workspace 下的所有包，并根据选项做过滤。
@@ -22,17 +79,15 @@ export async function getWorkspacePackages(
   workspaceDir: string,
   options?: GetWorkspacePackagesOptions,
 ): Promise<WorkspacePackageWithJsonPath[]> {
-  const { ignoreRootPackage, ignorePrivatePackage, patterns } = defu<GetWorkspacePackagesOptions, GetWorkspacePackagesOptions[]>(options, {
-    ignoreRootPackage: true,
-    ignorePrivatePackage: true,
-  })
+  const normalizedWorkspaceDir = normalizeDir(workspaceDir)
+  const ignoreRootPackage = options?.ignoreRootPackage ?? true
+  const ignorePrivatePackage = options?.ignorePrivatePackage ?? true
 
-  const manifest = await readWorkspaceManifest(workspaceDir)
-  const workspacePatterns = patterns ?? manifest?.packages
-  const packages = await findWorkspacePackages(
-    workspaceDir,
-    workspacePatterns ? { patterns: workspacePatterns } : {},
-  )
+  const manifest = options?.patterns === undefined
+    ? await readWorkspaceManifestCached(normalizedWorkspaceDir)
+    : undefined
+  const workspacePatterns = options?.patterns ?? manifest?.packages
+  const packages = await findWorkspacePackagesCached(normalizedWorkspaceDir, workspacePatterns)
   let pkgs: WorkspacePackageWithJsonPath[] = packages.filter((x) => {
     if (ignorePrivatePackage && x.manifest.private) {
       return false
@@ -48,7 +103,7 @@ export async function getWorkspacePackages(
 
   if (ignoreRootPackage) {
     pkgs = pkgs.filter((x) => {
-      return x.rootDir !== workspaceDir
+      return x.rootDir !== normalizedWorkspaceDir
     })
   }
   return pkgs
@@ -61,10 +116,11 @@ export async function getWorkspacePackages(
  * @param options 传给 `getWorkspacePackages()` 的过滤选项
  */
 export async function getWorkspaceData(cwd: string, options?: GetWorkspacePackagesOptions): Promise<WorkspaceData> {
-  const workspaceDir = (await findWorkspaceDir(cwd)) ?? cwd
+  const normalizedCwd = normalizeDir(cwd)
+  const workspaceDir = (await findWorkspaceDirCached(normalizedCwd)) ?? normalizedCwd
   const packages = await getWorkspacePackages(workspaceDir, options)
   return {
-    cwd,
+    cwd: normalizedCwd,
     workspaceDir,
     packages,
   }

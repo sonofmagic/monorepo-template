@@ -1,9 +1,10 @@
 /* eslint-disable perfectionist/sort-imports */
 import type { CliOpts, CreateChoiceOption, MonorepoCommitlintConfig, MonorepoTsconfig, MonorepoVitestConfigResult, MonorepoVitestProjectConfigResult, PackageJson } from '..'
-import { createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonorepoLintStagedConfig, createMonorepoStylelintConfig, createMonorepoTsconfig, createMonorepoVitestConfig, defineCommitlintConfig, defineVitestConfig, defineVitestProjectConfig, getCreateChoices, getFileHash, getTemplateMap, templateMap } from '..'
+import { clearWorkspaceCache, createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonorepoLintStagedConfig, createMonorepoStylelintConfig, createMonorepoTsconfig, createMonorepoVitestConfig, defineCommitlintConfig, defineVitestConfig, defineVitestProjectConfig, getCreateChoices, getFileHash, getTemplateMap, templateMap } from '..'
 import { expectAssignable, expectType } from 'tsd'
 
 expectType<string>(getFileHash('demo'))
+expectType<void>(clearWorkspaceCache())
 expectType<'tsdown'>(templateMap.tsdown.source)
 expectAssignable<CreateChoiceOption[]>(getCreateChoices())
 

@@ -62,4 +62,32 @@ describe('workspace helpers', () => {
     expect(findWorkspacePackagesMock).toHaveBeenCalledWith('/repo/sub', {})
     expect(data.packages).toEqual([])
   })
+
+  it('reuses workspace manifest, package and directory lookups in the same process', async () => {
+    const findWorkspacePackagesMock = vi.fn(async () => [
+      { rootDir: '/repo/packages/a', manifest: { name: 'pkg-a', private: false }, rootDirRealPath: '/repo/packages/a' },
+    ])
+    const readManifestMock = vi.fn(async () => ({ packages: ['packages/*'] }))
+    const findWorkspaceDirMock = vi.fn(async () => '/repo')
+
+    vi.doMock('@pnpm/workspace.find-packages', () => ({ findWorkspacePackages: findWorkspacePackagesMock }))
+    vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: readManifestMock }))
+    vi.doMock('@pnpm/find-workspace-dir', () => ({ findWorkspaceDir: findWorkspaceDirMock }))
+
+    const { clearWorkspaceCache, getWorkspaceData, getWorkspacePackages } = await import('@/core/workspace')
+
+    await getWorkspacePackages('/repo')
+    await getWorkspacePackages('/repo')
+    await getWorkspaceData('/repo/packages/a')
+    await getWorkspaceData('/repo/packages/a')
+
+    expect(readManifestMock).toHaveBeenCalledTimes(1)
+    expect(findWorkspacePackagesMock).toHaveBeenCalledTimes(1)
+    expect(findWorkspaceDirMock).toHaveBeenCalledTimes(1)
+
+    clearWorkspaceCache()
+    await getWorkspacePackages('/repo')
+    expect(readManifestMock).toHaveBeenCalledTimes(2)
+    expect(findWorkspacePackagesMock).toHaveBeenCalledTimes(2)
+  })
 })

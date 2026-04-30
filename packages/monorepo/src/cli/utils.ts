@@ -1,6 +1,6 @@
-import type { InitToolingTarget } from '../commands/init'
+import type { InitToolingTarget } from '../commands/init/tooling/types'
 import type { CleanCommandConfig, CliOpts } from '../types'
-import { normalizeInitToolingTargets } from '../commands'
+import { initToolingTargets } from '../commands/init/tooling/types'
 
 export interface CleanCommandOptions {
   yes?: boolean
@@ -36,7 +36,15 @@ export function normalizeCleanOptions(opts: CleanCommandOptions) {
 }
 
 export function normalizeToolingTargets(tooling: string[]) {
-  return tooling.length ? normalizeInitToolingTargets(tooling) : undefined
+  if (!tooling.length) {
+    return undefined
+  }
+
+  const unknown = tooling.filter(item => !initToolingTargets.includes(item as InitToolingTarget))
+  if (unknown.length > 0) {
+    throw new Error(`未知的 init tooling 目标: ${unknown.join(', ')}`)
+  }
+  return tooling as InitToolingTarget[]
 }
 
 export type NormalizedToolingTargets = InitToolingTarget[] | undefined

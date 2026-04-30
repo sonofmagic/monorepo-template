@@ -1,5 +1,4 @@
 import type { Command } from '@icebreakers/monorepo-templates'
-import { setVscodeBinaryMirror } from '../../commands'
 import { logger } from '../../core/logger'
 
 export function registerEnvCommands(program: Command, cwd: string) {
@@ -9,6 +8,7 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .description('设置 VS Code binary mirror')
     .alias('m')
     .action(async () => {
+      const { setVscodeBinaryMirror } = await import('@/commands')
       await setVscodeBinaryMirror(cwd)
       logger.success('env mirror finished!')
     })

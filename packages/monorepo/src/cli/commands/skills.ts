@@ -1,7 +1,8 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { SkillTarget } from '../../commands'
-import { skillTargets, syncSkills } from '../../commands'
 import { logger } from '../../core/logger'
+
+const skillTargets = ['codex', 'claude'] as const satisfies readonly SkillTarget[]
 
 interface SkillsSyncCommandOptions {
   codex?: boolean
@@ -19,6 +20,7 @@ export function registerSkillsCommands(program: Command, cwd: string) {
     .option('--claude', '同步到 ~/.claude/skills')
     .option('--all', '同步全部目标')
     .action(async (opts: SkillsSyncCommandOptions) => {
+      const { syncSkills } = await import('@/commands')
       const selected = new Set<SkillTarget>()
       if (opts.all) {
         for (const target of skillTargets) {

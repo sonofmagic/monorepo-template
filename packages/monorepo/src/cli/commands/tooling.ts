@@ -1,6 +1,6 @@
 import type { Command } from '@icebreakers/monorepo-templates'
-import type { InitToolingTarget } from '../../commands/init'
-import { initTooling, initToolingTargets } from '../../commands'
+import type { InitToolingTarget } from '../../commands/init/tooling/types'
+import { initToolingTargets } from '../../commands/init/tooling/types'
 import { logger } from '../../core/logger'
 import { normalizeToolingTargets } from '../utils'
 
@@ -20,6 +20,7 @@ export function registerToolingCommands(program: Command, cwd: string) {
     .option('-f, --force', '覆盖已存在的 tooling 配置文件')
     .action(async (tooling: string[] = [], opts: ToolingInitCommandOptions) => {
       const normalizedTooling: InitToolingTarget[] | undefined = normalizeToolingTargets(tooling)
+      const { initTooling } = await import('@/commands')
       await initTooling(cwd, {
         ...(normalizedTooling ? { targets: normalizedTooling } : {}),
         ...(opts.all !== undefined ? { all: opts.all } : {}),

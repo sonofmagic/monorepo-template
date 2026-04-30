@@ -1,6 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import { logger } from '../../core/logger'
-import { runCreateFlow } from './package/create-flow'
 
 interface PackageCreateCliOptions {
   template?: string
@@ -15,6 +14,7 @@ export function registerPackageCommands(program: Command, cwd: string) {
     .argument('[name]')
     .option('-t, --template <template>', '直接使用指定模板，跳过模板选择')
     .action(async (inputName: string, opts: PackageCreateCliOptions) => {
+      const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
       await runCreateFlow(cwd, inputName, { template: opts.template })
       logger.success('package create finished!')
     })

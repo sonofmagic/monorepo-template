@@ -1,6 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { CliOpts } from '../../types'
-import { cleanProjects, initMetadata, upgradeMonorepo } from '../../commands'
 import { logger } from '../../core/logger'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
@@ -21,6 +20,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
     .action(async (opts: CliOpts) => {
+      const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))
       logger.success('workspace upgrade finished!')
     })
@@ -29,6 +29,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .description('初始化工作区元信息（README、package.json、changeset、issue template）')
     .alias('i')
     .action(async () => {
+      const { initMetadata } = await import('@/commands')
       await initMetadata(cwd)
       logger.success('workspace init finished!')
     })
@@ -40,6 +41,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .option('--include-private', '包含 private 包')
     .option('--pinned-version <version>', '覆盖写入的 @icebreakers/monorepo 版本')
     .action(async (opts: WorkspaceCleanCliOptions) => {
+      const { cleanProjects } = await import('@/commands')
       await cleanProjects(cwd, normalizeCleanOptions(opts))
       logger.success('workspace clean finished!')
     })

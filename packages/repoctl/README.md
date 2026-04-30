@@ -79,6 +79,10 @@ Prefer `repoctl.config.ts`. `monorepo.config.ts` remains supported for compatibi
 
 `repoctl new foo`, `repoctl doctor`, and `repoctl check` remain supported as compatibility aliases.
 
+## Performance Notes
+
+The CLI keeps startup lightweight by registering the command tree first and loading each command implementation only when that action runs. Workspace discovery also uses an in-process cache, so repeated checks inside one command reuse the same `pnpm-workspace.yaml` and package scan results.
+
 ## Advanced Usage
 
 If you need the lower-level API and tooling wrappers, see `@icebreakers/monorepo`.

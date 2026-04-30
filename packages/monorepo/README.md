@@ -70,6 +70,12 @@ npx monorepo skills sync --codex
 
 如果有阻塞项，命令会以非零状态结束。
 
+## 性能与开发体验
+
+CLI 启动时只注册命令树，具体命令实现会在 action 执行时懒加载。因此 `repo --help`、`repo doctor --help`、`repoctl` 等入口不会提前加载所有 workspace、Git、配置与模板处理逻辑。
+
+同一进程内的 workspace 发现会复用缓存，包括 workspace 根目录、`pnpm-workspace.yaml` 和 package 扫描结果。长期运行的程序化集成在修改 workspace 结构后，可以调用 `clearWorkspaceCache()` 强制后续读取重新扫描磁盘。
+
 ## 默认 CLI 配置
 
 工作区根目录推荐使用 `repoctl.config.ts` 覆盖默认行为。若你维护的是旧项目，也兼容 `monorepo.config.ts`，但两者不能同时存在。

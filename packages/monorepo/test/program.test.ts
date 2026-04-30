@@ -60,6 +60,8 @@ describe('commander program', () => {
     })
 
     vi.doMock('@/commands', () => ({
+      createTimestampFolderName: vi.fn(() => 'timestamp'),
+      defaultAgenticBaseDir: 'agentic',
       generateAgenticTemplate: aiTemplateMock,
       generateAgenticTemplates: aiBatchMock,
       loadAgenticTasks: loadTasksMock,
