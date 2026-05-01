@@ -45,6 +45,13 @@ pnpm exec repo doctor --json
 pnpm exec repo doctor --json --out reports/doctor.json
 ```
 
+如果希望 CI 把建议项也当成失败，使用 strict 模式：
+
+```bash
+pnpm exec repo doctor --strict
+pnpm exec repo doctor --strict --json --out reports/doctor.json
+```
+
 ## 创建第一个包或应用
 
 不知道要用哪个模板时，先看列表：

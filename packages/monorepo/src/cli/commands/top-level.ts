@@ -33,6 +33,7 @@ interface NewCliOptions {
 interface DoctorCliOptions {
   json?: boolean
   out?: string
+  strict?: boolean
 }
 
 interface CleanCliOptions {
@@ -93,6 +94,10 @@ async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cw
   const outFile = path.resolve(cwd, opts.out)
   await fs.outputFile(outFile, `${content}\n`, 'utf8')
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
+}
+
+function hasDoctorBlockingIssues(report: DoctorReport, opts: DoctorCliOptions) {
+  return report.summary.fail > 0 || (opts.strict === true && report.summary.warn > 0)
 }
 
 function formatCheckPlan(plan: RecommendedCheckPlan) {
@@ -191,12 +196,13 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .description('诊断当前仓库是否适合直接开始使用')
     .option('--json', '输出 JSON 报告，方便 CI 或脚本消费')
     .option('--out <file>', '把诊断报告写入文件')
+    .option('--strict', '把 warning 也视为失败，适合 CI 门禁')
     .action(async (opts: DoctorCliOptions) => {
       const { runDoctor } = await import('@/commands')
       const report = await runDoctor(cwd)
       await emitDoctorReport(report, opts, cwd)
       if (opts.out || opts.json) {
-        if (report.summary.fail > 0) {
+        if (hasDoctorBlockingIssues(report, opts)) {
           process.exitCode = 1
         }
         return
@@ -209,6 +215,11 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
       }
 
       if (report.summary.warn > 0) {
+        if (opts.strict) {
+          logger.error(`doctor found ${report.summary.warn} warning(s) in strict mode.`)
+          process.exitCode = 1
+          return
+        }
         logger.warn(`doctor found ${report.summary.warn} suggestion(s).`)
       }
       logger.success('doctor finished!')
