@@ -1,9 +1,11 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import process from 'node:process'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 afterEach(async () => {
+  process.exitCode = undefined
   await vi.resetModules()
   vi.resetAllMocks()
 })
@@ -148,6 +150,34 @@ describe('commander program env support command', () => {
       expect(content).toContain('| workspace | <workspace> |')
       expect(content).toContain('- warn: root scripts (fix: run repo upgrade)')
       expect(content).toContain('- `repo verify pre-commit` - check <workspace>/package.json')
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('marks strict support output as failed when doctor reports warnings', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-support-strict-'))
+    const outFile = path.join(root, 'reports/support.md')
+    const collectEnvSupportBundleMock = vi.fn(async () => createSupportBundle(root))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvSupportBundle: collectEnvSupportBundleMock,
+      }))
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: vi.fn(),
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'env', 'support', '--markdown', '--strict', '--out', outFile])
+
+      expect(await readFile(outFile, 'utf8')).toContain('# Repo support bundle')
+      expect(process.exitCode).toBe(1)
     }
     finally {
       await rm(root, { recursive: true, force: true })

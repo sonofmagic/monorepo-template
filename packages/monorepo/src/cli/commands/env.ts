@@ -1,15 +1,17 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot, EnvSupportBundle } from '../../commands/env'
-import os from 'node:os'
+import process from 'node:process'
 import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
+import { createEnvSupportBundleOutput, hasStrictSupportBundleIssues } from './env/support'
 
 interface EnvInfoCliOptions {
   json?: boolean
   markdown?: boolean
   out?: string
   redact?: boolean
+  strict?: boolean
 }
 
 function formatEnvInfo(info: EnvInfo) {
@@ -105,135 +107,21 @@ async function emitEnvSnapshot(snapshot: EnvSnapshot, opts: EnvInfoCliOptions, c
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
-function formatEnvSupportBundle(bundle: EnvSupportBundle) {
-  return [
-    `generatedAt: ${bundle.generatedAt}`,
-    '',
-    formatEnvInfo(bundle.env),
-    '',
-    `config: ${bundle.config.file ?? '-'}`,
-    `doctor: ${bundle.doctor.summary.pass} pass, ${bundle.doctor.summary.warn} warn, ${bundle.doctor.summary.fail} fail`,
-    `check: ${bundle.checkPlan.mode}`,
-    `paths: ${bundle.paths.workspaceDir}`,
-    ...bundle.checkPlan.commands.map(command => `- ${command.command}`),
-  ].join('\n')
-}
-
-function formatMarkdownTable(rows: Array<[string, string | number | undefined]>) {
-  const formatCell = (value: string | number | undefined) => String(value ?? '-')
-    .split('|')
-    .join('\\|')
-    .split('\n')
-    .join('<br>')
-
-  return [
-    '| Field | Value |',
-    '| --- | --- |',
-    ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
-  ].join('\n')
-}
-
-function formatSupportBundleMarkdown(bundle: EnvSupportBundle) {
-  const warningsAndFailures = bundle.doctor.checks.filter(check => check.status !== 'pass')
-
-  return [
-    '# Repo support bundle',
-    '',
-    `Generated at: ${bundle.generatedAt}`,
-    '',
-    '## Environment',
-    '',
-    formatMarkdownTable([
-      ['cwd', bundle.env.cwd],
-      ['workspace', bundle.env.workspaceDir],
-      ['packages', bundle.env.packageCount],
-      ['node', bundle.env.nodeRange ? `${bundle.env.nodeVersion} (${bundle.env.nodeRange})` : bundle.env.nodeVersion],
-      ['pnpm', bundle.env.pnpmVersion],
-      ['packageManager', bundle.env.packageManager],
-      ['platform', `${bundle.env.platform}/${bundle.env.arch}`],
-    ]),
-    '',
-    '## Diagnostics',
-    '',
-    formatMarkdownTable([
-      ['doctor pass', bundle.doctor.summary.pass],
-      ['doctor warn', bundle.doctor.summary.warn],
-      ['doctor fail', bundle.doctor.summary.fail],
-      ['check mode', bundle.checkPlan.mode],
-      ['config file', bundle.config.file ?? '-'],
-    ]),
-    '',
-    ...(warningsAndFailures.length > 0
-      ? [
-          '## Doctor findings',
-          '',
-          ...warningsAndFailures.map(check => `- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`),
-          '',
-        ]
-      : []),
-    '## Check plan',
-    '',
-    ...bundle.checkPlan.commands.map(command => `- \`${command.command}\` - ${command.description}`),
-    '',
-    '## Report paths',
-    '',
-    formatMarkdownTable([
-      ['doctor', bundle.paths.paths.doctorReport.relativePath],
-      ['env', bundle.paths.paths.envReport.relativePath],
-      ['snapshot', bundle.paths.paths.snapshotReport.relativePath],
-      ['check plan', bundle.paths.paths.checkPlanReport.relativePath],
-    ]),
-  ].join('\n')
-}
-
-function replaceAll(value: string, search: string, replacement: string) {
-  return search.length > 0 ? value.split(search).join(replacement) : value
-}
-
-function redactSupportBundleValue(value: unknown, replacements: Array<[string, string]>): unknown {
-  if (typeof value === 'string') {
-    return replacements.reduce((result, [search, replacement]) => replaceAll(result, search, replacement), value)
-  }
-  if (Array.isArray(value)) {
-    return value.map(item => redactSupportBundleValue(item, replacements))
-  }
-  if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, item]) => [key, redactSupportBundleValue(item, replacements)]),
-    )
-  }
-  return value
-}
-
-function redactSupportBundle(bundle: EnvSupportBundle): EnvSupportBundle {
-  const candidates: Array<[string, string]> = [
-    [bundle.env.workspaceDir, '<workspace>'],
-    [bundle.env.cwd, '<cwd>'],
-    [os.homedir(), '<home>'],
-  ]
-  const replacements = candidates
-    .filter(([search], index, entries) => search.length > 0 && entries.findIndex(([value]) => value === search) === index)
-    .sort(([left], [right]) => right.length - left.length)
-
-  return redactSupportBundleValue(bundle, replacements) as EnvSupportBundle
-}
-
 async function emitEnvSupportBundle(bundle: EnvSupportBundle, opts: EnvInfoCliOptions, cwd: string) {
-  const outputBundle = opts.redact ? redactSupportBundle(bundle) : bundle
-  const content = opts.json
-    ? JSON.stringify(outputBundle, null, 2)
-    : opts.markdown
-      ? formatSupportBundleMarkdown(outputBundle)
-      : formatEnvSupportBundle(outputBundle)
+  const content = createEnvSupportBundleOutput(bundle, opts)
 
   if (!opts.out) {
     logger.log(content)
-    return
+  }
+  else {
+    const outFile = path.resolve(cwd, opts.out)
+    await fs.outputFile(outFile, `${content}\n`, 'utf8')
+    logger.success(`wrote ${path.relative(cwd, outFile)}`)
   }
 
-  const outFile = path.resolve(cwd, opts.out)
-  await fs.outputFile(outFile, `${content}\n`, 'utf8')
-  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+  if (opts.strict && hasStrictSupportBundleIssues(bundle)) {
+    process.exitCode = 1
+  }
 }
 
 export function registerEnvCommands(program: Command, cwd: string) {
@@ -276,6 +164,7 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
     .option('--out <file>', '把当前输出写入文件')
     .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
+    .option('--strict', '输出排障包后，如果 doctor 有 fail 或 warn 则返回失败码')
     .action(async (opts: EnvInfoCliOptions) => {
       const { collectEnvSupportBundle } = await import('@/commands')
       await emitEnvSupportBundle(await collectEnvSupportBundle(cwd), opts, cwd)
