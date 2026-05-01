@@ -149,6 +149,20 @@ Usage:
 - Includes cwd, workspace root, package manager, Node version, pnpm version,
   platform, arch, and workspace package count.
 
+## env snapshot (alias: e s)
+
+Purpose: collect a combined debugging snapshot for issues, CI artifacts, or editor integrations.
+Usage:
+
+- npx repoctl env snapshot
+- npx repoctl e s --json
+- npx repoctl env snapshot --json --out reports/snapshot.json
+  Options:
+- --json: emit structured snapshot data
+- --out <file>: persist the current text or JSON output
+  Notes:
+- Includes `env info`, `doctor` report data, and the default `check` plan.
+
 ## env mirror (alias: e m)
 
 Purpose: set VSCode binary mirror env.

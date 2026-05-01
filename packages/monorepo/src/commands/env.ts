@@ -1,9 +1,13 @@
+import type { RecommendedCheckPlan } from './check'
+import type { DoctorReport } from './doctor'
 import { execFileSync } from 'node:child_process'
 import os from 'node:os'
 import process from 'node:process'
 import path from 'pathe'
 import { getWorkspacePackageSummaries } from '../core/workspace'
 import fs from '../utils/fs'
+import { resolveRecommendedCheckPlan } from './check'
+import { runDoctor } from './doctor'
 
 interface PackageJsonLike {
   packageManager?: string
@@ -22,6 +26,13 @@ export interface EnvInfo {
   platform: string
   arch: string
   packageCount: number
+}
+
+export interface EnvSnapshot {
+  generatedAt: string
+  env: EnvInfo
+  doctor: DoctorReport
+  checkPlan: RecommendedCheckPlan
 }
 
 function readPnpmVersion() {
@@ -54,5 +65,19 @@ export async function collectEnvInfo(cwd: string): Promise<EnvInfo> {
     platform: os.platform(),
     arch: os.arch(),
     packageCount: workspace.packages.length,
+  }
+}
+
+export async function collectEnvSnapshot(cwd: string, now = new Date()): Promise<EnvSnapshot> {
+  const [env, doctor] = await Promise.all([
+    collectEnvInfo(cwd),
+    runDoctor(cwd),
+  ])
+
+  return {
+    generatedAt: now.toISOString(),
+    env,
+    doctor,
+    checkPlan: resolveRecommendedCheckPlan({ cwd }),
   }
 }

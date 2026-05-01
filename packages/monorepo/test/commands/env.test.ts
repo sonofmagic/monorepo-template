@@ -51,4 +51,22 @@ describe('collectEnvInfo', () => {
     expect(info.platform).toBeTruthy()
     expect(info.arch).toBeTruthy()
   })
+
+  it('collects an environment snapshot with doctor and check plan data', async () => {
+    const root = await createWorkspace()
+    const { collectEnvSnapshot } = await import('@/commands/env')
+    const snapshot = await collectEnvSnapshot(root, new Date('2026-05-01T12:00:00.000Z'))
+
+    expect(snapshot.generatedAt).toBe('2026-05-01T12:00:00.000Z')
+    expect(snapshot.env.packageManager).toBe('pnpm@10.0.0')
+    expect(snapshot.doctor.summary.fail).toBeGreaterThanOrEqual(0)
+    expect(snapshot.checkPlan).toEqual(expect.objectContaining({
+      mode: 'default',
+      commands: [
+        expect.objectContaining({
+          command: 'repo verify pre-commit',
+        }),
+      ],
+    }))
+  })
 })

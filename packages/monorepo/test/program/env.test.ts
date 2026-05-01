@@ -32,6 +32,35 @@ function createEnvInfo() {
   }
 }
 
+function createEnvSnapshot() {
+  return {
+    generatedAt: '2026-05-01T12:00:00.000Z',
+    env: createEnvInfo(),
+    doctor: {
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packageCount: 2,
+      checks: [],
+      summary: {
+        pass: 1,
+        warn: 0,
+        fail: 0,
+      },
+    },
+    checkPlan: {
+      cwd: '/repo',
+      mode: 'default',
+      commands: [
+        {
+          name: 'pre-commit',
+          command: 'repo verify pre-commit',
+          description: 'default check',
+        },
+      ],
+    },
+  }
+}
+
 describe('commander program env command', () => {
   it('prints env info as json', async () => {
     const collectEnvInfoMock = vi.fn(async () => createEnvInfo())
@@ -82,6 +111,43 @@ describe('commander program env command', () => {
       expect(await readFile(outFile, 'utf8')).toContain('packageManager: pnpm@10.0.0')
       expect(logMock).not.toHaveBeenCalled()
       expect(successMock).toHaveBeenCalledWith(expect.stringContaining('env.txt'))
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('writes env snapshot to a json file', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-snapshot-'))
+    const outFile = path.join(root, 'reports/snapshot.json')
+    const collectEnvSnapshotMock = vi.fn(async () => createEnvSnapshot())
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvSnapshot: collectEnvSnapshotMock,
+      }))
+
+      const logMock = vi.fn()
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: logMock,
+          success: successMock,
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'env', 'snapshot', '--json', '--out', outFile])
+
+      expect(JSON.parse(await readFile(outFile, 'utf8'))).toEqual(expect.objectContaining({
+        generatedAt: '2026-05-01T12:00:00.000Z',
+        env: expect.objectContaining({ packageManager: 'pnpm@10.0.0' }),
+        doctor: expect.objectContaining({ summary: { pass: 1, warn: 0, fail: 0 } }),
+        checkPlan: expect.objectContaining({ mode: 'default' }),
+      }))
+      expect(logMock).not.toHaveBeenCalled()
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('snapshot.json'))
     }
     finally {
       await rm(root, { recursive: true, force: true })

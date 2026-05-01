@@ -77,6 +77,7 @@ pnpm exec repo check --json --out reports/check-plan.json
 # collect environment info for debugging
 pnpm exec repo env info
 pnpm exec repo env info --json --out reports/env.json
+pnpm exec repo env snapshot --json --out reports/snapshot.json
 
 # inspect workspace packages
 pnpm exec repo ws ls

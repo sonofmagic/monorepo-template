@@ -20,6 +20,7 @@ pnpm exec repo doctor --json --out reports/doctor.json
 
 ```bash
 pnpm exec repo env info --json --out reports/env.json
+pnpm exec repo env snapshot --json --out reports/snapshot.json
 ```
 
 它会优先帮你排这些低成本但高频的问题：
