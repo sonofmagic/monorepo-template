@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { loadConfig } from 'c12'
 import path from 'pathe'
 
-interface LoadedConfig {
+export interface LoadedMonorepoConfig {
   file: string | null
   config: MonorepoConfig
 }
@@ -11,7 +11,7 @@ interface LoadedConfig {
 /**
  * 简单的内存缓存，避免同一次命令中重复走磁盘加载配置。
  */
-const cache = new Map<string, Promise<LoadedConfig>>()
+const cache = new Map<string, Promise<LoadedMonorepoConfig>>()
 const configExtensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs'] as const
 
 function findConfigFiles(cwd: string, baseName: 'repoctl' | 'monorepo') {
@@ -23,7 +23,7 @@ function findConfigFiles(cwd: string, baseName: 'repoctl' | 'monorepo') {
 /**
  * 基于 c12 的通用配置加载逻辑，支持多种配置文件格式。
  */
-async function loadConfigInternal(cwd: string): Promise<LoadedConfig> {
+async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
   const repoctlConfigFiles = findConfigFiles(cwd, 'repoctl')
   const monorepoConfigFiles = findConfigFiles(cwd, 'monorepo')
 
@@ -46,7 +46,7 @@ async function loadConfigInternal(cwd: string): Promise<LoadedConfig> {
   })
 
   return {
-    file: configFile ? path.resolve(configFile) : null,
+    file: configFile && fs.existsSync(configFile) ? fs.realpathSync(configFile) : null,
     config: config ?? {},
   }
 }
@@ -74,6 +74,21 @@ export function defineMonorepoConfig(config: MonorepoConfig) {
 }
 
 /**
+ * 加载配置对象和实际命中的配置文件路径，供诊断和脚本集成使用。
+ * 优先级为 `repoctl.config.*`，如果两者同时存在则直接报错。
+ *
+ * @param cwd 配置文件解析起点
+ * @returns 配置文件路径和解析后的配置对象；未找到时 file 为 null、config 为空对象
+ */
+export async function loadMonorepoConfigDetails(cwd: string): Promise<LoadedMonorepoConfig> {
+  const key = path.resolve(cwd)
+  if (!cache.has(key)) {
+    cache.set(key, loadConfigInternal(key))
+  }
+  return cache.get(key)!
+}
+
+/**
  * 加载指定目录的 `repoctl.config.*` 或 `monorepo.config.*`，并在当前进程内做内存缓存。
  * 优先级为 `repoctl.config.*`，如果两者同时存在则直接报错。
  *
@@ -81,11 +96,7 @@ export function defineMonorepoConfig(config: MonorepoConfig) {
  * @returns 解析后的配置对象；未找到时返回空对象
  */
 export async function loadMonorepoConfig(cwd: string) {
-  const key = path.resolve(cwd)
-  if (!cache.has(key)) {
-    cache.set(key, loadConfigInternal(key))
-  }
-  const { config } = await cache.get(key)!
+  const { config } = await loadMonorepoConfigDetails(cwd)
   return config
 }
 

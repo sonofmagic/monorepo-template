@@ -26,6 +26,7 @@ pnpm exec repo doctor --strict --json --out reports/doctor.json
 
 ```bash
 pnpm exec repo env paths --json --out reports/paths.json
+pnpm exec repo config inspect --json --out reports/config.json
 pnpm exec repo env info --json --out reports/env.json
 pnpm exec repo env snapshot --json --out reports/snapshot.json
 ```

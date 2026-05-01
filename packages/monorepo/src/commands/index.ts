@@ -1,6 +1,7 @@
 import type { GetWorkspacePackagesOptions } from '../types'
 import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplateOptions } from './ai'
 import type { RecommendedCheckMode, RecommendedCheckOptions, RecommendedCheckPlan, RecommendedCheckPlanCommand } from './check'
+import type { ConfigInspection } from './config'
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from './create'
 import type { DoctorCheck, DoctorReport, DoctorStatus, DoctorSummary } from './doctor'
 import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot } from './env'
@@ -12,6 +13,7 @@ import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
 import { resolveRecommendedCheckPlan, runRecommendedCheck } from './check'
 import { cleanProjects } from './clean'
+import { inspectMonorepoConfig } from './config'
 import { createNewProject, getCreateChoices, getTemplateMap, resolveCreateNewProjectPlan, templateMap } from './create'
 import { runDoctor } from './doctor'
 import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot } from './env'
@@ -27,6 +29,7 @@ export type {
   AgenticTemplateTask,
   CheckTemplatesOptions,
   CommitMsgVerifyOptions,
+  ConfigInspection,
   CreateNewProjectOptions,
   CreateNewProjectPlan,
   DoctorCheck,
@@ -76,6 +79,7 @@ export {
   initMetadata,
   initTooling,
   initToolingTargets,
+  inspectMonorepoConfig,
   loadAgenticTasks,
   normalizeInitToolingTargets,
   resolveCreateNewProjectPlan,

@@ -53,6 +53,17 @@ describe('commander program', () => {
         packageJson: { path: '/repo/package.json', relativePath: 'package.json', exists: true },
       },
     }))
+    const inspectMonorepoConfigMock = vi.fn(async () => ({
+      cwd: '/repo',
+      file: '/repo/repoctl.config.ts',
+      config: {
+        commands: {
+          clean: {
+            autoConfirm: true,
+          },
+        },
+      },
+    }))
     const verifyCommitMsgMock = vi.fn(() => {})
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
@@ -122,6 +133,7 @@ describe('commander program', () => {
       initMetadata: initMetadataMock,
       initTooling: initToolingMock,
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
+      inspectMonorepoConfig: inspectMonorepoConfigMock,
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
       resolveRecommendedCheckPlan: vi.fn(() => ({ cwd: '/repo', mode: 'default', commands: [] })),
       runDoctor: doctorMock,
@@ -188,6 +200,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'env', 'info', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'snapshot', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'paths', '--json'])
+    await program.parseAsync(['node', 'monorepo', 'config', 'inspect', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
@@ -230,6 +243,7 @@ describe('commander program', () => {
     expect(collectEnvInfoMock).toHaveBeenCalledWith(expect.any(String))
     expect(collectEnvSnapshotMock).toHaveBeenCalledWith(expect.any(String))
     expect(collectEnvPathsMock).toHaveBeenCalledWith(expect.any(String))
+    expect(inspectMonorepoConfigMock).toHaveBeenCalledWith(expect.any(String))
     expect(verifyPreCommitMock).toHaveBeenCalledWith({ cwd: expect.any(String) })
     expect(verifyCommitMsgMock).toHaveBeenCalledWith({
       cwd: expect.any(String),

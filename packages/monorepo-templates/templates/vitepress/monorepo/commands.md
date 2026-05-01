@@ -214,6 +214,13 @@ repo env paths --json --out reports/paths.json
 repo env mirror
 ```
 
+### config / cfg
+
+```bash
+repo config inspect
+repo cfg i --json --out reports/config.json
+```
+
 ### skills / sk
 
 ```bash
