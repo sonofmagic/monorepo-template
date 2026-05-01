@@ -1,6 +1,6 @@
 import type { GetWorkspacePackagesOptions } from '../types'
 import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplateOptions } from './ai'
-import type { RecommendedCheckOptions } from './check'
+import type { RecommendedCheckMode, RecommendedCheckOptions, RecommendedCheckPlan, RecommendedCheckPlanCommand } from './check'
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from './create'
 import type { DoctorCheck, DoctorReport, DoctorStatus, DoctorSummary } from './doctor'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
@@ -9,7 +9,7 @@ import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptio
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
-import { runRecommendedCheck } from './check'
+import { resolveRecommendedCheckPlan, runRecommendedCheck } from './check'
 import { cleanProjects } from './clean'
 import { createNewProject, getCreateChoices, getTemplateMap, resolveCreateNewProjectPlan, templateMap } from './create'
 import { runDoctor } from './doctor'
@@ -35,7 +35,10 @@ export type {
   GetWorkspacePackagesOptions,
   PreCommitVerifyOptions,
   PrePushVerifyOptions,
+  RecommendedCheckMode,
   RecommendedCheckOptions,
+  RecommendedCheckPlan,
+  RecommendedCheckPlanCommand,
   SkillTarget,
   StagedTypecheckOptions,
   SyncSkillsOptions,
@@ -67,6 +70,7 @@ export {
   loadAgenticTasks,
   normalizeInitToolingTargets,
   resolveCreateNewProjectPlan,
+  resolveRecommendedCheckPlan,
   runDoctor,
   runRecommendedCheck,
   setVscodeBinaryMirror,

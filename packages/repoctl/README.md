@@ -18,6 +18,7 @@ pnpm exec repo doctor --json --out reports/doctor.json
 pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
+pnpm exec repo check --dry-run
 ```
 
 Inside generated repos, the same workflow is available as shorter root scripts:
@@ -39,6 +40,7 @@ pnpm check
 - `repo upgrade`: sync the latest standard assets and scripts from the template.
 
 `repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` when automation needs a persisted report.
+Use `repo check --dry-run` or `repo check --json --out reports/check-plan.json` when automation needs to inspect the verification plan before running it.
 
 ## Common Commands
 
@@ -66,6 +68,10 @@ pnpm exec repo templates --markdown --out docs/templates.md
 
 # advanced workspace upgrade
 pnpm exec repo ws up
+
+# inspect verification routing
+pnpm exec repo check --dry-run
+pnpm exec repo check --json --out reports/check-plan.json
 
 # inspect workspace packages
 pnpm exec repo ws ls

@@ -20,6 +20,49 @@ afterEach(() => {
 })
 
 describe('runRecommendedCheck', () => {
+  it('resolves a dry-run plan for the default check route', async () => {
+    const { resolveRecommendedCheckPlan } = await import('@/commands/check')
+    const plan = resolveRecommendedCheckPlan({ cwd: '/repo' })
+
+    expect(plan).toEqual({
+      cwd: '/repo',
+      mode: 'default',
+      commands: [
+        expect.objectContaining({
+          name: 'pre-commit',
+          command: 'repo verify pre-commit',
+        }),
+      ],
+    })
+  })
+
+  it('resolves a dry-run plan for staged checks', async () => {
+    const { resolveRecommendedCheckPlan } = await import('@/commands/check')
+    const plan = resolveRecommendedCheckPlan({ cwd: '/repo', staged: true })
+
+    expect(plan.mode).toBe('staged')
+    expect(plan.commands.map(command => command.name)).toEqual(['pre-commit', 'staged-typecheck'])
+  })
+
+  it('resolves editFile before other check modes', async () => {
+    const { resolveRecommendedCheckPlan } = await import('@/commands/check')
+    const plan = resolveRecommendedCheckPlan({
+      cwd: '/repo',
+      full: true,
+      staged: true,
+      editFile: '.git/COMMIT_EDITMSG',
+    })
+
+    expect(plan).toEqual(expect.objectContaining({
+      mode: 'commit-msg',
+      commands: [
+        expect.objectContaining({
+          command: 'repo verify commit-msg .git/COMMIT_EDITMSG',
+        }),
+      ],
+    }))
+  })
+
   it('routes editFile to commit-msg verification', async () => {
     const { runRecommendedCheck } = await import('@/commands/check')
     await runRecommendedCheck({ cwd: '/repo', editFile: '.git/COMMIT_EDITMSG' })

@@ -101,6 +101,7 @@ repo ai prompt create --name checkout
 
 - 提交前自查
 - 怀疑 lint / typecheck / hooks 有问题时快速复现
+- 用 `repo check --dry-run` 或 `repo check --json --out reports/check-plan.json` 先确认校验路由
 
 ### `upgrade`
 

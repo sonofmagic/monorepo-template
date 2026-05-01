@@ -88,6 +88,7 @@ describe('commander program', () => {
       initTooling: initToolingMock,
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
+      resolveRecommendedCheckPlan: vi.fn(() => ({ cwd: '/repo', mode: 'default', commands: [] })),
       runDoctor: doctorMock,
       runRecommendedCheck: runRecommendedCheckMock,
       setVscodeBinaryMirror: mirrorMock,

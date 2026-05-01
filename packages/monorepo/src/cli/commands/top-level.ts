@@ -1,4 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
+import type { RecommendedCheckPlan } from '../../commands/check'
 import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
@@ -12,6 +13,9 @@ interface CheckCliOptions {
   full?: boolean
   staged?: boolean
   editFile?: string
+  dryRun?: boolean
+  json?: boolean
+  out?: string
 }
 
 interface InitCliOptions {
@@ -91,6 +95,36 @@ async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cw
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
+function formatCheckPlan(plan: RecommendedCheckPlan) {
+  const lines = [
+    `cwd: ${plan.cwd}`,
+    `mode: ${plan.mode}`,
+    '',
+  ]
+
+  for (const command of plan.commands) {
+    lines.push(`- ${command.command}`)
+    lines.push(`  ${command.description}`)
+  }
+
+  return lines.join('\n')
+}
+
+async function emitCheckPlan(plan: RecommendedCheckPlan, opts: CheckCliOptions, cwd: string) {
+  const content = opts.json
+    ? JSON.stringify(plan, null, 2)
+    : formatCheckPlan(plan)
+
+  if (!opts.out) {
+    logger.log(content)
+    return
+  }
+
+  const outFile = path.resolve(cwd, opts.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+}
+
 export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('init')
     .description('初始化当前 workspace，并生成推荐配置')
@@ -134,6 +168,9 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--full', '执行完整校验')
     .option('--staged', '仅执行 staged 相关校验')
     .option('--edit-file <file>', '执行 commit message 校验')
+    .option('--dry-run', '预览将要执行的校验，不实际运行')
+    .option('--json', '以 JSON 输出校验计划，隐含 --dry-run')
+    .option('--out <file>', '把校验计划写入文件，隐含 --dry-run')
     .action(async (opts: CheckCliOptions) => {
       const options = {
         cwd,
@@ -141,7 +178,11 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
         ...(opts.staged !== undefined ? { staged: opts.staged } : {}),
         ...(opts.editFile !== undefined ? { editFile: opts.editFile } : {}),
       }
-      const { runRecommendedCheck } = await import('@/commands')
+      const { resolveRecommendedCheckPlan, runRecommendedCheck } = await import('@/commands')
+      if (opts.dryRun || opts.json || opts.out) {
+        await emitCheckPlan(resolveRecommendedCheckPlan(options), opts, cwd)
+        return
+      }
       await runRecommendedCheck(options)
       logger.success('check finished!')
     })

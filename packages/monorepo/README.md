@@ -12,6 +12,7 @@ pnpm exec repo doctor --json
 pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
+pnpm exec repo check --dry-run
 ```
 
 模板生成后的仓库还会带上更短的根脚本：
@@ -59,6 +60,18 @@ npx monorepo skills sync --codex
 1. 生成仓库里的 `pnpm setup / pnpm doctor / pnpm new / pnpm check`
 2. `repo ...`
 3. `repoctl ...` / `monorepo ...` 兼容入口
+
+## `repo check`
+
+`check` 是推荐的本地验证入口。默认执行轻量 pre-commit 校验，`--staged` 会追加 staged typecheck 路由，`--full` 会切到 pre-push 级别的完整校验。
+
+如果只想看会跑什么，不实际执行校验，可以使用：
+
+```sh
+repo check --dry-run
+repo check --staged --json
+repo check --full --json --out reports/check-plan.json
+```
 
 ## `repo doctor`
 

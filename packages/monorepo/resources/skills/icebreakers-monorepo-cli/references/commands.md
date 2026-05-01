@@ -34,10 +34,14 @@ Usage:
 - npx repoctl check
 - npx repoctl check --staged
 - npx repoctl check --full
+- npx repoctl check --dry-run
+- npx repoctl check --json --out reports/check-plan.json
   Notes:
 - default mode runs the lightweight local verification flow
 - `--staged` adds staged typecheck routing
 - `--full` maps to the heavier pre-push verification flow
+- `--dry-run` previews the verification route without running checks
+- `--json` and `--out <file>` emit the same plan for automation and imply dry-run
 
 ## doctor
 
