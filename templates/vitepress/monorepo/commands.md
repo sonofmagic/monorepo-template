@@ -213,6 +213,7 @@ repo env snapshot --json --out reports/snapshot.json
 repo env paths --json --out reports/paths.json
 repo env support --json --out reports/support.json
 repo env support --json --redact --out reports/support.json
+repo env support --markdown --redact --out reports/support.md
 repo env mirror
 ```
 

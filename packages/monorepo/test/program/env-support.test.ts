@@ -58,8 +58,16 @@ function createSupportBundle(root: string) {
       cwd: root,
       workspaceDir: root,
       packageCount: 1,
-      checks: [],
-      summary: { pass: 1, warn: 0, fail: 0 },
+      checks: [
+        {
+          id: 'root-scripts',
+          title: 'root scripts',
+          status: 'warn',
+          detail: `missing script in ${path.join(root, 'package.json')}`,
+          fix: 'run repo upgrade',
+        },
+      ],
+      summary: { pass: 1, warn: 1, fail: 0 },
     },
     checkPlan: {
       cwd: root,
@@ -108,6 +116,38 @@ describe('commander program env support command', () => {
           file: '<workspace>/repoctl.config.ts',
         }),
       }))
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('writes a redacted markdown support summary', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-support-markdown-'))
+    const outFile = path.join(root, 'reports/support.md')
+    const collectEnvSupportBundleMock = vi.fn(async () => createSupportBundle(root))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvSupportBundle: collectEnvSupportBundleMock,
+      }))
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: vi.fn(),
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'env', 'support', '--markdown', '--redact', '--out', outFile])
+
+      const content = await readFile(outFile, 'utf8')
+      expect(content).not.toContain(root)
+      expect(content).toContain('# Repo support bundle')
+      expect(content).toContain('| workspace | <workspace> |')
+      expect(content).toContain('- warn: root scripts (fix: run repo upgrade)')
+      expect(content).toContain('- `repo verify pre-commit` - check <workspace>/package.json')
     }
     finally {
       await rm(root, { recursive: true, force: true })

@@ -116,6 +116,7 @@ describe('program help surface', () => {
     expect(envPaths?.helpInformation()).toContain('--json')
     expect(envPaths?.helpInformation()).toContain('--out')
     expect(envSupport?.helpInformation()).toContain('--json')
+    expect(envSupport?.helpInformation()).toContain('--markdown')
     expect(envSupport?.helpInformation()).toContain('--out')
     expect(envSupport?.helpInformation()).toContain('--redact')
     expect(config?.helpInformation()).toContain('i')

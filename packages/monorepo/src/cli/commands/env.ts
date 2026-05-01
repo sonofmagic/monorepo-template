@@ -7,6 +7,7 @@ import fs from '../../utils/fs'
 
 interface EnvInfoCliOptions {
   json?: boolean
+  markdown?: boolean
   out?: string
   redact?: boolean
 }
@@ -118,6 +119,73 @@ function formatEnvSupportBundle(bundle: EnvSupportBundle) {
   ].join('\n')
 }
 
+function formatMarkdownTable(rows: Array<[string, string | number | undefined]>) {
+  const formatCell = (value: string | number | undefined) => String(value ?? '-')
+    .split('|')
+    .join('\\|')
+    .split('\n')
+    .join('<br>')
+
+  return [
+    '| Field | Value |',
+    '| --- | --- |',
+    ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
+  ].join('\n')
+}
+
+function formatSupportBundleMarkdown(bundle: EnvSupportBundle) {
+  const warningsAndFailures = bundle.doctor.checks.filter(check => check.status !== 'pass')
+
+  return [
+    '# Repo support bundle',
+    '',
+    `Generated at: ${bundle.generatedAt}`,
+    '',
+    '## Environment',
+    '',
+    formatMarkdownTable([
+      ['cwd', bundle.env.cwd],
+      ['workspace', bundle.env.workspaceDir],
+      ['packages', bundle.env.packageCount],
+      ['node', bundle.env.nodeRange ? `${bundle.env.nodeVersion} (${bundle.env.nodeRange})` : bundle.env.nodeVersion],
+      ['pnpm', bundle.env.pnpmVersion],
+      ['packageManager', bundle.env.packageManager],
+      ['platform', `${bundle.env.platform}/${bundle.env.arch}`],
+    ]),
+    '',
+    '## Diagnostics',
+    '',
+    formatMarkdownTable([
+      ['doctor pass', bundle.doctor.summary.pass],
+      ['doctor warn', bundle.doctor.summary.warn],
+      ['doctor fail', bundle.doctor.summary.fail],
+      ['check mode', bundle.checkPlan.mode],
+      ['config file', bundle.config.file ?? '-'],
+    ]),
+    '',
+    ...(warningsAndFailures.length > 0
+      ? [
+          '## Doctor findings',
+          '',
+          ...warningsAndFailures.map(check => `- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`),
+          '',
+        ]
+      : []),
+    '## Check plan',
+    '',
+    ...bundle.checkPlan.commands.map(command => `- \`${command.command}\` - ${command.description}`),
+    '',
+    '## Report paths',
+    '',
+    formatMarkdownTable([
+      ['doctor', bundle.paths.paths.doctorReport.relativePath],
+      ['env', bundle.paths.paths.envReport.relativePath],
+      ['snapshot', bundle.paths.paths.snapshotReport.relativePath],
+      ['check plan', bundle.paths.paths.checkPlanReport.relativePath],
+    ]),
+  ].join('\n')
+}
+
 function replaceAll(value: string, search: string, replacement: string) {
   return search.length > 0 ? value.split(search).join(replacement) : value
 }
@@ -154,7 +222,9 @@ async function emitEnvSupportBundle(bundle: EnvSupportBundle, opts: EnvInfoCliOp
   const outputBundle = opts.redact ? redactSupportBundle(bundle) : bundle
   const content = opts.json
     ? JSON.stringify(outputBundle, null, 2)
-    : formatEnvSupportBundle(outputBundle)
+    : opts.markdown
+      ? formatSupportBundleMarkdown(outputBundle)
+      : formatEnvSupportBundle(outputBundle)
 
   if (!opts.out) {
     logger.log(content)
@@ -203,6 +273,7 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .description('输出完整排障包，包含环境、路径、配置、doctor 和 check 计划')
     .alias('b')
     .option('--json', '输出 JSON，方便脚本消费')
+    .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
     .option('--out <file>', '把当前输出写入文件')
     .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
     .action(async (opts: EnvInfoCliOptions) => {
