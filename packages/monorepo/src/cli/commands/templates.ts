@@ -154,6 +154,7 @@ export function registerTemplatesCommands(program: Command) {
         getTemplateChoice,
         getTemplateChoices,
         isTemplateCategory,
+        suggestTemplateKey,
         templateCategories,
       } = await import('@icebreakers/monorepo-templates')
 
@@ -176,6 +177,10 @@ export function registerTemplatesCommands(program: Command) {
         const choice = getTemplateChoice(key)
         if (!choice) {
           logger.error(`unknown template: ${key}`)
+          const suggestion = suggestTemplateKey(key)
+          if (suggestion) {
+            logger.info(`did you mean \`${suggestion}\`?`)
+          }
           logger.info('run `repo templates` to list available templates')
           process.exitCode = 1
           return

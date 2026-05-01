@@ -102,6 +102,7 @@ beforeEach(async () => {
 
   vi.doMock('@icebreakers/monorepo-templates', () => ({
     scaffoldTemplate: scaffoldTemplateMock,
+    suggestTemplateKey: vi.fn((key: string) => key === 'unknown-template' ? undefined : 'tsdown'),
     templateChoices: [
       { key: 'tsdown', label: 'tsdown 打包', source: 'tsdown', target: 'packages/tsdown', description: 'TypeScript library' },
       { key: 'vue-lib', label: 'vue 组件', source: 'vue-lib', target: 'packages/vue-lib' },
@@ -161,22 +162,41 @@ describe('createNewProject unit scenarios', () => {
     expect(outputJsonMock).not.toHaveBeenCalled()
   })
 
-  it('falls back to default template when requested type is unknown', async () => {
+  it('throws before writing files when requested type is unknown', async () => {
     resolveCommandConfigMock.mockResolvedValue({
       defaultTemplate: 'tsdown',
       renameJson: false,
     })
 
     const { createNewProject } = await import('@/commands/create')
-    await createNewProject({ cwd: '/repo', name: 'demo-app', type: 'unknown-template' })
+    await expect(
+      createNewProject({ cwd: '/repo', name: 'demo-app', type: 'unknown-template' }),
+    )
+      .rejects
+      .toThrow('未知模板：unknown-template')
 
-    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('[tsdown]'))
-    const outputCall = outputJsonMock.mock.calls.find(args => args[0].endsWith('package.json'))
-    expect(outputCall).toBeDefined()
-    const pkgJson = outputCall?.[1] as { name?: string } | undefined
-    expect(pkgJson?.name).toBe('demo-app')
-    expect(scaffoldTemplateMock).toHaveBeenCalledWith(expect.objectContaining({
-      skipRootBasenames: ['package.json'],
+    expect(ensureDirMock).not.toHaveBeenCalled()
+    expect(scaffoldTemplateMock).not.toHaveBeenCalled()
+    expect(outputJsonMock).not.toHaveBeenCalled()
+  })
+
+  it('resolves custom templates from config without built-in fallback', async () => {
+    resolveCommandConfigMock.mockResolvedValue({
+      templateMap: {
+        custom: { source: 'custom-template', target: 'apps/custom' },
+      },
+    })
+
+    const { resolveCreateNewProjectPlan } = await import('@/commands/create')
+    const plan = await resolveCreateNewProjectPlan({ cwd: '/repo', name: 'custom-app', type: 'custom' })
+
+    expect(plan).toEqual(expect.objectContaining({
+      requestedTemplate: 'custom',
+      template: 'custom',
+      usedFallback: false,
+      sourceDir: expect.stringContaining('/templates/custom-template'),
+      targetName: 'custom-app',
+      targetDir: '/repo/custom-app',
     }))
   })
 

@@ -84,6 +84,7 @@ repo new docs --template vitepress --dry-run
 
 - 交互式或直接创建新的 package / app
 - `--dry-run` 只预览模板、目标目录、package 名称和输出文件，不写入磁盘
+- 显式传入的 `--template` 会先校验，拼错时会失败并提示相近模板 key
 
 ### `repo templates`
 

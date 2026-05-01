@@ -45,6 +45,8 @@ repo new website --template vitepress --dry-run
 
 `--dry-run` 不写入磁盘，只展示模板、源目录、目标目录、package name 和输出的 package json 文件。
 
+显式传入的 `--template` 会先校验。模板 key 拼错时，命令会失败并提示相近 key，而不是静默回退到默认模板。
+
 ## 健康检查
 
 ```bash

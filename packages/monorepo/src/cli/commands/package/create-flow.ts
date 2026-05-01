@@ -1,4 +1,5 @@
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from '../../../commands'
+import process from 'node:process'
 import { input, select } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import { createNewProject, getCreateChoices, resolveCreateNewProjectPlan } from '../../../commands'
@@ -39,6 +40,7 @@ export interface RunCreateFlowOptions {
 
 export interface RunCreateFlowResult {
   dryRun: boolean
+  failed?: boolean
 }
 
 function formatPlanPath(cwd: string, targetPath: string) {
@@ -58,44 +60,79 @@ function printCreatePlan(plan: CreateNewProjectPlan) {
   logger.info('dry run only; no files were written')
 }
 
+function handleCreateFlowError(error: unknown): RunCreateFlowResult {
+  logger.error(error instanceof Error ? error.message : String(error))
+  process.exitCode = 1
+  return { dryRun: false, failed: true }
+}
+
 export async function runCreateFlow(cwd: string, inputName: string | undefined, options: RunCreateFlowOptions = {}) {
-  const createConfig = await resolveCommandConfig('create', cwd)
-  const explicitTemplate = options.template ?? createConfig?.type ?? createConfig?.defaultTemplate
+  try {
+    const createConfig = await resolveCommandConfig('create', cwd)
+    const explicitTemplate = options.template ?? createConfig?.type ?? createConfig?.defaultTemplate
 
-  let packageName = inputName
+    let packageName = inputName
 
-  if (!explicitTemplate) {
-    const intent = await select({
-      message: '你要创建什么？',
-      choices: createIntentChoices,
-      default: 'library',
-    })
-    const intentChoice = createIntentChoices.find(item => item.value === intent)
-    if (!intentChoice) {
-      throw new Error(`未找到 intent: ${intent}`)
+    if (!explicitTemplate) {
+      const intent = await select({
+        message: '你要创建什么？',
+        choices: createIntentChoices,
+        default: 'library',
+      })
+      const intentChoice = createIntentChoices.find(item => item.value === intent)
+      if (!intentChoice) {
+        throw new Error(`未找到 intent: ${intent}`)
+      }
+
+      if (!packageName) {
+        packageName = await input({
+          message: '请输入名称',
+          default: 'my-module',
+        })
+      }
+
+      let type: CreateNewProjectOptions['type'] = intentChoice.defaultTemplate
+      if (intent === 'library') {
+        type = await select({
+          message: '请选择库模板',
+          choices: [
+            { name: 'TypeScript Library', value: 'tsdown', description: '通用 TS 库' },
+            { name: 'Vue Component Library', value: 'vue-lib', description: 'Vue 组件库' },
+          ],
+          default: 'tsdown',
+        })
+      }
+
+      const createOptions = {
+        name: normalizeTargetName(packageName, intentChoice.defaultBaseDir),
+        cwd,
+        ...(type !== undefined ? { type } : {}),
+      }
+
+      if (options.dryRun) {
+        printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
+        return { dryRun: true }
+      }
+
+      await createNewProject(createOptions)
+      return { dryRun: false }
     }
 
     if (!packageName) {
       packageName = await input({
-        message: '请输入名称',
-        default: 'my-module',
+        message: '请输入包名',
+        default: createConfig?.name ?? 'my-package',
       })
     }
 
-    let type: CreateNewProjectOptions['type'] = intentChoice.defaultTemplate
-    if (intent === 'library') {
-      type = await select({
-        message: '请选择库模板',
-        choices: [
-          { name: 'TypeScript Library', value: 'tsdown', description: '通用 TS 库' },
-          { name: 'Vue Component Library', value: 'vue-lib', description: 'Vue 组件库' },
-        ],
-        default: 'tsdown',
-      })
-    }
+    const type: CreateNewProjectOptions['type'] = explicitTemplate ?? await select({
+      message: '请选择模板类型',
+      choices: getCreateChoices(createConfig?.choices),
+      default: defaultTemplate,
+    })
 
     const createOptions = {
-      name: normalizeTargetName(packageName, intentChoice.defaultBaseDir),
+      name: normalizeNameForTemplate(packageName, type),
       cwd,
       ...(type !== undefined ? { type } : {}),
     }
@@ -108,31 +145,7 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     await createNewProject(createOptions)
     return { dryRun: false }
   }
-
-  if (!packageName) {
-    packageName = await input({
-      message: '请输入包名',
-      default: createConfig?.name ?? 'my-package',
-    })
+  catch (error) {
+    return handleCreateFlowError(error)
   }
-
-  const type: CreateNewProjectOptions['type'] = explicitTemplate ?? await select({
-    message: '请选择模板类型',
-    choices: getCreateChoices(createConfig?.choices),
-    default: defaultTemplate,
-  })
-
-  const createOptions = {
-    name: normalizeNameForTemplate(packageName, type),
-    cwd,
-    ...(type !== undefined ? { type } : {}),
-  }
-
-  if (options.dryRun) {
-    printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
-    return { dryRun: true }
-  }
-
-  await createNewProject(createOptions)
-  return { dryRun: false }
 }

@@ -138,6 +138,8 @@ repo new dashboard --template vue-hono
 repo new dashboard --template vue-hono --dry-run
 ```
 
+如果 `--template` 拼错，CLI 会直接失败并提示最接近的模板 key；它不会静默回退到默认模板。
+
 当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。
 
 `monorepo ai prompt create` 支持批量生成：

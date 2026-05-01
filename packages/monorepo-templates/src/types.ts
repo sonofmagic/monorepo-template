@@ -17,3 +17,7 @@ export interface TemplateDefinition {
 export interface GetTemplateChoicesOptions {
   category?: TemplateCategory
 }
+
+export interface SuggestTemplateKeyOptions extends GetTemplateChoicesOptions {
+  keys?: readonly string[]
+}

@@ -21,7 +21,7 @@ export function registerPackageCommands(program: Command, cwd: string) {
         ...(opts.template !== undefined ? { template: opts.template } : {}),
         ...(opts.dryRun ? { dryRun: true } : {}),
       })
-      if (result.dryRun) {
+      if (result.dryRun || result.failed) {
         return
       }
       logger.success('package create finished!')

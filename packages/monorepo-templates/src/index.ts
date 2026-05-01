@@ -1,4 +1,4 @@
-import type { GetTemplateChoicesOptions, TemplateCategory, TemplateChoice, TemplateDefinition } from './types'
+import type { GetTemplateChoicesOptions, SuggestTemplateKeyOptions, TemplateCategory, TemplateChoice, TemplateDefinition } from './types'
 import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets } from '../assets-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
 import { prepareAssets } from './prepare'
@@ -31,10 +31,12 @@ export {
   getTemplateChoice,
   getTemplateChoices,
   getTemplateDefinition,
+  getTemplateKeys,
   getTemplateSource,
   getTemplateTarget,
   isTemplateCategory,
   isTemplateKey,
+  suggestTemplateKey,
   templateCategories,
 } from './templates'
 export {
@@ -45,7 +47,7 @@ export {
   toPublishGitignorePath,
   toWorkspaceGitignorePath,
 }
-export type { GetTemplateChoicesOptions, TemplateCategory, TemplateChoice, TemplateDefinition }
+export type { GetTemplateChoicesOptions, SuggestTemplateKeyOptions, TemplateCategory, TemplateChoice, TemplateDefinition }
 export { execaCommand } from './utils/command'
 export { default as checkbox } from '@inquirer/checkbox'
 export { default as input } from '@inquirer/input'

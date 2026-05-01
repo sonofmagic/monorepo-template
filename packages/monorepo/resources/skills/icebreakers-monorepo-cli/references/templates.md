@@ -22,6 +22,9 @@ Add `--out <file>` to write the selected output to disk.
 Use `repo new <name> --template <key> --dry-run` to preview the target directory
 and package metadata without writing files.
 
+Explicit template keys are validated before any files are written. If a key is
+misspelled, the CLI fails and prints the closest known key when one is available.
+
 Advanced users can still use `repo package create [path]` or `repo pkg new [path]`
 to select templates directly.
 

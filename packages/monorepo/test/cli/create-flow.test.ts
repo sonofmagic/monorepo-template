@@ -22,6 +22,7 @@ const getCreateChoicesMock = vi.fn(() => [])
 const resolveCommandConfigMock = vi.fn(async () => ({}))
 const logMock = vi.fn()
 const infoMock = vi.fn()
+const errorMock = vi.fn()
 
 beforeEach(async () => {
   await vi.resetModules()
@@ -33,6 +34,7 @@ beforeEach(async () => {
   resolveCommandConfigMock.mockReset()
   logMock.mockClear()
   infoMock.mockClear()
+  errorMock.mockClear()
 
   inputMock.mockResolvedValue('demo')
   getCreateChoicesMock.mockReturnValue([])
@@ -65,6 +67,7 @@ beforeEach(async () => {
     logger: {
       log: logMock,
       info: infoMock,
+      error: errorMock,
     },
   }))
 })
@@ -156,5 +159,21 @@ describe('runCreateFlow', () => {
     })
     expect(logMock).toHaveBeenCalledWith('Create preview:')
     expect(infoMock).toHaveBeenCalledWith('dry run only; no files were written')
+  })
+
+  it('prints create errors without throwing a stack from the CLI flow', async () => {
+    createNewProjectMock.mockRejectedValueOnce(new Error('未知模板：tsdwon。你是不是想用 tsdown？'))
+
+    const previousExitCode = process.exitCode
+    process.exitCode = undefined
+
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    const result = await runCreateFlow('/repo', 'demo', { template: 'tsdwon' })
+
+    expect(result).toEqual({ dryRun: false, failed: true })
+    expect(errorMock).toHaveBeenCalledWith('未知模板：tsdwon。你是不是想用 tsdown？')
+    expect(process.exitCode).toBe(1)
+
+    process.exitCode = previousExitCode
   })
 })

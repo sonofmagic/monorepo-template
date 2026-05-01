@@ -1,7 +1,7 @@
 import type { TemplateDefinition } from '@icebreakers/monorepo-templates'
 import type { CreateChoiceOption } from '@/types'
 import process from 'node:process'
-import { templateChoices } from '@icebreakers/monorepo-templates'
+import { suggestTemplateKey, templateChoices } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import fs from '@/utils/fs'
 import { templatesDir as defaultTemplatesDir } from '../../constants'
@@ -86,6 +86,12 @@ function normalizeTemplateDefinition(value: string | TemplateDefinition) {
   return value
 }
 
+function formatUnknownTemplateError(template: string, availableTemplates: string[]) {
+  const suggestion = suggestTemplateKey(template, { keys: availableTemplates })
+  const suggestionText = suggestion ? `你是不是想用 ${suggestion}？ ` : ''
+  return `未知模板：${template}。${suggestionText}可用模板：${availableTemplates.join(', ')}`
+}
+
 export function getCreateChoices(choices?: CreateChoiceOption[]) {
   if (choices?.length) {
     return choices
@@ -119,11 +125,13 @@ export async function resolveCreateNewProjectPlan(options?: CreateNewProjectOpti
     ? path.resolve(cwd, createConfig.templatesDir)
     : defaultTemplatesDir
 
-  const fallbackTemplate = (createConfig?.defaultTemplate as string | undefined) ?? defaultTemplate
   const requestedTemplateName = String(requestedTemplate)
-  const template = (typeof requestedTemplate === 'string' && templateDefinitions[requestedTemplate])
-    ? requestedTemplate
-    : fallbackTemplate
+  const availableTemplates = Object.keys(templateDefinitions).sort()
+  if (!templateDefinitions[requestedTemplateName]) {
+    throw new Error(formatUnknownTemplateError(requestedTemplateName, availableTemplates))
+  }
+
+  const template = requestedTemplateName
   const templateDefinition = templateDefinitions[template]
 
   if (!templateDefinition) {

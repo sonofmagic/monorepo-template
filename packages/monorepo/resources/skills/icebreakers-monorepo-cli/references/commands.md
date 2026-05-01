@@ -162,3 +162,5 @@ Usage:
   Notes:
 - Prefer `repoctl new` for the lower-cost guided flow.
 - Prompts for a template choice unless defaults are set in repoctl.config.ts or monorepo.config.ts.
+- Explicit `--template` values are validated before writing files. Unknown keys
+  fail with the closest suggestion instead of silently falling back.

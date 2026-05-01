@@ -71,6 +71,16 @@ pnpm doctor
 pnpm exec repo upgrade
 ```
 
+### 5. `repo new --template` 提示未知模板
+
+先运行：
+
+```bash
+pnpm exec repo templates
+```
+
+确认模板 key。`--template` 是严格校验的，拼写错误会直接失败；如果能判断出相近 key，CLI 会额外提示 `did you mean ...`。
+
 如果你只是不想等，也可以手动把这些脚本加回根 `package.json`。
 
 ### 5. 提交前校验没有正常工作
