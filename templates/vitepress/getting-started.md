@@ -150,6 +150,7 @@ pnpm tsd
 ```bash
 pnpm exec repo templates
 pnpm exec repo ws ls
+pnpm exec repo ws ls --json --out reports/workspaces.json
 pnpm exec repo tg init --all
 pnpm exec repo upgrade
 ```

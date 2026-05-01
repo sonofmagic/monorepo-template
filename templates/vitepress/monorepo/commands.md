@@ -170,6 +170,8 @@ repo mirror
 repo workspace upgrade
 repo ws up
 repo workspace init
+repo ws ls
+repo ws ls --json --out reports/workspaces.json
 repo workspace clean --yes
 ```
 

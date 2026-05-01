@@ -1,6 +1,9 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { CliOpts, WorkspacePackageSummaryData } from '../../types'
+import process from 'node:process'
+import path from 'pathe'
 import { logger } from '../../core/logger'
+import fs from '../../utils/fs'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
 interface WorkspaceListCliOptions {
@@ -8,6 +11,7 @@ interface WorkspaceListCliOptions {
   includePrivate?: boolean
   includeRoot?: boolean
   pattern?: string[]
+  out?: string
 }
 
 interface WorkspaceCleanCliOptions {
@@ -20,15 +24,34 @@ function collectValues(value: string, previous: string[] = []) {
   return [...previous, value]
 }
 
-function printWorkspaceList(result: WorkspacePackageSummaryData) {
-  logger.log(`workspace: ${result.workspaceDir}`)
-  logger.log(`packages: ${result.packages.length}`)
+function formatWorkspaceList(result: WorkspacePackageSummaryData) {
+  const lines = [
+    `workspace: ${result.workspaceDir}`,
+    `packages: ${result.packages.length}`,
+  ]
 
   for (const pkg of result.packages) {
     const name = pkg.name ?? '(unnamed)'
     const privateMark = pkg.private ? ' private' : ''
-    logger.log(`- ${name} ${pkg.relativeDir}${privateMark}`)
+    lines.push(`- ${name} ${pkg.relativeDir}${privateMark}`)
   }
+
+  return lines.join('\n')
+}
+
+async function emitWorkspaceList(result: WorkspacePackageSummaryData, opts: WorkspaceListCliOptions) {
+  const content = opts.json
+    ? JSON.stringify(result, null, 2)
+    : formatWorkspaceList(result)
+
+  if (!opts.out) {
+    logger.log(content)
+    return
+  }
+
+  const outFile = path.resolve(process.cwd(), opts.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(process.cwd(), outFile)}`)
 }
 
 export function registerWorkspaceCommands(program: Command, cwd: string) {
@@ -63,6 +86,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .option('--include-private', '包含 private 包')
     .option('--include-root', '包含 workspace 根包')
     .option('-p, --pattern <glob>', '追加自定义 workspace glob，可重复', collectValues)
+    .option('--out <file>', '把当前列表输出写入文件')
     .action(async (opts: WorkspaceListCliOptions) => {
       const { getWorkspacePackageSummaries } = await import('@/core/workspace')
       const result = await getWorkspacePackageSummaries(cwd, {
@@ -71,12 +95,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
         ...(opts.pattern?.length ? { patterns: opts.pattern } : {}),
       })
 
-      if (opts.json) {
-        logger.log(JSON.stringify(result, undefined, 2))
-        return
-      }
-
-      printWorkspaceList(result)
+      await emitWorkspaceList(result, opts)
     })
 
   workspaceCommand.command('clean')

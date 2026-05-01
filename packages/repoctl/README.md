@@ -70,6 +70,7 @@ pnpm exec repo ws up
 # inspect workspace packages
 pnpm exec repo ws ls
 pnpm exec repo ws ls --json --include-private
+pnpm exec repo ws ls --json --out reports/workspaces.json
 
 # generate tooling configs
 pnpm exec repo tg init --all

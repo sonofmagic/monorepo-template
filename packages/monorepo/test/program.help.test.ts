@@ -64,6 +64,7 @@ describe('program help surface', () => {
     const sync = program.commands.find((command: Command) => command.name() === 'sync')
     const clean = program.commands.find((command: Command) => command.name() === 'clean')
     const mirror = program.commands.find((command: Command) => command.name() === 'mirror')
+    const workspaceList = workspace?.commands.find((command: Command) => command.name() === 'list')
     const packageCreate = packageCommand?.commands.find((command: Command) => command.name() === 'create')
 
     expect(workspace?.aliases()).toEqual(['ws'])
@@ -91,6 +92,7 @@ describe('program help surface', () => {
     expect(createNew?.helpInformation()).toContain('--json')
     expect(createNew?.helpInformation()).toContain('--out')
     expect(doctor?.helpInformation()).toContain('--out')
+    expect(workspaceList?.helpInformation()).toContain('--out')
     expect(packageCreate?.helpInformation()).toContain('--json')
     expect(packageCreate?.helpInformation()).toContain('--out')
     expect(templates?.helpInformation()).toContain('--markdown')

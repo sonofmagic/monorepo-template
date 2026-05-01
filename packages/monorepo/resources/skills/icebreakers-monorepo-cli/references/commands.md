@@ -88,6 +88,21 @@ Usage:
 - npx repoctl workspace init
 - npx repoctl ws init
 
+## workspace list (alias: ws ls)
+
+Purpose: list workspace packages for inspection or automation.
+Usage:
+
+- npx repoctl workspace list
+- npx repoctl ws ls --json
+- npx repoctl ws ls --json --out reports/workspaces.json
+  Options:
+- --json: emit structured workspace summary data
+- --out <file>: persist the current text or JSON output
+- --include-private: include private packages
+- --include-root: include the workspace root package
+- --pattern <glob>: add custom workspace globs; repeatable
+
 ## tooling init (alias: tg init)
 
 Purpose: generate tooling config files plus matching devDependencies.
