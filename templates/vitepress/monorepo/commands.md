@@ -63,6 +63,7 @@ repo setup --preset standard --force
 ```bash
 repo doctor
 repo doctor --json
+repo doctor --json --out reports/doctor.json
 ```
 
 用途：
@@ -70,6 +71,7 @@ repo doctor --json
 - 诊断当前目录是不是可直接开始使用的 monorepo 根目录
 - 检查 Node 版本、workspace 文件、CLI 依赖、根脚本、配置冲突、提交链路
 - `--json` 只输出结构化报告，适合 CI、脚本和编辑器集成
+- `--out <file>` 把文本或 JSON 报告写入文件，仍会按 blocking issue 返回非零状态
 
 ### `repo new`
 

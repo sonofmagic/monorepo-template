@@ -42,6 +42,7 @@ pnpm doctor
 
 ```bash
 pnpm exec repo doctor --json
+pnpm exec repo doctor --json --out reports/doctor.json
 ```
 
 ## 创建第一个包或应用

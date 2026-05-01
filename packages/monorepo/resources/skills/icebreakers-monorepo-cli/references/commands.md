@@ -46,9 +46,11 @@ Usage:
 
 - npx repoctl doctor
 - npx repoctl doctor --json
+- npx repoctl doctor --json --out reports/doctor.json
   Notes:
 - default output is human-readable
 - `--json` emits the structured report only and still exits non-zero when blocking failures exist
+- `--out <file>` persists the text or JSON report and still exits non-zero when blocking failures exist
 
 ## upgrade
 

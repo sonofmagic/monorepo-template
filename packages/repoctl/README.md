@@ -14,6 +14,7 @@ pnpm add -D repoctl
 pnpm exec repo setup
 pnpm exec repo doctor
 pnpm exec repo doctor --json
+pnpm exec repo doctor --json --out reports/doctor.json
 pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
@@ -37,7 +38,7 @@ pnpm check
 - `repo check`: run the recommended local verification flow.
 - `repo upgrade`: sync the latest standard assets and scripts from the template.
 
-`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, and whether Husky plus lint-staged are both wired.
+`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` when automation needs a persisted report.
 
 ## Common Commands
 

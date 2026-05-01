@@ -10,6 +10,12 @@
 pnpm doctor
 ```
 
+需要把诊断结果交给 CI、编辑器或机器人时：
+
+```bash
+pnpm exec repo doctor --json --out reports/doctor.json
+```
+
 它会优先帮你排这些低成本但高频的问题：
 
 - 当前目录不是仓库根目录

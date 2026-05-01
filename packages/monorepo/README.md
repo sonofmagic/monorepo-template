@@ -75,6 +75,7 @@ npx monorepo skills sync --codex
 如果有阻塞项，命令会以非零状态结束。
 
 需要在 CI、脚本或编辑器集成中消费诊断结果时，使用 `repo doctor --json`。它只输出结构化报告；如果存在 blocking issue，仍会以非零状态结束。
+也可以加 `--out <file>` 把文本或 JSON 报告写入文件，例如 `repo doctor --json --out reports/doctor.json`。
 
 ## 性能与开发体验
 

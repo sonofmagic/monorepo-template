@@ -2,8 +2,10 @@ import type { Command } from '@icebreakers/monorepo-templates'
 import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
+import path from 'pathe'
 import pc from 'picocolors'
 import { logger } from '../../core/logger'
+import fs from '../../utils/fs'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
 interface CheckCliOptions {
@@ -26,6 +28,7 @@ interface NewCliOptions {
 
 interface DoctorCliOptions {
   json?: boolean
+  out?: string
 }
 
 interface CleanCliOptions {
@@ -44,24 +47,48 @@ function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
   return pc.red('FAIL')
 }
 
-function printDoctorReport(report: DoctorReport) {
-  logger.log('')
-  logger.log(`workspace: ${report.workspaceDir}`)
-  logger.log(`packages: ${report.packageCount}`)
-  logger.log('')
+function formatDoctorReport(report: DoctorReport, color = false) {
+  const status = color
+    ? formatDoctorStatus
+    : (value: 'pass' | 'warn' | 'fail') => value.toUpperCase()
+
+  const lines = [
+    `workspace: ${report.workspaceDir}`,
+    `packages: ${report.packageCount}`,
+    '',
+  ]
 
   for (const check of report.checks) {
-    logger.log(`[${formatDoctorStatus(check.status)}] ${check.title}`)
-    logger.log(`  ${check.detail}`)
+    lines.push(`[${status(check.status)}] ${check.title}`)
+    lines.push(`  ${check.detail}`)
     if (check.fix) {
-      logger.log(`  fix: ${check.fix}`)
+      lines.push(`  fix: ${check.fix}`)
     }
   }
 
-  logger.log('')
-  logger.log(
-    `summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`,
+  lines.push('')
+  lines.push(
+    color
+      ? `summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`
+      : `summary: ${report.summary.pass} pass, ${report.summary.warn} warn, ${report.summary.fail} fail`,
   )
+
+  return lines.join('\n')
+}
+
+async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cwd: string) {
+  const content = opts.json
+    ? JSON.stringify(report, null, 2)
+    : formatDoctorReport(report, !opts.out)
+
+  if (!opts.out) {
+    logger.log(content)
+    return
+  }
+
+  const outFile = path.resolve(cwd, opts.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
 export function registerTopLevelCommands(program: Command, cwd: string) {
@@ -122,18 +149,17 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('doctor')
     .description('诊断当前仓库是否适合直接开始使用')
     .option('--json', '输出 JSON 报告，方便 CI 或脚本消费')
+    .option('--out <file>', '把诊断报告写入文件')
     .action(async (opts: DoctorCliOptions) => {
       const { runDoctor } = await import('@/commands')
       const report = await runDoctor(cwd)
-      if (opts.json) {
-        logger.log(JSON.stringify(report, null, 2))
+      await emitDoctorReport(report, opts, cwd)
+      if (opts.out || opts.json) {
         if (report.summary.fail > 0) {
           process.exitCode = 1
         }
         return
       }
-
-      printDoctorReport(report)
 
       if (report.summary.fail > 0) {
         logger.error(`doctor found ${report.summary.fail} blocking issue(s).`)
