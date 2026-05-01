@@ -21,6 +21,15 @@ describe('commander program', () => {
     const runRecommendedCheckMock = vi.fn(async () => {})
     const cleanMock = vi.fn(async () => {})
     const mirrorMock = vi.fn(async () => {})
+    const collectEnvInfoMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      nodeVersion: 'v20.0.0',
+      pnpmVersion: '10.0.0',
+      platform: 'darwin',
+      arch: 'arm64',
+      packageCount: 1,
+    }))
     const verifyCommitMsgMock = vi.fn(() => {})
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
@@ -81,6 +90,7 @@ describe('commander program', () => {
       generateAgenticTemplates: aiBatchMock,
       loadAgenticTasks: loadTasksMock,
       cleanProjects: cleanMock,
+      collectEnvInfo: collectEnvInfoMock,
       createNewProject: vi.fn(async () => {}),
       getCreateChoices: vi.fn(() => choices),
       init: initMock,
@@ -150,6 +160,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'workspace', 'list', '--json', '--include-private', '--include-root', '--pattern', 'packages/*', '--pattern', 'apps/*'])
     await program.parseAsync(['node', 'monorepo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
     await program.parseAsync(['node', 'monorepo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
+    await program.parseAsync(['node', 'monorepo', 'env', 'info', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
@@ -189,6 +200,7 @@ describe('commander program', () => {
       pinnedVersion: 'next',
     })
     expect(mirrorMock).toHaveBeenCalled()
+    expect(collectEnvInfoMock).toHaveBeenCalledWith(expect.any(String))
     expect(verifyPreCommitMock).toHaveBeenCalledWith({ cwd: expect.any(String) })
     expect(verifyCommitMsgMock).toHaveBeenCalledWith({
       cwd: expect.any(String),

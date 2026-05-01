@@ -202,6 +202,14 @@ repo verify commit-msg .git/COMMIT_EDITMSG
 repo verify staged-typecheck packages/app/src/main.ts
 ```
 
+### env / e
+
+```bash
+repo env info
+repo e i --json --out reports/env.json
+repo env mirror
+```
+
 ### skills / sk
 
 ```bash

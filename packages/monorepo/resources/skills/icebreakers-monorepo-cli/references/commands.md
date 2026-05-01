@@ -134,6 +134,21 @@ Usage:
 - --include-private
 - --pinned-version <version>
 
+## env info (alias: e i)
+
+Purpose: print environment details for debugging and automation.
+Usage:
+
+- npx repoctl env info
+- npx repoctl e i --json
+- npx repoctl env info --json --out reports/env.json
+  Options:
+- --json: emit structured environment info
+- --out <file>: persist the current text or JSON output
+  Notes:
+- Includes cwd, workspace root, package manager, Node version, pnpm version,
+  platform, arch, and workspace package count.
+
 ## env mirror (alias: e m)
 
 Purpose: set VSCode binary mirror env.

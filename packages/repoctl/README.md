@@ -19,6 +19,7 @@ pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
 pnpm exec repo check --dry-run
+pnpm exec repo env info
 ```
 
 Inside generated repos, the same workflow is available as shorter root scripts:
@@ -72,6 +73,10 @@ pnpm exec repo ws up
 # inspect verification routing
 pnpm exec repo check --dry-run
 pnpm exec repo check --json --out reports/check-plan.json
+
+# collect environment info for debugging
+pnpm exec repo env info
+pnpm exec repo env info --json --out reports/env.json
 
 # inspect workspace packages
 pnpm exec repo ws ls

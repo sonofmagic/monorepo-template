@@ -16,6 +16,12 @@ pnpm doctor
 pnpm exec repo doctor --json --out reports/doctor.json
 ```
 
+需要把运行环境一起发给同事、CI 或机器人时：
+
+```bash
+pnpm exec repo env info --json --out reports/env.json
+```
+
 它会优先帮你排这些低成本但高频的问题：
 
 - 当前目录不是仓库根目录
