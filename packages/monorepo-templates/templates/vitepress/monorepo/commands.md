@@ -130,6 +130,7 @@ repo check --full
 repo check --edit-file .git/COMMIT_EDITMSG
 repo check --dry-run
 repo check --json --out reports/check-plan.json
+repo check --markdown --out reports/check-plan.md
 ```
 
 用途：
@@ -140,6 +141,7 @@ repo check --json --out reports/check-plan.json
 - `--edit-file` 用于 commit message 校验
 - `--dry-run` 只预览将要执行的校验
 - `--json` / `--out <file>` 输出校验计划，适合 CI、脚本和编辑器集成
+- `--markdown` 输出适合贴到 PR / issue 的校验计划摘要
 
 ### `repo upgrade`
 

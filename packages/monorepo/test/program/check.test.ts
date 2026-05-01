@@ -109,4 +109,50 @@ describe('commander program check command', () => {
       await rm(root, { recursive: true, force: true })
     }
   })
+
+  it('writes check plan as markdown without running checks', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-check-markdown-'))
+    const planPath = path.join(root, 'reports/check.md')
+    const runRecommendedCheckMock = vi.fn(async () => {})
+    const resolveRecommendedCheckPlanMock = vi.fn(() => ({
+      cwd: root,
+      mode: 'full',
+      commands: [
+        {
+          name: 'pre-push',
+          command: 'repo verify pre-push',
+          description: 'full check',
+        },
+      ],
+    }))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        resolveRecommendedCheckPlan: resolveRecommendedCheckPlanMock,
+        runRecommendedCheck: runRecommendedCheckMock,
+      }))
+
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: successMock,
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'check', '--full', '--markdown', '--out', planPath])
+
+      const content = await readFile(planPath, 'utf8')
+      expect(content).toContain('# Repo check plan')
+      expect(content).toContain('| mode | full |')
+      expect(content).toContain('- `repo verify pre-push` - full check')
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('check.md'))
+      expect(runRecommendedCheckMock).not.toHaveBeenCalled()
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
 })

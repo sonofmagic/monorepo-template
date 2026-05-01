@@ -7,6 +7,7 @@ import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
+import { createCheckPlanOutput } from './check/output'
 import { createDoctorReportOutput, createInteractiveDoctorReportOutput, hasDoctorBlockingIssues } from './doctor/output'
 
 interface CheckCliOptions {
@@ -15,6 +16,7 @@ interface CheckCliOptions {
   editFile?: string
   dryRun?: boolean
   json?: boolean
+  markdown?: boolean
   out?: string
 }
 
@@ -59,25 +61,8 @@ async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cw
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
-function formatCheckPlan(plan: RecommendedCheckPlan) {
-  const lines = [
-    `cwd: ${plan.cwd}`,
-    `mode: ${plan.mode}`,
-    '',
-  ]
-
-  for (const command of plan.commands) {
-    lines.push(`- ${command.command}`)
-    lines.push(`  ${command.description}`)
-  }
-
-  return lines.join('\n')
-}
-
 async function emitCheckPlan(plan: RecommendedCheckPlan, opts: CheckCliOptions, cwd: string) {
-  const content = opts.json
-    ? JSON.stringify(plan, null, 2)
-    : formatCheckPlan(plan)
+  const content = createCheckPlanOutput(plan, opts)
 
   if (!opts.out) {
     logger.log(content)
@@ -134,6 +119,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--edit-file <file>', '执行 commit message 校验')
     .option('--dry-run', '预览将要执行的校验，不实际运行')
     .option('--json', '以 JSON 输出校验计划，隐含 --dry-run')
+    .option('--markdown', '以 Markdown 输出校验计划，隐含 --dry-run')
     .option('--out <file>', '把校验计划写入文件，隐含 --dry-run')
     .action(async (opts: CheckCliOptions) => {
       const options = {
@@ -143,7 +129,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
         ...(opts.editFile !== undefined ? { editFile: opts.editFile } : {}),
       }
       const { resolveRecommendedCheckPlan, runRecommendedCheck } = await import('@/commands')
-      if (opts.dryRun || opts.json || opts.out) {
+      if (opts.dryRun || opts.json || opts.markdown || opts.out) {
         await emitCheckPlan(resolveRecommendedCheckPlan(options), opts, cwd)
         return
       }

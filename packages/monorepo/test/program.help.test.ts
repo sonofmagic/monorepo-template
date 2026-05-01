@@ -105,6 +105,7 @@ describe('program help surface', () => {
     expect(createNew?.helpInformation()).toContain('--out')
     expect(check?.helpInformation()).toContain('--dry-run')
     expect(check?.helpInformation()).toContain('--json')
+    expect(check?.helpInformation()).toContain('--markdown')
     expect(check?.helpInformation()).toContain('--out')
     expect(doctor?.helpInformation()).toContain('--strict')
     expect(doctor?.helpInformation()).toContain('--markdown')
