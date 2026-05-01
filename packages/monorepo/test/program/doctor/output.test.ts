@@ -2,23 +2,14 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { mockProgram } from './helpers'
 
 afterEach(async () => {
   await vi.resetModules()
   vi.resetAllMocks()
 })
 
-function mockProgram() {
-  vi.doMock('@icebreakers/monorepo-templates', async () => {
-    const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
-    return {
-      ...actual,
-      program: new actual.Command(),
-    }
-  })
-}
-
-describe('commander program doctor command', () => {
+describe('commander program doctor output', () => {
   it('prints doctor report as json and keeps failing exit code', async () => {
     const doctorMock = vi.fn(async () => ({
       cwd: '/repo',
@@ -170,113 +161,54 @@ describe('commander program doctor command', () => {
     }
   })
 
-  it('marks the process as failed when doctor finds blocking issues', async () => {
+  it('redacts local absolute paths from markdown doctor output', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-doctor-redact-'))
+    const reportPath = path.join(root, 'reports/doctor.md')
     const doctorMock = vi.fn(async () => ({
-      cwd: '/repo',
-      workspaceDir: '/repo',
-      packageCount: 0,
-      checks: [],
-      summary: { pass: 2, warn: 1, fail: 1 },
-    }))
-
-    mockProgram()
-    vi.doMock('@/commands', () => ({
-      runDoctor: doctorMock,
-    }))
-
-    const errorMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({
-      logger: {
-        success: vi.fn(),
-        info: vi.fn(),
-        warn: vi.fn(),
-        error: errorMock,
-        log: vi.fn(),
-      },
-    }))
-
-    const previousExitCode = process.exitCode
-    process.exitCode = undefined
-
-    const { default: program } = await import('@/cli/program')
-    await program.parseAsync(['node', 'repo', 'doctor'])
-
-    expect(process.exitCode).toBe(1)
-    expect(errorMock).toHaveBeenCalledWith('doctor found 1 blocking issue(s).')
-
-    process.exitCode = previousExitCode
-  })
-
-  it('treats warnings as failures in strict mode', async () => {
-    const doctorMock = vi.fn(async () => ({
-      cwd: '/repo',
-      workspaceDir: '/repo',
+      cwd: root,
+      workspaceDir: root,
       packageCount: 1,
-      checks: [],
-      summary: { pass: 7, warn: 2, fail: 0 },
+      checks: [
+        {
+          id: 'root-scripts',
+          title: 'root scripts',
+          status: 'warn',
+          detail: `missing script in ${path.join(root, 'package.json')}`,
+          fix: `run repo upgrade from ${root}`,
+        },
+      ],
+      summary: { pass: 2, warn: 1, fail: 0 },
     }))
 
-    mockProgram()
-    vi.doMock('@/commands', () => ({
-      runDoctor: doctorMock,
-    }))
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        runDoctor: doctorMock,
+      }))
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          error: vi.fn(),
+          log: vi.fn(),
+          success: vi.fn(),
+        },
+      }))
 
-    const errorMock = vi.fn()
-    const warnMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({
-      logger: {
-        success: vi.fn(),
-        info: vi.fn(),
-        warn: warnMock,
-        error: errorMock,
-        log: vi.fn(),
-      },
-    }))
+      const previousExitCode = process.exitCode
+      process.exitCode = undefined
 
-    const previousExitCode = process.exitCode
-    process.exitCode = undefined
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'doctor', '--markdown', '--redact', '--out', reportPath])
 
-    const { default: program } = await import('@/cli/program')
-    await program.parseAsync(['node', 'repo', 'doctor', '--strict'])
+      const content = await readFile(reportPath, 'utf8')
+      expect(content).not.toContain(root)
+      expect(content).toContain('| workspace | <workspace> |')
+      expect(content).toContain('- warn: root scripts (fix: run repo upgrade from <workspace>)')
+      expect(process.exitCode).toBeUndefined()
 
-    expect(process.exitCode).toBe(1)
-    expect(errorMock).toHaveBeenCalledWith('doctor found 2 warning(s) in strict mode.')
-    expect(warnMock).not.toHaveBeenCalled()
-
-    process.exitCode = previousExitCode
-  })
-
-  it('keeps strict warning failures machine-readable for json output', async () => {
-    const doctorMock = vi.fn(async () => ({
-      cwd: '/repo',
-      workspaceDir: '/repo',
-      packageCount: 1,
-      checks: [],
-      summary: { pass: 7, warn: 1, fail: 0 },
-    }))
-
-    mockProgram()
-    vi.doMock('@/commands', () => ({
-      runDoctor: doctorMock,
-    }))
-
-    const logMock = vi.fn()
-    vi.doMock('@/core/logger', () => ({
-      logger: {
-        error: vi.fn(),
-        log: logMock,
-      },
-    }))
-
-    const previousExitCode = process.exitCode
-    process.exitCode = undefined
-
-    const { default: program } = await import('@/cli/program')
-    await program.parseAsync(['node', 'repo', 'doctor', '--strict', '--json'])
-
-    expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"warn": 1'))
-    expect(process.exitCode).toBe(1)
-
-    process.exitCode = previousExitCode
+      process.exitCode = previousExitCode
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
   })
 })

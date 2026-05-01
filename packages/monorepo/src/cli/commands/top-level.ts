@@ -34,6 +34,7 @@ interface DoctorCliOptions {
   json?: boolean
   markdown?: boolean
   out?: string
+  redact?: boolean
   strict?: boolean
 }
 
@@ -46,7 +47,7 @@ interface CleanCliOptions {
 async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cwd: string) {
   const content = opts.json || opts.markdown || opts.out
     ? createDoctorReportOutput(report, opts)
-    : createInteractiveDoctorReportOutput(report)
+    : createInteractiveDoctorReportOutput(report, opts)
 
   if (!opts.out) {
     logger.log(content)
@@ -155,6 +156,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--json', '输出 JSON 报告，方便 CI 或脚本消费')
     .option('--markdown', '输出 Markdown 报告，方便粘贴到 issue 或 PR')
     .option('--out <file>', '把诊断报告写入文件')
+    .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
     .option('--strict', '把 warning 也视为失败，适合 CI 门禁')
     .action(async (opts: DoctorCliOptions) => {
       const { runDoctor } = await import('@/commands')

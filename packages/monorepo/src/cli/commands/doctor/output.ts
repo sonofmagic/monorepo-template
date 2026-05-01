@@ -1,9 +1,11 @@
 import type { DoctorReport, DoctorStatus } from '../../../commands/doctor'
+import os from 'node:os'
 import pc from 'picocolors'
 
 interface DoctorOutputOptions {
   json?: boolean
   markdown?: boolean
+  redact?: boolean
   strict?: boolean
 }
 
@@ -88,18 +90,52 @@ function formatDoctorMarkdown(report: DoctorReport) {
   ].join('\n')
 }
 
-export function createDoctorReportOutput(report: DoctorReport, opts: DoctorOutputOptions) {
-  if (opts.json) {
-    return JSON.stringify(report, null, 2)
-  }
-  if (opts.markdown) {
-    return formatDoctorMarkdown(report)
-  }
-  return formatDoctorReport(report)
+function replaceAll(value: string, search: string, replacement: string) {
+  return search.length > 0 ? value.split(search).join(replacement) : value
 }
 
-export function createInteractiveDoctorReportOutput(report: DoctorReport) {
-  return formatDoctorReport(report, true)
+function redactDoctorReportValue(value: unknown, replacements: Array<[string, string]>): unknown {
+  if (typeof value === 'string') {
+    return replacements.reduce((result, [search, replacement]) => replaceAll(result, search, replacement), value)
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => redactDoctorReportValue(item, replacements))
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, redactDoctorReportValue(item, replacements)]),
+    )
+  }
+  return value
+}
+
+function redactDoctorReport(report: DoctorReport): DoctorReport {
+  const candidates: Array<[string, string]> = [
+    [report.workspaceDir, '<workspace>'],
+    [report.cwd, '<cwd>'],
+    [os.homedir(), '<home>'],
+  ]
+  const replacements = candidates
+    .filter(([search], index, entries) => search.length > 0 && entries.findIndex(([value]) => value === search) === index)
+    .sort(([left], [right]) => right.length - left.length)
+
+  return redactDoctorReportValue(report, replacements) as DoctorReport
+}
+
+export function createDoctorReportOutput(report: DoctorReport, opts: DoctorOutputOptions) {
+  const outputReport = opts.redact ? redactDoctorReport(report) : report
+  if (opts.json) {
+    return JSON.stringify(outputReport, null, 2)
+  }
+  if (opts.markdown) {
+    return formatDoctorMarkdown(outputReport)
+  }
+  return formatDoctorReport(outputReport)
+}
+
+export function createInteractiveDoctorReportOutput(report: DoctorReport, opts: DoctorOutputOptions) {
+  const outputReport = opts.redact ? redactDoctorReport(report) : report
+  return formatDoctorReport(outputReport, true)
 }
 
 export function hasDoctorBlockingIssues(report: DoctorReport, opts: DoctorOutputOptions) {
