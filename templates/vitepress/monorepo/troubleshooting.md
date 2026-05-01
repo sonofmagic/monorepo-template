@@ -35,6 +35,7 @@ pnpm exec repo env info --json --out reports/env.json
 pnpm exec repo env info --markdown --redact --out reports/env.md
 pnpm exec repo env snapshot --json --out reports/snapshot.json
 pnpm exec repo env snapshot --markdown --redact --out reports/snapshot.md
+pnpm exec repo env snapshot --markdown --redact --strict --out reports/snapshot.md
 pnpm exec repo env support --json --out reports/support.json
 pnpm exec repo env support --markdown --redact --out reports/support.md
 pnpm exec repo env support --markdown --redact --strict --out reports/support.md

@@ -224,3 +224,7 @@ export function createEnvSnapshotOutput(snapshot: EnvSnapshot, opts: EnvOutputOp
   }
   return formatEnvSnapshot(outputSnapshot)
 }
+
+export function hasStrictEnvSnapshotIssues(snapshot: EnvSnapshot) {
+  return snapshot.doctor.summary.fail > 0 || snapshot.doctor.summary.warn > 0
+}

@@ -4,7 +4,7 @@ import process from 'node:process'
 import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
-import { createEnvInfoOutput, createEnvPathsOutput, createEnvSnapshotOutput } from './env/output'
+import { createEnvInfoOutput, createEnvPathsOutput, createEnvSnapshotOutput, hasStrictEnvSnapshotIssues } from './env/output'
 import { createEnvSupportBundleOutput, hasStrictSupportBundleIssues } from './env/support'
 
 interface EnvInfoCliOptions {
@@ -46,12 +46,16 @@ async function emitEnvSnapshot(snapshot: EnvSnapshot, opts: EnvInfoCliOptions, c
 
   if (!opts.out) {
     logger.log(content)
-    return
+  }
+  else {
+    const outFile = path.resolve(cwd, opts.out)
+    await fs.outputFile(outFile, `${content}\n`, 'utf8')
+    logger.success(`wrote ${path.relative(cwd, outFile)}`)
   }
 
-  const outFile = path.resolve(cwd, opts.out)
-  await fs.outputFile(outFile, `${content}\n`, 'utf8')
-  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+  if (opts.strict && hasStrictEnvSnapshotIssues(snapshot)) {
+    process.exitCode = 1
+  }
 }
 
 async function emitEnvSupportBundle(bundle: EnvSupportBundle, opts: EnvInfoCliOptions, cwd: string) {
@@ -93,6 +97,7 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
     .option('--out <file>', '把当前输出写入文件')
     .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
+    .option('--strict', '输出快照后，如果 doctor 有 fail 或 warn 则返回失败码')
     .action(async (opts: EnvInfoCliOptions) => {
       const { collectEnvSnapshot } = await import('@/commands')
       await emitEnvSnapshot(await collectEnvSnapshot(cwd), opts, cwd)

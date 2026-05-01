@@ -1,9 +1,11 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import process from 'node:process'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 afterEach(async () => {
+  process.exitCode = undefined
   await vi.resetModules()
   vi.resetAllMocks()
 })
@@ -147,6 +149,34 @@ describe('commander program env markdown output', () => {
       expect(content).toContain('# Repo environment snapshot')
       expect(content).toContain('- warn: root scripts (fix: run repo upgrade)')
       expect(content).toContain('- `repo verify pre-commit` - check <workspace>/package.json')
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('marks strict env snapshot output as failed when doctor reports warnings', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-snapshot-strict-'))
+    const outFile = path.join(root, 'reports/snapshot.md')
+    const collectEnvSnapshotMock = vi.fn(async () => createEnvSnapshot(root))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvSnapshot: collectEnvSnapshotMock,
+      }))
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: vi.fn(),
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'env', 'snapshot', '--markdown', '--strict', '--out', outFile])
+
+      expect(await readFile(outFile, 'utf8')).toContain('# Repo environment snapshot')
+      expect(process.exitCode).toBe(1)
     }
     finally {
       await rm(root, { recursive: true, force: true })

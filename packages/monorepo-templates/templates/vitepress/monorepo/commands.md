@@ -220,6 +220,7 @@ repo e i --json --out reports/env.json
 repo e i --markdown --redact --out reports/env.md
 repo env snapshot --json --out reports/snapshot.json
 repo env snapshot --markdown --redact --out reports/snapshot.md
+repo env snapshot --markdown --redact --strict --out reports/snapshot.md
 repo env paths --json --out reports/paths.json
 repo env paths --markdown --redact --out reports/paths.md
 repo env support --json --out reports/support.json
