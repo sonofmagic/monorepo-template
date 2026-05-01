@@ -217,8 +217,11 @@ repo verify staged-typecheck packages/app/src/main.ts
 ```bash
 repo env info
 repo e i --json --out reports/env.json
+repo e i --markdown --redact --out reports/env.md
 repo env snapshot --json --out reports/snapshot.json
+repo env snapshot --markdown --redact --out reports/snapshot.md
 repo env paths --json --out reports/paths.json
+repo env paths --markdown --redact --out reports/paths.md
 repo env support --json --out reports/support.json
 repo env support --json --redact --out reports/support.json
 repo env support --markdown --redact --out reports/support.md
