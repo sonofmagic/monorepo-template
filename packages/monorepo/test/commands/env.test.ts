@@ -90,4 +90,19 @@ describe('collectEnvInfo', () => {
       exists: false,
     }))
   })
+
+  it('collects a support bundle with environment, paths, config, doctor, and check data', async () => {
+    const root = await createWorkspace()
+    await writeFile(path.join(root, 'repoctl.config.mjs'), 'export default { commands: { clean: { autoConfirm: true } } }\n')
+
+    const { collectEnvSupportBundle } = await import('@/commands/env')
+    const bundle = await collectEnvSupportBundle(root, new Date('2026-05-01T12:00:00.000Z'))
+
+    expect(bundle.generatedAt).toBe('2026-05-01T12:00:00.000Z')
+    expect(bundle.env.packageManager).toBe('pnpm@10.0.0')
+    expect(bundle.paths.paths.packageJson.exists).toBe(true)
+    expect(bundle.config.config.commands?.clean?.autoConfirm).toBe(true)
+    expect(bundle.doctor.summary.fail).toBeGreaterThanOrEqual(0)
+    expect(bundle.checkPlan.mode).toBe('default')
+  })
 })

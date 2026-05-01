@@ -4,7 +4,7 @@ import type { RecommendedCheckMode, RecommendedCheckOptions, RecommendedCheckPla
 import type { ConfigInspection } from './config'
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from './create'
 import type { DoctorCheck, DoctorReport, DoctorStatus, DoctorSummary } from './doctor'
-import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot } from './env'
+import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot, EnvSupportBundle } from './env'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
 import type { CheckTemplatesOptions, TemplateHealthCheck, TemplateHealthReport, TemplateHealthStatus, TemplateHealthSummary } from './templates'
 import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
@@ -16,7 +16,7 @@ import { cleanProjects } from './clean'
 import { inspectMonorepoConfig } from './config'
 import { createNewProject, getCreateChoices, getTemplateMap, resolveCreateNewProjectPlan, templateMap } from './create'
 import { runDoctor } from './doctor'
-import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot } from './env'
+import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot, collectEnvSupportBundle } from './env'
 import { init, initMetadata, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
 import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
@@ -40,6 +40,7 @@ export type {
   EnvPathEntry,
   EnvPaths,
   EnvSnapshot,
+  EnvSupportBundle,
   GenerateAgenticTemplateOptions,
   GetWorkspacePackagesOptions,
   PreCommitVerifyOptions,
@@ -64,6 +65,7 @@ export {
   collectEnvInfo,
   collectEnvPaths,
   collectEnvSnapshot,
+  collectEnvSupportBundle,
   createNewProject,
   createTimestampFolderName,
   defaultAgenticBaseDir,

@@ -1,4 +1,5 @@
 import type { RecommendedCheckPlan } from './check'
+import type { ConfigInspection } from './config'
 import type { DoctorReport } from './doctor'
 import { execFileSync } from 'node:child_process'
 import os from 'node:os'
@@ -8,6 +9,7 @@ import path from 'pathe'
 import { getWorkspacePackageSummaries } from '../core/workspace'
 import fs from '../utils/fs'
 import { resolveRecommendedCheckPlan } from './check'
+import { inspectMonorepoConfig } from './config'
 import { runDoctor } from './doctor'
 
 interface PackageJsonLike {
@@ -32,6 +34,15 @@ export interface EnvInfo {
 export interface EnvSnapshot {
   generatedAt: string
   env: EnvInfo
+  doctor: DoctorReport
+  checkPlan: RecommendedCheckPlan
+}
+
+export interface EnvSupportBundle {
+  generatedAt: string
+  env: EnvInfo
+  paths: EnvPaths
+  config: ConfigInspection
   doctor: DoctorReport
   checkPlan: RecommendedCheckPlan
 }
@@ -142,6 +153,24 @@ export async function collectEnvSnapshot(cwd: string, now = new Date()): Promise
   return {
     generatedAt: now.toISOString(),
     env,
+    doctor,
+    checkPlan: resolveRecommendedCheckPlan({ cwd }),
+  }
+}
+
+export async function collectEnvSupportBundle(cwd: string, now = new Date()): Promise<EnvSupportBundle> {
+  const [env, paths, config, doctor] = await Promise.all([
+    collectEnvInfo(cwd),
+    collectEnvPaths(cwd),
+    inspectMonorepoConfig(cwd),
+    runDoctor(cwd),
+  ])
+
+  return {
+    generatedAt: now.toISOString(),
+    env,
+    paths,
+    config,
     doctor,
     checkPlan: resolveRecommendedCheckPlan({ cwd }),
   }

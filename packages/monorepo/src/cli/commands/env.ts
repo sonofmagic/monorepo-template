@@ -1,5 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
-import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot } from '../../commands/env'
+import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot, EnvSupportBundle } from '../../commands/env'
 import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
@@ -100,6 +100,35 @@ async function emitEnvSnapshot(snapshot: EnvSnapshot, opts: EnvInfoCliOptions, c
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
+function formatEnvSupportBundle(bundle: EnvSupportBundle) {
+  return [
+    `generatedAt: ${bundle.generatedAt}`,
+    '',
+    formatEnvInfo(bundle.env),
+    '',
+    `config: ${bundle.config.file ?? '-'}`,
+    `doctor: ${bundle.doctor.summary.pass} pass, ${bundle.doctor.summary.warn} warn, ${bundle.doctor.summary.fail} fail`,
+    `check: ${bundle.checkPlan.mode}`,
+    `paths: ${bundle.paths.workspaceDir}`,
+    ...bundle.checkPlan.commands.map(command => `- ${command.command}`),
+  ].join('\n')
+}
+
+async function emitEnvSupportBundle(bundle: EnvSupportBundle, opts: EnvInfoCliOptions, cwd: string) {
+  const content = opts.json
+    ? JSON.stringify(bundle, null, 2)
+    : formatEnvSupportBundle(bundle)
+
+  if (!opts.out) {
+    logger.log(content)
+    return
+  }
+
+  const outFile = path.resolve(cwd, opts.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+}
+
 export function registerEnvCommands(program: Command, cwd: string) {
   const envCommand = program.command('env').alias('e').description('环境命令')
 
@@ -131,6 +160,16 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .action(async (opts: EnvInfoCliOptions) => {
       const { collectEnvPaths } = await import('@/commands')
       await emitEnvPaths(await collectEnvPaths(cwd), opts, cwd)
+    })
+
+  envCommand.command('support')
+    .description('输出完整排障包，包含环境、路径、配置、doctor 和 check 计划')
+    .alias('b')
+    .option('--json', '输出 JSON，方便脚本消费')
+    .option('--out <file>', '把当前输出写入文件')
+    .action(async (opts: EnvInfoCliOptions) => {
+      const { collectEnvSupportBundle } = await import('@/commands')
+      await emitEnvSupportBundle(await collectEnvSupportBundle(cwd), opts, cwd)
     })
 
   envCommand.command('mirror')

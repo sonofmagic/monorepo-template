@@ -29,6 +29,7 @@ pnpm exec repo env paths --json --out reports/paths.json
 pnpm exec repo config inspect --json --out reports/config.json
 pnpm exec repo env info --json --out reports/env.json
 pnpm exec repo env snapshot --json --out reports/snapshot.json
+pnpm exec repo env support --json --out reports/support.json
 ```
 
 它会优先帮你排这些低成本但高频的问题：

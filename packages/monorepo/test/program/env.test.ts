@@ -80,6 +80,47 @@ function createEnvPaths() {
   }
 }
 
+function createSupportBundle() {
+  return {
+    generatedAt: '2026-05-01T12:00:00.000Z',
+    env: createEnvInfo(),
+    paths: createEnvPaths(),
+    config: {
+      cwd: '/repo',
+      file: '/repo/repoctl.config.ts',
+      config: {
+        commands: {
+          clean: {
+            autoConfirm: true,
+          },
+        },
+      },
+    },
+    doctor: {
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packageCount: 2,
+      checks: [],
+      summary: {
+        pass: 1,
+        warn: 0,
+        fail: 0,
+      },
+    },
+    checkPlan: {
+      cwd: '/repo',
+      mode: 'default',
+      commands: [
+        {
+          name: 'pre-commit',
+          command: 'repo verify pre-commit',
+          description: 'default check',
+        },
+      ],
+    },
+  }
+}
+
 describe('commander program env command', () => {
   it('prints env info as json', async () => {
     const collectEnvInfoMock = vi.fn(async () => createEnvInfo())
@@ -204,6 +245,44 @@ describe('commander program env command', () => {
       }))
       expect(logMock).not.toHaveBeenCalled()
       expect(successMock).toHaveBeenCalledWith(expect.stringContaining('paths.json'))
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('writes env support bundle to a json file', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-support-'))
+    const outFile = path.join(root, 'reports/support.json')
+    const collectEnvSupportBundleMock = vi.fn(async () => createSupportBundle())
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvSupportBundle: collectEnvSupportBundleMock,
+      }))
+
+      const logMock = vi.fn()
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: logMock,
+          success: successMock,
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'e', 'b', '--json', '--out', outFile])
+
+      expect(JSON.parse(await readFile(outFile, 'utf8'))).toEqual(expect.objectContaining({
+        env: expect.objectContaining({ packageManager: 'pnpm@10.0.0' }),
+        paths: expect.objectContaining({ workspaceDir: '/repo' }),
+        config: expect.objectContaining({ file: '/repo/repoctl.config.ts' }),
+        doctor: expect.objectContaining({ summary: { pass: 1, warn: 0, fail: 0 } }),
+        checkPlan: expect.objectContaining({ mode: 'default' }),
+      }))
+      expect(logMock).not.toHaveBeenCalled()
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('support.json'))
     }
     finally {
       await rm(root, { recursive: true, force: true })
