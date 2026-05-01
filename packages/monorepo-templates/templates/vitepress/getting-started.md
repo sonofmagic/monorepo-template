@@ -38,6 +38,12 @@ pnpm doctor
 
 如果 `doctor` 报错，先按输出里的 `fix:` 处理。处理完再跑一次 `pnpm doctor`，直到没有 blocking issue。
 
+如果要在 CI 或脚本里读取诊断结果：
+
+```bash
+pnpm exec repo doctor --json
+```
+
 ## 创建第一个包或应用
 
 不知道要用哪个模板时，先看列表：
@@ -75,6 +81,12 @@ pnpm new
 pnpm new my-lib --template tsdown
 pnpm new website --template vitepress
 pnpm new api --template hono-server
+```
+
+创建前想先确认目标目录：
+
+```bash
+pnpm new website --template vitepress --dry-run
 ```
 
 普通名字会自动放进合适目录，比如库包放到 `packages/`，应用放到 `apps/`。如果你传入了带 `/` 的路径，例如 `packages/shared-utils`，CLI 会尊重这个路径。
@@ -172,6 +184,12 @@ pnpm exec repo upgrade --skip-overwrite
 pnpm exec repo templates
 ```
 
+查看单个模板详情：
+
+```bash
+pnpm exec repo templates tsdown
+```
+
 需要给脚本读取时：
 
 ```bash
@@ -201,6 +219,7 @@ pnpm test
 ## 下一步
 
 - 想看完整命令：[命令速查](./monorepo/commands.md)
+- 想选择合适模板：[模板速查](./monorepo/templates.md)
 - 想理解 workspace 管理：[如何管理 monorepo](./monorepo/manage.md)
 - 遇到校验问题：[常见问题排障](./monorepo/troubleshooting.md)
 - 准备发包：[发包与变更日志](./monorepo/publish.md)

@@ -25,7 +25,7 @@ describe('commander program', () => {
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
     const verifyStagedTypecheckMock = vi.fn(() => {})
-    const runCreateFlowMock = vi.fn(async () => {})
+    const runCreateFlowMock = vi.fn(async () => ({ dryRun: false }))
     const aiTemplateMock = vi.fn(async () => {})
     const getWorkspacePackageSummariesMock = vi.fn(async () => ({
       cwd: '/repo',
@@ -205,7 +205,7 @@ describe('commander program', () => {
       force: false,
       format: 'md',
     }))
-    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined, { template: undefined })
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined, {})
     expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
       cwd: expect.any(String),
       targets: ['codex'],
@@ -221,6 +221,55 @@ describe('commander program', () => {
     expect(warnMock).not.toHaveBeenCalled()
     expect(errorMock).not.toHaveBeenCalled()
     expect(logMock).toHaveBeenCalled()
+  })
+
+  it('prints doctor report as json and keeps failing exit code', async () => {
+    const doctorMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      packageCount: 0,
+      checks: [
+        {
+          id: 'package-json',
+          title: 'package.json',
+          status: 'fail',
+          detail: 'missing',
+        },
+      ],
+      summary: { pass: 0, warn: 0, fail: 1 },
+    }))
+
+    vi.doMock('@icebreakers/monorepo-templates', async () => {
+      const actual = await vi.importActual<typeof import('@icebreakers/monorepo-templates')>('@icebreakers/monorepo-templates')
+      return {
+        ...actual,
+        program: new actual.Command(),
+      }
+    })
+    vi.doMock('@/commands', () => ({
+      runDoctor: doctorMock,
+    }))
+
+    const errorMock = vi.fn()
+    const logMock = vi.fn()
+    vi.doMock('@/core/logger', () => ({
+      logger: {
+        error: errorMock,
+        log: logMock,
+      },
+    }))
+
+    const previousExitCode = process.exitCode
+    process.exitCode = undefined
+
+    const { default: program } = await import('@/cli/program')
+    await program.parseAsync(['node', 'repo', 'doctor', '--json'])
+
+    expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"summary"'))
+    expect(errorMock).not.toHaveBeenCalled()
+    expect(process.exitCode).toBe(1)
+
+    process.exitCode = previousExitCode
   })
 
   it('marks the process as failed when doctor finds blocking issues', async () => {

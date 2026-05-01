@@ -1,6 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
-import type { CliOpts, CreateChoiceOption, MonorepoCommitlintConfig, MonorepoTsconfig, MonorepoVitestConfigResult, MonorepoVitestProjectConfigResult, PackageJson, WorkspacePackageSummaryData } from '..'
-import { clearWorkspaceCache, createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonorepoLintStagedConfig, createMonorepoStylelintConfig, createMonorepoTsconfig, createMonorepoVitestConfig, defineCommitlintConfig, defineVitestConfig, defineVitestProjectConfig, getCreateChoices, getFileHash, getTemplateMap, getWorkspacePackageSummaries, templateMap } from '..'
+import type { CliOpts, CreateChoiceOption, CreateNewProjectPlan, MonorepoCommitlintConfig, MonorepoTsconfig, MonorepoVitestConfigResult, MonorepoVitestProjectConfigResult, PackageJson, WorkspacePackageSummaryData } from '..'
+import { clearWorkspaceCache, createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonorepoLintStagedConfig, createMonorepoStylelintConfig, createMonorepoTsconfig, createMonorepoVitestConfig, defineCommitlintConfig, defineVitestConfig, defineVitestProjectConfig, getCreateChoices, getFileHash, getTemplateMap, getWorkspacePackageSummaries, resolveCreateNewProjectPlan, templateMap } from '..'
 import { expectAssignable, expectType } from 'tsd'
 
 expectType<string>(getFileHash('demo'))
@@ -8,6 +8,7 @@ expectType<void>(clearWorkspaceCache())
 expectType<Promise<WorkspacePackageSummaryData>>(getWorkspacePackageSummaries('.'))
 expectType<'tsdown'>(templateMap.tsdown.source)
 expectAssignable<CreateChoiceOption[]>(getCreateChoices())
+expectType<Promise<CreateNewProjectPlan>>(resolveCreateNewProjectPlan({ cwd: '.', type: 'tsdown' }))
 
 const templates = getTemplateMap()
 

@@ -1,4 +1,4 @@
-import type { Command, TemplateCategory, TemplateChoice } from '@icebreakers/monorepo-templates'
+import type { Command } from '@icebreakers/monorepo-templates'
 import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
@@ -19,47 +19,17 @@ interface InitCliOptions {
 
 interface NewCliOptions {
   template?: string
+  dryRun?: boolean
+}
+
+interface DoctorCliOptions {
+  json?: boolean
 }
 
 interface CleanCliOptions {
   yes?: boolean
   includePrivate?: boolean
   pinnedVersion?: string
-}
-
-interface TemplatesCliOptions {
-  json?: boolean
-  category?: string
-}
-
-function formatTemplateTable(choices: TemplateChoice[]) {
-  const rows = choices.map(choice => ({
-    key: choice.key,
-    category: choice.category ?? '-',
-    target: choice.target,
-    description: choice.description ?? '',
-  }))
-
-  const headers = {
-    key: 'key',
-    category: 'category',
-    target: 'target',
-    description: 'description',
-  }
-
-  const widths = {
-    key: Math.max(headers.key.length, ...rows.map(row => row.key.length)),
-    category: Math.max(headers.category.length, ...rows.map(row => row.category.length)),
-    target: Math.max(headers.target.length, ...rows.map(row => row.target.length)),
-  }
-
-  const lines = [
-    `${headers.key.padEnd(widths.key)}  ${headers.category.padEnd(widths.category)}  ${headers.target.padEnd(widths.target)}  ${headers.description}`,
-    `${'-'.repeat(widths.key)}  ${'-'.repeat(widths.category)}  ${'-'.repeat(widths.target)}  ${'-'.repeat(headers.description.length)}`,
-    ...rows.map(row => `${row.key.padEnd(widths.key)}  ${row.category.padEnd(widths.category)}  ${row.target.padEnd(widths.target)}  ${row.description}`),
-  ]
-
-  return lines.join('\n')
 }
 
 function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
@@ -112,47 +82,18 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .description('创建新的 package / app')
     .argument('[name]')
     .option('-t, --template <template>', '直接使用指定模板，跳过模板选择')
+    .option('--dry-run', '预览将要创建的目录与 package 信息，不写入文件')
     .action(async (inputName: string, opts: NewCliOptions) => {
       const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
-      await runCreateFlow(cwd, inputName, { template: opts.template })
-      logger.success('new finished!')
-      logger.info('next: run `pnpm install` and start the new workspace package')
-    })
-
-  program.command('templates')
-    .alias('tpl')
-    .description('列出可用的内置模板')
-    .option('-c, --category <category>', '按模板分类过滤：library / app / service / docs / tool')
-    .option('--json', '输出 JSON，方便脚本消费')
-    .action(async (opts: TemplatesCliOptions) => {
-      const {
-        getTemplateChoices,
-        isTemplateCategory,
-        templateCategories,
-      } = await import('@icebreakers/monorepo-templates')
-
-      let category: TemplateCategory | undefined
-      if (opts.category) {
-        if (!isTemplateCategory(opts.category)) {
-          logger.error(`unknown template category: ${opts.category}`)
-          logger.info(`available categories: ${templateCategories.join(', ')}`)
-          process.exitCode = 1
-          return
-        }
-        category = opts.category
-      }
-
-      const choices = getTemplateChoices(category ? { category } : {})
-      if (opts.json) {
-        logger.log(JSON.stringify(choices, null, 2))
+      const result = await runCreateFlow(cwd, inputName, {
+        ...(opts.template !== undefined ? { template: opts.template } : {}),
+        ...(opts.dryRun ? { dryRun: true } : {}),
+      })
+      if (result.dryRun) {
         return
       }
-
-      logger.log('')
-      logger.log('Available templates:')
-      logger.log(formatTemplateTable(choices))
-      logger.log('')
-      logger.info('next: run `repo new <name> --template <key>`')
+      logger.success('new finished!')
+      logger.info('next: run `pnpm install` and start the new workspace package')
     })
 
   program.command('check')
@@ -174,9 +115,18 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
 
   program.command('doctor')
     .description('诊断当前仓库是否适合直接开始使用')
-    .action(async () => {
+    .option('--json', '输出 JSON 报告，方便 CI 或脚本消费')
+    .action(async (opts: DoctorCliOptions) => {
       const { runDoctor } = await import('@/commands')
       const report = await runDoctor(cwd)
+      if (opts.json) {
+        logger.log(JSON.stringify(report, null, 2))
+        if (report.summary.fail > 0) {
+          process.exitCode = 1
+        }
+        return
+      }
+
       printDoctorReport(report)
 
       if (report.summary.fail > 0) {

@@ -3,16 +3,36 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const inputMock = vi.fn(async () => 'demo')
 const selectMock = vi.fn(async () => 'library')
 const createNewProjectMock = vi.fn(async () => {})
+const resolveCreateNewProjectPlanMock = vi.fn(async () => ({
+  cwd: '/repo',
+  requestedTemplate: 'tsdown',
+  template: 'tsdown',
+  usedFallback: false,
+  sourceDir: '/repo/templates/tsdown',
+  targetName: 'packages/demo',
+  targetDir: '/repo/packages/demo',
+  targetExists: false,
+  renameJson: false,
+  hasPackageJson: true,
+  packageJsonFileName: 'package.json',
+  packageName: 'demo',
+  templateDefinition: { source: 'tsdown', target: 'packages/tsdown' },
+}))
 const getCreateChoicesMock = vi.fn(() => [])
 const resolveCommandConfigMock = vi.fn(async () => ({}))
+const logMock = vi.fn()
+const infoMock = vi.fn()
 
 beforeEach(async () => {
   await vi.resetModules()
   inputMock.mockReset()
   selectMock.mockReset()
   createNewProjectMock.mockReset()
+  resolveCreateNewProjectPlanMock.mockClear()
   getCreateChoicesMock.mockReset()
   resolveCommandConfigMock.mockReset()
+  logMock.mockClear()
+  infoMock.mockClear()
 
   inputMock.mockResolvedValue('demo')
   getCreateChoicesMock.mockReturnValue([])
@@ -33,11 +53,19 @@ beforeEach(async () => {
       ...actual,
       createNewProject: createNewProjectMock,
       getCreateChoices: getCreateChoicesMock,
+      resolveCreateNewProjectPlan: resolveCreateNewProjectPlanMock,
     }
   })
 
   vi.doMock('@/core/config', () => ({
     resolveCommandConfig: resolveCommandConfigMock,
+  }))
+
+  vi.doMock('@/core/logger', () => ({
+    logger: {
+      log: logMock,
+      info: infoMock,
+    },
   }))
 })
 
@@ -113,5 +141,20 @@ describe('runCreateFlow', () => {
       cwd: '/repo',
       type: 'vue-hono',
     })
+  })
+
+  it('prints a create preview without writing files in dry-run mode', async () => {
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    const result = await runCreateFlow('/repo', 'demo', { template: 'tsdown', dryRun: true })
+
+    expect(result).toEqual({ dryRun: true })
+    expect(createNewProjectMock).not.toHaveBeenCalled()
+    expect(resolveCreateNewProjectPlanMock).toHaveBeenCalledWith({
+      name: 'packages/demo',
+      cwd: '/repo',
+      type: 'tsdown',
+    })
+    expect(logMock).toHaveBeenCalledWith('Create preview:')
+    expect(infoMock).toHaveBeenCalledWith('dry run only; no files were written')
   })
 })

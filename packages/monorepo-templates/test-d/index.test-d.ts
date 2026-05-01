@@ -13,12 +13,14 @@ import {
   templateCategories,
   templateChoices,
   templateSourceMap,
+  templateTargetMap,
   toWorkspaceGitignorePath,
 } from '..'
 
 expectType<string[]>(assetTargets)
 expectType<string[]>(getAssetTargets())
 expectType<string | undefined>(templateSourceMap['cli'])
+expectType<string | undefined>(templateTargetMap['cli'])
 expectType<string>(toWorkspaceGitignorePath('gitignore'))
 expectAssignable<TemplateChoice[]>(templateChoices)
 expectAssignable<readonly string[]>(templateCategories)

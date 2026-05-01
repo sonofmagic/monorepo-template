@@ -13,6 +13,7 @@ pnpm add -D repoctl
 ```sh
 pnpm exec repo setup
 pnpm exec repo doctor
+pnpm exec repo doctor --json
 pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
@@ -46,11 +47,18 @@ pnpm exec repo upgrade
 
 # create a specific template without extra prompts
 pnpm exec repo new dashboard --template vue-hono
+pnpm exec repo new dashboard --template vue-hono --dry-run
 
 # discover available templates
 pnpm exec repo templates
+pnpm exec repo templates tsdown
 pnpm exec repo templates --category library
+pnpm exec repo templates --check
+pnpm exec repo templates --check --json
 pnpm exec repo templates --json
+pnpm exec repo templates --markdown
+pnpm exec repo templates tsdown --markdown
+pnpm exec repo templates --markdown --out docs/templates.md
 
 # advanced workspace upgrade
 pnpm exec repo ws up

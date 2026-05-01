@@ -131,12 +131,34 @@ describe('createNewProject unit scenarios', () => {
   })
 
   it('throws when target directory already exists', async () => {
-    pathExistsMock.mockResolvedValueOnce(true)
+    pathExistsMock.mockImplementation(async (targetPath: string) => targetPath === '/repo/demo' || targetPath.endsWith('package.json'))
     const { createNewProject } = await import('@/commands/create')
 
     await expect(createNewProject({ cwd: '/repo', name: 'demo' })).rejects.toThrow('目标目录已存在')
     expect(ensureDirMock).not.toHaveBeenCalled()
     expect(scaffoldTemplateMock).not.toHaveBeenCalled()
+  })
+
+  it('resolves create plan without writing files', async () => {
+    const { resolveCreateNewProjectPlan } = await import('@/commands/create')
+    const plan = await resolveCreateNewProjectPlan({ cwd: '/repo', name: 'demo-app', type: 'vue-hono' })
+
+    expect(plan).toEqual(expect.objectContaining({
+      cwd: '/repo',
+      requestedTemplate: 'vue-hono',
+      template: 'vue-hono',
+      usedFallback: false,
+      sourceDir: expect.stringContaining('/templates/client'),
+      targetName: 'demo-app',
+      targetDir: '/repo/demo-app',
+      targetExists: false,
+      hasPackageJson: true,
+      packageJsonFileName: 'package.json',
+      packageName: 'demo-app',
+    }))
+    expect(ensureDirMock).not.toHaveBeenCalled()
+    expect(scaffoldTemplateMock).not.toHaveBeenCalled()
+    expect(outputJsonMock).not.toHaveBeenCalled()
   })
 
   it('falls back to default template when requested type is unknown', async () => {

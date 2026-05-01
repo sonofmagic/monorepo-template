@@ -39,6 +39,17 @@ Usage:
 - `--staged` adds staged typecheck routing
 - `--full` maps to the heavier pre-push verification flow
 
+## doctor
+
+Purpose: diagnose whether the current workspace is ready to use.
+Usage:
+
+- npx repoctl doctor
+- npx repoctl doctor --json
+  Notes:
+- default output is human-readable
+- `--json` emits the structured report only and still exits non-zero when blocking failures exist
+
 ## upgrade
 
 Purpose: sync repo assets and scripts into the workspace.

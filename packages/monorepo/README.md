@@ -8,6 +8,7 @@
 pnpm add -D repoctl
 pnpm exec repo setup
 pnpm exec repo doctor
+pnpm exec repo doctor --json
 pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
@@ -73,6 +74,8 @@ npx monorepo skills sync --codex
 
 如果有阻塞项，命令会以非零状态结束。
 
+需要在 CI、脚本或编辑器集成中消费诊断结果时，使用 `repo doctor --json`。它只输出结构化报告；如果存在 blocking issue，仍会以非零状态结束。
+
 ## 性能与开发体验
 
 CLI 启动时只注册命令树，具体命令实现会在 action 执行时懒加载。因此 `repo --help`、`repo doctor --help`、`repoctl` 等入口不会提前加载所有 workspace、Git、配置与模板处理逻辑。
@@ -118,14 +121,21 @@ export default defineMonorepoConfig({
 
 ```bash
 repo templates
+repo templates tsdown
 repo templates --category library
+repo templates --check
+repo templates --check --json
 repo templates --json
+repo templates --markdown
+repo templates tsdown --markdown
+repo templates --markdown --out docs/templates.md
 ```
 
 `repo new` / `monorepo new` 支持 `--template` 直接指定模板，例如：
 
 ```bash
 repo new dashboard --template vue-hono
+repo new dashboard --template vue-hono --dry-run
 ```
 
 当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。

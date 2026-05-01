@@ -5,6 +5,7 @@ import { registerAiCommands } from './commands/ai'
 import { registerEnvCommands } from './commands/env'
 import { registerPackageCommands } from './commands/package'
 import { registerSkillsCommands } from './commands/skills'
+import { registerTemplatesCommands } from './commands/templates'
 import { registerToolingCommands } from './commands/tooling'
 import { registerTopLevelCommands } from './commands/top-level'
 import { registerVerifyCommands } from './commands/verify'
@@ -19,6 +20,7 @@ program
   .description('One-command repo setup and maintenance for pnpm/turbo workspaces.')
 
 registerTopLevelCommands(program, cwd)
+registerTemplatesCommands(program)
 registerWorkspaceCommands(program, cwd)
 registerToolingCommands(program, cwd)
 registerEnvCommands(program, cwd)

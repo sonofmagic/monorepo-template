@@ -62,12 +62,14 @@ repo setup --preset standard --force
 
 ```bash
 repo doctor
+repo doctor --json
 ```
 
 用途：
 
 - 诊断当前目录是不是可直接开始使用的 monorepo 根目录
 - 检查 Node 版本、workspace 文件、CLI 依赖、根脚本、配置冲突、提交链路
+- `--json` 只输出结构化报告，适合 CI、脚本和编辑器集成
 
 ### `repo new`
 
@@ -75,24 +77,36 @@ repo doctor
 repo new
 repo new sdk --template tsdown
 repo new docs --template vitepress
+repo new docs --template vitepress --dry-run
 ```
 
 用途：
 
 - 交互式或直接创建新的 package / app
+- `--dry-run` 只预览模板、目标目录、package 名称和输出文件，不写入磁盘
 
 ### `repo templates`
 
 ```bash
 repo templates
+repo templates tsdown
 repo templates --category library
+repo templates --check
+repo templates --check --json
 repo templates --json
+repo templates --markdown
+repo templates tsdown --markdown
+repo templates --markdown --out docs/templates.md
 ```
 
 用途：
 
 - 查看内置模板 key、分类、默认生成目录和用途
+- 传入模板 key 时查看单个模板详情
+- `--check` 检查内置模板元数据、目录、package.json 和临时文件
 - 在写自动化脚本时用 `--json` 获取结构化输出
+- 用 `--markdown` 生成可直接放进文档的模板表格或详情页
+- 用 `--out <file>` 把当前 JSON、Markdown 或文本输出写入文件
 
 ### `repo check`
 

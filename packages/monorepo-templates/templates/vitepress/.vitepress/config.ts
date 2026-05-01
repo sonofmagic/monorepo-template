@@ -38,6 +38,7 @@ export default withMermaid(defineConfig({
           items: [
             { text: '为什么往 monorepo 方向演进', link: '/monorepo/' },
             { text: '如何管理 monorepo', link: '/monorepo/manage' },
+            { text: '模板速查', link: '/monorepo/templates' },
             { text: '命令速查', link: '/monorepo/commands' },
             { text: '常见问题排障', link: '/monorepo/troubleshooting' },
             { text: '发包与变更日志', link: '/monorepo/publish' },

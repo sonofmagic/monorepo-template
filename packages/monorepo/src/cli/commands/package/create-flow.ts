@@ -1,8 +1,10 @@
-import type { CreateNewProjectOptions } from '../../../commands'
+import type { CreateNewProjectOptions, CreateNewProjectPlan } from '../../../commands'
 import { input, select } from '@icebreakers/monorepo-templates'
-import { createNewProject, getCreateChoices } from '../../../commands'
+import path from 'pathe'
+import { createNewProject, getCreateChoices, resolveCreateNewProjectPlan } from '../../../commands'
 import { defaultTemplate } from '../../../commands/create'
 import { resolveCommandConfig } from '../../../core/config'
+import { logger } from '../../../core/logger'
 import { createIntentChoices } from './intents'
 
 function normalizeTargetName(name: string, baseDir: 'packages' | 'apps') {
@@ -32,6 +34,28 @@ function normalizeNameForTemplate(name: string, type: CreateNewProjectOptions['t
 
 export interface RunCreateFlowOptions {
   template?: CreateNewProjectOptions['type']
+  dryRun?: boolean
+}
+
+export interface RunCreateFlowResult {
+  dryRun: boolean
+}
+
+function formatPlanPath(cwd: string, targetPath: string) {
+  const relative = path.relative(cwd, targetPath)
+  return relative && relative !== '.' ? relative : targetPath
+}
+
+function printCreatePlan(plan: CreateNewProjectPlan) {
+  logger.log('')
+  logger.log('Create preview:')
+  logger.log(`  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`)
+  logger.log(`  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`)
+  logger.log(`  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`)
+  logger.log(`  package: ${plan.packageName}`)
+  logger.log(`  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`)
+  logger.log('')
+  logger.info('dry run only; no files were written')
 }
 
 export async function runCreateFlow(cwd: string, inputName: string | undefined, options: RunCreateFlowOptions = {}) {
@@ -76,8 +100,13 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
       ...(type !== undefined ? { type } : {}),
     }
 
+    if (options.dryRun) {
+      printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
+      return { dryRun: true }
+    }
+
     await createNewProject(createOptions)
-    return
+    return { dryRun: false }
   }
 
   if (!packageName) {
@@ -99,5 +128,11 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     ...(type !== undefined ? { type } : {}),
   }
 
+  if (options.dryRun) {
+    printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
+    return { dryRun: true }
+  }
+
   await createNewProject(createOptions)
+  return { dryRun: false }
 }

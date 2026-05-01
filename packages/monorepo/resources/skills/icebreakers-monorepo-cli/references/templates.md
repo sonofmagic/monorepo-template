@@ -12,7 +12,15 @@ Intent defaults:
 - cli-tool -> `cli` -> `apps/<name>`
 
 Run `repo templates` to discover template keys, categories, default targets, and
-descriptions. Use `repo templates --json` when scripting.
+descriptions. Use `repo templates <key>` for a single template detail page, and
+`repo templates --json` when scripting. Use `repo templates --check` to verify
+template metadata, directories, package.json files, duplicate targets, and
+temporary files; combine it with `--json` for CI. Use `repo templates --markdown`
+or `repo templates <key> --markdown` when generating documentation snippets.
+Add `--out <file>` to write the selected output to disk.
+
+Use `repo new <name> --template <key> --dry-run` to preview the target directory
+and package metadata without writing files.
 
 Advanced users can still use `repo package create [path]` or `repo pkg new [path]`
 to select templates directly.
