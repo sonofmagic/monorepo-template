@@ -81,6 +81,19 @@ repo new docs --template vitepress
 
 - 交互式或直接创建新的 package / app
 
+### `repo templates`
+
+```bash
+repo templates
+repo templates --category library
+repo templates --json
+```
+
+用途：
+
+- 查看内置模板 key、分类、默认生成目录和用途
+- 在写自动化脚本时用 `--json` 获取结构化输出
+
 ### `repo check`
 
 ```bash

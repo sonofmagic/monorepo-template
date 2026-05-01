@@ -10,6 +10,7 @@ export default withMermaid(defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '开始使用', link: '/' },
+      { text: '新手指南', link: '/getting-started' },
       { text: 'Monorepo', link: '/monorepo/' },
       { text: '工具专题', link: '/tools/turborepo' },
       { text: '一些思考', link: '/thinking' },
@@ -28,6 +29,7 @@ export default withMermaid(defineConfig({
           text: '开始使用',
           items: [
             { text: '首页', link: '/' },
+            { text: '新手使用指南', link: '/getting-started' },
             { text: '一些思考', link: '/thinking' },
           ],
         },

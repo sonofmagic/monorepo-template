@@ -8,6 +8,7 @@
 pnpm add -D repoctl
 pnpm exec repo setup
 pnpm exec repo doctor
+pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
 ```
@@ -38,6 +39,7 @@ pnpm add -D @icebreakers/monorepo@latest
 # 顶层任务命令
 npx monorepo setup
 npx monorepo doctor
+npx monorepo templates
 npx monorepo new my-package
 npx monorepo check
 npx monorepo upgrade
@@ -111,6 +113,14 @@ export default defineMonorepoConfig({
 - `pre-push` 会强制执行整仓 `pnpm lint` 与 `pnpm typecheck`，再按改动范围补跑 `build`、`test`、`tsd`
 
 ## `new` 与 `ai prompt` 的常用用法
+
+先用 `repo templates` 查看内置模板：
+
+```bash
+repo templates
+repo templates --category library
+repo templates --json
+```
 
 `repo new` / `monorepo new` 支持 `--template` 直接指定模板，例如：
 

@@ -13,6 +13,7 @@ pnpm add -D repoctl
 ```sh
 pnpm exec repo setup
 pnpm exec repo doctor
+pnpm exec repo templates
 pnpm exec repo new my-package
 pnpm exec repo check
 ```
@@ -30,6 +31,7 @@ pnpm check
 
 - `repo setup`: initialize the workspace with the recommended metadata and tooling defaults.
 - `repo doctor`: diagnose whether the current repo is ready to use.
+- `repo templates`: list the built-in package/app templates and their target folders.
 - `repo new`: create a new package or app.
 - `repo check`: run the recommended local verification flow.
 - `repo upgrade`: sync the latest standard assets and scripts from the template.
@@ -44,6 +46,11 @@ pnpm exec repo upgrade
 
 # create a specific template without extra prompts
 pnpm exec repo new dashboard --template vue-hono
+
+# discover available templates
+pnpm exec repo templates
+pnpm exec repo templates --category library
+pnpm exec repo templates --json
 
 # advanced workspace upgrade
 pnpm exec repo ws up

@@ -1,6 +1,6 @@
 # Templates
 
-Prefer `repoctl new [name]` for the guided flow. It first asks what you want to
+Prefer `repo new [name]` for the guided flow. It first asks what you want to
 create, then maps that intent to a template and default target directory.
 
 Intent defaults:
@@ -11,7 +11,10 @@ Intent defaults:
 - docs-site -> `vitepress` -> `apps/<name>`
 - cli-tool -> `cli` -> `apps/<name>`
 
-Advanced users can still use `repoctl package create [path]` or `repoctl pkg new [path]`
+Run `repo templates` to discover template keys, categories, default targets, and
+descriptions. Use `repo templates --json` when scripting.
+
+Advanced users can still use `repo package create [path]` or `repo pkg new [path]`
 to select templates directly.
 
 Built-in template map:

@@ -32,6 +32,7 @@ Quick start:
   Existing repo:
     $ ${cliName} setup
     $ ${cliName} doctor
+    $ ${cliName} templates
     $ ${cliName} new my-package
     $ ${cliName} check
 

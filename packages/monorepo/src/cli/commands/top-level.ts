@@ -1,4 +1,4 @@
-import type { Command } from '@icebreakers/monorepo-templates'
+import type { Command, TemplateCategory, TemplateChoice } from '@icebreakers/monorepo-templates'
 import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
@@ -25,6 +25,41 @@ interface CleanCliOptions {
   yes?: boolean
   includePrivate?: boolean
   pinnedVersion?: string
+}
+
+interface TemplatesCliOptions {
+  json?: boolean
+  category?: string
+}
+
+function formatTemplateTable(choices: TemplateChoice[]) {
+  const rows = choices.map(choice => ({
+    key: choice.key,
+    category: choice.category ?? '-',
+    target: choice.target,
+    description: choice.description ?? '',
+  }))
+
+  const headers = {
+    key: 'key',
+    category: 'category',
+    target: 'target',
+    description: 'description',
+  }
+
+  const widths = {
+    key: Math.max(headers.key.length, ...rows.map(row => row.key.length)),
+    category: Math.max(headers.category.length, ...rows.map(row => row.category.length)),
+    target: Math.max(headers.target.length, ...rows.map(row => row.target.length)),
+  }
+
+  const lines = [
+    `${headers.key.padEnd(widths.key)}  ${headers.category.padEnd(widths.category)}  ${headers.target.padEnd(widths.target)}  ${headers.description}`,
+    `${'-'.repeat(widths.key)}  ${'-'.repeat(widths.category)}  ${'-'.repeat(widths.target)}  ${'-'.repeat(headers.description.length)}`,
+    ...rows.map(row => `${row.key.padEnd(widths.key)}  ${row.category.padEnd(widths.category)}  ${row.target.padEnd(widths.target)}  ${row.description}`),
+  ]
+
+  return lines.join('\n')
 }
 
 function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
@@ -82,6 +117,42 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
       await runCreateFlow(cwd, inputName, { template: opts.template })
       logger.success('new finished!')
       logger.info('next: run `pnpm install` and start the new workspace package')
+    })
+
+  program.command('templates')
+    .alias('tpl')
+    .description('列出可用的内置模板')
+    .option('-c, --category <category>', '按模板分类过滤：library / app / service / docs / tool')
+    .option('--json', '输出 JSON，方便脚本消费')
+    .action(async (opts: TemplatesCliOptions) => {
+      const {
+        getTemplateChoices,
+        isTemplateCategory,
+        templateCategories,
+      } = await import('@icebreakers/monorepo-templates')
+
+      let category: TemplateCategory | undefined
+      if (opts.category) {
+        if (!isTemplateCategory(opts.category)) {
+          logger.error(`unknown template category: ${opts.category}`)
+          logger.info(`available categories: ${templateCategories.join(', ')}`)
+          process.exitCode = 1
+          return
+        }
+        category = opts.category
+      }
+
+      const choices = getTemplateChoices(category ? { category } : {})
+      if (opts.json) {
+        logger.log(JSON.stringify(choices, null, 2))
+        return
+      }
+
+      logger.log('')
+      logger.log('Available templates:')
+      logger.log(formatTemplateTable(choices))
+      logger.log('')
+      logger.info('next: run `repo new <name> --template <key>`')
     })
 
   program.command('check')

@@ -26,6 +26,9 @@ export function shouldSkipTemplatePath(rootDir: string, targetPath: string) {
   if (basename.endsWith('.tsbuildinfo')) {
     return true
   }
+  if (/\.timestamp-\d+-[a-z0-9]+\.mjs$/i.test(basename)) {
+    return true
+  }
   const relative = path.relative(rootDir, targetPath)
   if (!relative || relative.startsWith('..')) {
     return false

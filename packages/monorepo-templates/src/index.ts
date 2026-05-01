@@ -1,15 +1,15 @@
-import type { TemplateChoice, TemplateDefinition } from './types'
+import type { GetTemplateChoicesOptions, TemplateCategory, TemplateChoice, TemplateDefinition } from './types'
 import { assetTargets as rawAssetTargets, getAssetTargets as rawGetAssetTargets } from '../assets-data.mjs'
-import { templateChoices as rawTemplateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, skeletonDir, templatesDir } from './paths'
 import { prepareAssets } from './prepare'
 import { ensureTemplateAssetsPrepared } from './runtime-assets'
 import { scaffoldTemplate, scaffoldWorkspace } from './scaffold'
+import { getTemplateChoices } from './templates'
 import { runCommand } from './utils/command'
 import { isGitignoreFile, toPublishGitignorePath, toWorkspaceGitignorePath } from './utils/gitignore'
 import { createTemplateCopyFilter, shouldSkipTemplatePath } from './utils/template-filter'
 
-export const templateChoices = rawTemplateChoices as TemplateChoice[]
+export const templateChoices = getTemplateChoices()
 export const assetTargets = rawAssetTargets as string[]
 export const getAssetTargets = rawGetAssetTargets as (core?: boolean) => string[]
 
@@ -28,6 +28,16 @@ export const templateMap = templateSourceMap
 export { ensureTemplateAssetsPrepared, prepareAssets }
 export { scaffoldTemplate, scaffoldWorkspace }
 export {
+  getTemplateChoice,
+  getTemplateChoices,
+  getTemplateDefinition,
+  getTemplateSource,
+  getTemplateTarget,
+  isTemplateCategory,
+  isTemplateKey,
+  templateCategories,
+} from './templates'
+export {
   createTemplateCopyFilter,
   isGitignoreFile,
   runCommand,
@@ -35,7 +45,7 @@ export {
   toPublishGitignorePath,
   toWorkspaceGitignorePath,
 }
-export type { TemplateChoice, TemplateDefinition }
+export type { GetTemplateChoicesOptions, TemplateCategory, TemplateChoice, TemplateDefinition }
 export { execaCommand } from './utils/command'
 export { default as checkbox } from '@inquirer/checkbox'
 export { default as input } from '@inquirer/input'

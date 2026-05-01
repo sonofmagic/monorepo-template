@@ -9,6 +9,9 @@ const templatePrefix = /^templates[\\/]/
 async function getTrackedFilesInDir(dir: string) {
   const result = await git.raw([
     'ls-files',
+    '--cached',
+    '--others',
+    '--exclude-standard',
     dir,
   ])
   return result.split('\n').filter(Boolean)

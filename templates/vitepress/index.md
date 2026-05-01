@@ -169,6 +169,7 @@ export default defineMonorepoConfig({
 ## 下一步看哪里
 
 - 想理解为什么这套模板这样拆：[为什么往 monorepo 方向演进](./monorepo/index.md)
+- 第一次接手仓库先看：[新手使用指南](./getting-started.md)
 - 想看真实的日常管理方式：[如何管理 monorepo](./monorepo/manage.md)
 - 想要最完整的命令速查：[命令速查](./monorepo/commands.md)
 - 命令报错了怎么处理：[排障指南](./monorepo/troubleshooting.md)

@@ -3,7 +3,7 @@ import type { Dirent } from 'node:fs'
 import type { CreateChoiceOption, PackageJson } from '@/types'
 import { readdir } from 'node:fs/promises'
 import process from 'node:process'
-import { scaffoldTemplate } from '@icebreakers/monorepo-templates'
+import { scaffoldTemplate, templateChoices } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import pc from 'picocolors'
 import { setByPath } from '@/utils'
@@ -89,14 +89,16 @@ export const defaultTemplate: CreateNewProjectType = 'tsdown'
 /**
  * 交互式选择模板时的默认选项列表。
  */
-const baseChoices = [
-  { name: 'tsdown 打包', value: 'tsdown' },
-  { name: 'vue 组件', value: 'vue-lib' },
-  { name: 'vue hono 全栈', value: 'vue-hono' },
-  { name: 'hono 模板', value: 'hono-server' },
-  { name: 'vitepress 文档', value: 'vitepress' },
-  { name: 'cli 模板', value: 'cli' },
-] as const
+const baseChoices: CreateChoiceOption[] = templateChoices.map((choice) => {
+  const option: CreateChoiceOption = {
+    name: choice.label,
+    value: choice.key,
+  }
+  if (choice.description) {
+    option.description = choice.description
+  }
+  return option
+})
 
 /**
  * 获取 `monorepo new` 的交互式模板选项。
