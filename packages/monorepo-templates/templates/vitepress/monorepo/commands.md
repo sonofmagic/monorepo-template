@@ -231,6 +231,7 @@ repo env mirror
 ```bash
 repo config inspect
 repo cfg i --json --out reports/config.json
+repo cfg i --markdown --redact --out reports/config.md
 ```
 
 ### skills / sk

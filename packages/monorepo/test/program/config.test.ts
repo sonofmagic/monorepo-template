@@ -93,4 +93,55 @@ describe('commander program config command', () => {
       await rm(root, { recursive: true, force: true })
     }
   })
+
+  it('writes redacted config inspection as markdown', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-config-markdown-'))
+    const outFile = path.join(root, 'reports/config.md')
+    const inspectMock = vi.fn(async () => ({
+      cwd: root,
+      file: path.join(root, 'repoctl.config.ts'),
+      config: {
+        commands: {
+          clean: {
+            autoConfirm: true,
+          },
+        },
+        tooling: {
+          vitest: {
+            includeWorkspaceRootConfig: false,
+          },
+        },
+      },
+    }))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        inspectMonorepoConfig: inspectMock,
+      }))
+
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: successMock,
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'config', 'inspect', '--markdown', '--redact', '--out', outFile])
+
+      const content = await readFile(outFile, 'utf8')
+      expect(content).not.toContain(root)
+      expect(content).toContain('# Repo config inspection')
+      expect(content).toContain('| cwd | <cwd> |')
+      expect(content).toContain('| file | <cwd>/repoctl.config.ts |')
+      expect(content).toContain('- clean')
+      expect(content).toContain('- vitest')
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('config.md'))
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
 })
