@@ -1,5 +1,5 @@
 import type { Command } from '@icebreakers/monorepo-templates'
-import type { EnvInfo, EnvSnapshot } from '../../commands/env'
+import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot } from '../../commands/env'
 import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
@@ -25,6 +25,43 @@ async function emitEnvInfo(info: EnvInfo, opts: EnvInfoCliOptions, cwd: string) 
   const content = opts.json
     ? JSON.stringify(info, null, 2)
     : formatEnvInfo(info)
+
+  if (!opts.out) {
+    logger.log(content)
+    return
+  }
+
+  const outFile = path.resolve(cwd, opts.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+}
+
+function formatEnvPathEntry(label: string, entry: EnvPathEntry) {
+  return `${label}: ${entry.relativePath} (${entry.exists ? 'exists' : 'missing'})`
+}
+
+function formatEnvPaths(paths: EnvPaths) {
+  return [
+    `cwd: ${paths.cwd}`,
+    `workspace: ${paths.workspaceDir}`,
+    '',
+    formatEnvPathEntry('packageJson', paths.paths.packageJson),
+    formatEnvPathEntry('workspaceManifest', paths.paths.workspaceManifest),
+    formatEnvPathEntry('repoctlConfig', paths.paths.repoctlConfig),
+    formatEnvPathEntry('legacyConfig', paths.paths.legacyConfig),
+    formatEnvPathEntry('toolingDir', paths.paths.toolingDir),
+    formatEnvPathEntry('reportsDir', paths.paths.reportsDir),
+    formatEnvPathEntry('doctorReport', paths.paths.doctorReport),
+    formatEnvPathEntry('envReport', paths.paths.envReport),
+    formatEnvPathEntry('snapshotReport', paths.paths.snapshotReport),
+    formatEnvPathEntry('checkPlanReport', paths.paths.checkPlanReport),
+  ].join('\n')
+}
+
+async function emitEnvPaths(paths: EnvPaths, opts: EnvInfoCliOptions, cwd: string) {
+  const content = opts.json
+    ? JSON.stringify(paths, null, 2)
+    : formatEnvPaths(paths)
 
   if (!opts.out) {
     logger.log(content)
@@ -84,6 +121,16 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .action(async (opts: EnvInfoCliOptions) => {
       const { collectEnvSnapshot } = await import('@/commands')
       await emitEnvSnapshot(await collectEnvSnapshot(cwd), opts, cwd)
+    })
+
+  envCommand.command('paths')
+    .description('输出当前仓库关键路径和报告建议位置')
+    .alias('p')
+    .option('--json', '输出 JSON，方便脚本消费')
+    .option('--out <file>', '把当前输出写入文件')
+    .action(async (opts: EnvInfoCliOptions) => {
+      const { collectEnvPaths } = await import('@/commands')
+      await emitEnvPaths(await collectEnvPaths(cwd), opts, cwd)
     })
 
   envCommand.command('mirror')

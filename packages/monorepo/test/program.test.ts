@@ -46,6 +46,13 @@ describe('commander program', () => {
         commands: [],
       },
     }))
+    const collectEnvPathsMock = vi.fn(async () => ({
+      cwd: '/repo',
+      workspaceDir: '/repo',
+      paths: {
+        packageJson: { path: '/repo/package.json', relativePath: 'package.json', exists: true },
+      },
+    }))
     const verifyCommitMsgMock = vi.fn(() => {})
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
@@ -107,6 +114,7 @@ describe('commander program', () => {
       loadAgenticTasks: loadTasksMock,
       cleanProjects: cleanMock,
       collectEnvInfo: collectEnvInfoMock,
+      collectEnvPaths: collectEnvPathsMock,
       collectEnvSnapshot: collectEnvSnapshotMock,
       createNewProject: vi.fn(async () => {}),
       getCreateChoices: vi.fn(() => choices),
@@ -179,6 +187,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'monorepo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
     await program.parseAsync(['node', 'monorepo', 'env', 'info', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'snapshot', '--json'])
+    await program.parseAsync(['node', 'monorepo', 'env', 'paths', '--json'])
     await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
     await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
@@ -220,6 +229,7 @@ describe('commander program', () => {
     expect(mirrorMock).toHaveBeenCalled()
     expect(collectEnvInfoMock).toHaveBeenCalledWith(expect.any(String))
     expect(collectEnvSnapshotMock).toHaveBeenCalledWith(expect.any(String))
+    expect(collectEnvPathsMock).toHaveBeenCalledWith(expect.any(String))
     expect(verifyPreCommitMock).toHaveBeenCalledWith({ cwd: expect.any(String) })
     expect(verifyCommitMsgMock).toHaveBeenCalledWith({
       cwd: expect.any(String),

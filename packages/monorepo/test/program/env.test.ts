@@ -61,6 +61,25 @@ function createEnvSnapshot() {
   }
 }
 
+function createEnvPaths() {
+  return {
+    cwd: '/repo',
+    workspaceDir: '/repo',
+    paths: {
+      packageJson: { path: '/repo/package.json', relativePath: 'package.json', exists: true },
+      workspaceManifest: { path: '/repo/pnpm-workspace.yaml', relativePath: 'pnpm-workspace.yaml', exists: true },
+      repoctlConfig: { path: '/repo/repoctl.config.ts', relativePath: 'repoctl.config.ts', exists: false },
+      legacyConfig: { path: '/repo/monorepo.config.ts', relativePath: 'monorepo.config.ts', exists: false },
+      toolingDir: { path: '/repo/tooling', relativePath: 'tooling', exists: true },
+      reportsDir: { path: '/repo/reports', relativePath: 'reports', exists: false },
+      doctorReport: { path: '/repo/reports/doctor.json', relativePath: 'reports/doctor.json', exists: false },
+      envReport: { path: '/repo/reports/env.json', relativePath: 'reports/env.json', exists: false },
+      snapshotReport: { path: '/repo/reports/snapshot.json', relativePath: 'reports/snapshot.json', exists: false },
+      checkPlanReport: { path: '/repo/reports/check-plan.json', relativePath: 'reports/check-plan.json', exists: false },
+    },
+  }
+}
+
 describe('commander program env command', () => {
   it('prints env info as json', async () => {
     const collectEnvInfoMock = vi.fn(async () => createEnvInfo())
@@ -148,6 +167,43 @@ describe('commander program env command', () => {
       }))
       expect(logMock).not.toHaveBeenCalled()
       expect(successMock).toHaveBeenCalledWith(expect.stringContaining('snapshot.json'))
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('writes env paths to a json file', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-env-paths-'))
+    const outFile = path.join(root, 'reports/paths.json')
+    const collectEnvPathsMock = vi.fn(async () => createEnvPaths())
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        collectEnvPaths: collectEnvPathsMock,
+      }))
+
+      const logMock = vi.fn()
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: logMock,
+          success: successMock,
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'e', 'p', '--json', '--out', outFile])
+
+      expect(JSON.parse(await readFile(outFile, 'utf8'))).toEqual(expect.objectContaining({
+        paths: expect.objectContaining({
+          packageJson: expect.objectContaining({ relativePath: 'package.json', exists: true }),
+          snapshotReport: expect.objectContaining({ relativePath: 'reports/snapshot.json' }),
+        }),
+      }))
+      expect(logMock).not.toHaveBeenCalled()
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('paths.json'))
     }
     finally {
       await rm(root, { recursive: true, force: true })

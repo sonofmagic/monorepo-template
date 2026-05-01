@@ -3,6 +3,7 @@ import type { DoctorReport } from './doctor'
 import { execFileSync } from 'node:child_process'
 import os from 'node:os'
 import process from 'node:process'
+import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import path from 'pathe'
 import { getWorkspacePackageSummaries } from '../core/workspace'
 import fs from '../utils/fs'
@@ -35,6 +36,29 @@ export interface EnvSnapshot {
   checkPlan: RecommendedCheckPlan
 }
 
+export interface EnvPathEntry {
+  path: string
+  relativePath: string
+  exists: boolean
+}
+
+export interface EnvPaths {
+  cwd: string
+  workspaceDir: string
+  paths: {
+    packageJson: EnvPathEntry
+    workspaceManifest: EnvPathEntry
+    repoctlConfig: EnvPathEntry
+    legacyConfig: EnvPathEntry
+    toolingDir: EnvPathEntry
+    reportsDir: EnvPathEntry
+    doctorReport: EnvPathEntry
+    envReport: EnvPathEntry
+    snapshotReport: EnvPathEntry
+    checkPlanReport: EnvPathEntry
+  }
+}
+
 function readPnpmVersion() {
   try {
     return execFileSync('pnpm', ['--version'], {
@@ -44,6 +68,14 @@ function readPnpmVersion() {
   }
   catch {
     return undefined
+  }
+}
+
+async function createEnvPathEntry(workspaceDir: string, targetPath: string): Promise<EnvPathEntry> {
+  return {
+    path: targetPath,
+    relativePath: path.relative(workspaceDir, targetPath) || '.',
+    exists: await fs.pathExists(targetPath),
   }
 }
 
@@ -65,6 +97,39 @@ export async function collectEnvInfo(cwd: string): Promise<EnvInfo> {
     platform: os.platform(),
     arch: os.arch(),
     packageCount: workspace.packages.length,
+  }
+}
+
+export async function collectEnvPaths(cwd: string): Promise<EnvPaths> {
+  const workspaceDir = await findWorkspaceDir(cwd) ?? cwd
+  const paths = {
+    packageJson: path.join(workspaceDir, 'package.json'),
+    workspaceManifest: path.join(workspaceDir, 'pnpm-workspace.yaml'),
+    repoctlConfig: path.join(workspaceDir, 'repoctl.config.ts'),
+    legacyConfig: path.join(workspaceDir, 'monorepo.config.ts'),
+    toolingDir: path.join(workspaceDir, 'tooling'),
+    reportsDir: path.join(workspaceDir, 'reports'),
+    doctorReport: path.join(workspaceDir, 'reports/doctor.json'),
+    envReport: path.join(workspaceDir, 'reports/env.json'),
+    snapshotReport: path.join(workspaceDir, 'reports/snapshot.json'),
+    checkPlanReport: path.join(workspaceDir, 'reports/check-plan.json'),
+  }
+
+  return {
+    cwd,
+    workspaceDir,
+    paths: {
+      packageJson: await createEnvPathEntry(workspaceDir, paths.packageJson),
+      workspaceManifest: await createEnvPathEntry(workspaceDir, paths.workspaceManifest),
+      repoctlConfig: await createEnvPathEntry(workspaceDir, paths.repoctlConfig),
+      legacyConfig: await createEnvPathEntry(workspaceDir, paths.legacyConfig),
+      toolingDir: await createEnvPathEntry(workspaceDir, paths.toolingDir),
+      reportsDir: await createEnvPathEntry(workspaceDir, paths.reportsDir),
+      doctorReport: await createEnvPathEntry(workspaceDir, paths.doctorReport),
+      envReport: await createEnvPathEntry(workspaceDir, paths.envReport),
+      snapshotReport: await createEnvPathEntry(workspaceDir, paths.snapshotReport),
+      checkPlanReport: await createEnvPathEntry(workspaceDir, paths.checkPlanReport),
+    },
   }
 }
 

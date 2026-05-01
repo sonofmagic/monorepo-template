@@ -69,4 +69,25 @@ describe('collectEnvInfo', () => {
       ],
     }))
   })
+
+  it('collects key workspace paths and report targets', async () => {
+    const root = await createWorkspace()
+    await writeFile(path.join(root, 'repoctl.config.ts'), 'export default {}\n')
+
+    const { collectEnvPaths } = await import('@/commands/env')
+    const paths = await collectEnvPaths(path.join(root, 'packages/a'))
+
+    expect(paths.workspaceDir).toBe(await realpath(root))
+    expect(paths.paths.packageJson).toEqual(expect.objectContaining({
+      relativePath: 'package.json',
+      exists: true,
+    }))
+    expect(paths.paths.workspaceManifest.exists).toBe(true)
+    expect(paths.paths.repoctlConfig.exists).toBe(true)
+    expect(paths.paths.legacyConfig.exists).toBe(false)
+    expect(paths.paths.snapshotReport).toEqual(expect.objectContaining({
+      relativePath: 'reports/snapshot.json',
+      exists: false,
+    }))
+  })
 })

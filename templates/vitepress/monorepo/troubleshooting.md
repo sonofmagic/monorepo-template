@@ -25,6 +25,7 @@ pnpm exec repo doctor --strict --json --out reports/doctor.json
 需要把运行环境一起发给同事、CI 或机器人时：
 
 ```bash
+pnpm exec repo env paths --json --out reports/paths.json
 pnpm exec repo env info --json --out reports/env.json
 pnpm exec repo env snapshot --json --out reports/snapshot.json
 ```

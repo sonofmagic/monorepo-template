@@ -210,6 +210,7 @@ repo verify staged-typecheck packages/app/src/main.ts
 repo env info
 repo e i --json --out reports/env.json
 repo env snapshot --json --out reports/snapshot.json
+repo env paths --json --out reports/paths.json
 repo env mirror
 ```
 

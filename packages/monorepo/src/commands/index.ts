@@ -3,7 +3,7 @@ import type { AgenticTemplateFormat, AgenticTemplateTask, GenerateAgenticTemplat
 import type { RecommendedCheckMode, RecommendedCheckOptions, RecommendedCheckPlan, RecommendedCheckPlanCommand } from './check'
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from './create'
 import type { DoctorCheck, DoctorReport, DoctorStatus, DoctorSummary } from './doctor'
-import type { EnvInfo, EnvSnapshot } from './env'
+import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot } from './env'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
 import type { CheckTemplatesOptions, TemplateHealthCheck, TemplateHealthReport, TemplateHealthStatus, TemplateHealthSummary } from './templates'
 import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
@@ -14,7 +14,7 @@ import { resolveRecommendedCheckPlan, runRecommendedCheck } from './check'
 import { cleanProjects } from './clean'
 import { createNewProject, getCreateChoices, getTemplateMap, resolveCreateNewProjectPlan, templateMap } from './create'
 import { runDoctor } from './doctor'
-import { collectEnvInfo, collectEnvSnapshot } from './env'
+import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot } from './env'
 import { init, initMetadata, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
 import { setVscodeBinaryMirror } from './mirror'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
@@ -34,6 +34,8 @@ export type {
   DoctorStatus,
   DoctorSummary,
   EnvInfo,
+  EnvPathEntry,
+  EnvPaths,
   EnvSnapshot,
   GenerateAgenticTemplateOptions,
   GetWorkspacePackagesOptions,
@@ -57,6 +59,7 @@ export {
   checkTemplates,
   cleanProjects,
   collectEnvInfo,
+  collectEnvPaths,
   collectEnvSnapshot,
   createNewProject,
   createTimestampFolderName,
