@@ -33,6 +33,7 @@ pnpm exec repo env support --json --out reports/support.json
 ```
 
 `env paths` 会列出 repoctl / monorepo 配置文件的全部候选扩展名，不只检查 `.ts` 文件。
+如果要把 support bundle 发给外部协作者，优先加 `--redact` 脱敏本机绝对路径。
 
 它会优先帮你排这些低成本但高频的问题：
 

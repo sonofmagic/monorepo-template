@@ -117,6 +117,7 @@ describe('program help surface', () => {
     expect(envPaths?.helpInformation()).toContain('--out')
     expect(envSupport?.helpInformation()).toContain('--json')
     expect(envSupport?.helpInformation()).toContain('--out')
+    expect(envSupport?.helpInformation()).toContain('--redact')
     expect(config?.helpInformation()).toContain('i')
     expect(configInspect?.helpInformation()).toContain('--json')
     expect(configInspect?.helpInformation()).toContain('--out')

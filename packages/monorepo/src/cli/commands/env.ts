@@ -1,5 +1,6 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot, EnvSupportBundle } from '../../commands/env'
+import os from 'node:os'
 import path from 'pathe'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
@@ -7,6 +8,7 @@ import fs from '../../utils/fs'
 interface EnvInfoCliOptions {
   json?: boolean
   out?: string
+  redact?: boolean
 }
 
 function formatEnvInfo(info: EnvInfo) {
@@ -116,10 +118,43 @@ function formatEnvSupportBundle(bundle: EnvSupportBundle) {
   ].join('\n')
 }
 
+function replaceAll(value: string, search: string, replacement: string) {
+  return search.length > 0 ? value.split(search).join(replacement) : value
+}
+
+function redactSupportBundleValue(value: unknown, replacements: Array<[string, string]>): unknown {
+  if (typeof value === 'string') {
+    return replacements.reduce((result, [search, replacement]) => replaceAll(result, search, replacement), value)
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => redactSupportBundleValue(item, replacements))
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, redactSupportBundleValue(item, replacements)]),
+    )
+  }
+  return value
+}
+
+function redactSupportBundle(bundle: EnvSupportBundle): EnvSupportBundle {
+  const candidates: Array<[string, string]> = [
+    [bundle.env.workspaceDir, '<workspace>'],
+    [bundle.env.cwd, '<cwd>'],
+    [os.homedir(), '<home>'],
+  ]
+  const replacements = candidates
+    .filter(([search], index, entries) => search.length > 0 && entries.findIndex(([value]) => value === search) === index)
+    .sort(([left], [right]) => right.length - left.length)
+
+  return redactSupportBundleValue(bundle, replacements) as EnvSupportBundle
+}
+
 async function emitEnvSupportBundle(bundle: EnvSupportBundle, opts: EnvInfoCliOptions, cwd: string) {
+  const outputBundle = opts.redact ? redactSupportBundle(bundle) : bundle
   const content = opts.json
-    ? JSON.stringify(bundle, null, 2)
-    : formatEnvSupportBundle(bundle)
+    ? JSON.stringify(outputBundle, null, 2)
+    : formatEnvSupportBundle(outputBundle)
 
   if (!opts.out) {
     logger.log(content)
@@ -169,6 +204,7 @@ export function registerEnvCommands(program: Command, cwd: string) {
     .alias('b')
     .option('--json', '输出 JSON，方便脚本消费')
     .option('--out <file>', '把当前输出写入文件')
+    .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
     .action(async (opts: EnvInfoCliOptions) => {
       const { collectEnvSupportBundle } = await import('@/commands')
       await emitEnvSupportBundle(await collectEnvSupportBundle(cwd), opts, cwd)
