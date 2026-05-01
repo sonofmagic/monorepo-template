@@ -136,9 +136,11 @@ repo templates --markdown --out docs/templates.md
 ```bash
 repo new dashboard --template vue-hono
 repo new dashboard --template vue-hono --dry-run
+repo new dashboard --template vue-hono --json
 ```
 
 如果 `--template` 拼错，CLI 会直接失败并提示最接近的模板 key；它不会静默回退到默认模板。
+`--json` 用于脚本读取创建计划，隐含 `--dry-run`，不会写入文件。
 
 当 `repoctl.config.ts` 中设置了 `commands.create.defaultTemplate` 时，命令会直接创建，不再额外询问模板，并自动按模板落到 `packages/` 或 `apps/`。
 

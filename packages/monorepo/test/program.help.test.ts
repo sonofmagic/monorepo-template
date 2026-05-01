@@ -64,6 +64,7 @@ describe('program help surface', () => {
     const sync = program.commands.find((command: Command) => command.name() === 'sync')
     const clean = program.commands.find((command: Command) => command.name() === 'clean')
     const mirror = program.commands.find((command: Command) => command.name() === 'mirror')
+    const packageCreate = packageCommand?.commands.find((command: Command) => command.name() === 'create')
 
     expect(workspace?.aliases()).toEqual(['ws'])
     expect(tooling?.aliases()).toEqual(['tg'])
@@ -87,6 +88,8 @@ describe('program help surface', () => {
     expect(tooling?.helpInformation()).toContain('i')
     expect(packageCommand?.helpInformation()).toContain('new')
     expect(env?.helpInformation()).toContain('m')
+    expect(createNew?.helpInformation()).toContain('--json')
+    expect(packageCreate?.helpInformation()).toContain('--json')
     expect(templates?.helpInformation()).toContain('--markdown')
     expect(templates?.helpInformation()).toContain('--check')
     expect(verify?.helpInformation()).toContain('push')

@@ -161,6 +161,21 @@ describe('runCreateFlow', () => {
     expect(infoMock).toHaveBeenCalledWith('dry run only; no files were written')
   })
 
+  it('prints a create preview as json without writing files', async () => {
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    const result = await runCreateFlow('/repo', 'demo', { template: 'tsdown', dryRun: true, json: true })
+
+    expect(result).toEqual({ dryRun: true })
+    expect(createNewProjectMock).not.toHaveBeenCalled()
+    expect(resolveCreateNewProjectPlanMock).toHaveBeenCalledWith({
+      name: 'packages/demo',
+      cwd: '/repo',
+      type: 'tsdown',
+    })
+    expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"template": "tsdown"'))
+    expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+  })
+
   it('prints create errors without throwing a stack from the CLI flow', async () => {
     createNewProjectMock.mockRejectedValueOnce(new Error('未知模板：tsdwon。你是不是想用 tsdown？'))
 
@@ -172,6 +187,23 @@ describe('runCreateFlow', () => {
 
     expect(result).toEqual({ dryRun: false, failed: true })
     expect(errorMock).toHaveBeenCalledWith('未知模板：tsdwon。你是不是想用 tsdown？')
+    expect(process.exitCode).toBe(1)
+
+    process.exitCode = previousExitCode
+  })
+
+  it('prints create errors as json when json mode is enabled', async () => {
+    createNewProjectMock.mockRejectedValueOnce(new Error('未知模板：tsdwon。你是不是想用 tsdown？'))
+
+    const previousExitCode = process.exitCode
+    process.exitCode = undefined
+
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    const result = await runCreateFlow('/repo', 'demo', { template: 'tsdwon', json: true })
+
+    expect(result).toEqual({ dryRun: false, failed: true })
+    expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"error": "未知模板：tsdwon。你是不是想用 tsdown？"'))
+    expect(errorMock).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(1)
 
     process.exitCode = previousExitCode

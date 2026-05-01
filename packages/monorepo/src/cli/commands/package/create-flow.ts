@@ -36,6 +36,7 @@ function normalizeNameForTemplate(name: string, type: CreateNewProjectOptions['t
 export interface RunCreateFlowOptions {
   template?: CreateNewProjectOptions['type']
   dryRun?: boolean
+  json?: boolean
 }
 
 export interface RunCreateFlowResult {
@@ -60,8 +61,18 @@ function printCreatePlan(plan: CreateNewProjectPlan) {
   logger.info('dry run only; no files were written')
 }
 
-function handleCreateFlowError(error: unknown): RunCreateFlowResult {
-  logger.error(error instanceof Error ? error.message : String(error))
+function printCreatePlanJson(plan: CreateNewProjectPlan) {
+  logger.log(JSON.stringify(plan, null, 2))
+}
+
+function handleCreateFlowError(error: unknown, json = false): RunCreateFlowResult {
+  const message = error instanceof Error ? error.message : String(error)
+  if (json) {
+    logger.log(JSON.stringify({ error: message }, null, 2))
+  }
+  else {
+    logger.error(message)
+  }
   process.exitCode = 1
   return { dryRun: false, failed: true }
 }
@@ -110,7 +121,13 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
       }
 
       if (options.dryRun) {
-        printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
+        const plan = await resolveCreateNewProjectPlan(createOptions)
+        if (options.json) {
+          printCreatePlanJson(plan)
+        }
+        else {
+          printCreatePlan(plan)
+        }
         return { dryRun: true }
       }
 
@@ -138,7 +155,13 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     }
 
     if (options.dryRun) {
-      printCreatePlan(await resolveCreateNewProjectPlan(createOptions))
+      const plan = await resolveCreateNewProjectPlan(createOptions)
+      if (options.json) {
+        printCreatePlanJson(plan)
+      }
+      else {
+        printCreatePlan(plan)
+      }
       return { dryRun: true }
     }
 
@@ -146,6 +169,6 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     return { dryRun: false }
   }
   catch (error) {
-    return handleCreateFlowError(error)
+    return handleCreateFlowError(error, options.json)
   }
 }

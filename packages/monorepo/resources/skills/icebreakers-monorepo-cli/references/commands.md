@@ -164,3 +164,5 @@ Usage:
 - Prompts for a template choice unless defaults are set in repoctl.config.ts or monorepo.config.ts.
 - Explicit `--template` values are validated before writing files. Unknown keys
   fail with the closest suggestion instead of silently falling back.
+- Use `--json` to print the resolved create plan for automation. It implies
+  `--dry-run` and does not write files.

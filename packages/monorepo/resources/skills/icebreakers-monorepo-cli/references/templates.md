@@ -20,7 +20,9 @@ or `repo templates <key> --markdown` when generating documentation snippets.
 Add `--out <file>` to write the selected output to disk.
 
 Use `repo new <name> --template <key> --dry-run` to preview the target directory
-and package metadata without writing files.
+and package metadata without writing files. Use `repo new <name> --template <key>
+--json` when a script needs the same create plan as structured data; `--json`
+implies `--dry-run`.
 
 Explicit template keys are validated before any files are written. If a key is
 misspelled, the CLI fails and prints the closest known key when one is available.

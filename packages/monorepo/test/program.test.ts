@@ -25,7 +25,9 @@ describe('commander program', () => {
     const verifyPreCommitMock = vi.fn(() => {})
     const verifyPrePushMock = vi.fn(async () => {})
     const verifyStagedTypecheckMock = vi.fn(() => {})
-    const runCreateFlowMock = vi.fn(async () => ({ dryRun: false }))
+    const runCreateFlowMock = vi.fn(async (_cwd: string, _name?: string, options?: { dryRun?: boolean }) => ({
+      dryRun: options?.dryRun === true,
+    }))
     const aiTemplateMock = vi.fn(async () => {})
     const getWorkspacePackageSummariesMock = vi.fn(async () => ({
       cwd: '/repo',
@@ -134,6 +136,7 @@ describe('commander program', () => {
 
     await program.parseAsync(['node', 'repo', 'setup', '--preset', 'minimal'])
     await program.parseAsync(['node', 'repo', 'new', 'demo', '--template', 'tsdown'])
+    await program.parseAsync(['node', 'repo', 'new', 'demo-json', '--template', 'tsdown', '--json'])
     await program.parseAsync(['node', 'repo', 'check', '--full'])
     await program.parseAsync(['node', 'repo', 'doctor'])
     await program.parseAsync(['node', 'repo', 'upgrade'])
@@ -157,6 +160,7 @@ describe('commander program', () => {
 
     expect(initMock).toHaveBeenCalledWith(expect.any(String), { preset: 'minimal' })
     expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo', { template: 'tsdown' })
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), 'demo-json', { template: 'tsdown', dryRun: true, json: true })
     expect(runRecommendedCheckMock).toHaveBeenCalledWith({
       cwd: expect.any(String),
       full: true,
@@ -205,7 +209,7 @@ describe('commander program', () => {
       force: false,
       format: 'md',
     }))
-    expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), undefined, {})
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(3, expect.any(String), undefined, {})
     expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
       cwd: expect.any(String),
       targets: ['codex'],

@@ -87,9 +87,11 @@ pnpm new api --template hono-server
 
 ```bash
 pnpm new website --template vitepress --dry-run
+pnpm new website --template vitepress --json
 ```
 
 如果模板 key 拼错，CLI 会直接失败并提示最接近的模板 key；它不会静默回退到默认模板。
+`--json` 用于脚本读取创建计划，隐含 `--dry-run`，不会写入文件。
 
 普通名字会自动放进合适目录，比如库包放到 `packages/`，应用放到 `apps/`。如果你传入了带 `/` 的路径，例如 `packages/shared-utils`，CLI 会尊重这个路径。
 
