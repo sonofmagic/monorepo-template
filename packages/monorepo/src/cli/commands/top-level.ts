@@ -4,10 +4,10 @@ import type { DoctorReport } from '../../commands/doctor'
 import type { CliOpts } from '../../types'
 import process from 'node:process'
 import path from 'pathe'
-import pc from 'picocolors'
 import { logger } from '../../core/logger'
 import fs from '../../utils/fs'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
+import { createDoctorReportOutput, createInteractiveDoctorReportOutput, hasDoctorBlockingIssues } from './doctor/output'
 
 interface CheckCliOptions {
   full?: boolean
@@ -32,6 +32,7 @@ interface NewCliOptions {
 
 interface DoctorCliOptions {
   json?: boolean
+  markdown?: boolean
   out?: string
   strict?: boolean
 }
@@ -42,49 +43,10 @@ interface CleanCliOptions {
   pinnedVersion?: string
 }
 
-function formatDoctorStatus(status: 'pass' | 'warn' | 'fail') {
-  if (status === 'pass') {
-    return pc.green('PASS')
-  }
-  if (status === 'warn') {
-    return pc.yellow('WARN')
-  }
-  return pc.red('FAIL')
-}
-
-function formatDoctorReport(report: DoctorReport, color = false) {
-  const status = color
-    ? formatDoctorStatus
-    : (value: 'pass' | 'warn' | 'fail') => value.toUpperCase()
-
-  const lines = [
-    `workspace: ${report.workspaceDir}`,
-    `packages: ${report.packageCount}`,
-    '',
-  ]
-
-  for (const check of report.checks) {
-    lines.push(`[${status(check.status)}] ${check.title}`)
-    lines.push(`  ${check.detail}`)
-    if (check.fix) {
-      lines.push(`  fix: ${check.fix}`)
-    }
-  }
-
-  lines.push('')
-  lines.push(
-    color
-      ? `summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`
-      : `summary: ${report.summary.pass} pass, ${report.summary.warn} warn, ${report.summary.fail} fail`,
-  )
-
-  return lines.join('\n')
-}
-
 async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cwd: string) {
-  const content = opts.json
-    ? JSON.stringify(report, null, 2)
-    : formatDoctorReport(report, !opts.out)
+  const content = opts.json || opts.markdown || opts.out
+    ? createDoctorReportOutput(report, opts)
+    : createInteractiveDoctorReportOutput(report)
 
   if (!opts.out) {
     logger.log(content)
@@ -94,10 +56,6 @@ async function emitDoctorReport(report: DoctorReport, opts: DoctorCliOptions, cw
   const outFile = path.resolve(cwd, opts.out)
   await fs.outputFile(outFile, `${content}\n`, 'utf8')
   logger.success(`wrote ${path.relative(cwd, outFile)}`)
-}
-
-function hasDoctorBlockingIssues(report: DoctorReport, opts: DoctorCliOptions) {
-  return report.summary.fail > 0 || (opts.strict === true && report.summary.warn > 0)
 }
 
 function formatCheckPlan(plan: RecommendedCheckPlan) {
@@ -195,13 +153,14 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
   program.command('doctor')
     .description('诊断当前仓库是否适合直接开始使用')
     .option('--json', '输出 JSON 报告，方便 CI 或脚本消费')
+    .option('--markdown', '输出 Markdown 报告，方便粘贴到 issue 或 PR')
     .option('--out <file>', '把诊断报告写入文件')
     .option('--strict', '把 warning 也视为失败，适合 CI 门禁')
     .action(async (opts: DoctorCliOptions) => {
       const { runDoctor } = await import('@/commands')
       const report = await runDoctor(cwd)
       await emitDoctorReport(report, opts, cwd)
-      if (opts.out || opts.json) {
+      if (opts.out || opts.json || opts.markdown) {
         if (hasDoctorBlockingIssues(report, opts)) {
           process.exitCode = 1
         }

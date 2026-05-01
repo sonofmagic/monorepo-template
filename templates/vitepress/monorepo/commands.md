@@ -65,6 +65,7 @@ repo doctor
 repo doctor --strict
 repo doctor --json
 repo doctor --json --out reports/doctor.json
+repo doctor --markdown --out reports/doctor.md
 ```
 
 用途：
@@ -73,7 +74,8 @@ repo doctor --json --out reports/doctor.json
 - 检查 Node 版本、workspace 文件、CLI 依赖、根脚本、配置冲突、提交链路
 - `--strict` 会把 warning 也视为失败，适合 CI 门禁或团队模板验收
 - `--json` 只输出结构化报告，适合 CI、脚本和编辑器集成
-- `--out <file>` 把文本或 JSON 报告写入文件，仍会按 blocking issue 返回非零状态
+- `--markdown` 输出适合贴到 issue / PR 的摘要报告
+- `--out <file>` 把文本、JSON 或 Markdown 报告写入文件，仍会按 blocking issue 返回非零状态
 
 ### `repo new`
 

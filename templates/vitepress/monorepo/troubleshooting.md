@@ -14,12 +14,14 @@ pnpm doctor
 
 ```bash
 pnpm exec repo doctor --json --out reports/doctor.json
+pnpm exec repo doctor --markdown --out reports/doctor.md
 ```
 
 需要让 CI 对 warning 也失败时：
 
 ```bash
 pnpm exec repo doctor --strict --json --out reports/doctor.json
+pnpm exec repo doctor --strict --markdown --out reports/doctor.md
 ```
 
 需要把运行环境一起发给同事、CI 或机器人时：

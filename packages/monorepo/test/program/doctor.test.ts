@@ -116,6 +116,60 @@ describe('commander program doctor command', () => {
     }
   })
 
+  it('writes doctor report as markdown and keeps failing exit code', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-doctor-markdown-'))
+    const doctorMock = vi.fn(async () => ({
+      cwd: root,
+      workspaceDir: root,
+      packageCount: 1,
+      checks: [
+        {
+          id: 'root-scripts',
+          title: 'root scripts',
+          status: 'warn',
+          detail: 'missing doctor script',
+          fix: 'run repo upgrade',
+        },
+      ],
+      summary: { pass: 2, warn: 1, fail: 0 },
+    }))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        runDoctor: doctorMock,
+      }))
+
+      const successMock = vi.fn()
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          error: vi.fn(),
+          log: vi.fn(),
+          success: successMock,
+        },
+      }))
+
+      const previousExitCode = process.exitCode
+      process.exitCode = undefined
+      const reportPath = path.join(root, 'reports/doctor.md')
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'doctor', '--strict', '--markdown', '--out', reportPath])
+
+      const content = await readFile(reportPath, 'utf8')
+      expect(content).toContain('# Repo doctor report')
+      expect(content).toContain('| warn | 1 |')
+      expect(content).toContain('- warn: root scripts (fix: run repo upgrade)')
+      expect(successMock).toHaveBeenCalledWith(expect.stringContaining('doctor.md'))
+      expect(process.exitCode).toBe(1)
+
+      process.exitCode = previousExitCode
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
   it('marks the process as failed when doctor finds blocking issues', async () => {
     const doctorMock = vi.fn(async () => ({
       cwd: '/repo',
