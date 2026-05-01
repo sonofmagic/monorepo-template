@@ -49,6 +49,7 @@ pnpm exec repo upgrade
 pnpm exec repo new dashboard --template vue-hono
 pnpm exec repo new dashboard --template vue-hono --dry-run
 pnpm exec repo new dashboard --template vue-hono --json
+pnpm exec repo new dashboard --template vue-hono --json --out plans/dashboard.json
 # invalid template keys fail with a suggestion instead of falling back silently
 
 # discover available templates

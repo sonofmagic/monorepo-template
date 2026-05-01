@@ -1,3 +1,6 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'pathe'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const inputMock = vi.fn(async () => 'demo')
@@ -23,6 +26,7 @@ const resolveCommandConfigMock = vi.fn(async () => ({}))
 const logMock = vi.fn()
 const infoMock = vi.fn()
 const errorMock = vi.fn()
+const successMock = vi.fn()
 
 beforeEach(async () => {
   await vi.resetModules()
@@ -35,6 +39,7 @@ beforeEach(async () => {
   logMock.mockClear()
   infoMock.mockClear()
   errorMock.mockClear()
+  successMock.mockClear()
 
   inputMock.mockResolvedValue('demo')
   getCreateChoicesMock.mockReturnValue([])
@@ -68,6 +73,7 @@ beforeEach(async () => {
       log: logMock,
       info: infoMock,
       error: errorMock,
+      success: successMock,
     },
   }))
 })
@@ -174,6 +180,45 @@ describe('runCreateFlow', () => {
     })
     expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"template": "tsdown"'))
     expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+  })
+
+  it('writes a create preview as json when out is set', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-create-plan-'))
+
+    try {
+      const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+      const result = await runCreateFlow(cwd, 'demo', { template: 'tsdown', dryRun: true, json: true, out: 'plans/create.json' })
+
+      expect(result).toEqual({ dryRun: true })
+      expect(createNewProjectMock).not.toHaveBeenCalled()
+      expect(JSON.parse(await readFile(path.join(cwd, 'plans/create.json'), 'utf8'))).toEqual(expect.objectContaining({
+        template: 'tsdown',
+        targetName: 'packages/demo',
+      }))
+      expect(successMock).toHaveBeenCalledWith('wrote plans/create.json')
+      expect(logMock).not.toHaveBeenCalledWith(expect.stringContaining('"template": "tsdown"'))
+      expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+    }
+    finally {
+      await rm(cwd, { recursive: true, force: true })
+    }
+  })
+
+  it('writes a create preview as text when out is set without json', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-create-plan-'))
+
+    try {
+      const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+      const result = await runCreateFlow(cwd, 'demo', { template: 'tsdown', dryRun: true, out: 'plans/create.txt' })
+
+      expect(result).toEqual({ dryRun: true })
+      expect(await readFile(path.join(cwd, 'plans/create.txt'), 'utf8')).toContain('Create preview:')
+      expect(successMock).toHaveBeenCalledWith('wrote plans/create.txt')
+      expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+    }
+    finally {
+      await rm(cwd, { recursive: true, force: true })
+    }
   })
 
   it('prints create errors without throwing a stack from the CLI flow', async () => {

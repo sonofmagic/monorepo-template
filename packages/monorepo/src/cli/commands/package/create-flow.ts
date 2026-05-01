@@ -6,6 +6,7 @@ import { createNewProject, getCreateChoices, resolveCreateNewProjectPlan } from 
 import { defaultTemplate } from '../../../commands/create'
 import { resolveCommandConfig } from '../../../core/config'
 import { logger } from '../../../core/logger'
+import fs from '../../../utils/fs'
 import { createIntentChoices } from './intents'
 
 function normalizeTargetName(name: string, baseDir: 'packages' | 'apps') {
@@ -37,6 +38,7 @@ export interface RunCreateFlowOptions {
   template?: CreateNewProjectOptions['type']
   dryRun?: boolean
   json?: boolean
+  out?: string
 }
 
 export interface RunCreateFlowResult {
@@ -63,6 +65,36 @@ function printCreatePlan(plan: CreateNewProjectPlan) {
 
 function printCreatePlanJson(plan: CreateNewProjectPlan) {
   logger.log(JSON.stringify(plan, null, 2))
+}
+
+function formatCreatePlan(plan: CreateNewProjectPlan) {
+  return [
+    'Create preview:',
+    `  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`,
+    `  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`,
+    `  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`,
+    `  package: ${plan.packageName}`,
+    `  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`,
+    '',
+    'dry run only; no files were written',
+  ].join('\n')
+}
+
+async function emitCreatePlan(plan: CreateNewProjectPlan, options: RunCreateFlowOptions, cwd: string) {
+  if (!options.out) {
+    if (options.json) {
+      printCreatePlanJson(plan)
+    }
+    else {
+      printCreatePlan(plan)
+    }
+    return
+  }
+
+  const content = options.json ? JSON.stringify(plan, null, 2) : formatCreatePlan(plan)
+  const outFile = path.resolve(cwd, options.out)
+  await fs.outputFile(outFile, `${content}\n`, 'utf8')
+  logger.success(`wrote ${path.relative(cwd, outFile)}`)
 }
 
 function handleCreateFlowError(error: unknown, json = false): RunCreateFlowResult {
@@ -122,12 +154,7 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
 
       if (options.dryRun) {
         const plan = await resolveCreateNewProjectPlan(createOptions)
-        if (options.json) {
-          printCreatePlanJson(plan)
-        }
-        else {
-          printCreatePlan(plan)
-        }
+        await emitCreatePlan(plan, options, cwd)
         return { dryRun: true }
       }
 
@@ -156,12 +183,7 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
 
     if (options.dryRun) {
       const plan = await resolveCreateNewProjectPlan(createOptions)
-      if (options.json) {
-        printCreatePlanJson(plan)
-      }
-      else {
-        printCreatePlan(plan)
-      }
+      await emitCreatePlan(plan, options, cwd)
       return { dryRun: true }
     }
 

@@ -21,6 +21,7 @@ interface NewCliOptions {
   template?: string
   dryRun?: boolean
   json?: boolean
+  out?: string
 }
 
 interface DoctorCliOptions {
@@ -85,12 +86,14 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('-t, --template <template>', '直接使用指定模板，跳过模板选择')
     .option('--dry-run', '预览将要创建的目录与 package 信息，不写入文件')
     .option('--json', '以 JSON 输出创建预览，隐含 --dry-run')
+    .option('--out <file>', '把创建预览写入文件，隐含 --dry-run')
     .action(async (inputName: string, opts: NewCliOptions) => {
       const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
       const result = await runCreateFlow(cwd, inputName, {
         ...(opts.template !== undefined ? { template: opts.template } : {}),
-        ...(opts.dryRun || opts.json ? { dryRun: true } : {}),
+        ...(opts.dryRun || opts.json || opts.out ? { dryRun: true } : {}),
         ...(opts.json ? { json: true } : {}),
+        ...(opts.out !== undefined ? { out: opts.out } : {}),
       })
       if (result.dryRun || result.failed) {
         return

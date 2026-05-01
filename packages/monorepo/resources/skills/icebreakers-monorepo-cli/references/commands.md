@@ -166,3 +166,5 @@ Usage:
   fail with the closest suggestion instead of silently falling back.
 - Use `--json` to print the resolved create plan for automation. It implies
   `--dry-run` and does not write files.
+- Add `--out <file>` to write the preview or JSON plan to disk. It also implies
+  `--dry-run`.

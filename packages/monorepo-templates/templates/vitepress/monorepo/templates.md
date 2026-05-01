@@ -42,10 +42,12 @@ repo templates --markdown --out docs/templates.md
 repo new sdk --template tsdown --dry-run
 repo new website --template vitepress --dry-run
 repo new website --template vitepress --json
+repo new website --template vitepress --json --out plans/website.json
 ```
 
 `--dry-run` 不写入磁盘，只展示模板、源目录、目标目录、package name 和输出的 package json 文件。
 `--json` 输出同一份创建计划的结构化数据，隐含 `--dry-run`，适合 CI、编辑器和自动化脚本。
+`--out <file>` 可以把文本或 JSON 预览写入文件，也隐含 `--dry-run`。
 
 显式传入的 `--template` 会先校验。模板 key 拼错时，命令会失败并提示相近 key，而不是静默回退到默认模板。
 

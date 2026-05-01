@@ -137,6 +137,7 @@ describe('commander program', () => {
     await program.parseAsync(['node', 'repo', 'setup', '--preset', 'minimal'])
     await program.parseAsync(['node', 'repo', 'new', 'demo', '--template', 'tsdown'])
     await program.parseAsync(['node', 'repo', 'new', 'demo-json', '--template', 'tsdown', '--json'])
+    await program.parseAsync(['node', 'repo', 'new', 'demo-out', '--template', 'tsdown', '--out', 'plans/create.json'])
     await program.parseAsync(['node', 'repo', 'check', '--full'])
     await program.parseAsync(['node', 'repo', 'doctor'])
     await program.parseAsync(['node', 'repo', 'upgrade'])
@@ -161,6 +162,7 @@ describe('commander program', () => {
     expect(initMock).toHaveBeenCalledWith(expect.any(String), { preset: 'minimal' })
     expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo', { template: 'tsdown' })
     expect(runCreateFlowMock).toHaveBeenNthCalledWith(2, expect.any(String), 'demo-json', { template: 'tsdown', dryRun: true, json: true })
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(3, expect.any(String), 'demo-out', { template: 'tsdown', dryRun: true, out: 'plans/create.json' })
     expect(runRecommendedCheckMock).toHaveBeenCalledWith({
       cwd: expect.any(String),
       full: true,
@@ -209,7 +211,7 @@ describe('commander program', () => {
       force: false,
       format: 'md',
     }))
-    expect(runCreateFlowMock).toHaveBeenNthCalledWith(3, expect.any(String), undefined, {})
+    expect(runCreateFlowMock).toHaveBeenNthCalledWith(4, expect.any(String), undefined, {})
     expect(syncSkillsMock).toHaveBeenCalledWith(expect.objectContaining({
       cwd: expect.any(String),
       targets: ['codex'],
