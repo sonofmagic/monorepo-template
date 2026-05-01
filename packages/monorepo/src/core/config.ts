@@ -12,11 +12,17 @@ export interface LoadedMonorepoConfig {
  * 简单的内存缓存，避免同一次命令中重复走磁盘加载配置。
  */
 const cache = new Map<string, Promise<LoadedMonorepoConfig>>()
-const configExtensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs'] as const
+export const configExtensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs'] as const
+
+export function getMonorepoConfigCandidates(cwd: string) {
+  return {
+    repoctl: configExtensions.map(ext => path.resolve(cwd, `repoctl.config.${ext}`)),
+    monorepo: configExtensions.map(ext => path.resolve(cwd, `monorepo.config.${ext}`)),
+  }
+}
 
 function findConfigFiles(cwd: string, baseName: 'repoctl' | 'monorepo') {
-  return configExtensions
-    .map(ext => path.resolve(cwd, `${baseName}.config.${ext}`))
+  return getMonorepoConfigCandidates(cwd)[baseName]
     .filter(file => fs.existsSync(file))
 }
 

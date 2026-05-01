@@ -32,6 +32,8 @@ pnpm exec repo env snapshot --json --out reports/snapshot.json
 pnpm exec repo env support --json --out reports/support.json
 ```
 
+`env paths` 会列出 repoctl / monorepo 配置文件的全部候选扩展名，不只检查 `.ts` 文件。
+
 它会优先帮你排这些低成本但高频的问题：
 
 - 当前目录不是仓库根目录
