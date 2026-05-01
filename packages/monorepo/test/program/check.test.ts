@@ -155,4 +155,48 @@ describe('commander program check command', () => {
       await rm(root, { recursive: true, force: true })
     }
   })
+
+  it('redacts local absolute paths from markdown check plan output', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'repo-check-redact-'))
+    const planPath = path.join(root, 'reports/check.md')
+    const runRecommendedCheckMock = vi.fn(async () => {})
+    const resolveRecommendedCheckPlanMock = vi.fn(() => ({
+      cwd: root,
+      mode: 'staged',
+      commands: [
+        {
+          name: 'staged-typecheck',
+          command: `repo verify staged-typecheck ${path.join(root, 'packages/app/src/main.ts')}`,
+          description: `typecheck ${path.join(root, 'packages/app')}`,
+        },
+      ],
+    }))
+
+    try {
+      mockProgram()
+      vi.doMock('@/commands', () => ({
+        resolveRecommendedCheckPlan: resolveRecommendedCheckPlanMock,
+        runRecommendedCheck: runRecommendedCheckMock,
+      }))
+      vi.doMock('@/core/logger', () => ({
+        logger: {
+          log: vi.fn(),
+          success: vi.fn(),
+        },
+      }))
+
+      const { default: program } = await import('@/cli/program')
+      await program.parseAsync(['node', 'repo', 'check', '--staged', '--markdown', '--redact', '--out', planPath])
+
+      const content = await readFile(planPath, 'utf8')
+      expect(content).not.toContain(root)
+      expect(content).toContain('| cwd | <cwd> |')
+      expect(content).toContain('repo verify staged-typecheck <cwd>/packages/app/src/main.ts')
+      expect(content).toContain('typecheck <cwd>/packages/app')
+      expect(runRecommendedCheckMock).not.toHaveBeenCalled()
+    }
+    finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
 })

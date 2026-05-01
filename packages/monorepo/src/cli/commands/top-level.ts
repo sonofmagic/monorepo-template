@@ -18,6 +18,7 @@ interface CheckCliOptions {
   json?: boolean
   markdown?: boolean
   out?: string
+  redact?: boolean
 }
 
 interface InitCliOptions {
@@ -121,6 +122,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('--json', '以 JSON 输出校验计划，隐含 --dry-run')
     .option('--markdown', '以 Markdown 输出校验计划，隐含 --dry-run')
     .option('--out <file>', '把校验计划写入文件，隐含 --dry-run')
+    .option('--redact', '脱敏 cwd/home 绝对路径后再输出')
     .action(async (opts: CheckCliOptions) => {
       const options = {
         cwd,
