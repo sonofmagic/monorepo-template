@@ -1,5 +1,6 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import type { CliOpts, WorkspacePackageSummaryData } from '../../types'
+import os from 'node:os'
 import process from 'node:process'
 import path from 'pathe'
 import { logger } from '../../core/logger'
@@ -8,6 +9,8 @@ import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
 interface WorkspaceListCliOptions {
   json?: boolean
+  markdown?: boolean
+  redact?: boolean
   includePrivate?: boolean
   includeRoot?: boolean
   pattern?: string[]
@@ -39,10 +42,83 @@ function formatWorkspaceList(result: WorkspacePackageSummaryData) {
   return lines.join('\n')
 }
 
+function formatMarkdownCell(value: string | number | boolean | undefined) {
+  return String(value ?? '-')
+    .split('|')
+    .join('\\|')
+    .split('\n')
+    .join('<br>')
+}
+
+function formatMarkdownTable(rows: Array<[string, string | number | boolean | undefined]>) {
+  return [
+    '| Field | Value |',
+    '| --- | --- |',
+    ...rows.map(([label, value]) => `| ${label} | ${formatMarkdownCell(value)} |`),
+  ].join('\n')
+}
+
+function formatWorkspaceListMarkdown(result: WorkspacePackageSummaryData) {
+  return [
+    '# Repo workspaces',
+    '',
+    formatMarkdownTable([
+      ['cwd', result.cwd],
+      ['workspace', result.workspaceDir],
+      ['packages', result.packages.length],
+    ]),
+    '',
+    '## Packages',
+    '',
+    '| Name | Path | Private | Description |',
+    '| --- | --- | --- | --- |',
+    ...result.packages.map((pkg) => {
+      const name = pkg.name ?? '(unnamed)'
+      const description = pkg.description ?? '-'
+      return `| ${formatMarkdownCell(name)} | ${formatMarkdownCell(pkg.relativeDir)} | ${pkg.private ? 'yes' : 'no'} | ${formatMarkdownCell(description)} |`
+    }),
+  ].join('\n')
+}
+
+function replaceAll(value: string, search: string, replacement: string) {
+  return search.length > 0 ? value.split(search).join(replacement) : value
+}
+
+function redactWorkspaceValue(value: unknown, replacements: Array<[string, string]>): unknown {
+  if (typeof value === 'string') {
+    return replacements.reduce((result, [search, replacement]) => replaceAll(result, search, replacement), value)
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => redactWorkspaceValue(item, replacements))
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, redactWorkspaceValue(item, replacements)]),
+    )
+  }
+  return value
+}
+
+function redactWorkspaceList(result: WorkspacePackageSummaryData): WorkspacePackageSummaryData {
+  const candidates: Array<[string, string]> = [
+    [result.workspaceDir, '<workspace>'],
+    [result.cwd, '<cwd>'],
+    [os.homedir(), '<home>'],
+  ]
+  const replacements = candidates
+    .filter(([search], index, entries) => search.length > 0 && entries.findIndex(([value]) => value === search) === index)
+    .sort(([left], [right]) => right.length - left.length)
+
+  return redactWorkspaceValue(result, replacements) as WorkspacePackageSummaryData
+}
+
 async function emitWorkspaceList(result: WorkspacePackageSummaryData, opts: WorkspaceListCliOptions) {
+  const outputResult = opts.redact ? redactWorkspaceList(result) : result
   const content = opts.json
-    ? JSON.stringify(result, null, 2)
-    : formatWorkspaceList(result)
+    ? JSON.stringify(outputResult, null, 2)
+    : opts.markdown
+      ? formatWorkspaceListMarkdown(outputResult)
+      : formatWorkspaceList(outputResult)
 
   if (!opts.out) {
     logger.log(content)
@@ -83,6 +159,8 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .description('列出 workspace 包')
     .alias('ls')
     .option('--json', '输出 JSON')
+    .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
+    .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
     .option('--include-private', '包含 private 包')
     .option('--include-root', '包含 workspace 根包')
     .option('-p, --pattern <glob>', '追加自定义 workspace glob，可重复', collectValues)

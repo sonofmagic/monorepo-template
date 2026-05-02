@@ -186,6 +186,7 @@ repo ws up
 repo workspace init
 repo ws ls
 repo ws ls --json --out reports/workspaces.json
+repo ws ls --markdown --redact --out reports/workspaces.md
 repo workspace clean --yes
 ```
 

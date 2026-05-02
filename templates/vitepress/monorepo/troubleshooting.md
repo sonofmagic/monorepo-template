@@ -68,6 +68,13 @@ pnpm-workspace.yaml
 
 先回到根目录再执行。
 
+如果要确认 CLI 实际识别到了哪些 workspace 包，可以输出一份列表：
+
+```bash
+pnpm exec repo ws ls --json --out reports/workspaces.json
+pnpm exec repo ws ls --markdown --redact --out reports/workspaces.md
+```
+
 ### 2. Node 版本不满足要求
 
 看根 `package.json`：

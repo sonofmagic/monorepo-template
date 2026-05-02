@@ -113,6 +113,8 @@ describe('program help surface', () => {
     expect(doctor?.helpInformation()).toContain('--out')
     expect(doctor?.helpInformation()).toContain('--redact')
     expect(workspaceList?.helpInformation()).toContain('--out')
+    expect(workspaceList?.helpInformation()).toContain('--markdown')
+    expect(workspaceList?.helpInformation()).toContain('--redact')
     expect(envInfo?.helpInformation()).toContain('--json')
     expect(envInfo?.helpInformation()).toContain('--markdown')
     expect(envInfo?.helpInformation()).toContain('--out')
