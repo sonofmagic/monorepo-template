@@ -1,0 +1,70 @@
+# repoctl
+
+## 4.0.0
+
+### Major Changes
+
+- 🚀 **Remove the legacy `tsup` and `unbuild` library templates from the repository and scaffolding flow.** [`5a0dae9`](https://github.com/sonofmagic/monorepo-template/commit/5a0dae99cc3c0eef74f88c1c0da01c5f58552042) by @sonofmagic
+  - `monorepo new`, `repoctl new`, and `create-icebreaker` no longer offer `tsup` or `unbuild` as built-in template keys. The bundled template asset set and related docs have been updated to standardize on `tsdown` as the only generic TypeScript library template.
+
+### Minor Changes
+
+- ✨ **Add task-first `repoctl` entrypoints such as `init`, `new`, `check`, and `upgrade`, plus compatibility top-level commands for `sync`, `clean`, and `mirror`.** [`72ebd27`](https://github.com/sonofmagic/monorepo-template/commit/72ebd27b7498ee6f9176d984612a0496a201d140) by @sonofmagic
+
+  - Refresh the guided package creation flow to start from user intent, add `init --preset` support, and align package docs, template docs, and create-icebreaker guidance around the new lower-cost onboarding path.
+
+- ✨ **Add the new `repoctl` package as the preferred repo toolchain entrypoint while keeping `@icebreakers/monorepo` published and version-linked for compatibility. Template assets, docs, hooks, and config defaults now prefer `repoctl`, and cleanup/upgrade flows preserve whichever helper package a workspace already uses.** [`eb56ff6`](https://github.com/sonofmagic/monorepo-template/commit/eb56ff644072f18475914c8f2860747d1f96046b) by @sonofmagic
+
+- ✨ **Remove the legacy `sync` CLI command and its related config support from the monorepo toolchain.** [`e7e26eb`](https://github.com/sonofmagic/monorepo-template/commit/e7e26eb0e962ecb9ddbf6a1f69a36e28dedf9302) by @sonofmagic
+
+- ✨ **Improve template discovery and scaffolding developer experience with template listing/check commands, create dry-run previews, structured doctor output, and beginner documentation.** [`c237abc`](https://github.com/sonofmagic/monorepo-template/commit/c237abc0bfc3fd16e70efd1fea5f4c82fac8a3eb) by @sonofmagic
+
+### Patch Changes
+
+- 🐛 **Add `repo check --markdown` for PR-friendly recommended check plans.** [`bed9e4a`](https://github.com/sonofmagic/monorepo-template/commit/bed9e4a5ae7efd2540fc3190ebf24848a6575cd2) by @sonofmagic
+
+- 🐛 **Add dry-run, JSON, and file output support for `repo check` verification plans.** [`21bbafb`](https://github.com/sonofmagic/monorepo-template/commit/21bbafb5b2b78f3b10e1ac7e9d621ca4ed877a8d) by @sonofmagic
+
+- 🐛 **Add `repo check --redact` to hide local cwd and home paths in shared check plans.** [`2065670`](https://github.com/sonofmagic/monorepo-template/commit/2065670cf8cbd715e789be3b0c2487c115a851fe) by @sonofmagic
+
+- 🐛 **Add `repo config inspect --markdown --redact` for issue-friendly configuration diagnostics.** [`bf18b98`](https://github.com/sonofmagic/monorepo-template/commit/bf18b98760474ece3d1a30b9817fe483112e3d1d) by @sonofmagic
+
+- 🐛 **Add JSON output for create dry-run previews so scripts can consume resolved scaffold plans without writing files.** [`23d6cea`](https://github.com/sonofmagic/monorepo-template/commit/23d6cead9327fc4f42aac35b2a2e4e6c40107b7e) by @sonofmagic
+
+- 🐛 **Allow create dry-run previews to be written to files with `repo new --out`, including JSON plan output for automation.** [`fc5abeb`](https://github.com/sonofmagic/monorepo-template/commit/fc5abeb12b8dace9d1eacd85178f081f5a56d448) by @sonofmagic
+
+- 🐛 **Support `repoctl.config.*` as the preferred config filename, keep `monorepo.config.*` compatible, and fail fast when both are present in the same workspace.** [`8f4dec9`](https://github.com/sonofmagic/monorepo-template/commit/8f4dec98100f121111ff9ca4d4fe6e8bef001abc) by @sonofmagic
+
+- 🐛 **Add `repo doctor --markdown` for issue-friendly repository health reports.** [`281b636`](https://github.com/sonofmagic/monorepo-template/commit/281b6363b42e3e75da2463cf3282f0f4151bc113) by @sonofmagic
+
+- 🐛 **Add `repo doctor --redact` to hide local workspace, cwd, and home paths in shared reports.** [`3eefad0`](https://github.com/sonofmagic/monorepo-template/commit/3eefad0a04cb789ab94c869e74214987fcaa2a86) by @sonofmagic
+
+- 🐛 **Allow doctor reports to be written to files with `repo doctor --out`, including JSON reports for automation.** [`3b37308`](https://github.com/sonofmagic/monorepo-template/commit/3b373084b03d707c81f757b3b25414976004c6ad) by @sonofmagic
+
+- 🐛 **Add `repo env info` for text, JSON, and file-based environment diagnostics.** [`7eff57d`](https://github.com/sonofmagic/monorepo-template/commit/7eff57d09f7f8883da48dfe69e30faf4f028ccb9) by @sonofmagic
+
+- 🐛 **Add Markdown and redacted output support to `repo env info`, `repo env snapshot`, and `repo env paths`.** [`35a66c9`](https://github.com/sonofmagic/monorepo-template/commit/35a66c99a62b5108cd50924f9e6bfd1372870e89) by @sonofmagic
+
+- 🐛 **Add `--strict` support to `repo env snapshot` so CI can write a snapshot and fail on doctor warnings or failures.** [`78d69f0`](https://github.com/sonofmagic/monorepo-template/commit/78d69f0e431bff17e18db43d068a6174fec43710) by @sonofmagic
+
+- 🐛 **Add `repo env snapshot` to collect environment, doctor, and check-plan diagnostics in one report.** [`f9d7395`](https://github.com/sonofmagic/monorepo-template/commit/f9d7395c094bb088cf2087e90da4c02374666817) by @sonofmagic
+
+- 🐛 **Prefer `repoctl.config.ts` as the default generated config filename while keeping `monorepo.config.ts` compatible at runtime.** [`b66eccd`](https://github.com/sonofmagic/monorepo-template/commit/b66eccd34209de2713f490351f6f500501e44ef6) by @sonofmagic
+
+- 🐛 **Add `rc` and `repo` bin aliases for the repo toolchain CLI.** [`437e738`](https://github.com/sonofmagic/monorepo-template/commit/437e738e19a9b006a84a32216016b65ed9bcaea0) by @sonofmagic
+
+- 🐛 **Allow all default engineering config entrypoints to inherit overrides from `monorepo.config.ts`, including project-level Vitest defaults through `tooling.vitestProject`.** [`74d49db`](https://github.com/sonofmagic/monorepo-template/commit/74d49db5f1009aa4fe39a65088ff31df3779f301) by @sonofmagic
+
+- 🐛 **Add `repo env support --markdown` for issue-friendly support bundle summaries.** [`bd53a04`](https://github.com/sonofmagic/monorepo-template/commit/bd53a04d90992e8772e8ae60f5e5c00251a9e3c4) by @sonofmagic
+
+- 🐛 **Add `repo env support --strict` so CI can write support bundles before failing on doctor warnings or failures.** [`a3996ad`](https://github.com/sonofmagic/monorepo-template/commit/a3996adc3303571946038fa214a85afeb8d47f33) by @sonofmagic
+
+- 🐛 **Validate explicit template keys before scaffolding and expose template key suggestion helpers for better CLI guidance.** [`9c8e1d5`](https://github.com/sonofmagic/monorepo-template/commit/9c8e1d51b2b67358b765117932befc79599815f8) by @sonofmagic
+
+- 🐛 **Clarify npm package metadata so `repoctl` is presented as the default task-first CLI, while `@icebreakers/monorepo` is described as the underlying engine and compatibility package.** [`2584972`](https://github.com/sonofmagic/monorepo-template/commit/2584972528044fb8b2c5207581ba8b6cddcdbeba) by @sonofmagic
+
+- 🐛 **Add Markdown and redacted output support to `repo workspace list`.** [`71ec33a`](https://github.com/sonofmagic/monorepo-template/commit/71ec33ab7c09d627a082ed56dd03218bd560ddca) by @sonofmagic
+
+- 🐛 **Allow workspace package lists to be written to files with `repo ws ls --out`, including JSON output for automation.** [`342de08`](https://github.com/sonofmagic/monorepo-template/commit/342de084e14a1d71e6ec70ebbf5c24ccba39ced9) by @sonofmagic
+- 📦 **Dependencies** [`9372a11`](https://github.com/sonofmagic/monorepo-template/commit/9372a117c744c073084e439efcefb4a5123b2e64)
+  → `@icebreakers/monorepo@4.0.0`
