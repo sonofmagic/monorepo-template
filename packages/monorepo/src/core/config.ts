@@ -1,5 +1,6 @@
 import type { MonorepoConfig } from '../types'
 import fs from 'node:fs'
+import { realpath } from 'node:fs/promises'
 import { loadConfig } from 'c12'
 import path from 'pathe'
 
@@ -57,8 +58,8 @@ async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
 
   return {
     file: matchedConfigFile
-      ? fs.realpathSync(matchedConfigFile)
-      : (configFile && fs.existsSync(configFile) ? fs.realpathSync(configFile) : null),
+      ? await realpath(matchedConfigFile)
+      : (configFile && fs.existsSync(configFile) ? await realpath(configFile) : null),
     config: config ?? {},
   }
 }
