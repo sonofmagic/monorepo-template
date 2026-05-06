@@ -11,7 +11,7 @@ This is a pnpm + Turbo monorepo template designed for production-ready projects.
 - **`templates/`** - Template sources:
   - `cli/` - CLI application scaffold
   - `client/` - Vue.js web client with Cloudflare integration
-  - `server/` - Server/API layer (tsup-based)
+  - `server/` - Server/API layer (tsdown-based)
   - `vitepress/` - VitePress documentation site
   - `tsdown/` - TypeScript library build template
   - `vue-lib/` - Vue component library template

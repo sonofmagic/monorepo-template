@@ -12,6 +12,17 @@
 
 当前这个仓库已经把通用类库模板收敛到 `tsdown`，组件库则继续使用 `vite` 库模式。
 
+## 过时的方案
+
+:::warning 不推荐继续使用
+`tsup` 和 `unbuild` 在这个模板仓库里已经被标记为过时方案，不再作为新项目的推荐构建工具。
+:::
+
+- `tsup` 曾经用于部分 TypeScript 包和服务模板，但现在这些模板已经迁移到 `tsdown`。如果旧项目里还有 `tsup.config.ts`，建议改成 `tsdown.config.ts`，并把 `build` / `dev` 脚本切到 `tsdown`。
+- `unbuild` 曾经用于库包开发时的 stub 流程，但这里的新模板已经统一使用 `tsdown --watch` 处理开发构建。新项目不要继续引入 `unbuild`。
+
+新建 TypeScript 类库优先使用 `tsdown` 模板；Vue 组件库继续使用 `vite` 库模式。
+
 ## tsdown
 
 本项目当前的通用类库模板是 [tsdown](https://github.com/sonofmagic/monorepo-template/tree/main/templates/tsdown)

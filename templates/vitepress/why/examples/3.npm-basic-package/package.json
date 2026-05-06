@@ -19,14 +19,13 @@
     "dist"
   ],
   "scripts": {
-    "dev": "unbuild --stub",
-    "build:watch": "tsup --watch --sourcemap",
-    "build": "tsup"
+    "dev": "tsdown --watch --sourcemap",
+    "build:watch": "tsdown --watch --sourcemap",
+    "build": "tsdown"
   },
   "devDependencies": {
-    "tsup": "^8.5.0",
+    "tsdown": "0.21.10",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3",
-    "unbuild": "^3.5.0"
+    "typescript": "^5.8.3"
   }
 }

@@ -14,7 +14,7 @@ Templates currently live under `apps/` and `packages/*-template`. We want to mov
 
 ## Non-Goals
 
-- Changing template selection keys (for example `vue-lib`, `tsup`, `vitepress`).
+- Changing template selection keys (for example `vue-lib`, `tsdown`, `vitepress`).
 - Changing runtime behavior of the templates themselves.
 
 ## Proposed Changes
