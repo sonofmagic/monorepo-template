@@ -66,6 +66,15 @@ async function resetDir(targetDir: string, overwriteExisting: boolean) {
 
 async function copyEntry(from: string, to: string, overwriteExisting: boolean, filter?: (src: string) => boolean) {
   if (!overwriteExisting && await pathExists(to)) {
+    const [fromStats, toStats] = await Promise.all([fs.stat(from), fs.stat(to)])
+    if (fromStats.isDirectory() && toStats.isDirectory()) {
+      await fs.cp(from, to, {
+        recursive: true,
+        force: false,
+        errorOnExist: false,
+        filter,
+      })
+    }
     return
   }
   try {
@@ -90,7 +99,7 @@ async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
   for (const target of assetTargets) {
     const packageAsset = path.join(monorepoAssetRoot, toPublishGitignorePath(target))
     const repoAsset = path.join(repoRoot, target)
-    const from = await pathExists(packageAsset) ? packageAsset : repoAsset
+    const from = await pathExists(repoAsset) ? repoAsset : packageAsset
     if (!await pathExists(from)) {
       continue
     }
