@@ -27,6 +27,24 @@ describe('workspace helpers', () => {
     expect(findWorkspacePackagesMock).toHaveBeenCalledWith('/repo', { patterns: ['packages/*'] })
   })
 
+  it('filters out the root package when pnpm reports a short root path', async () => {
+    const findWorkspacePackagesMock = vi.fn(async () => [
+      { rootDir: '/RUNNER~1/repo', manifest: { name: 'root', private: false }, rootDirRealPath: '/runneradmin/repo' },
+      { rootDir: '/runneradmin/repo/packages/a', manifest: { name: 'pkg-a', private: false }, rootDirRealPath: '/runneradmin/repo/packages/a' },
+    ])
+    const readManifestMock = vi.fn(async () => ({ packages: ['packages/*'] }))
+
+    vi.doMock('@pnpm/workspace.find-packages', () => ({ findWorkspacePackages: findWorkspacePackagesMock }))
+    vi.doMock('@pnpm/workspace.read-manifest', () => ({ readWorkspaceManifest: readManifestMock }))
+    vi.doMock('@pnpm/find-workspace-dir', () => ({ findWorkspaceDir: vi.fn(async () => '/runneradmin/repo') }))
+
+    const { getWorkspacePackages } = await import('@/core/workspace')
+    const result = await getWorkspacePackages('/runneradmin/repo', { ignorePrivatePackage: false })
+
+    expect(result.map(pkg => pkg.manifest.name)).toEqual(['pkg-a'])
+    expect(result[0]?.rootDir).toBe('/runneradmin/repo/packages/a')
+  })
+
   it('keeps root and private packages when options request them', async () => {
     const findWorkspacePackagesMock = vi.fn(async () => [
       { rootDir: '/repo', manifest: { name: 'root', private: false }, rootDirRealPath: '/repo' },

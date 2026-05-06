@@ -25,6 +25,10 @@ function comparePackagePath(left: WorkspacePackageSummary, right: WorkspacePacka
   return left.relativeDir.localeCompare(right.relativeDir)
 }
 
+function getPackageRootDir(project: WorkspacePackage) {
+  return normalizeDir(project.rootDirRealPath || project.rootDir)
+}
+
 async function findWorkspaceDirCached(cwd: string) {
   const key = normalizeDir(cwd)
   if (!workspaceDirCache.has(key)) {
@@ -98,9 +102,11 @@ export async function getWorkspacePackages(
     }
     return true
   }).map((project) => {
-    const pkgJsonPath = path.resolve(project.rootDir, 'package.json')
+    const rootDir = getPackageRootDir(project)
+    const pkgJsonPath = path.resolve(rootDir, 'package.json')
     return {
       ...project,
+      rootDir,
       pkgJsonPath,
     }
   })
