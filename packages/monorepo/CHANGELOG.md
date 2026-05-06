@@ -1,5 +1,13 @@
 # @icebreakers/monorepo
 
+## 4.0.2
+
+### Patch Changes
+
+- 🐛 **Stabilize workspace package discovery and config inspection on Windows short paths.** [#664](https://github.com/sonofmagic/monorepo-template/pull/664) by @renovate
+- 📦 **Dependencies** [`f24eb48`](https://github.com/sonofmagic/monorepo-template/commit/f24eb48a8457d1d491af5756bd442b1027aa37a1)
+  → `@icebreakers/monorepo-templates@1.0.2`
+
 ## 4.0.1
 
 ### Patch Changes
