@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.2
+
+### Patch Changes
+
+- 🐛 **Fix asset preparation so existing generated asset directories can still receive missing files from the current repository templates.** [`f24eb48`](https://github.com/sonofmagic/monorepo-template/commit/f24eb48a8457d1d491af5756bd442b1027aa37a1) by @sonofmagic
+
 ## 1.0.1
 
 ### Patch Changes
