@@ -14,7 +14,7 @@ async function getTrackedFilesInDir(dir: string) {
     '--exclude-standard',
     dir,
   ])
-  return result.split('\n').filter(Boolean)
+  return result.split('\n').filter(Boolean).sort((left, right) => left.localeCompare(right))
 }
 export async function getTemplateTargets() {
   return Promise.all(
