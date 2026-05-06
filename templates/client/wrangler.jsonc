@@ -2,6 +2,9 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "monorepo-client",
   "compatibility_date": "2025-10-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "./worker/fetch-entry.ts",
   "assets": {
     "not_found_handling": "single-page-application",

@@ -49,14 +49,19 @@ pnpm exec repo doctor
 
 ```bash
 repo setup
+repo setup --yes
 repo setup --preset minimal
 repo setup --preset standard --force
+repo setup --overwrite
 ```
 
 用途：
 
 - 初始化当前 workspace 的推荐默认值
-- 同步 README / package.json / changeset / tooling 相关基础资产
+- 默认不覆盖已有 README、package.json、pnpm-workspace.yaml 和 tooling 配置
+- 会追加缺失的 `apps/*`、`packages/*`、`examples/*` workspace patterns
+- `--yes` 用于 CI / 非 TTY 环境，使用安全默认行为
+- 需要重写受管理文件时显式传 `--force` 或 `--overwrite`
 
 ### `repo doctor`
 
@@ -149,6 +154,9 @@ repo check --markdown --redact --out reports/check-plan.md
 
 ```bash
 repo upgrade
+repo upgrade --yes
+repo upgrade --overwrite
+repo upgrade --no-overwrite
 repo upgrade --core
 repo upgrade -i
 repo upgrade -s
@@ -162,7 +170,9 @@ repo upgrade -s
 
 - `--core`：只同步核心配置，跳过 GitHub 相关资产
 - `-i`：交互式选择
-- `-s`：跳过新增，只覆盖已存在文件
+- `--yes` / `--overwrite`：非交互覆盖 drifted 标准资产，并迁移旧 tooling loader import
+- `--no-overwrite` / `-s`：保留已有 drifted 文件
+- 非 TTY 环境不会弹出选择框，也不会抛 prompt 退出错误
 
 ### 兼容命令
 

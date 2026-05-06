@@ -28,6 +28,17 @@ const infoMock = vi.fn()
 const errorMock = vi.fn()
 const successMock = vi.fn()
 
+function setTty(value: boolean) {
+  Object.defineProperty(process.stdin, 'isTTY', {
+    configurable: true,
+    value,
+  })
+  Object.defineProperty(process.stdout, 'isTTY', {
+    configurable: true,
+    value,
+  })
+}
+
 beforeEach(async () => {
   await vi.resetModules()
   inputMock.mockReset()
@@ -84,6 +95,7 @@ afterEach(() => {
 
 describe('runCreateFlow', () => {
   it('uses intent flow for library creation by default', async () => {
+    setTty(true)
     selectMock
       .mockResolvedValueOnce('library')
       .mockResolvedValueOnce('tsdown')
@@ -99,6 +111,7 @@ describe('runCreateFlow', () => {
   })
 
   it('maps web-app intent to apps directory', async () => {
+    setTty(true)
     selectMock.mockResolvedValueOnce('web-app')
 
     const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
@@ -112,6 +125,7 @@ describe('runCreateFlow', () => {
   })
 
   it('keeps explicit nested paths unchanged in intent flow', async () => {
+    setTty(true)
     selectMock.mockResolvedValueOnce('api-service')
 
     const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
@@ -125,6 +139,7 @@ describe('runCreateFlow', () => {
   })
 
   it('falls back to template flow when default template is configured', async () => {
+    setTty(true)
     resolveCommandConfigMock.mockResolvedValueOnce({
       defaultTemplate: 'cli',
       choices: [{ name: 'CLI', value: 'cli' }],
@@ -149,6 +164,21 @@ describe('runCreateFlow', () => {
       name: 'apps/dashboard',
       cwd: '/repo',
       type: 'vue-hono',
+    })
+  })
+
+  it('uses safe defaults without prompting in non-TTY mode', async () => {
+    setTty(false)
+
+    const { runCreateFlow } = await import('@/cli/commands/package/create-flow')
+    await runCreateFlow('/repo', undefined)
+
+    expect(selectMock).not.toHaveBeenCalled()
+    expect(inputMock).not.toHaveBeenCalled()
+    expect(createNewProjectMock).toHaveBeenCalledWith({
+      name: 'packages/my-package',
+      cwd: '/repo',
+      type: 'tsdown',
     })
   })
 

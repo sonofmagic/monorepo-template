@@ -1,8 +1,9 @@
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { defineVitestProjectConfig } from 'repoctl/tooling'
 import { defineProject } from 'vitest/config'
-import { loadRepoctlToolingModule } from '../../tooling/load-tooling-module.mjs'
 
-const { defineVitestProjectConfig } = await loadRepoctlToolingModule()
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineProject(await defineVitestProjectConfig({
   options: {

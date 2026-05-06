@@ -2,8 +2,7 @@ import { defineEslintConfig } from 'repoctl/tooling'
 
 export default await defineEslintConfig({
   options: {
-    vue: true,
     typescript: true,
-    ignores: ['**/fixtures/**'],
+    ignores: ['worker-configuration.d.ts'],
   },
 })

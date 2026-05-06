@@ -27,4 +27,19 @@ export interface CliOpts {
    * @default false
    */
   skipOverwrite?: boolean
+  /**
+   * 跳过交互并接受默认写入策略。upgrade 中等价于覆盖 drifted 标准资产。
+   * @default false
+   */
+  yes?: boolean
+  /**
+   * 显式覆盖已有文件。
+   * @default false
+   */
+  overwrite?: boolean
+  /**
+   * 显式不覆盖已有文件。
+   * @default false
+   */
+  noOverwrite?: boolean
 }

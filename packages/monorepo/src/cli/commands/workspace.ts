@@ -140,6 +140,9 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
+    .option('-y, --yes', '跳过交互并覆盖 drifted 标准资产')
+    .option('--overwrite', '覆盖 drifted 标准资产')
+    .option('--no-overwrite', '不覆盖 drifted 标准资产')
     .action(async (opts: CliOpts) => {
       const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))

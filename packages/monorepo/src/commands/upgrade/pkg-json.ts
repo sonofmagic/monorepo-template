@@ -83,7 +83,7 @@ export function setPkgJson(
   const targetDevDeps = { ...(targetPkgJson.devDependencies ?? {}) }
   const preferredToolPackageName = resolvePreferredToolPackageName(sourceDevDeps, targetDevDeps)
 
-  if (packageManager) {
+  if (packageManager && !targetPkgJson.packageManager) {
     targetPkgJson.packageManager = packageManager
   }
 

@@ -2,6 +2,9 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "monorepo-service",
   "compatibility_date": "2025-10-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "./src/fetch-entry.ts",
   "dev": {
     "port": 8787

@@ -59,6 +59,7 @@ function printCreatePlan(plan: CreateNewProjectPlan) {
   logger.log(`  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`)
   logger.log(`  package: ${plan.packageName}`)
   logger.log(`  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`)
+  logger.log(`  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`)
   logger.log('')
   logger.info('dry run only; no files were written')
 }
@@ -75,9 +76,14 @@ function formatCreatePlan(plan: CreateNewProjectPlan) {
     `  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`,
     `  package: ${plan.packageName}`,
     `  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`,
+    `  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`,
     '',
     'dry run only; no files were written',
   ].join('\n')
+}
+
+function canPrompt() {
+  return process.stdin.isTTY && process.stdout.isTTY
 }
 
 async function emitCreatePlan(plan: CreateNewProjectPlan, options: RunCreateFlowOptions, cwd: string) {
@@ -115,6 +121,24 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     const explicitTemplate = options.template ?? createConfig?.type ?? createConfig?.defaultTemplate
 
     let packageName = inputName
+
+    if (!explicitTemplate && !canPrompt()) {
+      const type = defaultTemplate
+      const createOptions = {
+        name: normalizeNameForTemplate(packageName ?? createConfig?.name ?? 'my-package', type),
+        cwd,
+        type,
+      }
+
+      if (options.dryRun) {
+        const plan = await resolveCreateNewProjectPlan(createOptions)
+        await emitCreatePlan(plan, options, cwd)
+        return { dryRun: true }
+      }
+
+      await createNewProject(createOptions)
+      return { dryRun: false }
+    }
 
     if (!explicitTemplate) {
       const intent = await select({
@@ -162,7 +186,10 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
       return { dryRun: false }
     }
 
-    if (!packageName) {
+    if (!packageName && !canPrompt()) {
+      packageName = createConfig?.name ?? 'my-package'
+    }
+    else if (!packageName) {
       packageName = await input({
         message: '请输入包名',
         default: createConfig?.name ?? 'my-package',

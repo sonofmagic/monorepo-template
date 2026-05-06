@@ -60,7 +60,12 @@ async function getRows(ctx: Context) {
 /**
  * 生成标准化的 README 草稿，列出所有子包并补充贡献者、作者信息。
  */
-export default async function (ctx: Context) {
+export default async function (ctx: Context, options: { force?: boolean } = {}) {
+  const readmePath = path.resolve(ctx.cwd, 'README.md')
+  if (!options.force && await fs.pathExists(readmePath)) {
+    return
+  }
+
   const rows = await getRows(ctx)
-  await fs.writeFile(path.resolve(ctx.cwd, 'README.md'), `${rows.join('\n')}\n`)
+  await fs.writeFile(readmePath, `${rows.join('\n')}\n`)
 }

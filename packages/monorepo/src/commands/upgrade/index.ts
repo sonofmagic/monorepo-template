@@ -1,6 +1,6 @@
-import type { Buffer } from 'node:buffer'
 import type { CliOpts, PackageJson } from '../../types'
 import type { PendingOverwrite } from './overwrite'
+import { Buffer } from 'node:buffer'
 import process from 'node:process'
 import { checkbox, ensureTemplateAssetsPrepared } from '@icebreakers/monorepo-templates'
 import klaw from 'klaw'
@@ -12,6 +12,7 @@ import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
 import { escapeStringRegexp, isIgnorableFsError, isMatch, setByPath, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
+import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
@@ -103,15 +104,20 @@ export async function upgradeMonorepo(opts: CliOpts) {
   if (merged.interactive) {
     // 交互模式允许用户临时调整需要覆盖的文件集合。
     // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
-    targets = await checkbox({
-      message: '选择你需要的文件',
-      choices: targets.map((x) => {
-        return {
-          value: x,
-          checked: true,
-        }
-      }),
-    })
+    if (!process.stdin.isTTY || !process.stdout.isTTY) {
+      logger.info('skip interactive target selection in non-interactive mode')
+    }
+    else {
+      targets = await checkbox({
+        message: '选择你需要的文件',
+        choices: targets.map((x) => {
+          return {
+            value: x,
+            checked: true,
+          }
+        }),
+      })
+    }
   }
 
   const regexpArr = targets.map((x) => {
@@ -120,7 +126,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
   // 旧版本默认跳过 changeset Markdown，可通过配置覆盖。
   const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
   const scriptOverrides = upgradeConfig?.scripts
-  const skipOverwrite = merged.skipOverwrite
+  const skipOverwrite = merged.noOverwrite ? true : merged.skipOverwrite
   const buildWriteIntentOptions = (source: string | Buffer) => {
     return skipOverwrite === undefined ? { source } : { skipOverwrite, source }
   }
@@ -288,7 +294,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
         continue
       }
 
-      const source = await fs.readFile(file.path)
+      let source = await fs.readFile(file.path)
+      if (/\.(?:js|mjs|ts|mts|cjs|cts)$/.test(relPath)) {
+        source = Buffer.from(migrateLegacyToolingReferences(source.toString('utf8'), 'repoctl/tooling'))
+      }
       const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(source))
       const action = async () => {
         await fs.outputFile(targetPath, source)
@@ -309,5 +318,9 @@ export async function upgradeMonorepo(opts: CliOpts) {
     }
   }
 
-  await flushPendingOverwrites(pendingOverwrites)
+  await flushPendingOverwrites(pendingOverwrites, {
+    ...(merged.yes !== undefined ? { yes: merged.yes } : {}),
+    ...(merged.overwrite !== undefined ? { overwrite: merged.overwrite } : {}),
+    ...(merged.noOverwrite !== undefined ? { noOverwrite: merged.noOverwrite } : {}),
+  })
 }

@@ -11,7 +11,7 @@ import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptio
 import { GitClient } from '../core/git'
 import { getWorkspaceData, getWorkspacePackages } from '../core/workspace'
 import { createTimestampFolderName, defaultAgenticBaseDir, generateAgenticTemplate, generateAgenticTemplates, loadAgenticTasks } from './ai'
-import { resolveRecommendedCheckPlan, runRecommendedCheck } from './check'
+import { getKnownRepoCheckCommands, resolveFullWorkspaceCheckPlan, resolveRecommendedCheckPlan, runRecommendedCheck } from './check'
 import { cleanProjects } from './clean'
 import { inspectMonorepoConfig } from './config'
 import { createNewProject, getCreateChoices, getTemplateMap, resolveCreateNewProjectPlan, templateMap } from './create'
@@ -72,6 +72,7 @@ export {
   generateAgenticTemplate,
   generateAgenticTemplates,
   getCreateChoices,
+  getKnownRepoCheckCommands,
   getSkillTargetPaths,
   getTemplateMap,
   getWorkspaceData,
@@ -85,6 +86,7 @@ export {
   loadAgenticTasks,
   normalizeInitToolingTargets,
   resolveCreateNewProjectPlan,
+  resolveFullWorkspaceCheckPlan,
   resolveRecommendedCheckPlan,
   runDoctor,
   runRecommendedCheck,

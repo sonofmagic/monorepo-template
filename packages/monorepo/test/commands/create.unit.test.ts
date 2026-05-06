@@ -27,6 +27,7 @@ interface OutputPackageJson {
 const ensureDirMock = vi.fn(async () => {})
 const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
 const outputJsonMock = vi.fn<(file: string, data: unknown, options?: { spaces?: number }) => Promise<void>>(async () => {})
+const outputFileMock = vi.fn(async () => {})
 const pathExistsMock = vi.fn<(targetPath: string) => Promise<boolean>>(async (_targetPath: string) => false)
 const scaffoldTemplateMock = vi.fn(async () => {})
 const resolveCommandConfigMock = vi.fn(async () => ({}))
@@ -40,6 +41,7 @@ beforeEach(async () => {
   ensureDirMock.mockClear()
   readJsonMock.mockReset()
   outputJsonMock.mockClear()
+  outputFileMock.mockClear()
   pathExistsMock.mockReset()
   scaffoldTemplateMock.mockClear()
   resolveCommandConfigMock.mockReset()
@@ -63,11 +65,13 @@ beforeEach(async () => {
         ensureDir: ensureDirMock,
         readJson: readJsonMock,
         outputJson: outputJsonMock,
+        outputFile: outputFileMock,
         pathExists: pathExistsMock,
       },
       ensureDir: ensureDirMock,
       readJson: readJsonMock,
       outputJson: outputJsonMock,
+      outputFile: outputFileMock,
       pathExists: pathExistsMock,
     }
   })

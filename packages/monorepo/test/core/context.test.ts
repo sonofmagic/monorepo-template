@@ -49,12 +49,27 @@ describe('init', () => {
     const setChangesetMock = vi.fn(async () => {})
     const setPkgJsonMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
+    const pathExistsMock = vi.fn(async () => true)
+    const readFileMock = vi.fn(async () => 'packages:\n  - apps/*\n  - packages/*\n  - examples/*\n')
+    const writeFileMock = vi.fn(async () => {})
 
     await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
     vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
     vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          readFile: readFileMock,
+          writeFile: writeFileMock,
+        },
+      }
+    })
 
     const { init } = await import('@/commands/init')
     await init('/repo')
@@ -62,7 +77,7 @@ describe('init', () => {
     expect(createContextMock).toHaveBeenCalledWith('/repo')
     expect(setChangesetMock).toHaveBeenCalledWith(ctx)
     expect(setPkgJsonMock).toHaveBeenCalledWith(ctx)
-    expect(setReadmeMock).toHaveBeenCalledWith(ctx)
+    expect(setReadmeMock).toHaveBeenCalledWith(ctx, { force: false })
   })
 
   it('respects skip flags in init configuration', async () => {
@@ -71,12 +86,27 @@ describe('init', () => {
     const setChangesetMock = vi.fn(async () => {})
     const setPkgJsonMock = vi.fn(async () => {})
     const setReadmeMock = vi.fn(async () => {})
+    const pathExistsMock = vi.fn(async () => true)
+    const readFileMock = vi.fn(async () => 'packages:\n  - apps/*\n  - packages/*\n  - examples/*\n')
+    const writeFileMock = vi.fn(async () => {})
 
     await vi.resetModules()
     vi.doMock('@/core/context', () => ({ createContext: createContextMock }))
     vi.doMock('@/commands/init/setChangeset', () => ({ default: setChangesetMock }))
     vi.doMock('@/commands/init/setPkgJson', () => ({ default: setPkgJsonMock }))
     vi.doMock('@/commands/init/setReadme', () => ({ default: setReadmeMock }))
+    vi.doMock('@/utils/fs', async () => {
+      const actual = await vi.importActual<typeof import('@/utils/fs')>('@/utils/fs')
+      return {
+        ...actual,
+        default: {
+          ...actual.default,
+          pathExists: pathExistsMock,
+          readFile: readFileMock,
+          writeFile: writeFileMock,
+        },
+      }
+    })
 
     const { init } = await import('@/commands/init')
     await init('/repo')

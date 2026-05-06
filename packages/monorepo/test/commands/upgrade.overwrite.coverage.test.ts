@@ -8,6 +8,7 @@ describe('upgrade overwrite helpers coverage', () => {
     const readFileMock = vi.fn()
     const checkboxMock = vi.fn()
     const isFileChangedMock = vi.fn()
+    const loggerInfoMock = vi.fn()
 
     await vi.resetModules()
     vi.doMock('@/utils/fs', async () => {
@@ -39,6 +40,11 @@ describe('upgrade overwrite helpers coverage', () => {
         isFileChanged: isFileChangedMock,
       }
     })
+    vi.doMock('@/core/logger', () => ({
+      logger: {
+        info: loggerInfoMock,
+      },
+    }))
 
     const { evaluateWriteIntent, scheduleOverwrite, flushPendingOverwrites } = await import('@/commands/upgrade/overwrite')
 
@@ -93,6 +99,14 @@ describe('upgrade overwrite helpers coverage', () => {
     expect(pending).toHaveLength(1)
 
     checkboxMock.mockResolvedValueOnce(['/tmp/b.txt'])
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
+    Object.defineProperty(process.stdout, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
     await flushPendingOverwrites(pending)
     expect(actionMock).toHaveBeenCalledTimes(2)
 
@@ -103,5 +117,19 @@ describe('upgrade overwrite helpers coverage', () => {
       action: actionMock,
     }])
     expect(actionMock).toHaveBeenCalledTimes(2)
+
+    await flushPendingOverwrites([{
+      relPath: 'file-d',
+      targetPath: '/tmp/d.txt',
+      action: actionMock,
+    }], { yes: true })
+    expect(actionMock).toHaveBeenCalledTimes(3)
+
+    await flushPendingOverwrites([{
+      relPath: 'file-e',
+      targetPath: '/tmp/e.txt',
+      action: actionMock,
+    }], { noOverwrite: true })
+    expect(actionMock).toHaveBeenCalledTimes(3)
   })
 })

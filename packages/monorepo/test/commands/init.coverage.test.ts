@@ -129,7 +129,7 @@ describe('init helpers coverage', () => {
     await setReadme(ctx)
     expect(files.get(`${workspaceDir}/README.md`)).toContain('Contributions Welcome!')
 
-    await setReadme({ ...ctx, gitUrl: undefined })
+    await setReadme({ ...ctx, gitUrl: undefined }, { force: true })
     const readme = files.get(`${workspaceDir}/README.md`) ?? ''
     expect(readme).not.toContain('Contributions Welcome!')
 
@@ -185,6 +185,7 @@ describe('init helpers coverage', () => {
       targets: [],
       force: false,
     })
+    expect(setReadmeMock).toHaveBeenCalledWith(expect.anything(), { force: false })
 
     initToolingMock.mockClear()
     await init('/repo', { preset: 'minimal' })
@@ -247,5 +248,50 @@ describe('init helpers coverage', () => {
       targets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       force: true,
     })
+  })
+
+  it('creates missing root files and preserves existing workspace/readme by default', async () => {
+    const workspaceDir = '/repo'
+    files.set(`${workspaceDir}/README.md`, '# User README\n')
+    files.set(`${workspaceDir}/package.json`, JSON.stringify({
+      name: 'demo',
+      private: true,
+      scripts: {
+        build: 'turbo build',
+      },
+    }))
+    files.set(`${workspaceDir}/pnpm-workspace.yaml`, 'packages:\n  - custom/*\n')
+
+    const ctx = createTestContext({
+      cwd: workspaceDir,
+      workspaceDir,
+      workspaceFilepath: `${workspaceDir}/pnpm-workspace.yaml`,
+      gitUrl: undefined,
+      packages: [],
+    })
+
+    await vi.resetModules()
+    vi.doMock('@/core/context', () => ({ createContext: vi.fn(async () => ctx) }))
+    vi.doMock('@/commands/init/tooling', () => ({
+      initTooling: vi.fn(async () => ({
+        selectedTargets: [],
+        writtenFiles: [],
+        skippedFiles: [],
+        updatedPackageJson: false,
+      })),
+      initToolingTargets: [],
+      normalizeInitToolingTargets: (input: string[]) => input,
+    }))
+
+    const { init } = await import('@/commands/init')
+    await init(workspaceDir, { yes: true })
+    await init(workspaceDir, { yes: true })
+
+    expect(files.get(`${workspaceDir}/README.md`)).toBe('# User README\n')
+    const workspaceManifest = files.get(`${workspaceDir}/pnpm-workspace.yaml`) ?? ''
+    expect(workspaceManifest).toContain('custom/*')
+    expect(workspaceManifest).toContain('apps/*')
+    expect(workspaceManifest).toContain('packages/*')
+    expect(workspaceManifest).toContain('examples/*')
   })
 })

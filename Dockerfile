@@ -7,21 +7,12 @@ FROM base AS builder
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run -r build \
-&& pnpm deploy --filter=@icebreakers/foo --prod /prod/foo \
-&& pnpm deploy --filter=@icebreakers/bar --prod /prod/bar
+RUN pnpm run -r build
 
-FROM base AS foo
-COPY --from=builder /prod/foo /prod/foo
-WORKDIR /prod/foo
+FROM base AS app
+COPY --from=builder /usr/src/app /app
+WORKDIR /app
 EXPOSE 8000
 CMD [ "pnpm", "start" ]
 
-FROM base AS bar
-COPY --from=builder /prod/bar /prod/bar
-WORKDIR /prod/bar
-EXPOSE 8001
-CMD [ "pnpm", "start" ]
-
-# docker build . --target foo --tag foo:latest
-# docker build . --target bar --tag bar:latest
+# docker build . --target app --tag app:latest

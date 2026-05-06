@@ -33,12 +33,20 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
     const licensePath = path.join(outDir, 'LICENSE')
     expect(await fs.pathExists(licensePath)).toBe(true)
 
     await fs.writeFile(licensePath, '# custom license\n', 'utf8')
-    await upgradeMonorepo({ outDir })
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
+    Object.defineProperty(process.stdout, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
+    await upgradeMonorepo({ outDir, overwrite: true })
 
     const content = await fs.readFile(licensePath, 'utf8')
     expect(content).toBe('# custom license\n')
@@ -60,7 +68,7 @@ describe('upgradeMonorepo overwrite logic', () => {
       }
     })
     const { upgradeMonorepo } = await import('@/commands/upgrade')
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
     const targetFile = path.join(outDir, 'netlify.toml')
     await fs.writeFile(targetFile, '# custom configuration\n')
     await upgradeMonorepo({ outDir, skipOverwrite: true })
@@ -94,6 +102,14 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     await upgradeMonorepo({ outDir })
     await fs.writeFile(targetFile, '# drifted\n')
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
+    Object.defineProperty(process.stdout, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
     await upgradeMonorepo({ outDir })
     expect(checkboxMock).toHaveBeenCalledTimes(1)
     const rewritten = await fs.readFile(targetFile, 'utf8')
@@ -132,6 +148,14 @@ describe('upgradeMonorepo overwrite logic', () => {
     vi.doMock('@/core/git', () => ({ GitClient: GitClientMock }))
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
+    Object.defineProperty(process.stdout, 'isTTY', {
+      configurable: true,
+      value: true,
+    })
     await upgradeMonorepo({ outDir, interactive: true })
 
     const configPath = path.join(outDir, '.changeset/config.json')
@@ -168,11 +192,11 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
 
     const pkg = await fs.readJSON(packagePath)
     expect(pkg.scripts.commitlint).toBe('commitlint --edit')
-    expect(checkboxMock).toHaveBeenCalled()
+    expect(checkboxMock).not.toHaveBeenCalled()
 
     await fs.remove(root)
   })
@@ -195,7 +219,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
 
     await fs.writeFile(agentsPath, [
       '# Repository Guidelines',
@@ -210,7 +234,7 @@ describe('upgradeMonorepo overwrite logic', () => {
       '',
     ].join('\n'), 'utf8')
 
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
 
     const next = await fs.readFile(agentsPath, 'utf8')
     expect(next).toContain('custom structure section')
@@ -240,7 +264,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
 
     const { upgradeMonorepo } = await import('@/commands/upgrade')
-    await upgradeMonorepo({ outDir })
+    await upgradeMonorepo({ outDir, overwrite: true })
 
     await fs.writeFile(gitignorePath, [
       '# local overrides',

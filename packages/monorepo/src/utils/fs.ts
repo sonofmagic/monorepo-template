@@ -1,4 +1,4 @@
-import { access, cp, mkdir, mkdtemp, open, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { access, cp, mkdir, mkdtemp, open, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'pathe'
 
 /**
@@ -13,7 +13,8 @@ export interface JsonWriteOptions {
 }
 
 function stringifyJson(data: unknown, options?: JsonWriteOptions) {
-  return JSON.stringify(data, undefined, options?.spaces)
+  const content = JSON.stringify(data, undefined, options?.spaces)
+  return options?.spaces ? `${content}\n` : content
 }
 
 async function ensureParentDir(targetPath: string) {
@@ -150,6 +151,7 @@ const fs = {
   outputJson,
   pathExists,
   readFile,
+  readdir,
   readJSON,
   readJson,
   remove,

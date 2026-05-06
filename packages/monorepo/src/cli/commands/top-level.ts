@@ -23,6 +23,8 @@ interface CheckCliOptions {
 
 interface InitCliOptions {
   force?: boolean
+  overwrite?: boolean
+  yes?: boolean
   preset?: 'minimal' | 'standard'
 }
 
@@ -81,11 +83,15 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .alias('setup')
     .option('--preset <preset>', '初始化预设：minimal / standard', 'standard')
     .option('-f, --force', '覆盖已存在的 tooling 配置文件')
+    .option('--overwrite', '覆盖 setup 管理的已存在文件')
+    .option('-y, --yes', '使用默认值跳过所有交互，适合 CI')
     .action(async (opts: InitCliOptions) => {
       const { init } = await import('@/commands')
       await init(cwd, {
         ...(opts.preset !== undefined ? { preset: opts.preset } : {}),
         ...(opts.force !== undefined ? { force: opts.force } : {}),
+        ...(opts.overwrite !== undefined ? { overwrite: opts.overwrite } : {}),
+        ...(opts.yes !== undefined ? { yes: opts.yes } : {}),
       })
       logger.success('init finished!')
       logger.info('next: run `pnpm install` and `pnpm build`')
@@ -132,6 +138,11 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
       }
       const { resolveRecommendedCheckPlan, runRecommendedCheck } = await import('@/commands')
       if (opts.dryRun || opts.json || opts.markdown || opts.out) {
+        if (opts.full) {
+          const { resolveFullWorkspaceCheckPlan } = await import('@/commands')
+          await emitCheckPlan(await resolveFullWorkspaceCheckPlan(cwd), opts, cwd)
+          return
+        }
         await emitCheckPlan(resolveRecommendedCheckPlan(options), opts, cwd)
         return
       }
@@ -180,6 +191,9 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
+    .option('-y, --yes', '跳过交互并覆盖 drifted 标准资产')
+    .option('--overwrite', '覆盖 drifted 标准资产')
+    .option('--no-overwrite', '不覆盖 drifted 标准资产')
     .action(async (opts: CliOpts) => {
       const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))
@@ -192,6 +206,9 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
     .option('--outDir <dir>', 'Output directory')
     .option('-s,--skip-overwrite', 'skip overwrite')
+    .option('-y, --yes', '跳过交互并覆盖 drifted 标准资产')
+    .option('--overwrite', '覆盖 drifted 标准资产')
+    .option('--no-overwrite', '不覆盖 drifted 标准资产')
     .action(async (opts: CliOpts) => {
       const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))

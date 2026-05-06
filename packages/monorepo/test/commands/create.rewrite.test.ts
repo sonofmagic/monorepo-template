@@ -22,7 +22,12 @@ describe('createNewProject root reference rewriting', () => {
     await fs.writeFile(path.join(sourceDir, 'tsconfig.json'), '{\n  "extends": "../../tsconfig.json"\n}\n')
     await fs.writeFile(
       path.join(sourceDir, 'vitest.config.ts'),
-      'import { loadRepoctlToolingModule } from \'../../tooling/load-tooling-module.mjs\'\n',
+      [
+        'import { loadRepoctlToolingModule } from \'../../tooling/load-tooling-module.mjs\'',
+        'const { defineVitestProjectConfig } = await loadRepoctlToolingModule()',
+        'export default await defineVitestProjectConfig()',
+        '',
+      ].join('\n'),
     )
 
     vi.doMock('@/core/config', () => ({
@@ -73,9 +78,12 @@ describe('createNewProject root reference rewriting', () => {
       path.join(workspaceDir, 'apps/platform/web/client/vitest.config.ts'),
       'utf8',
     )
+    const generatedWorkspaceManifest = await fs.readFile(path.join(workspaceDir, 'pnpm-workspace.yaml'), 'utf8')
 
     expect(generatedTsconfig).toContain('"extends": "../../../../tsconfig.json"')
-    expect(generatedVitestConfig).toContain('../../../../tooling/load-tooling-module.mjs')
+    expect(generatedVitestConfig).toContain(`from 'repoctl/tooling'`)
+    expect(generatedVitestConfig).not.toContain('tooling/load-tooling-module.mjs')
+    expect(generatedWorkspaceManifest).toContain('apps/*')
 
     await fs.remove(workspaceDir)
   })

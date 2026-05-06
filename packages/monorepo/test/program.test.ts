@@ -135,6 +135,7 @@ describe('commander program', () => {
       initToolingTargets: ['commitlint', 'eslint', 'stylelint', 'lint-staged', 'tsconfig', 'vitest'],
       inspectMonorepoConfig: inspectMonorepoConfigMock,
       normalizeInitToolingTargets: vi.fn((input: string[]) => input),
+      resolveFullWorkspaceCheckPlan: vi.fn(async () => ({ cwd: '/repo', mode: 'full', commands: [] })),
       resolveRecommendedCheckPlan: vi.fn(() => ({ cwd: '/repo', mode: 'default', commands: [] })),
       runDoctor: doctorMock,
       runRecommendedCheck: runRecommendedCheckMock,

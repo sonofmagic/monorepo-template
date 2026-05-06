@@ -69,6 +69,7 @@ describe('coverage binder', () => {
     const pathExistsMock = vi.fn(async (targetPath: string) => targetPath.endsWith('package.json'))
     const readJsonMock = vi.fn(async () => ({ name: 'template', version: '1.0.0' }))
     const outputJsonMock = vi.fn(async () => {})
+    const outputFileMock = vi.fn(async () => {})
     const scaffoldTemplateMock = vi.fn(async () => {})
 
     vi.doMock('@/utils/fs', async () => {
@@ -81,11 +82,13 @@ describe('coverage binder', () => {
           pathExists: pathExistsMock,
           readJson: readJsonMock,
           outputJson: outputJsonMock,
+          outputFile: outputFileMock,
         },
         ensureDir: ensureDirMock,
         pathExists: pathExistsMock,
         readJson: readJsonMock,
         outputJson: outputJsonMock,
+        outputFile: outputFileMock,
       }
     })
     vi.doMock('@icebreakers/monorepo-templates', async (importOriginal) => {

@@ -5,10 +5,12 @@ import { readdir } from 'node:fs/promises'
 import { scaffoldTemplate } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import pc from 'picocolors'
+import YAML from 'yaml'
 import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
+import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { resolveCreateNewProjectPlan } from './plan'
 
 export * from './plan'
@@ -27,10 +29,6 @@ const rootReferenceReplacements = [
   {
     from: '../../tsconfig.json',
     to: 'tsconfig.json',
-  },
-  {
-    from: '../../tooling/load-tooling-module.mjs',
-    to: 'tooling/load-tooling-module.mjs',
   },
 ] as const
 
@@ -108,7 +106,7 @@ async function rewriteTemplateRootReferences(targetDir: string, workspaceDir: st
     }
 
     const originalContent = await fs.readFile(entryPath, 'utf8')
-    let nextContent = originalContent
+    let nextContent = migrateLegacyToolingReferences(originalContent, 'repoctl/tooling')
 
     for (const replacement of rootReferenceReplacements) {
       if (!nextContent.includes(replacement.from)) {
@@ -124,6 +122,34 @@ async function rewriteTemplateRootReferences(targetDir: string, workspaceDir: st
       await fs.writeFile(entryPath, nextContent, 'utf8')
     }
   }))
+}
+
+function inferWorkspacePattern(targetName: string) {
+  const normalized = targetName.split(path.sep).join('/')
+  const parts = normalized.split('/').filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[0]}/*`
+  }
+  return 'packages/*'
+}
+
+async function updateWorkspaceManifest(workspaceDir: string, targetName: string) {
+  const workspacePath = path.resolve(workspaceDir, 'pnpm-workspace.yaml')
+  const exists = await fs.pathExists(workspacePath)
+  const manifest = exists ? YAML.parse(await fs.readFile(workspacePath, 'utf8')) ?? {} : {}
+  const currentPackages = Array.isArray(manifest.packages)
+    ? manifest.packages.filter((item: unknown): item is string => typeof item === 'string')
+    : []
+  const pattern = inferWorkspacePattern(targetName)
+  if (currentPackages.includes(pattern)) {
+    return
+  }
+
+  const nextManifest = {
+    ...(typeof manifest === 'object' && manifest !== null ? manifest : {}),
+    packages: [...currentPackages, pattern],
+  }
+  await fs.outputFile(workspacePath, YAML.stringify(nextManifest, { singleQuote: true }), 'utf8')
 }
 
 /**
@@ -166,6 +192,8 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
       { spaces: 2 },
     )
   }
+
+  await updateWorkspaceManifest(plan.cwd, plan.targetName)
 
   logger.success(`${pc.bgGreenBright(pc.white(`[${plan.template}]`))} ${plan.targetName} 项目创建成功！`)
 }

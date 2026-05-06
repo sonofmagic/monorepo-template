@@ -56,6 +56,7 @@ describe('upgrade command coverage', () => {
     vi.doMock('@/core/logger', () => ({
       logger: {
         success: loggerSuccessMock,
+        info: vi.fn(),
       },
     }))
     vi.doMock('@/commands/upgrade/targets', () => ({
@@ -226,10 +227,11 @@ describe('upgrade command coverage', () => {
 
     await upgradeMonorepo({ cwd: '/repo', outDir: '/workspace', interactive: true })
 
-    expect(checkboxMock).toHaveBeenCalled()
+    expect(checkboxMock).not.toHaveBeenCalled()
     expect(setPkgJsonMock).toHaveBeenCalled()
     expect(scheduleOverwriteMock).toHaveBeenCalled()
     expect(flushPendingOverwritesMock).toHaveBeenCalledTimes(1)
+    expect(flushPendingOverwritesMock).toHaveBeenCalledWith(expect.any(Array), {})
     expect(loggerSuccessMock).toHaveBeenCalled()
     const issueTemplateCall = outputFileMock.mock.calls.find(args => args[0] === '/workspace/.github/ISSUE_TEMPLATE/config.yml')
     expect(issueTemplateCall?.[1]).toBeDefined()

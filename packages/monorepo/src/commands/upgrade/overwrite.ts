@@ -1,6 +1,8 @@
 import { Buffer } from 'node:buffer'
+import process from 'node:process'
 import { checkbox } from '@icebreakers/monorepo-templates'
 import pc from 'picocolors'
+import { logger } from '@/core/logger'
 import fs from '@/utils/fs'
 import { isFileChanged } from '../../utils'
 
@@ -103,8 +105,36 @@ export async function scheduleOverwrite(
   }
 }
 
-export async function flushPendingOverwrites(pending: PendingOverwrite[]) {
+export async function flushPendingOverwrites(
+  pending: PendingOverwrite[],
+  options: {
+    yes?: boolean
+    overwrite?: boolean
+    noOverwrite?: boolean
+  } = {},
+) {
   if (!pending.length) {
+    return
+  }
+
+  if (options.noOverwrite) {
+    for (const item of pending) {
+      logger.info(`skip changed file: ${item.relPath}`)
+    }
+    return
+  }
+
+  if (options.yes || options.overwrite) {
+    for (const item of pending) {
+      await item.action()
+    }
+    return
+  }
+
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    for (const item of pending) {
+      logger.info(`skip changed file in non-interactive mode: ${item.relPath}`)
+    }
     return
   }
 

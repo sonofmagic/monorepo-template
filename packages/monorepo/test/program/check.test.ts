@@ -21,21 +21,22 @@ function mockProgram() {
 describe('commander program check command', () => {
   it('prints check plan as json without running checks', async () => {
     const runRecommendedCheckMock = vi.fn(async () => {})
-    const resolveRecommendedCheckPlanMock = vi.fn(() => ({
+    const resolveFullWorkspaceCheckPlanMock = vi.fn(async () => ({
       cwd: '/repo',
       mode: 'full',
       commands: [
         {
-          name: 'pre-push',
-          command: 'repo verify pre-push',
-          description: 'full check',
+          name: 'lint',
+          command: 'pnpm lint',
+          description: 'lint check',
         },
       ],
     }))
 
     mockProgram()
     vi.doMock('@/commands', () => ({
-      resolveRecommendedCheckPlan: resolveRecommendedCheckPlanMock,
+      resolveFullWorkspaceCheckPlan: resolveFullWorkspaceCheckPlanMock,
+      resolveRecommendedCheckPlan: vi.fn(),
       runRecommendedCheck: runRecommendedCheckMock,
     }))
 
@@ -50,10 +51,7 @@ describe('commander program check command', () => {
     const { default: program } = await import('@/cli/program')
     await program.parseAsync(['node', 'repo', 'check', '--full', '--json'])
 
-    expect(resolveRecommendedCheckPlanMock).toHaveBeenCalledWith({
-      cwd: expect.any(String),
-      full: true,
-    })
+    expect(resolveFullWorkspaceCheckPlanMock).toHaveBeenCalledWith(expect.any(String))
     expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"mode": "full"'))
     expect(runRecommendedCheckMock).not.toHaveBeenCalled()
   })
@@ -114,13 +112,13 @@ describe('commander program check command', () => {
     const root = await mkdtemp(path.join(tmpdir(), 'repo-check-markdown-'))
     const planPath = path.join(root, 'reports/check.md')
     const runRecommendedCheckMock = vi.fn(async () => {})
-    const resolveRecommendedCheckPlanMock = vi.fn(() => ({
+    const resolveFullWorkspaceCheckPlanMock = vi.fn(async () => ({
       cwd: root,
       mode: 'full',
       commands: [
         {
-          name: 'pre-push',
-          command: 'repo verify pre-push',
+          name: 'lint',
+          command: 'pnpm lint',
           description: 'full check',
         },
       ],
@@ -129,7 +127,8 @@ describe('commander program check command', () => {
     try {
       mockProgram()
       vi.doMock('@/commands', () => ({
-        resolveRecommendedCheckPlan: resolveRecommendedCheckPlanMock,
+        resolveFullWorkspaceCheckPlan: resolveFullWorkspaceCheckPlanMock,
+        resolveRecommendedCheckPlan: vi.fn(),
         runRecommendedCheck: runRecommendedCheckMock,
       }))
 
@@ -147,7 +146,7 @@ describe('commander program check command', () => {
       const content = await readFile(planPath, 'utf8')
       expect(content).toContain('# Repo check plan')
       expect(content).toContain('| mode | full |')
-      expect(content).toContain('- `repo verify pre-push` - full check')
+      expect(content).toContain('- `pnpm lint` - full check')
       expect(successMock).toHaveBeenCalledWith(expect.stringContaining('check.md'))
       expect(runRecommendedCheckMock).not.toHaveBeenCalled()
     }

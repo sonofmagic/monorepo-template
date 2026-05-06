@@ -113,6 +113,12 @@ pnpm doctor
 pnpm exec repo upgrade
 ```
 
+CI 或非 TTY 环境使用：
+
+```bash
+pnpm exec repo setup --yes
+```
+
 ### 5. `repo new --template` 提示未知模板
 
 先运行：
@@ -143,7 +149,20 @@ pnpm exec repo upgrade
 pnpm check
 ```
 
-### 6. `repo` 命令不可用
+### 6. ESLint / Vitest 配置引用 `tooling/load-tooling-module.mjs`
+
+这是旧模板生成的本仓库源码 loader。普通使用者仓库应该直接 import `repoctl/tooling`。
+
+处理方式：
+
+```bash
+pnpm exec repo upgrade --yes
+pnpm doctor
+```
+
+如果自动化里必须保留本地修改，用 `pnpm exec repo upgrade --no-overwrite` 查看 skipped 文件，再手动迁移。
+
+### 7. `repo` 命令不可用
 
 通常是依赖还没安装，或者当前仓库没把 CLI 包放进根依赖。
 

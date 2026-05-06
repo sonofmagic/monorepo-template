@@ -33,8 +33,6 @@ exports[`createNewProject > assets 1`] = `
   "repoctl.config.ts",
   "SECURITY.md",
   "stylelint.config.js",
-  "tooling/ensure-tooling-built.mjs",
-  "tooling/load-tooling-module.mjs",
   "tsconfig.json",
   "turbo.json",
   "vitest.config.ts",
@@ -77,6 +75,7 @@ exports[`createNewProject > createNewProject demo client case 1`] = `
   "tsconfig.node.json",
   "tsconfig.worker.json",
   "vite.config.ts",
+  "worker-configuration.d.ts",
   "worker/app.ts",
   "worker/config.ts",
   "worker/fetch-entry.ts",
@@ -101,6 +100,7 @@ exports[`createNewProject > createNewProject demo default case 1`] = `
 exports[`createNewProject > createNewProject demo server case 1`] = `
 [
   ".gitignore",
+  "eslint.config.js",
   "package.mock.json",
   "src/app.ts",
   "src/config.ts",
@@ -110,6 +110,7 @@ exports[`createNewProject > createNewProject demo server case 1`] = `
   "tsconfig.json",
   "tsdown.config.ts",
   "vitest.config.ts",
+  "worker-configuration.d.ts",
   "wrangler.jsonc",
 ]
 `;
@@ -238,8 +239,6 @@ exports[`createNewProject > upgradeMonorepo 1`] = `
   "repoctl.config.ts",
   "SECURITY.md",
   "stylelint.config.js",
-  "tooling/ensure-tooling-built.mjs",
-  "tooling/load-tooling-module.mjs",
   "tsconfig.json",
   "turbo.json",
   "vitest.config.ts",

@@ -40,7 +40,11 @@ pnpm check
 - `repo check`: run the recommended local verification flow.
 - `repo upgrade`: sync the latest standard assets and scripts from the template.
 
-`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` when automation needs a persisted report.
+`repo setup` is safe to run in an existing pnpm workspace. By default it creates missing root files, appends missing workspace patterns, and skips existing README/tooling files; use `--force` or `--overwrite` when you explicitly want managed files rewritten. Use `--yes` in CI.
+
+`repo upgrade` is also CI-safe. In a non-TTY process it will not prompt; changed files are skipped unless you pass `--yes` or `--overwrite`. Use `--no-overwrite` when automation must preserve every changed file.
+
+`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, workspace pattern coverage, legacy local tooling imports, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` when automation needs a persisted report.
 Use `repo check --dry-run` or `repo check --json --out reports/check-plan.json` when automation needs to inspect the verification plan before running it.
 
 ## Common Commands
@@ -48,6 +52,8 @@ Use `repo check --dry-run` or `repo check --json --out reports/check-plan.json` 
 ```sh
 # sync repo standards
 pnpm exec repo upgrade
+pnpm exec repo upgrade --yes
+pnpm exec repo upgrade --no-overwrite
 
 # create a specific template without extra prompts
 pnpm exec repo new dashboard --template vue-hono

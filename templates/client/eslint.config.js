@@ -1,7 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { loadRepoctlToolingModule } from '../../tooling/load-tooling-module.mjs'
-
-const { defineEslintConfig } = await loadRepoctlToolingModule()
+import { defineEslintConfig } from 'repoctl/tooling'
 
 const tailwindEntryPoint = fileURLToPath(new URL('./src/style.css', import.meta.url))
 
@@ -12,6 +10,6 @@ export default await defineEslintConfig({
     tailwindcss: {
       entryPoint: tailwindEntryPoint,
     },
-    ignores: ['**/fixtures/**'],
+    ignores: ['**/fixtures/**', 'worker-configuration.d.ts'],
   },
 })

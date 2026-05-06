@@ -18,6 +18,14 @@ describe('checkTemplates', () => {
     expect(report.checks.some(check => check.id === 'metadata' && check.status === 'pass')).toBe(true)
   })
 
+  it('keeps Cloudflare worker typegen files in templates', async () => {
+    const { shouldSkipTemplatePath } = await import('@icebreakers/monorepo-templates')
+    const sourceDir = '/repo/templates/client'
+
+    expect(shouldSkipTemplatePath(sourceDir, path.join(sourceDir, 'worker-configuration.d.ts'))).toBe(false)
+    expect(shouldSkipTemplatePath(sourceDir, path.join(sourceDir, 'route-map.d.ts'))).toBe(true)
+  })
+
   it('flags missing sources when checking another templates directory', async () => {
     const templatesDir = await createTempTemplatesDir()
 
