@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "description": "tsdown bundler template",
-  "author": "ice breaker <1324318532@qq.com>",
+  "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -42,7 +42,8 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts"
   },
   "publishConfig": {}
 }

@@ -26,4 +26,3 @@ This file adds template-local guidance. Global rules are defined in the reposito
 - `pnpm --filter @icebreakers/client lint`
 - `pnpm --filter @icebreakers/client typecheck`
 - `pnpm --filter @icebreakers/client build`
-
