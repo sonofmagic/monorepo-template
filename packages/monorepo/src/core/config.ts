@@ -51,8 +51,14 @@ async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
     packageJson: false,
   })
 
+  const matchedConfigFile = configFile && fs.existsSync(configFile)
+    ? findConfigFiles(cwd, configName).find(file => path.basename(file).toLowerCase() === path.basename(configFile).toLowerCase())
+    : undefined
+
   return {
-    file: configFile && fs.existsSync(configFile) ? fs.realpathSync(configFile) : null,
+    file: matchedConfigFile
+      ? fs.realpathSync(matchedConfigFile)
+      : (configFile && fs.existsSync(configFile) ? fs.realpathSync(configFile) : null),
     config: config ?? {},
   }
 }
