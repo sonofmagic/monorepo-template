@@ -1,5 +1,13 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.1
+
+### Patch Changes
+
+- 🐛 **Fix the Vue library template package metadata and type tests for Vite plugin dts output.** [`a209464`](https://github.com/sonofmagic/monorepo-template/commit/a209464efbbe64a5cc507d0fbf3110ce5e91dde1) by @sonofmagic
+
+- 🐛 **Replace remaining tsup and unbuild template build scripts with tsdown.** [`bd38e6c`](https://github.com/sonofmagic/monorepo-template/commit/bd38e6c91a7347a7de6e7db219e6138745805488) by @sonofmagic
+
 ## 1.0.0
 
 ### Major Changes
