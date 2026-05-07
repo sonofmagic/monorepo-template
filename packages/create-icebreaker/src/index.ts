@@ -7,6 +7,7 @@ import { updateRootPackageJson } from './package-json'
 import { promptTargetDir, promptTemplates } from './prompts'
 import { scaffoldFromNpm } from './source-npm'
 import { resolveTemplateSelections } from './templates'
+import { updateRootTsconfigReferences } from './tsconfig'
 
 interface CreateOptions {
   templates?: string
@@ -42,6 +43,7 @@ async function runCreate(targetDirInput: string, options: CreateOptions) {
 
   await scaffoldFromNpm(targetDir, selectedTemplates, Boolean(options.force))
   await updateRootPackageJson(targetDir, projectName)
+  await updateRootTsconfigReferences(targetDir)
   printNextSteps(targetDir)
 }
 
