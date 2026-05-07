@@ -12,6 +12,9 @@ const whitespacePattern = /\s+/
 const gitDirName = '.git'
 const defaultWorkspaceOrder = [
   'packages/create-icebreaker',
+  'packages/create-monorepo',
+  'packages/create-repo',
+  'packages/create-repoctl',
   'packages/monorepo',
   'packages/monorepo-templates',
   'packages/repoctl',

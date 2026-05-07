@@ -1,0 +1,48 @@
+{
+  "name": "create-repo",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Bootstrap repoctl monorepo projects via pnpm create repo",
+  "author": "ice breaker <hi@sonofmagic.top>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "directory": "packages/create-repo"
+  },
+  "bugs": {
+    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+  },
+  "keywords": [
+    "repo",
+    "repoctl",
+    "monorepo",
+    "create-app",
+    "template",
+    "scaffold"
+  ],
+  "sideEffects": false,
+  "bin": {
+    "create-repo": "bin/create-repo.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "tsdown --watch --sourcemap",
+    "build": "tsdown",
+    "typecheck": "pnpm --filter create-icebreaker build && node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "create-icebreaker": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
