@@ -107,3 +107,10 @@ pnpm exec repo upgrade --yes
 - `--no-overwrite` preserves changed managed files.
 - `--yes` or `--overwrite` is for explicit automated overwrites.
 - Non-TTY environments do not open interactive prompts.
+
+## Next Steps
+
+- Adopt an existing repository: [Adopt Existing Repositories](./adopt-existing.md).
+- Set team defaults: [Configuration](./config.md).
+- Inspect template keys: [Templates](./templates.md).
+- Share diagnostic output: [Troubleshooting](./troubleshooting.md).

@@ -1,0 +1,131 @@
+# Adopt Existing Repositories
+
+repoctl is not only for newly generated repositories. It can be adopted gradually in existing pnpm workspaces by using diagnostics and conservative asset syncs.
+
+## Good Candidates
+
+A repository is a good fit when:
+
+- It already uses pnpm, or is ready to move to pnpm.
+- It has a root `package.json`.
+- It can use workspace folders such as `apps/*`, `packages/*`, or `examples/*`.
+- The team wants stable daily entries such as `setup`, `doctor`, `new`, and `check`.
+
+If the repository is not yet a pnpm workspace, start with a minimal `pnpm-workspace.yaml`:
+
+```yaml
+packages:
+  - apps/*
+  - packages/*
+```
+
+## Step 1: Install And Setup
+
+```bash
+pnpm add -D repoctl
+pnpm exec repo setup --yes
+```
+
+`setup --yes` uses safe defaults. It adds recommended scripts and workspace patterns, but it does not blindly overwrite existing README, package.json, pnpm-workspace.yaml, or tooling files.
+
+## Step 2: Save The First Diagnostic Report
+
+```bash
+pnpm exec repo doctor --markdown --redact --out reports/doctor-before.md
+pnpm exec repo doctor --json --out reports/doctor-before.json
+```
+
+Prefer saving the first report as a PR comment or CI artifact instead of relying only on terminal output.
+
+Watch these checks:
+
+| Check                        | Common Issue                                                      |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `package-json`               | Current directory is not the repository root                      |
+| `workspace-manifest`         | `pnpm-workspace.yaml` is missing                                  |
+| `node-version`               | Root package has no `engines.node`, or the version does not match |
+| `tool-package`               | `repoctl` is not installed                                        |
+| `root-scripts`               | `setup/new/check/doctor` scripts are missing                      |
+| `config-file`                | `repoctl.config.ts` and `monorepo.config.ts` coexist              |
+| `commit-hooks`               | Husky and lint-staged are only partially configured               |
+| `workspace-package-coverage` | Some package.json files are not covered by workspace patterns     |
+
+## Step 3: Sync Conservatively
+
+```bash
+pnpm exec repo upgrade --no-overwrite
+pnpm exec repo doctor --markdown --redact --out reports/doctor-after.md
+```
+
+Use `--no-overwrite` for the first adoption pass. It syncs missing assets while preserving changed managed files.
+
+## Step 4: Preview Verification
+
+```bash
+pnpm exec repo check --dry-run
+pnpm exec repo check --json --out reports/check-plan.json
+pnpm exec repo check --markdown --redact --out reports/check-plan.md
+```
+
+Review the plan before wiring hooks or CI.
+
+## Step 5: Use Root Scripts
+
+After `setup`, team docs can use:
+
+```bash
+pnpm doctor
+pnpm new
+pnpm check
+```
+
+CI and automation should still prefer explicit commands:
+
+```bash
+pnpm exec repo doctor --strict
+pnpm exec repo check --full
+```
+
+## Step 6: Resolve Legacy Config
+
+### Config Conflicts
+
+Keep only:
+
+```txt
+repoctl.config.ts
+```
+
+`monorepo.config.ts` is for compatibility with older projects.
+
+### Local Tooling Loader
+
+If `doctor` reports local source tooling loaders, migrate with:
+
+```bash
+pnpm exec repo upgrade --yes
+```
+
+### Workspace Pattern Gaps
+
+Run:
+
+```bash
+pnpm exec repo setup --yes
+```
+
+or manually extend `pnpm-workspace.yaml`.
+
+## Recommended PR Shape
+
+1. Install `repoctl` and add root scripts.
+2. Attach `doctor-before` and `doctor-after` reports.
+3. Sync or migrate tooling config.
+4. Wire hooks and CI.
+5. Verify scaffolding paths with `repo new --dry-run`.
+
+## Keep Reading
+
+- [Workflows and CI](./workflows.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Configuration](./config.md)

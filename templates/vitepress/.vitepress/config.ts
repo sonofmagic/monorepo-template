@@ -8,6 +8,7 @@ const repoctlSidebar = [
     items: [
       { text: '概览', link: '/repoctl/' },
       { text: '快速开始', link: '/repoctl/getting-started' },
+      { text: '接入已有仓库', link: '/repoctl/adopt-existing' },
       { text: '命令速查', link: '/repoctl/commands' },
       { text: '配置文件', link: '/repoctl/config' },
       { text: '模板与创建', link: '/repoctl/templates' },
@@ -49,6 +50,7 @@ const enSidebar = [
     items: [
       { text: 'Overview', link: '/en/repoctl/' },
       { text: 'Getting Started', link: '/en/repoctl/getting-started' },
+      { text: 'Adopt Existing Repos', link: '/en/repoctl/adopt-existing' },
       { text: 'Command Reference', link: '/en/repoctl/commands' },
       { text: 'Configuration', link: '/en/repoctl/config' },
       { text: 'Templates', link: '/en/repoctl/templates' },

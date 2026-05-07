@@ -116,6 +116,7 @@ pnpm exec repo upgrade --yes
 
 ## 常见下一步
 
+- 已有仓库渐进接入：阅读 [接入已有仓库](./adopt-existing.md)。
 - 想固定默认模板：阅读 [配置文件](./config.md)。
 - 想查看所有模板：阅读 [模板与创建](./templates.md)。
 - 想把诊断结果发给同事：阅读 [排障与报告](./troubleshooting.md)。

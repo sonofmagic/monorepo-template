@@ -48,6 +48,7 @@ pnpm check
 
 - [repoctl 概览](./repoctl/index.md)
 - [快速开始](./repoctl/getting-started.md)
+- [接入已有仓库](./repoctl/adopt-existing.md)
 - [命令速查](./repoctl/commands.md)
 - [配置文件](./repoctl/config.md)
 - [模板与创建](./repoctl/templates.md)

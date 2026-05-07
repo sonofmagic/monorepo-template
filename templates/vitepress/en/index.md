@@ -48,6 +48,7 @@ pnpm check
 
 - [repoctl Overview](./repoctl/index.md)
 - [Getting Started](./repoctl/getting-started.md)
+- [Adopt Existing Repositories](./repoctl/adopt-existing.md)
 - [Command Reference](./repoctl/commands.md)
 - [Configuration](./repoctl/config.md)
 - [Templates](./repoctl/templates.md)
