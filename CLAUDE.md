@@ -111,7 +111,7 @@ This monorepo uses Changesets for version management:
 
 1. Make changes to packages
 2. Run `pnpm changeset` to describe changes (patch/minor/major)
-3. After merging, run `pnpm publish-packages` locally or let CI publish from `main`
+3. After merging, let CI publish from `main` for stable releases, or from `alpha` / `beta` / `rc` / `next` for prerelease tags
 4. Ensure `secrets.NPM_TOKEN` is configured in GitHub for automated publishing
 
 When modifying publishable packages, always create a changeset so releases stay traceable.

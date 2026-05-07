@@ -103,7 +103,7 @@ packages/
 Leverage Changesets plus GitHub Actions for automated versioning:
 
 1. Capture changes with `pnpm changeset`, marking each update as patch, minor, or major.
-2. After merging, run `pnpm publish-packages` locally or let CI publish from the `main` branch.
+2. After merging, let CI publish stable releases from the `main` branch and prerelease tags from `alpha`, `beta`, `rc`, or `next`.
 3. Configure `secrets.NPM_TOKEN` in GitHub to allow npm publishing.
 
 ## Quality Assurance

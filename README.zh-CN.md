@@ -103,7 +103,7 @@ packages/
 结合 Changesets 与 GitHub Actions 实现自动化版本管理：
 
 1. 通过 `pnpm changeset` 记录改动类型（patch/minor/major）。
-2. 合并后运行 `pnpm publish-packages`，或由 CI 在 `main` 分支自动发布。
+2. 合并后由 CI 在 `main` 分支发布正式包，在 `alpha`、`beta`、`rc`、`next` 分支发布 pre tag 包。
 3. 在 GitHub 仓库配置 `secrets.NPM_TOKEN`，允许 Actions 推送到 npm。
 
 ## 质量保障

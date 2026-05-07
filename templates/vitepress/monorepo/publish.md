@@ -31,6 +31,8 @@ pnpm changeset version
 pnpm publish-packages
 ```
 
+正式发布只走 `main`；`alpha`、`beta`、`rc`、`next` 只做 Changesets 的 prerelease，并发布对应 tag 包。
+
 ## 一条务实的发布流程
 
 先把顺序记住：
@@ -137,6 +139,10 @@ on:
   push:
     branches:
       - main
+      - alpha
+      - beta
+      - rc
+      - next
   workflow_dispatch:
 
 permissions:
@@ -150,6 +156,7 @@ env:
 
 jobs:
   release:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -166,6 +173,22 @@ jobs:
           publish: pnpm publish-packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  prerelease:
+    if: github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install
+      - run: git config user.name "github-actions[bot]"
+      - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Publish Prerelease
+        run: pnpm release:pre
 ```
 
 ## 关于 npm 鉴权
