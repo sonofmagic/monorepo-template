@@ -87,3 +87,6 @@ jobs:
 
       - name: Publish Prerelease
         run: pnpm release:pre
+        env:
+          npm_config_registry: https://registry.npmjs.org
+          NPM_CONFIG_PROVENANCE: true
