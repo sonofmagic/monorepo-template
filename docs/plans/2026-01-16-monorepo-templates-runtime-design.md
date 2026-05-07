@@ -24,7 +24,7 @@ The monorepo CLI currently ships its own `assets/` and `templates/` inside `pack
 
 ## Components & Data Flow
 
-- `monorepo-templates/scripts/sync-assets.mjs` copies root `templates/`, root skeleton files, and root asset files into the package for publish.
+- `pnpm --filter @icebreakers/monorepo-templates sync:assets` copies root `templates/`, root skeleton files, and root asset files into the package for publish.
 - `@icebreakers/monorepo` uses `assetsDir`/`templatesDir` from the dependency to serve `create`, `upgrade`, and `clean`.
 - `create-icebreaker` continues to source templates and skeletons from `@icebreakers/monorepo-templates`.
 

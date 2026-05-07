@@ -1,8 +1,7 @@
 import process from 'node:process'
+import { prepareAssets } from './prepare'
 
 async function main() {
-  const entryUrl = new URL('../dist/index.mjs', import.meta.url)
-  const { prepareAssets } = await import(entryUrl.href)
   await prepareAssets({ overwriteExisting: true })
 }
 

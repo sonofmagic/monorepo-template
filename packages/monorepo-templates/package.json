@@ -47,8 +47,8 @@
     "build": "tsdown",
     "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
-    "sync:assets": "pnpm run build && node scripts/sync-assets.mjs",
-    "prepack": "pnpm run build && node scripts/sync-assets.mjs",
+    "sync:assets": "pnpm run build && node dist/cli.mjs",
+    "prepack": "pnpm run build && node dist/cli.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

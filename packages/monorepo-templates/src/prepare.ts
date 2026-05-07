@@ -8,6 +8,39 @@ import { toPublishGitignorePath } from './utils/gitignore'
 import { shouldSkipTemplatePath } from './utils/template-filter'
 
 const huskySkippedEntryPattern = /[\\/]_$/
+const publishedToolingConfigs = {
+  'commitlint.config.ts': [
+    `import { defineCommitlintConfig } from 'repoctl/tooling'`,
+    '',
+    'export default await defineCommitlintConfig()',
+    '',
+  ].join('\n'),
+  'eslint.config.js': [
+    `import { defineEslintConfig } from 'repoctl/tooling'`,
+    '',
+    'export default await defineEslintConfig()',
+    '',
+  ].join('\n'),
+  'lint-staged.config.js': [
+    `import { defineLintStagedConfig } from 'repoctl/tooling'`,
+    '',
+    'export default await defineLintStagedConfig()',
+    '',
+  ].join('\n'),
+  'stylelint.config.js': [
+    `import { defineStylelintConfig } from 'repoctl/tooling'`,
+    '',
+    'export default await defineStylelintConfig()',
+    '',
+  ].join('\n'),
+  'vitest.config.ts': [
+    `import { defineConfig } from 'vitest/config'`,
+    `import { defineVitestConfig } from 'repoctl/tooling'`,
+    '',
+    'export default defineConfig(async () => await defineVitestConfig())',
+    '',
+  ].join('\n'),
+}
 
 export interface PrepareAssetsOptions {
   overwriteExisting?: boolean
@@ -121,6 +154,15 @@ async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
   }
 }
 
+async function writePublishedToolingConfigs() {
+  await Promise.all(Object.entries(publishedToolingConfigs).map(async ([filename, content]) => {
+    const targetPath = path.join(assetsDir, filename)
+    if (await pathExists(targetPath)) {
+      await fs.writeFile(targetPath, content)
+    }
+  }))
+}
+
 async function copyTemplates(repoRoot: string, overwriteExisting: boolean) {
   for (const template of templateChoices) {
     const from = path.join(repoRoot, 'templates', template.source)
@@ -143,5 +185,6 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   await resetDir(assetsDir, overwriteExisting)
   await resetDir(templatesDir, overwriteExisting)
   await copyAssets(repoRoot, overwriteExisting)
+  await writePublishedToolingConfigs()
   await copyTemplates(repoRoot, overwriteExisting)
 }
