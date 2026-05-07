@@ -1,5 +1,17 @@
 # @icebreakers/monorepo
 
+## 4.0.3
+
+### Patch Changes
+
+- 🐛 **repoctl now ships a publishable `tsconfig.json` entry for direct `extends` usage, and generated templates write that same public entry instead of relying on a local base file.** [`67a2ed5`](https://github.com/sonofmagic/monorepo-template/commit/67a2ed50cc2782fa7fc45a6ce2811a389e84173d) by @sonofmagic
+
+- 🐛 **Internalize stable and prerelease Changesets publishing in `repo release` commands so generated repositories no longer need copied release scripts.** [`3f67b4c`](https://github.com/sonofmagic/monorepo-template/commit/3f67b4ca9a486cbd8590fa558238044f5e282ccf) by @sonofmagic
+
+- 🐛 **release 流程改为按分支分流：`main` 只发正式包，`alpha`、`beta`、`rc`、`next` 仅以 Changesets pre 模式发布对应 tag 包，并补齐了相关文档说明。** [`758a57f`](https://github.com/sonofmagic/monorepo-template/commit/758a57f788aceb66cf77afc17ea379f4e0003af9) by @sonofmagic
+- 📦 **Dependencies** [`67a2ed5`](https://github.com/sonofmagic/monorepo-template/commit/67a2ed50cc2782fa7fc45a6ce2811a389e84173d)
+  → `@icebreakers/monorepo-templates@1.0.3`
+
 ## 4.0.2
 
 ### Patch Changes

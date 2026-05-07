@@ -1,5 +1,15 @@
 # create-icebreaker
 
+## 1.0.3
+
+### Patch Changes
+
+- 🐛 **新增 `create-repoctl` 包，提供 `npm create repoctl`、`pnpm create repoctl`、`yarn create repoctl` 的 repoctl 品牌脚手架入口，并补齐 `create-icebreaker` 的包导出以便复用现有创建流程。** [`5623491`](https://github.com/sonofmagic/monorepo-template/commit/5623491f0229982856a4ee6aa92631384be207ab) by @sonofmagic
+
+- 🐛 **Generate clean repoctl scaffold output by rewriting root TypeScript project references from the selected templates and avoiding source-repo-only tooling loaders in created projects.** [`ae546e4`](https://github.com/sonofmagic/monorepo-template/commit/ae546e4cf3bb899f091ca48a95a7bb2a8181a2bb) by @sonofmagic
+- 📦 **Dependencies** [`67a2ed5`](https://github.com/sonofmagic/monorepo-template/commit/67a2ed50cc2782fa7fc45a6ce2811a389e84173d)
+  → `@icebreakers/monorepo-templates@1.0.3`
+
 ## 1.0.2
 
 ### Patch Changes
