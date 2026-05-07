@@ -1,5 +1,13 @@
 # repoctl
 
+## 4.0.6
+
+### Patch Changes
+
+- 🐛 **Upgrade the bundled Icebreakers ESLint and Stylelint presets so repoctl/tooling uses the upstream peer dependency ownership fixes instead of carrying lint ecosystem dependencies in the monorepo runtime package.** [`540c09e`](https://github.com/sonofmagic/monorepo-template/commit/540c09ee1d3cc825f638d8bf8d3d8aaa21ee8a07) by @sonofmagic
+- 📦 **Dependencies** [`540c09e`](https://github.com/sonofmagic/monorepo-template/commit/540c09ee1d3cc825f638d8bf8d3d8aaa21ee8a07)
+  → `@icebreakers/monorepo@4.0.6`
+
 ## 4.0.5
 
 ### Patch Changes
