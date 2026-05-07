@@ -147,8 +147,22 @@ repo skills sync --codex
 
 分组命令适合维护者和自动化脚本。日常开发优先使用顶层命令。
 
+## 输出参数速查
+
+| 参数           | 适用命令                                     | 说明                                  |
+| -------------- | -------------------------------------------- | ------------------------------------- |
+| `--json`       | `doctor`、`check`、`templates`、`new`、`env` | 输出机器可读数据                      |
+| `--markdown`   | `doctor`、`check`、`templates`、`env`        | 输出适合 PR 和 issue 的 Markdown      |
+| `--out <file>` | 多数报告和计划命令                           | 写入文件，便于 CI artifact 或脚本读取 |
+| `--redact`     | `doctor`、`check`、`env`                     | 分享报告前脱敏本机路径                |
+| `--strict`     | `doctor`、`env snapshot`、`env support`      | warning 也会导致失败                  |
+| `--dry-run`    | `check`、`new`                               | 只看计划，不执行校验或写入文件        |
+
 ## 继续阅读
 
+- [执行模型](./execution-model.md)
+- [校验链路](./checks.md)
+- [doctor 诊断](./doctor.md)
 - [工作流与 CI](./workflows.md)
-- [排障与报告](./troubleshooting.md)
+- [报告与自动化输出](./reports.md)
 - [命令别名](./aliases.md)

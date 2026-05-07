@@ -49,6 +49,16 @@ repo env paths --markdown --redact --out reports/paths.md
 
 这些命令适合排查 Node、pnpm、workspace、Git、路径和 CI 环境差异。
 
+## 先判断问题类型
+
+| 现象                           | 优先命令                                  | 继续阅读                             |
+| ------------------------------ | ----------------------------------------- | ------------------------------------ |
+| 不确定当前目录是不是仓库根目录 | `repo doctor`                             | [doctor 诊断](./doctor.md)           |
+| 不知道 `repo check` 会跑什么   | `repo check --dry-run`                    | [校验链路](./checks.md)              |
+| CI 失败但日志不完整            | `repo env support --markdown --redact`    | [报告与自动化输出](./reports.md)     |
+| 模板创建结果不符合预期         | `repo new <name> --template <key> --json` | [模板资产治理](./template-assets.md) |
+| 模板列表或元数据异常           | `repo templates --check`                  | [模板资产治理](./template-assets.md) |
+
 ## 常见问题
 
 ### 当前目录不是仓库根目录
@@ -95,4 +105,6 @@ repo check --json --out reports/check-plan.json
 
 - [工作流与 CI](./workflows.md)
 - [命令速查](./commands.md)
+- [doctor 诊断](./doctor.md)
+- [报告与自动化输出](./reports.md)
 - [命令别名](./aliases.md)

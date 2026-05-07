@@ -8,6 +8,8 @@ repoctl.config.ts
 
 旧文件名 `monorepo.config.ts` 继续兼容，但两者不能同时存在。`repo doctor` 会把冲突配置标记为阻塞问题。
 
+repoctl 支持 `ts`、`mts`、`cts`、`js`、`mjs`、`cjs` 等配置文件后缀。新项目优先使用 `repoctl.config.ts`，这样能保留类型提示和更清晰的迁移路径。
+
 ## 最小配置
 
 ```ts
@@ -79,3 +81,10 @@ repo cfg i --markdown --redact --out reports/config.md
 - 团队长期一致的选择写进 `repoctl.config.ts`。
 - 临时行为用命令参数表达，例如 `--dry-run`、`--json`、`--out`。
 - 自动化脚本优先使用显式参数，减少隐藏状态。
+
+## 继续阅读
+
+- [执行模型](./execution-model.md)
+- [模板与创建](./templates.md)
+- [模板资产治理](./template-assets.md)
+- [报告与自动化输出](./reports.md)

@@ -2,6 +2,8 @@
 
 repoctl 的模板由 `@icebreakers/monorepo-templates` 维护。CLI、脚手架和文档都复用同一份模板元数据。
 
+更偏维护者视角的模板元数据、健康检查和自定义模板说明见：[模板资产治理](./template-assets.md)。
+
 ## 内置模板
 
 | Key           | Category | 默认目录           | 适合场景                    |
@@ -154,3 +156,4 @@ repo templates --check --json
 - [接入已有仓库](./adopt-existing.md)
 - [工作流与 CI](./workflows.md)
 - [配置文件](./config.md)
+- [模板资产治理](./template-assets.md)

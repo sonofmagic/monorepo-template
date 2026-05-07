@@ -51,6 +51,29 @@ pnpm exec repo config inspect
 
 这些入口适合已经熟悉 repoctl 的维护者，用来做更细的 workspace、tooling、环境和配置操作。
 
+## repoctl 管什么
+
+repoctl 把 monorepo 里最容易分散的动作收敛为五条主线：
+
+| 主线   | 代表命令                      | 解决的问题                                                |
+| ------ | ----------------------------- | --------------------------------------------------------- |
+| 初始化 | `repo setup` / `repo upgrade` | 生成或同步 workspace、根脚本、Husky、lint-staged 等资产   |
+| 诊断   | `repo doctor`                 | 判断仓库根目录、运行时、脚本、配置和提交链路是否就绪      |
+| 创建   | `repo templates` / `repo new` | 使用内置模板生成库、应用、服务、文档站和 CLI              |
+| 校验   | `repo check` / `repo verify`  | 统一 pre-commit、staged typecheck、pre-push 和 commit-msg |
+| 报告   | `repo env support`            | 输出可保存、可脱敏、可给 CI 和协作者读取的上下文          |
+
+这几条主线都支持非交互参数。需要自动化时，优先使用 `--json`、`--markdown`、`--out <file>`、`--redact` 和 `--dry-run` 组合。
+
+## 新人和维护者的边界
+
+| 角色       | 推荐只记住                                                      | 需要深入时再看                                              |
+| ---------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
+| 新成员     | `pnpm doctor`、`pnpm new`、`pnpm check`                         | [按场景选命令](./scenarios.md)                              |
+| 包维护者   | `repo templates`、`repo new --template`、`repo check --full`    | [模板资产治理](./template-assets.md)                        |
+| CI 维护者  | `repo doctor --strict`、`repo check --full`、`repo env support` | [报告与自动化输出](./reports.md)                            |
+| 平台维护者 | `repo setup`、`repo upgrade`、`repo config inspect`             | [执行模型](./execution-model.md) 和 [配置文件](./config.md) |
+
 ## 和旧入口的关系
 
 `repoctl` 包仍然提供兼容入口，例如：
@@ -66,9 +89,14 @@ pnpm exec repoctl new
 
 - 第一次接入：[快速开始](./getting-started.md)
 - 不知道用哪个命令：[按场景选命令](./scenarios.md)
+- 理解 CLI 怎么执行：[执行模型](./execution-model.md)
 - 查命令参数：[命令速查](./commands.md)
+- 理解本地校验：[校验链路](./checks.md)
+- 看 doctor 具体检查项：[doctor 诊断](./doctor.md)
 - 固化团队默认值：[配置文件](./config.md)
 - 看可创建的模板：[模板与创建](./templates.md)
+- 治理模板资产：[模板资产治理](./template-assets.md)
 - 接入 CI 和本地流程：[工作流与 CI](./workflows.md)
-- 生成排障报告：[排障与报告](./troubleshooting.md)
+- 生成机器可读报告：[报告与自动化输出](./reports.md)
+- 排查常见问题：[排障与报告](./troubleshooting.md)
 - 熟悉短命令：[命令别名](./aliases.md)

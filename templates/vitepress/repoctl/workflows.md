@@ -87,6 +87,18 @@ repo ws ls --json --out reports/workspaces.json
 
 这些命令都不会要求人工选择，适合编辑器插件、脚本和 CI bot。
 
+## 推荐流水线拆分
+
+| 阶段 | 命令                                                            | 失败后先看                           |
+| ---- | --------------------------------------------------------------- | ------------------------------------ |
+| 安装 | `pnpm install --frozen-lockfile`                                | lockfile、Node、pnpm 版本            |
+| 诊断 | `repo doctor --strict`                                          | [doctor 诊断](./doctor.md)           |
+| 计划 | `repo check --full --json --out reports/check-plan.json`        | [报告与自动化输出](./reports.md)     |
+| 执行 | `repo check --full`                                             | 失败的 root script 或 workspace 任务 |
+| 留证 | `repo env support --markdown --redact --out reports/support.md` | CI artifact                          |
+
+早期项目可以把计划和执行合并。成熟项目建议保留 `reports/`，方便失败时复盘实际执行路径。
+
 ## 非交互参数选择
 
 | 场景               | 推荐参数                                           |
@@ -101,5 +113,6 @@ repo ws ls --json --out reports/workspaces.json
 ## 下一步
 
 - 查所有参数：[命令速查](./commands.md)
-- 生成排障包：[排障与报告](./troubleshooting.md)
+- 理解校验链路：[校验链路](./checks.md)
+- 生成排障包：[报告与自动化输出](./reports.md)
 - 看短命令：[命令别名](./aliases.md)

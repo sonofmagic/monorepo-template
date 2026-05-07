@@ -17,7 +17,7 @@ hero:
       link: /repoctl/commands
     - theme: alt
       text: AI 文档入口
-      link: /tools/llms-txt
+      link: /ai/
 
 features:
   - title: 从已有仓库开始
@@ -55,9 +55,12 @@ pnpm check
 - [快速开始](./repoctl/getting-started.md)
 - [接入已有仓库](./repoctl/adopt-existing.md)
 - [按场景选命令](./repoctl/scenarios.md)
+- [执行模型](./repoctl/execution-model.md)
 - [命令速查](./repoctl/commands.md)
+- [校验链路](./repoctl/checks.md)
+- [doctor 诊断](./repoctl/doctor.md)
 - [配置文件](./repoctl/config.md)
 - [模板与创建](./repoctl/templates.md)
+- [模板资产治理](./repoctl/template-assets.md)
 - [工作流与 CI](./repoctl/workflows.md)
-- [AI 文档入口：llms.txt](./tools/llms-txt.md)
-- [知识库：为什么往 monorepo 方向演进](./monorepo/index.md)
+- [报告与自动化输出](./repoctl/reports.md)

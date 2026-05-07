@@ -17,7 +17,7 @@ hero:
       link: /en/repoctl/commands
     - theme: alt
       text: AI Docs
-      link: /tools/llms-txt
+      link: /ai/
 
 features:
   - title: Adopt existing workspaces
@@ -59,5 +59,5 @@ pnpm check
 - [Configuration](./repoctl/config.md)
 - [Templates](./repoctl/templates.md)
 - [Workflows and CI](./repoctl/workflows.md)
-- [AI Docs: llms.txt](../tools/llms-txt.md)
+- [AI Docs: llms.txt](../ai/llms-txt.md)
 - [Knowledge Base: Why Monorepo](./knowledge/monorepo.md)

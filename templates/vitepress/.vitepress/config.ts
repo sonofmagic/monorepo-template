@@ -11,37 +11,68 @@ const repoctlSidebar = [
       { text: '快速开始', link: '/repoctl/getting-started' },
       { text: '接入已有仓库', link: '/repoctl/adopt-existing' },
       { text: '按场景选命令', link: '/repoctl/scenarios' },
+      { text: '执行模型', link: '/repoctl/execution-model' },
       { text: '命令速查', link: '/repoctl/commands' },
+      { text: '校验链路', link: '/repoctl/checks' },
+      { text: 'doctor 诊断', link: '/repoctl/doctor' },
       { text: '配置文件', link: '/repoctl/config' },
       { text: '模板与创建', link: '/repoctl/templates' },
+      { text: '模板资产治理', link: '/repoctl/template-assets' },
       { text: '工作流与 CI', link: '/repoctl/workflows' },
+      { text: '报告与自动化输出', link: '/repoctl/reports' },
       { text: '排障与报告', link: '/repoctl/troubleshooting' },
       { text: '命令别名', link: '/repoctl/aliases' },
     ],
   },
+]
+
+const knowledgeSidebar = [
   {
     text: '知识库',
     items: [
+      { text: '知识库首页', link: '/knowledge/' },
       { text: '为什么往 monorepo 方向演进', link: '/monorepo/' },
       { text: '如何管理 monorepo', link: '/monorepo/manage' },
       { text: '发包与变更日志', link: '/monorepo/publish' },
+      { text: 'monorepo 命令参考', link: '/monorepo/commands' },
+      { text: 'monorepo 模板体系', link: '/monorepo/templates' },
+      { text: 'monorepo 排障', link: '/monorepo/troubleshooting' },
+    ],
+  },
+  {
+    text: '现代 npm 包',
+    items: [
       { text: '如何复用 js 代码', link: '/why/how-to-reuse-js-code' },
       { text: 'JS 文件的各种后缀', link: '/why/js-cjs-mjs' },
       { text: 'CJS 和 ESM 关键字/全局变量对比', link: '/why/js-keywords' },
       { text: '什么是 npm 包', link: '/why/what-is-npm-package' },
       { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
       { text: '改进并发布现代 npm 包', link: '/why/index' },
+      { text: '现代包指南', link: '/why/modern/' },
+      { text: 'ESM 与 CJS', link: '/why/modern/esm-vs-cjs' },
+      { text: '类型声明', link: '/why/modern/dts' },
+      { text: '包入口', link: '/why/modern/package-entry-points' },
+      { text: '构建工具', link: '/why/modern/bundlers' },
+      { text: 'TypeScript', link: '/why/modern/typescript' },
     ],
   },
+]
+
+const aiSidebar = [
   {
     text: 'AI',
     items: [
-      { text: 'AI 文档入口', link: '/tools/llms-txt' },
+      { text: 'AI 文档首页', link: '/ai/' },
+      { text: 'llms.txt', link: '/ai/llms-txt' },
     ],
   },
+]
+
+const toolsSidebar = [
   {
     text: '工具专题',
     items: [
+      { text: '工具专题首页', link: '/tools/' },
       { text: 'pnpm', link: '/tools/pnpm' },
       { text: 'turborepo', link: '/tools/turborepo' },
       { text: 'changeset', link: '/tools/changeset' },
@@ -105,15 +136,21 @@ export default withMermaid(defineConfig({
           { text: 'repoctl', link: '/repoctl/' },
           { text: '快速开始', link: '/repoctl/getting-started' },
           { text: '命令', link: '/repoctl/commands' },
-          { text: '知识库', link: '/monorepo/' },
-          { text: 'AI 文档', link: '/tools/llms-txt' },
-          { text: '工具专题', link: '/tools/turborepo' },
+          { text: '知识库', link: '/knowledge/' },
+          { text: 'AI 文档', link: '/ai/' },
+          { text: '工具专题', link: '/tools/' },
         ],
         outline: {
           label: '目录',
           level: [2, 3],
         },
         sidebar: {
+          '/repoctl/': repoctlSidebar,
+          '/knowledge/': knowledgeSidebar,
+          '/monorepo/': knowledgeSidebar,
+          '/why/': knowledgeSidebar,
+          '/ai/': aiSidebar,
+          '/tools/': toolsSidebar,
           '/': repoctlSidebar,
         },
         editLink: {
@@ -140,7 +177,7 @@ export default withMermaid(defineConfig({
           { text: 'Getting Started', link: '/en/repoctl/getting-started' },
           { text: 'Commands', link: '/en/repoctl/commands' },
           { text: 'Knowledge Base', link: '/en/knowledge/monorepo' },
-          { text: 'AI Docs', link: '/tools/llms-txt' },
+          { text: 'AI Docs', link: '/ai/' },
         ],
         outline: {
           label: 'On This Page',
