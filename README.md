@@ -16,7 +16,7 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 - **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
 - **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
-- **Extensible Template**: Helper scripts (`script:init`, `script:sync`, `script:clean`, etc.) from `repoctl` keep dependencies and scaffolding aligned. `repo` is the primary command, while `repoctl`, `rc`, and `@icebreakers/monorepo` remain compatibility entrypoints.
+- **Extensible Template**: `repoctl` owns setup, sync, cleanup, package creation, checks, and release helpers. `repo` is the primary command, while `repoctl`, `rc`, and `@icebreakers/monorepo` remain compatibility entrypoints.
 - **CI/CD Ready**: Sample GitHub Actions configuration, Codecov integration, and `secrets.NPM_TOKEN` support automated publishing and coverage reporting.
 
 ## Quick Start
@@ -79,7 +79,8 @@ packages/
 | `pnpm test` / `pnpm test:dev` | Run Vitest once or in watch mode.                                    |
 | `pnpm lint`                   | Apply ESLint and Stylelint checks across the monorepo.               |
 | `pnpm changeset`              | Create an interactive Changeset for version bumps.                   |
-| `pnpm publish-packages`       | Build, lint, test, then version and publish changed packages.        |
+| `pnpm publish-packages`       | Shortcut for `repo release stable`.                                  |
+| `pnpm exec repo release pre`  | Manage prerelease enter, exit, and publish flows.                    |
 | `pnpm setup`                  | Bootstrap recommended workspace metadata and tooling.                |
 | `pnpm new <name>`             | Create a new package or app with the guided flow.                    |
 | `pnpm check`                  | Run recommended local verification.                                  |
@@ -87,7 +88,7 @@ packages/
 | `pnpm exec repo new`          | CLI entrypoint for package/app creation.                             |
 | `pnpm exec repo check`        | CLI entrypoint for local verification.                               |
 | `pnpm script:init`            | Initialise template settings via the `repoctl` compatibility script. |
-| `pnpm script:sync`            | Synchronise repo assets and helper scripts via `repoctl`.            |
+| `pnpm script:sync`            | Synchronise repo assets via `repoctl`.                               |
 | `pnpm script:clean`           | Remove sample packages and generated artifacts.                      |
 | `pnpm script:mirror`          | Apply the VS Code binary mirror compatibility shortcut.              |
 

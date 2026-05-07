@@ -8,8 +8,7 @@
 pnpm exec repo doctor --strict
 pnpm exec repo check --full
 pnpm changeset
-pnpm changeset version
-pnpm publish-packages
+pnpm exec repo release stable
 ```
 
 继续看：[monorepo 发包与变更日志](../monorepo/publish.md)。

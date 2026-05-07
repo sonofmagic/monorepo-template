@@ -17,7 +17,7 @@ This is a pnpm + Turbo monorepo template designed for production-ready projects.
   - `vue-lib/` - Vue component library template
 
 - **`packages/`** - Reusable tooling:
-  - `monorepo/` - @icebreakers/monorepo helper scripts and CLI
+  - `monorepo/` - @icebreakers/monorepo compatibility CLI and repoctl engine
   - `create-icebreaker/` - npm create scaffolding tool
   - `monorepo-templates/` - template asset bundle for npm
 
@@ -45,10 +45,11 @@ This is a pnpm + Turbo monorepo template designed for production-ready projects.
 
 ### Release & Publishing
 
-| Command                 | Description                                              |
-| ----------------------- | -------------------------------------------------------- |
-| `pnpm changeset`        | Create an interactive changeset for version bumps        |
-| `pnpm publish-packages` | Build, lint, test, version, and publish changed packages |
+| Command                              | Description                                                |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `pnpm changeset`                     | Create an interactive changeset for version bumps          |
+| `pnpm publish-packages`              | Run `repo release stable` for stable Changesets publishing |
+| `pnpm exec repo release pre publish` | Run prerelease publishing on alpha/beta/rc/next branches   |
 
 ### Monorepo Helper Scripts
 

@@ -5,6 +5,7 @@ import { registerAiCommands } from './commands/ai'
 import { registerConfigCommands } from './commands/config'
 import { registerEnvCommands } from './commands/env'
 import { registerPackageCommands } from './commands/package'
+import { registerReleaseCommands } from './commands/release'
 import { registerSkillsCommands } from './commands/skills'
 import { registerTemplatesCommands } from './commands/templates'
 import { registerToolingCommands } from './commands/tooling'
@@ -26,6 +27,7 @@ registerWorkspaceCommands(program, cwd)
 registerToolingCommands(program, cwd)
 registerEnvCommands(program, cwd)
 registerConfigCommands(program, cwd)
+registerReleaseCommands(program, cwd)
 registerSkillsCommands(program, cwd)
 registerVerifyCommands(program, cwd)
 registerAiCommands(program, cwd)
