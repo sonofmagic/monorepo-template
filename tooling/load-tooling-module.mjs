@@ -1,12 +1,26 @@
+import { execSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { ensureToolingBuilt } from './ensure-tooling-built.mjs'
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const toolingEntryPaths = {
   monorepo: path.join(rootDir, 'packages', 'monorepo', 'dist', 'tooling-entry.mjs'),
   repoctl: path.join(rootDir, 'packages', 'repoctl', 'dist', 'tooling-entry.mjs'),
+}
+
+export async function ensureToolingBuilt() {
+  const missingBuildOutput = Object.values(toolingEntryPaths).some(entryPath => !existsSync(entryPath))
+
+  if (!missingBuildOutput) {
+    return
+  }
+
+  execSync('pnpm tooling:build', {
+    cwd: rootDir,
+    stdio: 'inherit',
+  })
 }
 
 function getToolingImportSpecifier(entryPath, cacheBust = false) {
