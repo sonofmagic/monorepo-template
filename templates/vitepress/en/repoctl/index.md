@@ -65,6 +65,7 @@ The docs prefer `repo` so new users only need to remember one command name.
 ## Keep Reading
 
 - [Getting Started](./getting-started.md)
+- [Choose By Scenario](./scenarios.md)
 - [Command Reference](./commands.md)
 - [Configuration](./config.md)
 - [Templates](./templates.md)

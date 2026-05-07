@@ -65,6 +65,7 @@ pnpm exec repoctl new
 ## 下一步
 
 - 第一次接入：[快速开始](./getting-started.md)
+- 不知道用哪个命令：[按场景选命令](./scenarios.md)
 - 查命令参数：[命令速查](./commands.md)
 - 固化团队默认值：[配置文件](./config.md)
 - 看可创建的模板：[模板与创建](./templates.md)
