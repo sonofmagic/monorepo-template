@@ -2,6 +2,18 @@
 
 [Changesets](https://github.com/changesets/changesets)。它帮助你在 **monorepo** 或多包项目中更有条理地维护变更日志（changelog）、版本号升级策略以及自动化发布流程。
 
+在 repoctl 体系里，Changesets 负责“版本和发布”，repoctl 负责“发布前仓库是否健康”。
+
+```bash
+pnpm exec repo doctor --strict
+pnpm exec repo check --full
+pnpm changeset
+pnpm changeset version
+pnpm publish-packages
+```
+
+继续看：[monorepo 发包与变更日志](../monorepo/publish.md)。
+
 ## 1. 什么是 Changeset？
 
 - **核心思想**：每一次改动，不直接修改 `package.json` 里的版本号，而是通过写一个 `changeset` 文件（通常放在 `.changeset` 文件夹下）。

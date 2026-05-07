@@ -7,6 +7,30 @@
 - changelog 可以稳定产出
 - 很容易接到 CI 里
 
+repoctl 在发布流程里的位置很明确：它不替代 `changesets` 发布版本，而是在发布前帮你确认仓库状态、模板资产和校验计划。
+
+## repoctl 在发布前做什么
+
+```bash
+pnpm exec repo doctor --strict
+pnpm exec repo check --full
+pnpm exec repo env support --markdown --redact --out reports/support.md
+```
+
+| 命令                   | 发布前价值                                               |
+| ---------------------- | -------------------------------------------------------- |
+| `repo doctor --strict` | 确认仓库结构、Node、脚本、配置和提交链路没有漂移         |
+| `repo check --full`    | 跑根脚本里的 lint/typecheck/test/build 计划              |
+| `repo env support`     | 保存环境、配置、doctor 和 check plan，方便发布失败后回溯 |
+
+发布本身仍交给 `changesets`：
+
+```bash
+pnpm changeset
+pnpm changeset version
+pnpm publish-packages
+```
+
 ## 一条务实的发布流程
 
 先把顺序记住：
@@ -209,5 +233,6 @@ permissions:
 ## 继续阅读
 
 - [如何管理 monorepo](./manage.md)
-- [命令速查](./commands.md)
-- [排障指南](./troubleshooting.md)
+- [repoctl 工作流与 CI](../repoctl/workflows.md)
+- [repoctl 排障与报告](../repoctl/troubleshooting.md)
+- [命令别名](../repoctl/aliases.md)

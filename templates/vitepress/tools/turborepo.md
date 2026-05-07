@@ -1,5 +1,22 @@
 # Turborepo
 
+在 repoctl 体系里，Turborepo 负责“任务编排和缓存”，repoctl 负责“什么时候该跑哪些任务”。你日常通常不需要直接调用 `turbo`，而是通过根脚本或 `repo check` 间接触发。
+
+```bash
+pnpm build
+pnpm test
+pnpm exec repo check --full
+pnpm exec repo check --json --out reports/check-plan.json
+```
+
+| 层级                              | 作用                                      |
+| --------------------------------- | ----------------------------------------- |
+| `repo check`                      | 决定校验模式，输出可读或可保存的计划      |
+| 根脚本 `pnpm build` / `pnpm test` | 调用 `turbo run build` / `turbo run test` |
+| `turbo.json`                      | 定义任务依赖、缓存输出和执行策略          |
+
+继续看：[repoctl 工作流与 CI](../repoctl/workflows.md)。
+
 ## 1. 什么是 Turborepo？
 
 **Turborepo** 是由 **Vercel** 推出的一个 **高性能 JavaScript/TypeScript monorepo 构建系统**。

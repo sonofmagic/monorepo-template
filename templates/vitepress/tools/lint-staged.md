@@ -1,5 +1,15 @@
 # lint-staged
 
+在 repoctl 体系里，lint-staged 负责把 staged 文件交给合适的工具；repoctl 的 `verify staged-typecheck` 会根据文件所在 workspace 路由 typecheck。
+
+```bash
+repo verify pre-commit
+repo verify staged-typecheck packages/app/src/main.ts
+repo check --staged
+```
+
+继续看：[repoctl 工作流与 CI](../repoctl/workflows.md)。
+
 ## 1. 什么是 lint-staged？
 
 **lint-staged** 是一个工具，主要功能是：

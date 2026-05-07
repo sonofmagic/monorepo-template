@@ -1,6 +1,8 @@
 # 如何管理 monorepo
 
-这一页只讲一件事：拿到这套模板后，日常到底怎么用，才是最省心的。
+这一页是 repoctl 文档后面的知识库页面。它不再重新解释所有命令参数，而是解释：为什么这些命令能让 monorepo 日常管理变简单。
+
+如果你只想查命令，直接看 [repoctl 工作流与 CI](../repoctl/workflows.md) 或 [repoctl 命令速查](../repoctl/commands.md)。
 
 ## 先记住默认工作流
 
@@ -19,6 +21,16 @@ pnpm build
 ```bash
 pnpm setup
 ```
+
+这个工作流背后的顺序是：
+
+| 阶段 | 目标                                             |
+| ---- | ------------------------------------------------ |
+| 安装 | 让 workspace 依赖和本地包链接完整                |
+| 诊断 | 先确认仓库结构、Node、脚本、配置和提交链路可用   |
+| 创建 | 用模板生成新包，减少手写 package metadata 和配置 |
+| 校验 | 在提交前复现默认 hook 和 workspace typecheck     |
+| 构建 | 最后再跑更重的全仓任务                           |
 
 ## 命令分层
 
@@ -225,6 +237,7 @@ pnpm test
 
 ## 继续阅读
 
-- [命令速查](./commands.md)
-- [排障指南](./troubleshooting.md)
+- [repoctl 工作流与 CI](../repoctl/workflows.md)
+- [repoctl 命令速查](../repoctl/commands.md)
+- [repoctl 排障与报告](../repoctl/troubleshooting.md)
 - [发包与变更日志](./publish.md)

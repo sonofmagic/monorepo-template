@@ -1,5 +1,22 @@
 # Husky
 
+在 repoctl 体系里，Husky 是 Git hook 触发器；真正的校验逻辑尽量收口到 repoctl 命令，方便本地、CI 和手动复现使用同一套入口。
+
+```bash
+repo verify pre-commit
+repo verify commit-msg .git/COMMIT_EDITMSG
+repo verify pre-push
+```
+
+如果你只想手动复现推荐校验，用：
+
+```bash
+repo check --staged
+repo check --full
+```
+
+继续看：[repoctl 工作流与 CI](../repoctl/workflows.md)。
+
 ## 1. 什么是 Husky？
 
 **Husky** 是一个用于在 **Git hooks**（如 `pre-commit`、`pre-push`、`commit-msg` 等）中运行脚本的工具。

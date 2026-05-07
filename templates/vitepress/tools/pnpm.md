@@ -1,5 +1,31 @@
 # pnpm
 
+repoctl 默认围绕 pnpm workspace 设计。你不需要先掌握 pnpm 的所有细节，但要理解这三个事实：
+
+- `pnpm-workspace.yaml` 决定哪些目录属于 workspace。
+- `pnpm install` 会把 workspace 包链接起来。
+- 根脚本，例如 `pnpm doctor`、`pnpm new`、`pnpm check`，最终会调用 repoctl 的 `repo` CLI。
+
+## 在 repoctl 项目里怎么用 pnpm
+
+```bash
+pnpm install
+pnpm add -D repoctl
+pnpm doctor
+pnpm new sdk --template tsdown
+pnpm check
+```
+
+| 命令                  | 在 repoctl 工作流里的作用     |
+| --------------------- | ----------------------------- |
+| `pnpm install`        | 安装依赖并创建 workspace link |
+| `pnpm add -D repoctl` | 给已有仓库接入 repoctl CLI    |
+| `pnpm doctor`         | 通过根脚本运行 `repo doctor`  |
+| `pnpm new`            | 通过根脚本运行 `repo new`     |
+| `pnpm check`          | 通过根脚本运行 `repo check`   |
+
+继续看：[repoctl 快速开始](../repoctl/getting-started.md)。
+
 ## 1. 什么是 pnpm？
 
 **pnpm** 是一种 Node.js 的包管理器（类似于 **npm** 和 **yarn**）。
