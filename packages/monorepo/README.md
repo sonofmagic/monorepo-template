@@ -212,7 +212,7 @@ export const vitestProject = defineProject(await defineVitestProjectConfig({
 
 ## 文档地址
 
-https://monorepo.icebreaker.top/
+https://repo.icebreaker.top/
 
 ## 需求环境
 

@@ -1,1 +1,1 @@
-https://monorepo.icebreaker.top/
+https://repo.icebreaker.top/

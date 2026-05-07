@@ -116,7 +116,7 @@ packages/
 
 ## 更多资源
 
-- 官方文档：https://monorepo.icebreaker.top/
+- 官方文档：https://repo.icebreaker.top/
 - 贡献指南：参阅 `CONTRIBUTING.md` 了解协作流程。
 - 行为准则：查看 `CODE_OF_CONDUCT.md` 了解社区守则。
 - 安全策略：遵循 `SECURITY.md` 汇报安全问题。

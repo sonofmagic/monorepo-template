@@ -227,7 +227,7 @@ describe('createNewProject unit scenarios', () => {
       name: 'template',
       version: '1.0.0',
       author: 'ice breaker <hi@sonofmagic.top>',
-      homepage: 'https://monorepo.icebreaker.top',
+      homepage: 'https://repo.icebreaker.top',
       bugs: {
         url: 'https://github.com/sonofmagic/monorepo-template/issues',
       },

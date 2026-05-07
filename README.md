@@ -116,7 +116,7 @@ Leverage Changesets plus GitHub Actions for automated versioning:
 
 ## More Resources
 
-- Documentation: https://monorepo.icebreaker.top/
+- Documentation: https://repo.icebreaker.top/
 - Contributing guide: See `CONTRIBUTING.md` for workflow details.
 - Code of Conduct: Review `CODE_OF_CONDUCT.md` to understand community expectations.
 - Security policy: Follow `SECURITY.md` to report security issues.
