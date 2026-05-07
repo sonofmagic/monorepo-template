@@ -6,14 +6,14 @@
 
 ```bash
 pnpm install
-pnpm doctor
+pnpm run repo:doctor
 ```
 
-如果 `pnpm doctor` 不存在：
+如果 `repo:*` 根脚本还不存在：
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor
 ```
 
@@ -23,7 +23,7 @@ pnpm exec repo doctor
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor --markdown --redact --out reports/doctor-before.md
 pnpm exec repo upgrade --no-overwrite
 pnpm exec repo doctor --markdown --redact --out reports/doctor-after.md
@@ -42,7 +42,7 @@ pnpm exec repo new docs --template vitepress --dry-run
 如果只是日常开发，根脚本也可以：
 
 ```bash
-pnpm new sdk --template tsdown
+pnpm run repo:new -- sdk --template tsdown
 ```
 
 继续看：[模板与创建](./templates.md)。
@@ -50,7 +50,7 @@ pnpm new sdk --template tsdown
 ## 我要提交前自查
 
 ```bash
-pnpm check
+pnpm run repo:check
 pnpm exec repo check --dry-run
 pnpm exec repo check --full
 ```

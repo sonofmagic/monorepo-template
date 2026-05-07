@@ -34,7 +34,7 @@ features:
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo new
 pnpm exec repo check
@@ -43,10 +43,10 @@ pnpm exec repo check
 在由模板生成的仓库里，同一套工作流会暴露成更短的根脚本：
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
 ## 你可以继续阅读

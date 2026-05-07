@@ -156,7 +156,7 @@ async function updateWorkspaceManifest(workspaceDir: string, targetName: string)
  * 根据模板生成一个新项目目录，并自动补写 `package.json` 常用字段。
  *
  * 默认行为：
- * - 优先读取 `repoctl.config.ts -> commands.create`，兼容 `monorepo.config.ts`
+ * - 读取 `repoctl.config.ts -> commands.create`
  * - 模板类型默认回退到 `'tsdown'`
  * - 若目标目录已存在则直接抛错
  * - 若模板包含 `package.json`，会自动写入 `name`、`version` 与 Git 仓库信息

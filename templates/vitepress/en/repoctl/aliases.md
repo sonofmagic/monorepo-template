@@ -16,7 +16,7 @@ mo
 
 The docs recommend `repo`.
 
-Compatibility entry points remain available:
+These bins all enter the same command implementation:
 
 ```bash
 repoctl doctor
@@ -29,8 +29,7 @@ mo doctor
 
 | Recommended      | Alias       | Purpose                       |
 | ---------------- | ----------- | ----------------------------- |
-| `repo setup`     | `repo init` | Initialize workspace defaults |
-| `repo upgrade`   | `repo sync` | Sync standard template assets |
+| `repo init`      | `repo init` | Initialize workspace defaults |
 | `repo templates` | `repo tpl`  | Inspect or check templates    |
 
 ## Group Aliases
@@ -66,6 +65,6 @@ mo doctor
 ## Recommendation
 
 - Use full commands in onboarding docs.
-- Use root scripts in project README files.
+- Use `repo:*` root scripts in project README files, for example `pnpm run repo:doctor`.
 - Use short aliases in maintainer scripts only when the surrounding docs explain them.
 - Prefer full commands in CI logs.

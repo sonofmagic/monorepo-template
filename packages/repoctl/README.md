@@ -11,7 +11,7 @@ pnpm add -D repoctl
 ## Quick Start
 
 ```sh
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo doctor --json
 pnpm exec repo doctor --json --out reports/doctor.json
@@ -22,29 +22,29 @@ pnpm exec repo check --dry-run
 pnpm exec repo env info
 ```
 
-Inside generated repos, the same workflow is available as shorter root scripts:
+Inside generated repos, the same workflow is available as conflict-free `repo:*` root scripts:
 
 ```sh
-pnpm setup
-pnpm doctor
-pnpm new my-package
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor -- --json
+pnpm run repo:new -- my-package
+pnpm run repo:check
 ```
 
 ## What Each Command Is For
 
-- `repo setup`: initialize the workspace with the recommended metadata and tooling defaults.
+- `repo init`: initialize the workspace with the recommended metadata and tooling defaults.
 - `repo doctor`: diagnose whether the current repo is ready to use.
 - `repo templates`: list the built-in package/app templates and their target folders.
 - `repo new`: create a new package or app.
 - `repo check`: run the recommended local verification flow.
 - `repo upgrade`: sync the latest standard assets and scripts from the template.
 
-`repo setup` is safe to run in an existing pnpm workspace. By default it creates missing root files, appends missing workspace patterns, and skips existing README/tooling files; use `--force` or `--overwrite` when you explicitly want managed files rewritten. Use `--yes` in CI.
+`repo init` is safe to run in an existing pnpm workspace. By default it creates missing root files, appends missing workspace patterns, and skips existing README/tooling files; use `--force` or `--overwrite` when you explicitly want managed files rewritten. Use `--yes` in CI.
 
 `repo upgrade` is also CI-safe. In a non-TTY process it will not prompt; changed files are skipped unless you pass `--yes` or `--overwrite`. Use `--no-overwrite` when automation must preserve every changed file.
 
-`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended root scripts, config conflicts, workspace pattern coverage, legacy local tooling imports, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` when automation needs a persisted report.
+`repo doctor` is intentionally lightweight. It checks root workspace files, Node version compatibility, CLI dependency presence, recommended `repo:*` root scripts, stale `monorepo.config.ts` files, workspace pattern coverage, legacy local tooling imports, and whether Husky plus lint-staged are both wired. Use `repo doctor --json --out reports/doctor.json` or `pnpm run repo:doctor -- --json` when automation needs a persisted report.
 Use `repo check --dry-run` or `repo check --json --out reports/check-plan.json` when automation needs to inspect the verification plan before running it.
 
 ## Common Commands
@@ -115,11 +115,7 @@ export default defineMonorepoConfig({
 
 When `commands.create.defaultTemplate` is set, `repo new foo` creates the package directly and places it under the conventional base directory inferred from the template, such as `packages/foo` or `apps/foo`.
 
-Prefer `repoctl.config.ts`. `monorepo.config.ts` remains supported for compatibility, but the two files cannot coexist.
-
-## Compatibility
-
-`repoctl new foo`, `repoctl doctor`, and `repoctl check` remain supported as compatibility aliases.
+Use `repoctl.config.ts`. `monorepo.config.ts` is no longer loaded at runtime.
 
 ## Performance Notes
 

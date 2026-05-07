@@ -6,14 +6,14 @@ Start here when you know what you want to do, but not which repoctl command to u
 
 ```bash
 pnpm install
-pnpm doctor
+pnpm run repo:doctor
 ```
 
-If `pnpm doctor` does not exist yet:
+If the `repo:*` scripts do not exist yet:
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor
 ```
 
@@ -23,7 +23,7 @@ Keep reading: [Getting Started](./getting-started.md).
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor --markdown --redact --out reports/doctor-before.md
 pnpm exec repo upgrade --no-overwrite
 pnpm exec repo doctor --markdown --redact --out reports/doctor-after.md
@@ -42,7 +42,7 @@ pnpm exec repo new docs --template vitepress --dry-run
 For daily development, root scripts also work:
 
 ```bash
-pnpm new sdk --template tsdown
+pnpm run repo:new -- sdk --template tsdown
 ```
 
 Keep reading: [Templates](./templates.md).
@@ -50,7 +50,7 @@ Keep reading: [Templates](./templates.md).
 ## I Want To Check Before Committing
 
 ```bash
-pnpm check
+pnpm run repo:check
 pnpm exec repo check --dry-run
 pnpm exec repo check --full
 ```

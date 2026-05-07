@@ -90,7 +90,6 @@ describe('collectEnvInfo', () => {
         exists: true,
       }),
     ]))
-    expect(paths.paths.legacyConfig.exists).toBe(false)
     expect(paths.paths.snapshotReport).toEqual(expect.objectContaining({
       relativePath: 'reports/snapshot.json',
       exists: false,

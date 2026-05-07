@@ -9,7 +9,7 @@ repoctl 不只适合新模板仓库。它也可以渐进接入已有 pnpm worksp
 - 已经使用 pnpm 或准备迁移到 pnpm。
 - 有根 `package.json`。
 - 能接受 `apps/*`、`packages/*`、`examples/*` 这类 workspace 目录约定。
-- 希望统一 `setup`、`doctor`、`new`、`check` 这类日常入口。
+- 希望统一 `repo:init`、`repo:doctor`、`repo:new`、`repo:check` 这类日常入口。
 
 如果仓库还不是 pnpm workspace，先补最小 `pnpm-workspace.yaml`：
 
@@ -23,10 +23,10 @@ packages:
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 ```
 
-`setup --yes` 会使用安全默认值。它会补齐推荐脚本和 workspace patterns，但不会无条件覆盖已有 README、package.json、pnpm-workspace.yaml 或 tooling 配置。
+`repo init --yes` 会使用安全默认值。它会补齐推荐脚本和 workspace patterns，但不会无条件覆盖已有 README、package.json、pnpm-workspace.yaml 或 tooling 配置。
 
 ## 第二步：保存第一次诊断
 
@@ -39,16 +39,16 @@ pnpm exec repo doctor --json --out reports/doctor-before.json
 
 重点看这些项：
 
-| 检查项                       | 常见问题                                             |
-| ---------------------------- | ---------------------------------------------------- |
-| `package-json`               | 当前目录不是仓库根目录                               |
-| `workspace-manifest`         | 缺少 `pnpm-workspace.yaml`                           |
-| `node-version`               | 根 package 没声明 `engines.node` 或版本不匹配        |
-| `tool-package`               | 没安装 `repoctl`                                     |
-| `root-scripts`               | 缺少 `setup/new/check/doctor`                        |
-| `config-file`                | `repoctl.config.ts` 和 `monorepo.config.ts` 同时存在 |
-| `commit-hooks`               | Husky 和 lint-staged 只接了一半                      |
-| `workspace-package-coverage` | package.json 没被 workspace patterns 覆盖            |
+| 检查项                       | 常见问题                                         |
+| ---------------------------- | ------------------------------------------------ |
+| `package-json`               | 当前目录不是仓库根目录                           |
+| `workspace-manifest`         | 缺少 `pnpm-workspace.yaml`                       |
+| `node-version`               | 根 package 没声明 `engines.node` 或版本不匹配    |
+| `tool-package`               | 没安装 `repoctl`                                 |
+| `root-scripts`               | 缺少 `repo:init/repo:new/repo:check/repo:doctor` |
+| `config-file`                | 残留已废弃的 `monorepo.config.ts`                |
+| `commit-hooks`               | Husky 和 lint-staged 只接了一半                  |
+| `workspace-package-coverage` | package.json 没被 workspace patterns 覆盖        |
 
 ## 第三步：保守同步标准资产
 
@@ -71,12 +71,12 @@ pnpm exec repo check --markdown --redact --out reports/check-plan.md
 
 ## 第五步：接入根脚本
 
-如果 `setup` 已补齐根脚本，团队日常文档就可以改成：
+如果 `repo init` 已补齐根脚本，团队日常文档优先改成：
 
 ```bash
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:doctor
+pnpm run repo:new -- sdk
+pnpm run repo:check
 ```
 
 CI 和自动化脚本仍建议写完整 CLI：
@@ -88,7 +88,7 @@ pnpm exec repo check --full
 
 ## 第六步：处理遗留配置
 
-### 配置文件冲突
+### 遗留配置文件
 
 只保留：
 
@@ -96,7 +96,7 @@ pnpm exec repo check --full
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` 只是兼容旧项目。
+`monorepo.config.ts` 已不再加载；请改名为 `repoctl.config.ts`。
 
 ### 本地 tooling loader
 
@@ -106,14 +106,14 @@ repoctl.config.ts
 pnpm exec repo upgrade --yes
 ```
 
-这个命令会迁移到 `repoctl/tooling` 入口。
+这个命令会迁移到 `repoctl/tooling` 入口。简单的 `@icebreakers/commitlint-config`、`@icebreakers/eslint-config`、`@icebreakers/stylelint-config` wrapper 也会被保守转换为 `repoctl/tooling`，复杂 ESLint 配置会保留原有 rules、ignores、overrides 和额外 flat config 语义。
 
 ### workspace patterns 不覆盖包
 
 运行：
 
 ```bash
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 ```
 
 或手动扩展 `pnpm-workspace.yaml`。
@@ -122,7 +122,7 @@ pnpm exec repo setup --yes
 
 存量仓库接入建议拆成小 PR：
 
-1. 安装 `repoctl`，补 `setup/doctor/new/check` 根脚本。
+1. 安装 `repoctl`，补 `init/doctor/new/check` 根脚本。
 2. 提交 `doctor-before` 和 `doctor-after` 报告。
 3. 同步或迁移 tooling 配置。
 4. 接入 hook 和 CI。

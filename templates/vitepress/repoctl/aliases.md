@@ -16,7 +16,7 @@ mo
 
 文档统一推荐 `repo`。
 
-兼容入口仍然可用：
+这些 bin 都进入同一套命令实现：
 
 ```bash
 repoctl doctor
@@ -27,10 +27,9 @@ mo doctor
 
 ## 顶层命令别名
 
-| 推荐写法         | 兼容或短写  | 说明             |
+| 推荐写法         | 短写        | 说明             |
 | ---------------- | ----------- | ---------------- |
-| `repo setup`     | `repo init` | 初始化仓库默认值 |
-| `repo upgrade`   | `repo sync` | 同步模板标准资产 |
+| `repo init`      | `repo init` | 初始化仓库默认值 |
 | `repo templates` | `repo tpl`  | 查看或检查模板   |
 
 ## 分组命令别名
@@ -66,6 +65,6 @@ mo doctor
 ## 推荐使用原则
 
 - 新手教程写完整命令，例如 `pnpm exec repo doctor`。
-- 团队 README 写根脚本，例如 `pnpm doctor`。
+- 团队 README 写根脚本，例如 `pnpm run repo:doctor`。
 - 维护者脚本可以写短别名，但要在注释或文档里说明用途。
 - CI 里优先写完整命令，方便日志搜索。

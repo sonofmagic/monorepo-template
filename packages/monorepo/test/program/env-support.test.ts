@@ -41,8 +41,6 @@ function createSupportBundle(root: string) {
         workspaceManifest: { path: path.join(root, 'pnpm-workspace.yaml'), relativePath: 'pnpm-workspace.yaml', exists: true },
         repoctlConfig: { path: path.join(root, 'repoctl.config.ts'), relativePath: 'repoctl.config.ts', exists: true },
         repoctlConfigs: [{ path: path.join(root, 'repoctl.config.ts'), relativePath: 'repoctl.config.ts', exists: true }],
-        legacyConfig: { path: path.join(root, 'monorepo.config.ts'), relativePath: 'monorepo.config.ts', exists: false },
-        legacyConfigs: [{ path: path.join(root, 'monorepo.config.ts'), relativePath: 'monorepo.config.ts', exists: false }],
         toolingDir: { path: path.join(root, 'tooling'), relativePath: 'tooling', exists: true },
         reportsDir: { path: path.join(root, 'reports'), relativePath: 'reports', exists: false },
         doctorReport: { path: path.join(root, 'reports/doctor.json'), relativePath: 'reports/doctor.json', exists: false },

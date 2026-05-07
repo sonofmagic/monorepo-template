@@ -8,14 +8,11 @@ repoctl 的核心设计是把日常入口保持短，把细粒度能力放到分
 
 ## 1. 入口层级
 
-| 层级        | 示例                                       | 使用场景                       |
-| ----------- | ------------------------------------------ | ------------------------------ |
-| 根脚本      | `pnpm doctor`、`pnpm new`、`pnpm check`    | 团队日常开发、README、贡献指南 |
-| `repo` 命令 | `pnpm exec repo doctor`                    | 文档、CI、脚本、排障           |
-| 兼容入口    | `pnpm exec repoctl doctor`                 | 旧文档或旧脚本迁移             |
-| 分组命令    | `repo env support`、`repo verify pre-push` | 维护者、自动化和集成工具       |
-
-推荐在新文档里统一写 `repo`。它比 `repoctl` 更短，也和模板生成的根脚本保持一致。
+| 层级        | 示例                                                               | 使用场景                       |
+| ----------- | ------------------------------------------------------------------ | ------------------------------ |
+| 根脚本      | `pnpm run repo:doctor`、`pnpm run repo:new`、`pnpm run repo:check` | 团队日常开发、README、贡献指南 |
+| `repo` 命令 | `pnpm exec repo doctor`                                            | 文档、CI、脚本、排障           |
+| 分组命令    | `repo env support`、`repo verify pre-push`                         | 维护者、自动化和集成工具       |
 
 ## 2. 命令执行过程
 
@@ -70,13 +67,13 @@ repo check --markdown --out reports/check-plan.md
 
 ## 5. 和配置文件的关系
 
-repoctl 会从 workspace 根目录加载 `repoctl.config.*`。旧项目也兼容 `monorepo.config.*`，但两种配置文件不能同时存在。
+repoctl 会从 workspace 根目录加载 `repoctl.config.*`。`monorepo.config.*` 已不再加载。
 
 配置加载后会影响具体命令，例如：
 
 | 配置区域           | 影响命令                                                            |
 | ------------------ | ------------------------------------------------------------------- |
-| `commands.init`    | `repo setup`                                                        |
+| `commands.init`    | `repo init`                                                         |
 | `commands.create`  | `repo new`                                                          |
 | `commands.upgrade` | `repo upgrade`                                                      |
 | `tooling`          | `repoctl/tooling` wrapper 生成的 ESLint、Vitest、lint-staged 等配置 |

@@ -109,8 +109,10 @@ describe('init tooling', () => {
     expect(loggerInfoMock).toHaveBeenCalledWith('skip existing init target: eslint.config.js')
 
     const packageJson = JSON.parse(files.get('/repo/package.json') ?? '{}')
-    expect(packageJson.devDependencies['@icebreakers/eslint-config']).toBeTruthy()
-    expect(packageJson.devDependencies['@icebreakers/monorepo']).toMatch(/^\^/)
+    expect(packageJson.devDependencies['@icebreakers/eslint-config']).toBeUndefined()
+    expect(packageJson.devDependencies['@icebreakers/monorepo']).toBeUndefined()
+    expect(packageJson.devDependencies.repoctl).toMatch(/^\^/)
+    expect(packageJson.devDependencies.eslint).toBeTruthy()
   })
 
   it('validates target names and supports all presets', async () => {

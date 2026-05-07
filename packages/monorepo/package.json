@@ -2,7 +2,7 @@
   "name": "@icebreakers/monorepo",
   "type": "module",
   "version": "4.0.5",
-  "description": "Core engine and compatibility package behind the repoctl monorepo CLI",
+  "description": "Core engine behind the repoctl monorepo CLI",
   "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
   "homepage": "https://repo.icebreaker.top",
@@ -18,7 +18,6 @@
     "monorepo",
     "repoctl",
     "tooling",
-    "compatibility",
     "icebreaker"
   ],
   "sideEffects": false,
@@ -43,11 +42,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "bin": {
-    "rc": "bin/rc.js",
     "repo": "bin/repo.js",
-    "repoctl": "bin/repoctl.js",
-    "monorepo": "bin/monorepo.js",
-    "mo": "bin/mo.js"
+    "repoctl": "bin/repoctl.js"
   },
   "files": [
     "bin",
@@ -69,22 +65,50 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
+  "peerDependencies": {
+    "@commitlint/cli": "^20.0.0",
+    "eslint": "^9.0.0 || ^10.0.0",
+    "stylelint": "^17.0.0",
+    "typescript": "^5.0.0 || ^6.0.0",
+    "vitest": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@commitlint/cli": {
+      "optional": true
+    },
+    "eslint": {
+      "optional": true
+    },
+    "stylelint": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@icebreakers/commitlint-config": "^2.0.0",
     "@icebreakers/eslint-config": "^4.0.10",
     "@icebreakers/monorepo-templates": "workspace:*",
     "@icebreakers/stylelint-config": "^3.0.6",
     "@pnpm/find-workspace-dir": "^1000.1.5",
-    "@pnpm/logger": "^1100.0.0",
-    "@pnpm/types": "^1101.0.0",
-    "@pnpm/worker": "^1100.1.2",
+    "@pnpm/logger": "^1001.0.1",
+    "@pnpm/types": "^1001.3.0",
+    "@pnpm/worker": "^1000.6.8",
     "@pnpm/workspace.find-packages": "^1000.0.65",
     "@pnpm/workspace.read-manifest": "^1000.3.1",
+    "@typescript-eslint/rule-tester": "^8.59.2",
+    "@typescript-eslint/typescript-estree": "^8.59.2",
+    "@vue/compiler-sfc": "^3.5.34",
     "c12": "^3.3.4",
     "commander": "^14.0.3",
     "comment-json": "^5.0.0",
     "consola": "^3.4.2",
     "git-url-parse": "^16.1.0",
+    "globals": "^17.6.0",
     "klaw": "^4.1.0",
     "lint-staged": "^17.0.2",
     "p-queue": "^9.2.0",
@@ -92,6 +116,8 @@
     "picocolors": "^1.1.1",
     "semver": "^7.7.4",
     "simple-git": "^3.36.0",
+    "stylelint-order": "^8.1.1",
+    "tailwindcss": "^4.2.4",
     "vitest": "~4.1.5",
     "yaml": "^2.8.4"
   },

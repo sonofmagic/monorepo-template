@@ -16,7 +16,7 @@ repo doctor --strict
 - `pnpm-workspace.yaml` 是否存在。
 - `repoctl` 是否作为 CLI 依赖安装。
 - 根脚本是否齐全。
-- `repoctl.config.ts` 和 `monorepo.config.ts` 是否冲突。
+- 是否仍残留已废弃的 `monorepo.config.ts`。
 - Husky 与 lint-staged 是否都接上。
 
 ## 保存诊断报告
@@ -77,7 +77,7 @@ repo doctor
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` 是兼容旧项目的文件名，新项目不建议继续使用。
+`monorepo.config.ts` 已不再加载。旧项目需要改名为 `repoctl.config.ts`。
 
 ### `repo new` 提示模板不存在
 
@@ -94,7 +94,7 @@ repo templates
 使用非交互参数：
 
 ```bash
-repo setup --yes
+repo init --yes
 repo upgrade --no-overwrite
 repo check --json --out reports/check-plan.json
 ```

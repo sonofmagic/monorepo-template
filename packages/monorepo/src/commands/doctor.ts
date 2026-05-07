@@ -42,9 +42,16 @@ interface PackageJsonLike {
 }
 
 interface ToolPackageResolution {
-  name: 'repoctl' | '@icebreakers/monorepo'
+  name: 'repoctl'
   version: string
 }
+
+const recommendedRepoScripts = {
+  'repo:init': 'repo init',
+  'repo:new': 'repo new',
+  'repo:check': 'repo check',
+  'repo:doctor': 'repo doctor',
+} as const
 
 function createCheck(check: DoctorCheck) {
   return check
@@ -66,14 +73,8 @@ function resolveToolPackageName(pkgJson: PackageJsonLike): ToolPackageResolution
     typeof pkgJson.devDependencies?.['repoctl'] === 'string'
       ? { name: 'repoctl', version: pkgJson.devDependencies['repoctl'] }
       : null,
-    typeof pkgJson.devDependencies?.['@icebreakers/monorepo'] === 'string'
-      ? { name: '@icebreakers/monorepo', version: pkgJson.devDependencies['@icebreakers/monorepo'] }
-      : null,
     typeof pkgJson.dependencies?.['repoctl'] === 'string'
       ? { name: 'repoctl', version: pkgJson.dependencies['repoctl'] }
-      : null,
-    typeof pkgJson.dependencies?.['@icebreakers/monorepo'] === 'string'
-      ? { name: '@icebreakers/monorepo', version: pkgJson.dependencies['@icebreakers/monorepo'] }
       : null,
   ]
   return candidates.find((value): value is ToolPackageResolution => value !== null) ?? null
@@ -81,6 +82,16 @@ function resolveToolPackageName(pkgJson: PackageJsonLike): ToolPackageResolution
 
 function hasScript(pkgJson: PackageJsonLike, name: string) {
   return typeof pkgJson.scripts?.[name] === 'string' && pkgJson.scripts[name]!.length > 0
+}
+
+function getMissingScripts(pkgJson: PackageJsonLike, expected: Record<string, string>) {
+  return Object.keys(expected).filter(scriptName => !hasScript(pkgJson, scriptName))
+}
+
+function getUnexpectedScripts(pkgJson: PackageJsonLike, expected: Record<string, string>) {
+  return Object.entries(expected)
+    .filter(([scriptName, expectedCommand]) => hasScript(pkgJson, scriptName) && pkgJson.scripts?.[scriptName] !== expectedCommand)
+    .map(([scriptName]) => scriptName)
 }
 
 function getWorkspacePatterns(manifest: unknown) {
@@ -141,7 +152,7 @@ export async function runDoctor(cwd: string) {
   const packageJsonPath = `${workspaceDir}/package.json`
   const workspaceManifestPath = `${workspaceDir}/pnpm-workspace.yaml`
   const repoctlConfigPath = `${workspaceDir}/repoctl.config.ts`
-  const monorepoConfigPath = `${workspaceDir}/monorepo.config.ts`
+  const legacyMonorepoConfigPath = `${workspaceDir}/monorepo.config.ts`
   const huskyPreCommitPath = `${workspaceDir}/.husky/pre-commit`
   const lintStagedConfigPath = `${workspaceDir}/lint-staged.config.js`
 
@@ -149,14 +160,14 @@ export async function runDoctor(cwd: string) {
     hasPackageJson,
     hasWorkspaceManifest,
     hasRepoctlConfig,
-    hasMonorepoConfig,
+    hasLegacyMonorepoConfig,
     hasHuskyPreCommit,
     hasLintStagedConfig,
   ] = await Promise.all([
     fs.pathExists(packageJsonPath),
     fs.pathExists(workspaceManifestPath),
     fs.pathExists(repoctlConfigPath),
-    fs.pathExists(monorepoConfigPath),
+    fs.pathExists(legacyMonorepoConfigPath),
     fs.pathExists(huskyPreCommitPath),
     fs.pathExists(lintStagedConfigPath),
   ])
@@ -201,7 +212,7 @@ export async function runDoctor(cwd: string) {
           title: 'pnpm workspace',
           status: 'fail',
           detail: '缺少 pnpm-workspace.yaml，当前目录不像一个完整的 pnpm monorepo 根目录。',
-          fix: '运行 repo setup --yes 补充 pnpm-workspace.yaml，或确认你当前就在仓库根目录。',
+          fix: '运行 repo init --yes 补充 pnpm-workspace.yaml，或确认你当前就在仓库根目录。',
         }),
   ]
 
@@ -247,54 +258,50 @@ export async function runDoctor(cwd: string) {
           id: 'tool-package',
           title: 'repo CLI 依赖',
           status: 'fail',
-          detail: '根 package.json 中未发现 repoctl 或 @icebreakers/monorepo 依赖。',
-          fix: '运行 repo setup --yes 添加 repoctl devDependency，或手动执行 pnpm add -D repoctl。',
+          detail: '根 package.json 中未发现 repoctl 依赖。',
+          fix: '运行 repo init --yes 添加 repoctl devDependency，或手动执行 pnpm add -D repoctl。',
         }),
   )
 
-  const hasSetup = hasScript(pkgJson, 'setup')
-  const hasNew = hasScript(pkgJson, 'new')
-  const hasCheck = hasScript(pkgJson, 'check')
-  const hasDoctor = hasScript(pkgJson, 'doctor')
-  if (hasSetup && hasNew && hasCheck && hasDoctor) {
+  const missingRepoScripts = getMissingScripts(pkgJson, recommendedRepoScripts)
+  const unexpectedRepoScripts = getUnexpectedScripts(pkgJson, recommendedRepoScripts)
+  if (missingRepoScripts.length === 0 && unexpectedRepoScripts.length === 0) {
     checks.push(createCheck({
       id: 'root-scripts',
-      title: '根快捷脚本',
+      title: 'repo:* 根脚本',
       status: 'pass',
-      detail: '已检测到 setup / new / check / doctor 根脚本，可以直接使用 pnpm setup / pnpm new / pnpm check / pnpm doctor。',
+      detail: '已检测到 repo:init / repo:new / repo:check / repo:doctor，推荐使用 pnpm run repo:doctor -- --json 这类无冲突入口。',
     }))
   }
   else {
-    const missing = [
-      !hasSetup ? 'setup' : null,
-      !hasNew ? 'new' : null,
-      !hasCheck ? 'check' : null,
-      !hasDoctor ? 'doctor' : null,
-    ].filter(Boolean).join(', ')
+    const details = [
+      missingRepoScripts.length ? `缺少：${missingRepoScripts.join(', ')}` : null,
+      unexpectedRepoScripts.length ? `命令不一致：${unexpectedRepoScripts.join(', ')}` : null,
+    ].filter(Boolean).join('；')
     checks.push(createCheck({
       id: 'root-scripts',
-      title: '根快捷脚本',
+      title: 'repo:* 根脚本',
       status: 'warn',
-      detail: `缺少推荐的根脚本：${missing}。`,
-      fix: '运行 repo setup --yes 同步推荐根脚本，或手动在 package.json 中补齐 setup / new / check / doctor。',
+      detail: `推荐的 repo:* 根脚本未完全就绪。${details}。`,
+      fix: '运行 repo init --yes 同步推荐根脚本，或手动在 package.json 中补齐 repo:init / repo:new / repo:check / repo:doctor。',
     }))
   }
 
-  if (hasRepoctlConfig && hasMonorepoConfig) {
+  if (hasLegacyMonorepoConfig) {
     checks.push(createCheck({
       id: 'config-file',
       title: '配置文件',
       status: 'fail',
-      detail: '同时存在 repoctl.config.ts 和 monorepo.config.ts，CLI 会拒绝加载。',
-      fix: '保留一个配置文件即可，推荐只保留 repoctl.config.ts。',
+      detail: '检测到已废弃的 monorepo.config.ts，repoctl 不再加载该文件。',
+      fix: '将 monorepo.config.ts 改名为 repoctl.config.ts，并确认根配置只保留 repoctl.config.ts。',
     }))
   }
-  else if (hasRepoctlConfig || hasMonorepoConfig) {
+  else if (hasRepoctlConfig) {
     checks.push(createCheck({
       id: 'config-file',
       title: '配置文件',
       status: 'pass',
-      detail: `已检测到配置文件：${hasRepoctlConfig ? 'repoctl.config.ts' : 'monorepo.config.ts'}`,
+      detail: '已检测到配置文件：repoctl.config.ts',
     }))
   }
   else {
@@ -378,7 +385,7 @@ export async function runDoctor(cwd: string) {
       id: 'tooling-imports',
       title: 'tooling imports',
       status: 'pass',
-      detail: 'tooling 配置未引用本地源码仓库 loader。',
+      detail: 'tooling 配置未引用本地源码仓库 loader 或旧 @icebreakers/*-config wrapper。',
     }))
   }
   else {
@@ -386,8 +393,8 @@ export async function runDoctor(cwd: string) {
       id: 'tooling-imports',
       title: 'tooling imports',
       status: 'warn',
-      detail: `以下配置引用了本地源码仓库 tooling loader：${legacyToolingFiles.join(', ')}。`,
-      fix: '运行 repo upgrade --yes 迁移为直接 import repoctl/tooling。',
+      detail: `以下配置引用了旧 tooling 入口：${legacyToolingFiles.join(', ')}。`,
+      fix: '运行 repo upgrade --yes 迁移为直接 import repoctl/tooling，并保留现有配置语义。',
     }))
   }
 
@@ -412,7 +419,7 @@ export async function runDoctor(cwd: string) {
       title: 'workspace patterns',
       status: 'warn',
       detail: `pnpm-workspace.yaml 缺少常见目录：${missingCommonPatterns.join(', ')}。`,
-      fix: '运行 repo setup --yes 追加缺失 workspace patterns。',
+      fix: '运行 repo init --yes 追加缺失 workspace patterns。',
     }))
   }
 
@@ -431,7 +438,7 @@ export async function runDoctor(cwd: string) {
       title: 'workspace package coverage',
       status: 'warn',
       detail: `以下 package.json 未被 pnpm-workspace.yaml 覆盖：${uncoveredWorkspacePackages.join(', ')}。`,
-      fix: '运行 repo setup --yes 追加缺失 workspace patterns。',
+      fix: '运行 repo init --yes 追加缺失 workspace patterns。',
     }))
   }
 

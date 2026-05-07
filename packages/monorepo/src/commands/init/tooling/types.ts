@@ -20,8 +20,8 @@ export interface InitToolingExecutionOptions {
 export interface InitToolingContext {
   cwd: string
   packageJson: PackageJson
-  toolingPackageName: 'repoctl' | '@icebreakers/monorepo'
-  toolingImportSource: 'repoctl/tooling' | '@icebreakers/monorepo/tooling'
+  toolingPackageName: 'repoctl'
+  toolingImportSource: 'repoctl/tooling'
 }
 
 export interface InitToolingPreset {

@@ -67,7 +67,7 @@ Keep only:
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` is for compatibility with older projects.
+`monorepo.config.ts` is no longer loaded at runtime; rename it to `repoctl.config.ts`.
 
 ### Unknown Template Key
 
@@ -84,7 +84,7 @@ Explicit `--template` values are validated first. Invalid keys fail with suggest
 Use non-interactive options:
 
 ```bash
-repo setup --yes
+repo init --yes
 repo upgrade --no-overwrite
 repo check --json --out reports/check-plan.json
 ```

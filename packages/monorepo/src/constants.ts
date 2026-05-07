@@ -14,7 +14,7 @@ export {
 }
 
 /**
- * 用户默认看到的 CLI 名称。兼容别名仍然可用，但帮助文案统一引导到 repo。
+ * 用户默认看到的 CLI 名称，帮助文案和生成脚本都统一引导到 repo。
  */
 export const cliName = 'repo'
 

@@ -62,7 +62,7 @@ describe('upgrade pkg-json helpers coverage', () => {
     })
   })
 
-  it('preserves legacy scoped helper dependency when target already uses it', () => {
+  it('migrates legacy scoped helper dependency to repoctl', () => {
     const source: PackageJson = {
       devDependencies: {
         'repoctl': '^0.0.1',
@@ -77,8 +77,8 @@ describe('upgrade pkg-json helpers coverage', () => {
 
     setPkgJson(source, target)
 
-    expect(target.devDependencies?.['@icebreakers/monorepo']).toBe(`^${pkgVersion}`)
-    expect(target.devDependencies?.['repoctl']).toBeUndefined()
+    expect(target.devDependencies?.['repoctl']).toBe(`^${pkgVersion}`)
+    expect(target.devDependencies?.['@icebreakers/monorepo']).toBeUndefined()
   })
 
   it('exposes scripts list for consumers', () => {

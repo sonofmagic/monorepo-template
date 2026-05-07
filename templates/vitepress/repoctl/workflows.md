@@ -6,27 +6,27 @@ repoctl 的命令可以分成两类：给人用的日常入口，以及给 CI、
 
 ```bash
 pnpm install
-pnpm doctor
-pnpm new sdk --template tsdown
-pnpm check
+pnpm run repo:doctor
+pnpm run repo:new -- sdk --template tsdown
+pnpm run repo:check
 pnpm build
 ```
 
 这条链路适合新成员第一次进入仓库：
 
-| 步骤           | 判断标准                                         |
-| -------------- | ------------------------------------------------ |
-| `pnpm install` | workspace 依赖和本地链接完整                     |
-| `pnpm doctor`  | 仓库根目录、Node、脚本、配置和提交链路可用       |
-| `pnpm new`     | 新包由模板创建，目录和 package metadata 符合约定 |
-| `pnpm check`   | 提交前轻量校验可以复现                           |
-| `pnpm build`   | 全仓构建链路没有明显断点                         |
+| 步骤                   | 判断标准                                         |
+| ---------------------- | ------------------------------------------------ |
+| `pnpm install`         | workspace 依赖和本地链接完整                     |
+| `pnpm run repo:doctor` | 仓库根目录、Node、脚本、配置和提交链路可用       |
+| `pnpm run repo:new`    | 新包由模板创建，目录和 package metadata 符合约定 |
+| `pnpm run repo:check`  | 提交前轻量校验可以复现                           |
+| `pnpm build`           | 全仓构建链路没有明显断点                         |
 
 ## 存量仓库接入
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor --markdown --out reports/doctor.md
 pnpm exec repo upgrade --no-overwrite
 pnpm exec repo doctor
@@ -103,7 +103,7 @@ repo ws ls --json --out reports/workspaces.json
 
 | 场景               | 推荐参数                                           |
 | ------------------ | -------------------------------------------------- |
-| 初始化时接受默认值 | `repo setup --yes`                                 |
+| 初始化时接受默认值 | `repo init --yes`                                  |
 | 同步时保留已有改动 | `repo upgrade --no-overwrite`                      |
 | 明确覆盖标准资产   | `repo upgrade --yes` 或 `repo upgrade --overwrite` |
 | 只看计划不执行     | `--dry-run`                                        |

@@ -15,36 +15,20 @@ export interface LoadedMonorepoConfig {
 const cache = new Map<string, Promise<LoadedMonorepoConfig>>()
 export const configExtensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs'] as const
 
-export function getMonorepoConfigCandidates(cwd: string) {
-  return {
-    repoctl: configExtensions.map(ext => path.resolve(cwd, `repoctl.config.${ext}`)),
-    monorepo: configExtensions.map(ext => path.resolve(cwd, `monorepo.config.${ext}`)),
-  }
+export function getRepoctlConfigCandidates(cwd: string) {
+  return configExtensions.map(ext => path.resolve(cwd, `repoctl.config.${ext}`))
 }
 
-function findConfigFiles(cwd: string, baseName: 'repoctl' | 'monorepo') {
-  return getMonorepoConfigCandidates(cwd)[baseName]
-    .filter(file => fs.existsSync(file))
+function findConfigFiles(cwd: string) {
+  return getRepoctlConfigCandidates(cwd).filter(file => fs.existsSync(file))
 }
 
 /**
  * 基于 c12 的通用配置加载逻辑，支持多种配置文件格式。
  */
 async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
-  const repoctlConfigFiles = findConfigFiles(cwd, 'repoctl')
-  const monorepoConfigFiles = findConfigFiles(cwd, 'monorepo')
-
-  if (repoctlConfigFiles.length > 0 && monorepoConfigFiles.length > 0) {
-    throw new Error(
-      `Found both repoctl and monorepo config files in ${cwd}. `
-      + `Please keep only one of them. repoctl candidates: ${repoctlConfigFiles.join(', ')}; `
-      + `monorepo candidates: ${monorepoConfigFiles.join(', ')}`,
-    )
-  }
-
-  const configName = repoctlConfigFiles.length > 0 ? 'repoctl' : 'monorepo'
   const { config, configFile } = await loadConfig<MonorepoConfig>({
-    name: configName,
+    name: 'repoctl',
     cwd,
     rcFile: false,
     defaults: {},
@@ -53,7 +37,7 @@ async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
   })
 
   const matchedConfigFile = configFile && fs.existsSync(configFile)
-    ? findConfigFiles(cwd, configName).find(file => path.basename(file).toLowerCase() === path.basename(configFile).toLowerCase())
+    ? findConfigFiles(cwd).find(file => path.basename(file).toLowerCase() === path.basename(configFile).toLowerCase())
     : undefined
 
   return {
@@ -65,13 +49,13 @@ async function loadConfigInternal(cwd: string): Promise<LoadedMonorepoConfig> {
 }
 
 /**
- * 为 `repoctl.config.ts` / `monorepo.config.ts` 提供类型提示的辅助函数。
+ * 为 `repoctl.config.ts` 提供类型提示的辅助函数。
  *
  * 推荐在用户项目中这样写：
  *
  * @example
  * ```ts
- * import { defineMonorepoConfig } from '@icebreakers/monorepo'
+ * import { defineMonorepoConfig } from 'repoctl'
  *
  * export default defineMonorepoConfig({
  *   tooling: {
@@ -88,7 +72,6 @@ export function defineMonorepoConfig(config: MonorepoConfig) {
 
 /**
  * 加载配置对象和实际命中的配置文件路径，供诊断和脚本集成使用。
- * 优先级为 `repoctl.config.*`，如果两者同时存在则直接报错。
  *
  * @param cwd 配置文件解析起点
  * @returns 配置文件路径和解析后的配置对象；未找到时 file 为 null、config 为空对象
@@ -102,8 +85,7 @@ export async function loadMonorepoConfigDetails(cwd: string): Promise<LoadedMono
 }
 
 /**
- * 加载指定目录的 `repoctl.config.*` 或 `monorepo.config.*`，并在当前进程内做内存缓存。
- * 优先级为 `repoctl.config.*`，如果两者同时存在则直接报错。
+ * 加载指定目录的 `repoctl.config.*`，并在当前进程内做内存缓存。
  *
  * @param cwd 配置文件解析起点
  * @returns 解析后的配置对象；未找到时返回空对象
@@ -116,7 +98,7 @@ export async function loadMonorepoConfig(cwd: string) {
 /**
  * 获取单个命令对应的配置块。
  *
- * @param name 命令名称，对应 `repoctl.config.ts` / `monorepo.config.ts -> commands.<name>`
+ * @param name 命令名称，对应 `repoctl.config.ts -> commands.<name>`
  * @param cwd 配置文件解析起点
  * @returns 对应命令配置；未配置时返回空对象
  */
@@ -131,7 +113,7 @@ export async function resolveCommandConfig<Name extends keyof NonNullable<Monore
 }
 
 /**
- * 获取 `repoctl.config.ts` / `monorepo.config.ts` 中完整的 `tooling` 配置块。
+ * 获取 `repoctl.config.ts` 中完整的 `tooling` 配置块。
  *
  * @param cwd 配置文件解析起点
  * @returns `tooling` 配置；未配置时返回空对象

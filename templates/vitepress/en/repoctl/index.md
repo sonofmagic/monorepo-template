@@ -8,7 +8,7 @@ The CLI does not replace pnpm, Turborepo, or changesets. It gives teams a stable
 
 | Goal                                                  | Command                  |
 | ----------------------------------------------------- | ------------------------ |
-| Add recommended scripts and workspace defaults        | `pnpm exec repo setup`   |
+| Add recommended scripts and workspace defaults        | `pnpm exec repo init`    |
 | Check whether a repository is ready to develop        | `pnpm exec repo doctor`  |
 | Create a package, app, docs site, service, or CLI     | `pnpm exec repo new`     |
 | Reproduce the recommended pre-commit or pre-push flow | `pnpm exec repo check`   |
@@ -17,21 +17,21 @@ The CLI does not replace pnpm, Turborepo, or changesets. It gives teams a stable
 
 ## Recommended Command Layers
 
-### Root Scripts
+### repo:\* Root Scripts
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
-These are the best commands for day-to-day team docs.
+These are the best commands for day-to-day team docs. They are short, explicit, and do not collide with pnpm built-in commands.
 
 ### Explicit CLI Calls
 
 ```bash
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo templates
 pnpm exec repo new sdk --template tsdown
@@ -51,9 +51,9 @@ pnpm exec repo config inspect
 
 Grouped commands are for maintainers and automation that need finer control.
 
-## Compatibility
+## Command Entrypoints
 
-The package still supports compatibility entry points:
+The package exposes multiple bins:
 
 ```bash
 pnpm exec repoctl doctor

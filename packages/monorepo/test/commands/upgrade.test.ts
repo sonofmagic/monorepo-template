@@ -283,4 +283,34 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     await fs.remove(root)
   })
+
+  it('migrates direct config package wrappers when upgrading existing tooling files', async () => {
+    const { root, outDir } = await createTempOutDir('monorepo-upgrade-direct-tooling-')
+    const packagePath = path.join(outDir, 'package.json')
+    const eslintPath = path.join(outDir, 'eslint.config.js')
+
+    await fs.writeJSON(packagePath, {
+      name: 'demo-package',
+      scripts: {},
+    }, { spaces: 2 })
+    await fs.writeFile(eslintPath, [
+      'import { icebreaker as eslintConfig } from \'@icebreakers/eslint-config\'',
+      '',
+      'const baseOptions = { ignores: [\'dist/**\'] }',
+      'const extraFlatConfigs = [{ rules: { \'no-console\': \'off\' } }]',
+      '',
+      'export default eslintConfig(baseOptions, ...extraFlatConfigs)',
+      '',
+    ].join('\n'), 'utf8')
+
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
+    await upgradeMonorepo({ outDir, yes: true })
+
+    const content = await fs.readFile(eslintPath, 'utf8')
+    expect(content).toContain('import { defineEslintConfig } from \'repoctl/tooling\'')
+    expect(content).toContain('export default await defineEslintConfig(baseOptions, ...extraFlatConfigs)')
+    expect(content).toContain('no-console')
+
+    await fs.remove(root)
+  })
 })

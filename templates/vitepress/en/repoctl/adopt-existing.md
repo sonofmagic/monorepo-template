@@ -9,7 +9,7 @@ A repository is a good fit when:
 - It already uses pnpm, or is ready to move to pnpm.
 - It has a root `package.json`.
 - It can use workspace folders such as `apps/*`, `packages/*`, or `examples/*`.
-- The team wants stable daily entries such as `setup`, `doctor`, `new`, and `check`.
+- The team wants stable daily entries such as `repo:init`, `repo:doctor`, `repo:new`, and `repo:check`.
 
 If the repository is not yet a pnpm workspace, start with a minimal `pnpm-workspace.yaml`:
 
@@ -23,10 +23,10 @@ packages:
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 ```
 
-`setup --yes` uses safe defaults. It adds recommended scripts and workspace patterns, but it does not blindly overwrite existing README, package.json, pnpm-workspace.yaml, or tooling files.
+`repo init --yes` uses safe defaults. It adds recommended scripts and workspace patterns, but it does not blindly overwrite existing README, package.json, pnpm-workspace.yaml, or tooling files.
 
 ## Step 2: Save The First Diagnostic Report
 
@@ -45,8 +45,8 @@ Watch these checks:
 | `workspace-manifest`         | `pnpm-workspace.yaml` is missing                                  |
 | `node-version`               | Root package has no `engines.node`, or the version does not match |
 | `tool-package`               | `repoctl` is not installed                                        |
-| `root-scripts`               | `setup/new/check/doctor` scripts are missing                      |
-| `config-file`                | `repoctl.config.ts` and `monorepo.config.ts` coexist              |
+| `root-scripts`               | `repo:init/repo:new/repo:check/repo:doctor` scripts are missing   |
+| `config-file`                | A stale `monorepo.config.ts` file is still present                |
 | `commit-hooks`               | Husky and lint-staged are only partially configured               |
 | `workspace-package-coverage` | Some package.json files are not covered by workspace patterns     |
 
@@ -71,12 +71,12 @@ Review the plan before wiring hooks or CI.
 
 ## Step 5: Use Root Scripts
 
-After `setup`, team docs can use:
+After `repo init`, team docs can use:
 
 ```bash
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:doctor
+pnpm run repo:new -- sdk
+pnpm run repo:check
 ```
 
 CI and automation should still prefer explicit commands:
@@ -96,7 +96,7 @@ Keep only:
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` is for compatibility with older projects.
+`monorepo.config.ts` is no longer loaded at runtime; rename it to `repoctl.config.ts`.
 
 ### Local Tooling Loader
 
@@ -106,12 +106,14 @@ If `doctor` reports local source tooling loaders, migrate with:
 pnpm exec repo upgrade --yes
 ```
 
+The same migration also converts simple wrappers from `@icebreakers/commitlint-config`, `@icebreakers/eslint-config`, and `@icebreakers/stylelint-config` to `repoctl/tooling`. Complex ESLint configs keep their rules, ignores, overrides, and extra flat config semantics.
+
 ### Workspace Pattern Gaps
 
 Run:
 
 ```bash
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 ```
 
 or manually extend `pnpm-workspace.yaml`.

@@ -83,7 +83,8 @@ describe('cleanProjects', () => {
     expect(await fs.pathExists(docsPlansDir)).toBe(false)
 
     const rootPkg = await fs.readJSON(path.join(workspaceDir, 'package.json'))
-    expect(rootPkg.devDependencies['@icebreakers/monorepo']).toBe('latest')
+    expect(rootPkg.devDependencies.repoctl).toBe('latest')
+    expect(rootPkg.devDependencies['@icebreakers/monorepo']).toBeUndefined()
 
     await fs.remove(tmpRoot)
   })

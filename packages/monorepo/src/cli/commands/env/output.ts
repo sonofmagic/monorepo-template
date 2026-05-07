@@ -62,8 +62,6 @@ function formatEnvPaths(paths: EnvPaths) {
     formatEnvPathEntry('workspaceManifest', paths.paths.workspaceManifest),
     formatEnvPathEntry('repoctlConfig', paths.paths.repoctlConfig),
     ...paths.paths.repoctlConfigs.map(entry => formatEnvPathEntry('repoctlConfigCandidate', entry)),
-    formatEnvPathEntry('legacyConfig', paths.paths.legacyConfig),
-    ...paths.paths.legacyConfigs.map(entry => formatEnvPathEntry('legacyConfigCandidate', entry)),
     formatEnvPathEntry('toolingDir', paths.paths.toolingDir),
     formatEnvPathEntry('reportsDir', paths.paths.reportsDir),
     formatEnvPathEntry('doctorReport', paths.paths.doctorReport),

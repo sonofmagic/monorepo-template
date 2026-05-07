@@ -1,10 +1,10 @@
 import type { PackageJson } from '../../types'
 import { coerce, gte, minVersion } from 'semver'
-import { packageName as pkgName, version as pkgVersion } from '../../constants'
+import { version as pkgVersion } from '../../constants'
 import { scriptsEntries } from './scripts'
 
 const NON_OVERRIDABLE_PREFIXES = ['workspace:', 'catalog:']
-const toolPackageNames = ['repoctl', pkgName] as const
+const legacyToolPackageName = '@icebreakers/monorepo'
 
 function parseVersion(input: unknown) {
   if (typeof input !== 'string' || input.trim().length === 0) {
@@ -43,29 +43,10 @@ function shouldAssignVersion(currentVersion: unknown, nextVersion: string) {
   return !gte(current, next)
 }
 
-function resolvePreferredToolPackageName(
-  sourceDevDeps: Record<string, string | undefined>,
-  targetDevDeps: Record<string, string | undefined>,
-) {
-  for (const depName of toolPackageNames) {
-    if (typeof targetDevDeps[depName] === 'string' && targetDevDeps[depName].length > 0) {
-      return depName
-    }
-  }
-
-  for (const depName of toolPackageNames) {
-    if (typeof sourceDevDeps[depName] === 'string' && sourceDevDeps[depName].length > 0) {
-      return depName
-    }
-  }
-
-  return 'repoctl'
-}
-
 /**
  * 将内置 package.json 内容合并进目标工程：
  * - 同步依赖（保留 workspace: 前缀的版本）
- * - 确保 @icebreakers/monorepo 使用最新版本
+ * - 确保 repoctl 使用最新版本
  * - 写入预置脚本
  */
 export function setPkgJson(
@@ -81,7 +62,12 @@ export function setPkgJson(
 
   const targetDeps = { ...(targetPkgJson.dependencies ?? {}) }
   const targetDevDeps = { ...(targetPkgJson.devDependencies ?? {}) }
-  const preferredToolPackageName = resolvePreferredToolPackageName(sourceDevDeps, targetDevDeps)
+  const shouldEnsureRepoctl = Boolean(
+    sourceDevDeps['repoctl']
+    || sourceDevDeps[legacyToolPackageName]
+    || targetDevDeps['repoctl']
+    || targetDevDeps[legacyToolPackageName],
+  )
 
   if (packageManager && !targetPkgJson.packageManager) {
     targetPkgJson.packageManager = packageManager
@@ -109,15 +95,15 @@ export function setPkgJson(
       continue
     }
 
-    if (toolPackageNames.includes(depName as (typeof toolPackageNames)[number])) {
-      if (depName !== preferredToolPackageName) {
-        continue
-      }
+    if (depName === 'repoctl') {
       const nextVersion = `^${pkgVersion}`
       const targetVersion = targetDevDeps[depName]
       if (!hasNonOverridablePrefix(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
         targetDevDeps[depName] = nextVersion
       }
+    }
+    else if (depName === legacyToolPackageName) {
+      delete targetDevDeps[legacyToolPackageName]
     }
     else {
       const targetVersion = targetDevDeps[depName]
@@ -129,10 +115,16 @@ export function setPkgJson(
       }
     }
   }
-  for (const depName of toolPackageNames) {
-    if (depName !== preferredToolPackageName && depName in targetDevDeps && preferredToolPackageName in targetDevDeps) {
-      delete targetDevDeps[depName]
+  if (legacyToolPackageName in targetDevDeps && 'repoctl' in targetDevDeps) {
+    delete targetDevDeps[legacyToolPackageName]
+  }
+  if (shouldEnsureRepoctl) {
+    const nextVersion = `^${pkgVersion}`
+    const targetVersion = targetDevDeps['repoctl']
+    if (!hasNonOverridablePrefix(targetVersion) && shouldAssignVersion(targetVersion, nextVersion)) {
+      targetDevDeps['repoctl'] = nextVersion
     }
+    delete targetDevDeps[legacyToolPackageName]
   }
   if (Object.keys(targetDevDeps).length) {
     targetPkgJson.devDependencies = targetDevDeps

@@ -6,25 +6,25 @@ repoctl commands have two audiences: humans using short daily commands, and auto
 
 ```bash
 pnpm install
-pnpm doctor
-pnpm new sdk --template tsdown
-pnpm check
+pnpm run repo:doctor
+pnpm run repo:new -- sdk --template tsdown
+pnpm run repo:check
 pnpm build
 ```
 
-| Step           | What It Proves                                          |
-| -------------- | ------------------------------------------------------- |
-| `pnpm install` | Workspace dependencies and local links are ready        |
-| `pnpm doctor`  | Root files, Node, scripts, config, and hooks are usable |
-| `pnpm new`     | New packages follow template conventions                |
-| `pnpm check`   | The lightweight local verification flow is reproducible |
-| `pnpm build`   | The workspace build graph has no obvious breakage       |
+| Step                   | What It Proves                                          |
+| ---------------------- | ------------------------------------------------------- |
+| `pnpm install`         | Workspace dependencies and local links are ready        |
+| `pnpm run repo:doctor` | Root files, Node, scripts, config, and hooks are usable |
+| `pnpm run repo:new`    | New packages follow template conventions                |
+| `pnpm run repo:check`  | The lightweight local verification flow is reproducible |
+| `pnpm build`           | The workspace build graph has no obvious breakage       |
 
 ## Adopt An Existing Repository
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup --yes
+pnpm exec repo init --yes
 pnpm exec repo doctor --markdown --out reports/doctor.md
 pnpm exec repo upgrade --no-overwrite
 pnpm exec repo doctor
@@ -75,7 +75,7 @@ repo verify pre-push
 
 | Scenario                              | Option                                             |
 | ------------------------------------- | -------------------------------------------------- |
-| Accept setup defaults                 | `repo setup --yes`                                 |
+| Accept setup defaults                 | `repo init --yes`                                  |
 | Preserve changed files during upgrade | `repo upgrade --no-overwrite`                      |
 | Explicitly overwrite standard assets  | `repo upgrade --yes` or `repo upgrade --overwrite` |
 | Preview only                          | `--dry-run`                                        |

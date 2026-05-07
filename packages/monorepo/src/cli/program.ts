@@ -19,7 +19,7 @@ const program = new Command()
 program
   .name(cliName)
   .version(version)
-  .description('One-command repo setup and maintenance for pnpm/turbo workspaces.')
+  .description('One-command repo initialization and maintenance for pnpm/turbo workspaces.')
 
 registerTopLevelCommands(program, cwd)
 registerTemplatesCommands(program)
@@ -36,29 +36,20 @@ registerPackageCommands(program, cwd)
 program.addHelpText('after', `
 Quick start:
   Existing repo:
-    $ ${cliName} setup
+    $ ${cliName} init
     $ ${cliName} doctor
     $ ${cliName} templates
     $ ${cliName} new my-package
     $ ${cliName} check
 
   Faster in generated repos:
-    $ pnpm setup
-    $ pnpm doctor
-    $ pnpm new my-package
-    $ pnpm check
+    $ pnpm run repo:init
+    $ pnpm run repo:doctor
+    $ pnpm run repo:new -- my-package
+    $ pnpm run repo:check
 
   Keep the repo current:
     $ ${cliName} upgrade
-
-  Zero-install cleanup:
-    $ pnpm dlx repo@latest clean --yes
-
-Compatibility shortcuts:
-  $ repoctl setup
-  $ repoctl doctor
-  $ repoctl new
-  $ repoctl check
 `)
 
 export default program

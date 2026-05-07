@@ -8,9 +8,9 @@
 
 ```bash
 pnpm install
-pnpm doctor
-pnpm new
-pnpm check
+pnpm exec repo doctor
+pnpm run repo:new
+pnpm run repo:check
 pnpm build
 ```
 
@@ -19,7 +19,7 @@ pnpm build
 如果你在接入一个旧仓库，再多加一步：
 
 ```bash
-pnpm setup
+pnpm exec repo init
 ```
 
 这个工作流背后的顺序是：
@@ -41,10 +41,10 @@ pnpm setup
 这是最推荐的入口：
 
 ```bash
-pnpm setup
-pnpm new
-pnpm doctor
-pnpm check
+pnpm exec repo init
+pnpm run repo:new
+pnpm exec repo doctor
+pnpm run repo:check
 ```
 
 适合：
@@ -59,7 +59,7 @@ pnpm check
 当你要明确告诉别人“这是 CLI 行为，不只是 package.json 脚本”时，用：
 
 ```bash
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo new
 pnpm exec repo doctor
 pnpm exec repo check
@@ -81,14 +81,14 @@ repo ai prompt create --name checkout
 
 ## 日常任务对照表
 
-| 你想做什么             | 推荐命令                     | 说明                                              |
-| ---------------------- | ---------------------------- | ------------------------------------------------- |
-| 初始化一个刚接入的仓库 | `pnpm setup`                 | 同步推荐的仓库元信息和基础工程化配置              |
-| 看仓库当前状态是否健康 | `pnpm doctor`                | 先排根目录、Node、脚本、配置冲突、提交链路        |
-| 创建一个新的包或应用   | `pnpm new`                   | 支持交互式选择，也支持 `--template`               |
-| 提交前做本地校验       | `pnpm check`                 | 默认对齐推荐 pre-commit / pre-push 逻辑           |
-| 同步模板最新标准资产   | `pnpm exec repo upgrade`     | 适合模板升级、老仓库补齐                          |
-| 清理演示仓库或非必要包 | `pnpm exec repo clean --yes` | 零安装也可以用 `pnpm dlx repo@latest clean --yes` |
+| 你想做什么             | 推荐命令                        | 说明                                                 |
+| ---------------------- | ------------------------------- | ---------------------------------------------------- |
+| 初始化一个刚接入的仓库 | `pnpm exec repo init`           | 同步推荐的仓库元信息和基础工程化配置                 |
+| 看仓库当前状态是否健康 | `pnpm exec repo doctor`         | 先排根目录、Node、脚本、遗留配置、提交链路           |
+| 创建一个新的包或应用   | `pnpm run repo:new`             | 支持交互式选择，也支持 `-- --template`               |
+| 提交前做本地校验       | `pnpm run repo:check`           | 默认对齐推荐 pre-commit / pre-push 逻辑              |
+| 同步模板最新标准资产   | `pnpm exec repo upgrade`        | 适合模板升级、老仓库补齐                             |
+| 清理演示仓库或非必要包 | `pnpm exec repo ws clean --yes` | 零安装也可以用 `pnpm dlx repo@latest ws clean --yes` |
 
 ## `doctor`、`check`、`upgrade` 的边界
 
@@ -151,7 +151,7 @@ export default defineMonorepoConfig({
 说明：
 
 - 优先使用 `repoctl.config.ts`
-- `monorepo.config.ts` 继续兼容
+- `monorepo.config.ts` 已不再加载
 - 两者不能同时存在
 
 如果同时存在，现在 CLI 会直接报错，`repo doctor` 也会把它判成阻塞项。
@@ -161,7 +161,7 @@ export default defineMonorepoConfig({
 ### 交互式
 
 ```bash
-pnpm new
+pnpm run repo:new
 ```
 
 适合第一次使用模板、想先看看有哪些模板可选。
@@ -208,8 +208,8 @@ pnpm exec repo new utils
 
 这也是为什么：
 
-- `pnpm doctor` 会检查 Husky 与 lint-staged 是否同时存在
-- `pnpm check` 会成为最自然的人工入口
+- `pnpm exec repo doctor` 会检查 Husky 与 lint-staged 是否同时存在
+- `pnpm run repo:check` 会成为最自然的人工入口
 
 ## 依赖与构建建议
 

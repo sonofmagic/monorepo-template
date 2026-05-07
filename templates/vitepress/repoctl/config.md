@@ -6,7 +6,7 @@ repoctl 推荐在仓库根目录使用一个配置文件：
 repoctl.config.ts
 ```
 
-旧文件名 `monorepo.config.ts` 继续兼容，但两者不能同时存在。`repo doctor` 会把冲突配置标记为阻塞问题。
+`monorepo.config.ts` 已不再作为运行时配置入口。迁移旧仓库时请改名为 `repoctl.config.ts`。
 
 repoctl 支持 `ts`、`mts`、`cts`、`js`、`mjs`、`cjs` 等配置文件后缀。新项目优先使用 `repoctl.config.ts`，这样能保留类型提示和更清晰的迁移路径。
 

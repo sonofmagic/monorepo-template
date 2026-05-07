@@ -24,18 +24,18 @@ repo doctor --strict
 
 ## 2. 核心检查项
 
-| 检查项                       | 通过标准                                        | 常见修复                     |
-| ---------------------------- | ----------------------------------------------- | ---------------------------- |
-| `package-json`               | 当前 workspace 根目录存在 `package.json`        | 回到仓库根目录或先初始化项目 |
-| `workspace-manifest`         | 存在 `pnpm-workspace.yaml`                      | `repo setup --yes`           |
-| `node-version`               | 当前 Node 满足 `engines.node`                   | 切换 Node 版本或补充 engines |
-| `tool-package`               | 根依赖包含 `repoctl` 或 `@icebreakers/monorepo` | `pnpm add -D repoctl`        |
-| `root-scripts`               | 存在 `setup`、`new`、`check`、`doctor` 根脚本   | `repo setup --yes`           |
-| `config-file`                | 只存在一种配置文件                              | 保留 `repoctl.config.ts`     |
-| `commit-hooks`               | Husky 和 lint-staged 同时就绪                   | `repo upgrade --yes`         |
-| `tooling-imports`            | 配置不再引用本地源码 loader                     | `repo upgrade --yes`         |
-| `workspace-patterns`         | 常见目录被 workspace patterns 覆盖              | `repo setup --yes`           |
-| `workspace-package-coverage` | 常见目录下的包都被 pnpm 覆盖                    | `repo setup --yes`           |
+| 检查项                       | 通过标准                                                         | 常见修复                     |
+| ---------------------------- | ---------------------------------------------------------------- | ---------------------------- |
+| `package-json`               | 当前 workspace 根目录存在 `package.json`                         | 回到仓库根目录或先初始化项目 |
+| `workspace-manifest`         | 存在 `pnpm-workspace.yaml`                                       | `repo init --yes`            |
+| `node-version`               | 当前 Node 满足 `engines.node`                                    | 切换 Node 版本或补充 engines |
+| `tool-package`               | 根依赖包含 `repoctl`                                             | `pnpm add -D repoctl`        |
+| `root-scripts`               | 存在 `repo:init`、`repo:new`、`repo:check`、`repo:doctor` 根脚本 | `repo init --yes`            |
+| `config-file`                | 使用 `repoctl.config.ts`，且没有残留 `monorepo.config.ts`        | 保留 `repoctl.config.ts`     |
+| `commit-hooks`               | Husky 和 lint-staged 同时就绪                                    | `repo upgrade --yes`         |
+| `tooling-imports`            | 配置不再引用本地源码 loader 或旧 config wrapper                  | `repo upgrade --yes`         |
+| `workspace-patterns`         | 常见目录被 workspace patterns 覆盖                               | `repo init --yes`            |
+| `workspace-package-coverage` | 常见目录下的包都被 pnpm 覆盖                                     | `repo init --yes`            |
 
 ## 3. 输出报告
 
@@ -46,6 +46,8 @@ repo doctor --markdown --redact
 repo doctor --json --out reports/doctor.json
 repo doctor --markdown --redact --out reports/doctor.md
 ```
+
+自动化脚本推荐使用 `pnpm run repo:doctor -- --json` 或 `pnpm exec repo doctor --json`。
 
 | 输出         | 适合场景                    |
 | ------------ | --------------------------- |
@@ -77,7 +79,7 @@ repo doctor
 建议按阻塞程度处理：
 
 1. 先处理 `fail`，否则命令或 CI 很可能无法继续。
-2. 再处理配置冲突和 Node 版本问题。
+2. 再处理遗留配置和 Node 版本问题。
 3. 然后补根脚本、hook 和 lint-staged。
 4. 最后整理 workspace patterns 与 tooling imports。
 

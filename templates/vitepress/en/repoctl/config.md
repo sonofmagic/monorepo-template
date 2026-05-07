@@ -6,7 +6,7 @@ repoctl recommends one root config file:
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` remains supported for compatibility, but the two files cannot coexist. `repo doctor` reports the conflict as a blocking issue.
+`monorepo.config.ts` is no longer loaded at runtime. Rename it to `repoctl.config.ts` before running repoctl.
 
 ## Minimal Config
 

@@ -296,7 +296,10 @@ export async function upgradeMonorepo(opts: CliOpts) {
 
       let source = await fs.readFile(file.path)
       if (/\.(?:js|mjs|ts|mts|cjs|cts)$/.test(relPath)) {
-        source = Buffer.from(migrateLegacyToolingReferences(source.toString('utf8'), 'repoctl/tooling'))
+        const exists = await fs.pathExists(targetPath)
+        const textSource = exists ? await fs.readFile(targetPath, 'utf8') : source.toString('utf8')
+        const migrated = migrateLegacyToolingReferences(textSource, 'repoctl/tooling')
+        source = Buffer.from(migrated === textSource ? migrateLegacyToolingReferences(source.toString('utf8'), 'repoctl/tooling') : migrated)
       }
       const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(source))
       const action = async () => {

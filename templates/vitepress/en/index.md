@@ -34,7 +34,7 @@ features:
 
 ```bash
 pnpm add -D repoctl
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo new
 pnpm exec repo check
@@ -43,10 +43,10 @@ pnpm exec repo check
 Generated repositories expose the same workflow as shorter root scripts:
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
 ## Keep Reading

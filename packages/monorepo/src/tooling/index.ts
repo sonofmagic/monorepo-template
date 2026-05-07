@@ -78,10 +78,15 @@ export interface MonorepoTsconfig {
 export interface DefineConfigOptions<TConfig> {
   cwd?: string
   options?: TConfig
+}
+
+export interface DefineEslintConfigOptions extends DefineConfigOptions<EslintToolingConfig> {
   /**
-   * @deprecated 使用 `options` 代替，避免与 `tooling.lintStaged.config` 语义冲突。
+   * 额外传给 ESLint flat config 工厂的配置片段。
+   *
+   * 这等价于 `options.configs`，但更贴近 flat config 的“基础 options + 后续 configs”写法。
    */
-  config?: TConfig
+  configs?: IcebreakerEslintUserConfigItem[]
 }
 
 /**
@@ -148,10 +153,6 @@ export interface DefineVitestConfigOptions {
 export interface DefineVitestProjectConfigOptions {
   cwd?: string
   options?: MonorepoVitestProjectConfigOptions
-  /**
-   * @deprecated 使用 `options` 代替，保持与其他 `define*Config()` 包装器一致。
-   */
-  config?: MonorepoVitestProjectConfigOptions
 }
 
 const defaultProjectRoots = ['packages', 'apps']
@@ -262,14 +263,14 @@ function findConfig(basePath: string, configCandidates: string[]) {
 }
 
 /**
- * 读取当前工作目录下的 `monorepo.config.*` 中 `tooling` 配置块。
+ * 读取当前工作目录下的 `repoctl.config.*` 中 `tooling` 配置块。
  *
  * @param cwd 配置文件解析起点。默认使用 `process.cwd()`
  * @returns 标准化后的 tooling 配置；未配置时返回空对象
  *
  * @example
  * ```ts
- * import { loadMonorepoToolingConfig } from '@icebreakers/monorepo/tooling'
+ * import { loadMonorepoToolingConfig } from 'repoctl/tooling'
  *
  * const tooling = await loadMonorepoToolingConfig()
  * console.log(tooling.vitest?.includeWorkspaceRootConfig)
@@ -288,7 +289,32 @@ async function loadToolingSection<K extends keyof NonNullable<ToolingConfig>>(ke
 function resolveConfigInput<TConfig>(input?: DefineConfigOptions<TConfig>) {
   return {
     cwd: input?.cwd ?? process.cwd(),
-    options: input?.options ?? input?.config,
+    options: input?.options,
+  }
+}
+
+function isDefineConfigWrapper(input: unknown): input is DefineConfigOptions<unknown> {
+  if (input === null || typeof input !== 'object' || Array.isArray(input)) {
+    return false
+  }
+  return 'cwd' in input || 'options' in input
+}
+
+function resolveEslintOptions(
+  options: EslintToolingConfig = {},
+  configs: IcebreakerEslintUserConfigItem[] = [],
+): EslintToolingConfig {
+  const {
+    configs: inlineConfigs = [],
+    ...rest
+  } = options
+
+  return {
+    ...rest,
+    configs: [
+      ...(inlineConfigs as IcebreakerEslintUserConfigItem[]),
+      ...configs,
+    ],
   }
 }
 
@@ -322,7 +348,7 @@ function loadBundledTsconfig(): MonorepoTsconfig {
 /**
  * 基于 `@icebreakers/commitlint-config` 创建 commitlint 配置。
  *
- * 适合在需要手动传入覆盖项时使用；如果只想读取 `repoctl.config.ts` / `monorepo.config.ts` 默认值，
+ * 适合在需要手动传入覆盖项时使用；如果只想读取 `repoctl.config.ts` 默认值，
  * 优先使用 `defineCommitlintConfig()`。
  *
  * @param options 额外合并到默认 commitlint 配置上的字段
@@ -330,7 +356,7 @@ function loadBundledTsconfig(): MonorepoTsconfig {
  *
  * @example
  * ```ts
- * import { createMonorepoCommitlintConfig } from '@icebreakers/monorepo/tooling'
+ * import { createMonorepoCommitlintConfig } from 'repoctl/tooling'
  *
  * export default createMonorepoCommitlintConfig({
  *   rules: {
@@ -346,14 +372,14 @@ export function createMonorepoCommitlintConfig(
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.commitlint`，并生成 commitlint 配置。
+ * 从 `repoctl.config.ts` 读取 `tooling.commitlint`，并生成 commitlint 配置。
  *
- * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @param input `cwd` 用于指定配置文件解析起点，`options` 用于追加运行时覆盖项
  * @returns 可直接导出的 commitlint 配置对象
  *
  * @example
  * ```ts
- * import { defineCommitlintConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineCommitlintConfig } from 'repoctl/tooling'
  *
  * export default await defineCommitlintConfig()
  * ```
@@ -375,43 +401,62 @@ export async function defineCommitlintConfig(
  * 默认会追加一个用于忽略 `fixtures` 目录的 glob，除非显式传入其他 `ignores`。
  *
  * @param options 额外 ESLint 配置；`ignores` 默认会忽略 `fixtures` 目录
+ * @param extraConfigs 额外追加的 flat config 片段，等价于 `options.configs`
  * @returns 可直接作为 `eslint.config.js` 默认导出的 flat config
+ *
+ * @example
+ * ```js
+ * import { createMonorepoEslintConfig } from 'repoctl/tooling'
+ *
+ * export default createMonorepoEslintConfig(
+ *   { ignores: ['dist/**'] },
+ *   { rules: { 'no-console': 'off' } },
+ * )
+ * ```
  */
 export function createMonorepoEslintConfig(
   options: EslintToolingConfig = {},
+  ...extraConfigs: IcebreakerEslintUserConfigItem[]
 ): MonorepoEslintConfig {
   const {
-    configs = [],
+    configs: resolvedConfigs = [],
     ...rest
-  } = options
+  } = resolveEslintOptions(options, extraConfigs)
   return createEslint(
     rest as IcebreakerEslintOptions,
-    ...(configs as IcebreakerEslintUserConfigItem[]),
+    ...(resolvedConfigs as IcebreakerEslintUserConfigItem[]),
   )
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.eslint`，并生成 ESLint 配置。
+ * 从 `repoctl.config.ts` 读取 `tooling.eslint`，并生成 ESLint 配置。
  *
- * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @param input `cwd` 用于指定配置文件解析起点，`options` 与 `configs` 用于追加运行时覆盖项
  * @returns 可直接导出的 ESLint flat config
  *
  * @example
  * ```js
- * import { defineEslintConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineEslintConfig } from 'repoctl/tooling'
  *
- * export default await defineEslintConfig()
+ * export default await defineEslintConfig(
+ *   { ignores: ['dist/**'] },
+ *   { rules: { 'no-console': 'off' } },
+ * )
  * ```
  */
 export async function defineEslintConfig(
-  input: DefineConfigOptions<EslintToolingConfig> = {},
+  input: DefineEslintConfigOptions | EslintToolingConfig = {},
+  ...configs: IcebreakerEslintUserConfigItem[]
 ): Promise<MonorepoEslintConfig> {
-  const resolved = resolveConfigInput(input)
+  const wrapped = isDefineConfigWrapper(input)
+    ? input as DefineEslintConfigOptions
+    : { options: input as EslintToolingConfig }
+  const resolved = resolveConfigInput(wrapped)
   const toolingOptions = await loadToolingSection('eslint', resolved.cwd)
   return createMonorepoEslintConfig({
     ...toolingOptions,
     ...resolved.options,
-  })
+  }, ...(wrapped.configs ?? []), ...configs)
 }
 
 /**
@@ -427,9 +472,9 @@ export function createMonorepoStylelintConfig(
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.stylelint`，并生成 Stylelint 配置。
+ * 从 `repoctl.config.ts` 读取 `tooling.stylelint`，并生成 Stylelint 配置。
  *
- * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @param input `cwd` 用于指定配置文件解析起点，`options` 用于追加运行时覆盖项
  * @returns 可直接导出的 Stylelint 配置对象
  */
 export async function defineStylelintConfig(
@@ -456,9 +501,9 @@ export function createMonorepoTsconfig(
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.tsconfig`，并生成最终的 TypeScript 配置对象。
+ * 从 `repoctl.config.ts` 读取 `tooling.tsconfig`，并生成最终的 TypeScript 配置对象。
  *
- * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @param input `cwd` 用于指定配置文件解析起点，`options` 用于追加运行时覆盖项
  * @returns 可直接写入或导出的 `tsconfig.json` 配置对象
  */
 export async function defineTsconfigConfig(
@@ -478,15 +523,15 @@ export async function defineTsconfigConfig(
  * - `*.{ts,tsx,mts,cts,vue}` 调用 `pnpm exec repo verify staged-typecheck`
  * - 样式文件运行 `stylelint --fix --allow-empty-input`
  *
- * @param options 仅支持 `monorepoCommand`，默认值为 `pnpm exec repo`
+ * @param options 可配置 `repoCommand`，默认值为 `pnpm exec repo`
  * @returns 可直接导出的 `lint-staged` 配置对象
  *
  * @example
  * ```js
- * import { createMonorepoLintStagedConfig } from '@icebreakers/monorepo/tooling'
+ * import { createMonorepoLintStagedConfig } from 'repoctl/tooling'
  *
  * export default createMonorepoLintStagedConfig({
- *   monorepoCommand: 'pnpm exec repo',
+ *   repoCommand: 'pnpm exec repo',
  * })
  * ```
  */
@@ -495,7 +540,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
     return options.config as MonorepoLintStagedConfig
   }
 
-  const monorepoCommand = options.monorepoCommand ?? 'pnpm exec repo'
+  const repoCommand = options.repoCommand ?? 'pnpm exec repo'
   return {
     '*.{js,jsx,mjs,ts,tsx,mts,cts}': [
       'eslint --fix',
@@ -509,7 +554,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
       if (uniqueFiles.length === 0) {
         return []
       }
-      return `${monorepoCommand} verify staged-typecheck ${uniqueFiles.map(escapeForShell).join(' ')}`
+      return `${repoCommand} verify staged-typecheck ${uniqueFiles.map(escapeForShell).join(' ')}`
     },
     '*.{json,md,mdx,html,yml,yaml}': [
       'eslint --fix',
@@ -521,9 +566,9 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.lintStaged`，并生成 `lint-staged` 配置。
+ * 从 `repoctl.config.ts` 读取 `tooling.lintStaged`，并生成 `lint-staged` 配置。
  *
- * @param input `cwd` 用于指定配置文件解析起点，`config` 用于追加运行时覆盖项
+ * @param input `cwd` 用于指定配置文件解析起点，`options` 用于追加运行时覆盖项
  * @returns 可直接导出的 `lint-staged` 配置对象
  */
 export async function defineLintStagedConfig(
@@ -554,7 +599,7 @@ export async function defineLintStagedConfig(
  *
  * @example
  * ```ts
- * import { createMonorepoVitestConfig } from '@icebreakers/monorepo/tooling'
+ * import { createMonorepoVitestConfig } from 'repoctl/tooling'
  *
  * export default {
  *   ...createMonorepoVitestConfig({
@@ -623,11 +668,11 @@ function mergeMonorepoVitestConfig(
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitest`，再叠加运行时 `options` 与 `overrides`
+ * 从 `repoctl.config.ts` 读取 `tooling.vitest`，再叠加运行时 `options` 与 `overrides`
  * 生成最终 Vitest 配置。
  *
  * 优先级从低到高：
- * 1. `repoctl.config.ts` / `monorepo.config.ts -> tooling.vitest`
+ * 1. `repoctl.config.ts -> tooling.vitest`
  * 2. `options`
  * 3. `overrides`
  *
@@ -638,7 +683,7 @@ function mergeMonorepoVitestConfig(
  *
  * @example
  * ```ts
- * import { defineVitestConfig } from '@icebreakers/monorepo/tooling'
+ * import { defineVitestConfig } from 'repoctl/tooling'
  * import { defineConfig } from 'vitest/config'
  *
  * export default defineConfig(async () => await defineVitestConfig({
@@ -698,11 +743,11 @@ export function createMonorepoVitestProjectConfig(options: MonorepoVitestProject
 }
 
 /**
- * 从 `repoctl.config.ts` / `monorepo.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `options`
+ * 从 `repoctl.config.ts` 读取 `tooling.vitestProject`，再叠加运行时 `options`
  * 生成单个 package/app 的项目级 Vitest 配置。
  *
  * 优先级从低到高：
- * 1. `repoctl.config.ts` / `monorepo.config.ts -> tooling.vitestProject`
+ * 1. `repoctl.config.ts -> tooling.vitestProject`
  * 2. `options`
  *
  * @param input `cwd` 用于配置文件解析起点，`options` 用于追加项目内局部覆盖项
@@ -716,6 +761,6 @@ export async function defineVitestProjectConfig(
 
   return createMonorepoVitestProjectConfig({
     ...toolingOptions,
-    ...(input.options ?? input.config),
+    ...input.options,
   })
 }

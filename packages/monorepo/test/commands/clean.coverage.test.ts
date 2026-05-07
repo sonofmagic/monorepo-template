@@ -176,7 +176,7 @@ describe('clean coverage', () => {
     }, { spaces: 2 })
   })
 
-  it('preserves legacy scoped helper dependency when already installed', async () => {
+  it('migrates legacy scoped helper dependency to repoctl', async () => {
     resolveCommandConfigMock.mockResolvedValue({
       autoConfirm: true,
       pinnedVersion: '3.0.0',
@@ -199,7 +199,7 @@ describe('clean coverage', () => {
 
     expect(outputJsonMock).toHaveBeenCalledWith('/repo/package.json', {
       devDependencies: {
-        '@icebreakers/monorepo': '3.0.0',
+        repoctl: '3.0.0',
       },
     }, { spaces: 2 })
   })

@@ -1,5 +1,4 @@
 import type { InitToolingContext, InitToolingPreset, InitToolingTarget } from './types'
-import type { PackageJson } from '@/types'
 import { version } from '@/constants'
 import { defineTsconfigConfig } from '@/tooling'
 import rootPackageJson from '../../../../../../package.json'
@@ -39,30 +38,12 @@ function getToolingPackageDependency(toolingPackageName: InitToolingContext['too
   }
 }
 
-function getRootDeps(pkgJson: PackageJson) {
-  return {
-    ...(pkgJson.dependencies ?? {}),
-    ...(pkgJson.devDependencies ?? {}),
-  }
-}
-
-export function resolveToolingPackageName(pkgJson: PackageJson): InitToolingContext['toolingPackageName'] {
-  const deps = getRootDeps(pkgJson)
-  if (typeof deps['repoctl'] === 'string' && deps['repoctl'].length > 0) {
-    return 'repoctl'
-  }
-  if (typeof deps['@icebreakers/monorepo'] === 'string' && deps['@icebreakers/monorepo'].length > 0) {
-    return '@icebreakers/monorepo'
-  }
+export function resolveToolingPackageName(): InitToolingContext['toolingPackageName'] {
   return 'repoctl'
 }
 
-export function resolveToolingImportSource(
-  toolingPackageName: InitToolingContext['toolingPackageName'],
-): InitToolingContext['toolingImportSource'] {
-  return toolingPackageName === 'repoctl'
-    ? 'repoctl/tooling'
-    : '@icebreakers/monorepo/tooling'
+export function resolveToolingImportSource(): InitToolingContext['toolingImportSource'] {
+  return 'repoctl/tooling'
 }
 
 export const initToolingPresets: Record<InitToolingTarget, InitToolingPreset> = {
@@ -73,7 +54,6 @@ export const initToolingPresets: Record<InitToolingTarget, InitToolingPreset> = 
     getDependencies: ({ toolingPackageName }) => ({
       ...getToolingPackageDependency(toolingPackageName),
       '@commitlint/cli': getDependencyVersion('@commitlint/cli'),
-      '@icebreakers/commitlint-config': getDependencyVersion('@icebreakers/commitlint-config'),
     }),
   },
   'eslint': {
@@ -82,8 +62,7 @@ export const initToolingPresets: Record<InitToolingTarget, InitToolingPreset> = 
     getContent: ({ toolingImportSource }) => createConfigModule('defineEslintConfig', toolingImportSource),
     getDependencies: ({ toolingPackageName }) => ({
       ...getToolingPackageDependency(toolingPackageName),
-      '@icebreakers/eslint-config': getDependencyVersion('@icebreakers/eslint-config'),
-      'eslint': getDependencyVersion('eslint'),
+      eslint: getDependencyVersion('eslint'),
     }),
   },
   'stylelint': {
@@ -92,8 +71,7 @@ export const initToolingPresets: Record<InitToolingTarget, InitToolingPreset> = 
     getContent: ({ toolingImportSource }) => createConfigModule('defineStylelintConfig', toolingImportSource),
     getDependencies: ({ toolingPackageName }) => ({
       ...getToolingPackageDependency(toolingPackageName),
-      '@icebreakers/stylelint-config': getDependencyVersion('@icebreakers/stylelint-config'),
-      'stylelint': getDependencyVersion('stylelint'),
+      stylelint: getDependencyVersion('stylelint'),
     }),
   },
   'lint-staged': {

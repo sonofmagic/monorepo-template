@@ -24,6 +24,13 @@
     "monorepo"
   ],
   "sideEffects": false,
+  "tsd": {
+    "compilerOptions": {
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "skipLibCheck": true
+    }
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -45,11 +52,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "bin": {
-    "rc": "bin/rc.js",
     "repo": "bin/repo.js",
-    "repoctl": "bin/repoctl.js",
-    "monorepo": "bin/monorepo.js",
-    "mo": "bin/mo.js"
+    "repoctl": "bin/repoctl.js"
   },
   "files": [
     "bin",
@@ -68,6 +72,30 @@
     "release": "pnpm publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
+  },
+  "peerDependencies": {
+    "@commitlint/cli": "^20.0.0",
+    "eslint": "^9.0.0 || ^10.0.0",
+    "stylelint": "^17.0.0",
+    "typescript": "^5.0.0 || ^6.0.0",
+    "vitest": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@commitlint/cli": {
+      "optional": true
+    },
+    "eslint": {
+      "optional": true
+    },
+    "stylelint": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@icebreakers/monorepo": "workspace:*"

@@ -25,9 +25,9 @@ describe('tooling factories', () => {
     expect(createMonorepoTsconfig()).toBeTruthy()
   })
 
-  it('creates lint-staged config with overridable monorepo command', () => {
+  it('creates lint-staged config with overridable repo command', () => {
     const config = createMonorepoLintStagedConfig({
-      monorepoCommand: 'pnpm exec repo',
+      repoCommand: 'pnpm exec repo',
     })
     const command = config['*.{ts,tsx,mts,cts,vue}']
 
@@ -99,6 +99,11 @@ describe('tooling factories', () => {
   })
 
   it('defines wrapper configs with inline overrides', async () => {
+    const extraEslintConfig = {
+      rules: {
+        'no-alert': 'off' as const,
+      },
+    }
     const commitlint = await defineCommitlintConfig({
       options: {
         extends: ['@custom/commitlint-config'],
@@ -107,10 +112,40 @@ describe('tooling factories', () => {
     const eslint = await defineEslintConfig({
       options: {
         ignores: ['custom-ignore/**'],
+      },
+      configs: [
+        {
+          rules: {
+            'no-console': 'off',
+          },
+        },
+      ],
+    })
+    const eslintDirect = await defineEslintConfig(
+      {
+        ignores: ['direct-ignore/**'],
+      },
+      extraEslintConfig,
+    )
+    const eslintCreated = await createMonorepoEslintConfig(
+      {
+        ignores: ['created-ignore/**'],
         configs: [
           {
             rules: {
-              'no-console': 'off',
+              'no-debugger': 'off',
+            },
+          },
+        ],
+      },
+      extraEslintConfig,
+    )
+    const eslintOptionsConfigs = await defineEslintConfig({
+      options: {
+        configs: [
+          {
+            rules: {
+              'no-restricted-syntax': 'off',
             },
           },
         ],
@@ -125,7 +160,7 @@ describe('tooling factories', () => {
     })
     const lintStaged = await defineLintStagedConfig({
       options: {
-        monorepoCommand: 'monorepo',
+        repoCommand: 'repo',
       },
     })
     const eslintIgnores = eslint
@@ -137,6 +172,10 @@ describe('tooling factories', () => {
     expect(commitlint['extends']).toEqual(['@custom/commitlint-config'])
     expect(eslintIgnores).toContain('custom-ignore/**')
     expect(eslint.some(config => config.rules?.['no-console'] === 'off')).toBe(true)
+    expect(eslintDirect.some(config => config.rules?.['no-alert'] === 'off')).toBe(true)
+    expect(eslintCreated.some(config => config.rules?.['no-alert'] === 'off')).toBe(true)
+    expect(eslintCreated.some(config => config.rules?.['no-debugger'] === 'off')).toBe(true)
+    expect(eslintOptionsConfigs.some(config => config.rules?.['no-restricted-syntax'] === 'off')).toBe(true)
     expect(stylelint['rules']).toMatchObject({
       'selector-class-pattern': null,
     })
@@ -146,7 +185,7 @@ describe('tooling factories', () => {
     if (typeof command !== 'function') {
       throw new TypeError('expected lint-staged rule to be callable')
     }
-    expect(command(['src/index.ts'])).toContain('monorepo verify staged-typecheck')
+    expect(command(['src/index.ts'])).toContain('repo verify staged-typecheck')
   })
 
   it('reads define wrapper cwd from object input', async () => {
@@ -184,7 +223,7 @@ describe('tooling factories', () => {
     expect(config.test.alias).toEqual([{ find: '@', replacement: '/tmp/project-src' }])
   })
 
-  it('loads tooling config from monorepo config', async () => {
+  it('loads tooling config from repoctl config', async () => {
     const config = await loadMonorepoToolingConfig(process.cwd())
     expect(config).toBeTruthy()
   })
@@ -204,32 +243,7 @@ describe('tooling factories', () => {
     expect(config.include).toEqual(['src'])
   })
 
-  it('keeps legacy config input working for define wrappers', async () => {
-    const lintStaged = await defineLintStagedConfig({
-      config: {
-        monorepoCommand: 'legacy-monorepo',
-      },
-    })
-
-    const command = lintStaged['*.{ts,tsx,mts,cts,vue}']
-    expect(typeof command).toBe('function')
-    if (typeof command !== 'function') {
-      throw new TypeError('expected lint-staged rule to be callable')
-    }
-    expect(command(['src/index.ts'])).toContain('legacy-monorepo verify staged-typecheck')
-  })
-
-  it('keeps legacy config input working for vitest project wrapper', async () => {
-    const config = await defineVitestProjectConfig({
-      config: {
-        environment: 'jsdom',
-      },
-    })
-
-    expect(config.test.environment).toBe('jsdom')
-  })
-
-  it('defines wrapper configs internally from monorepo config', async () => {
+  it('defines wrapper configs internally from repoctl config', async () => {
     expect(await defineCommitlintConfig()).toBeTruthy()
     expect(await defineEslintConfig()).toBeTruthy()
     expect(await defineStylelintConfig()).toBeTruthy()

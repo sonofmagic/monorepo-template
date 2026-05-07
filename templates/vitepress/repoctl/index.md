@@ -8,7 +8,7 @@
 
 | 场景                                     | 推荐入口                 |
 | ---------------------------------------- | ------------------------ |
-| 给已有 pnpm workspace 补齐标准脚本和配置 | `pnpm exec repo setup`   |
+| 给已有 pnpm workspace 补齐标准脚本和配置 | `pnpm exec repo init`    |
 | 判断当前仓库是不是能顺利开发             | `pnpm exec repo doctor`  |
 | 创建新的包、应用、文档站或 CLI           | `pnpm exec repo new`     |
 | 提交前复现推荐校验链路                   | `pnpm exec repo check`   |
@@ -17,21 +17,21 @@
 
 ## 推荐命令层级
 
-### 1. 生成仓库里的短脚本
+### 1. 生成仓库里的 repo:\* 根脚本
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
-这是给日常开发和团队文档使用的入口。短、稳定、不需要先解释 CLI 包名。
+这是给日常开发和团队文档使用的入口。短、稳定、不需要先解释 CLI 包名，也不会和 pnpm 内置命令冲突。
 
 ### 2. 明确调用 repo CLI
 
 ```bash
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo templates
 pnpm exec repo new sdk --template tsdown
@@ -57,7 +57,7 @@ repoctl 把 monorepo 里最容易分散的动作收敛为五条主线：
 
 | 主线   | 代表命令                      | 解决的问题                                                |
 | ------ | ----------------------------- | --------------------------------------------------------- |
-| 初始化 | `repo setup` / `repo upgrade` | 生成或同步 workspace、根脚本、Husky、lint-staged 等资产   |
+| 初始化 | `repo init` / `repo upgrade`  | 生成或同步 workspace、根脚本、Husky、lint-staged 等资产   |
 | 诊断   | `repo doctor`                 | 判断仓库根目录、运行时、脚本、配置和提交链路是否就绪      |
 | 创建   | `repo templates` / `repo new` | 使用内置模板生成库、应用、服务、文档站和 CLI              |
 | 校验   | `repo check` / `repo verify`  | 统一 pre-commit、staged typecheck、pre-push 和 commit-msg |
@@ -67,23 +67,23 @@ repoctl 把 monorepo 里最容易分散的动作收敛为五条主线：
 
 ## 新人和维护者的边界
 
-| 角色       | 推荐只记住                                                      | 需要深入时再看                                              |
-| ---------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
-| 新成员     | `pnpm doctor`、`pnpm new`、`pnpm check`                         | [按场景选命令](./scenarios.md)                              |
-| 包维护者   | `repo templates`、`repo new --template`、`repo check --full`    | [模板资产治理](./template-assets.md)                        |
-| CI 维护者  | `repo doctor --strict`、`repo check --full`、`repo env support` | [报告与自动化输出](./reports.md)                            |
-| 平台维护者 | `repo setup`、`repo upgrade`、`repo config inspect`             | [执行模型](./execution-model.md) 和 [配置文件](./config.md) |
+| 角色       | 推荐只记住                                                         | 需要深入时再看                                              |
+| ---------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| 新成员     | `pnpm run repo:doctor`、`pnpm run repo:new`、`pnpm run repo:check` | [按场景选命令](./scenarios.md)                              |
+| 包维护者   | `repo templates`、`repo new --template`、`repo check --full`       | [模板资产治理](./template-assets.md)                        |
+| CI 维护者  | `repo doctor --strict`、`repo check --full`、`repo env support`    | [报告与自动化输出](./reports.md)                            |
+| 平台维护者 | `repo init`、`repo upgrade`、`repo config inspect`                 | [执行模型](./execution-model.md) 和 [配置文件](./config.md) |
 
-## 和旧入口的关系
+## 命令入口
 
-`repoctl` 包仍然提供兼容入口，例如：
+`repoctl` 包提供多个 bin，例如：
 
 ```bash
 pnpm exec repoctl doctor
 pnpm exec repoctl new
 ```
 
-文档统一推荐 `repo`，是为了减少新人需要记住的名字。底层实现仍来自同一套 CLI。
+文档统一推荐 `repo`，是为了减少新人需要记住的名字。底层实现来自同一套 CLI。
 
 ## 下一步
 

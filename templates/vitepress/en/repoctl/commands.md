@@ -5,7 +5,7 @@ This page focuses on high-value repoctl commands and options.
 ## Main Entry
 
 ```bash
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo templates
 pnpm exec repo new
@@ -15,20 +15,20 @@ pnpm exec repo check
 Generated repositories also expose:
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
-## `repo setup`
+## `repo init`
 
 ```bash
-repo setup
-repo setup --yes
-repo setup --preset minimal
-repo setup --preset standard --force
-repo setup --overwrite
+repo init
+repo init --yes
+repo init --preset minimal
+repo init --preset standard --force
+repo init --overwrite
 ```
 
 Use it to initialize recommended workspace defaults. It skips existing managed files by default, appends missing workspace patterns, and supports non-interactive CI usage with `--yes`.
@@ -42,7 +42,7 @@ repo doctor --json --out reports/doctor.json
 repo doctor --markdown --redact --out reports/doctor.md
 ```
 
-Use it to check root workspace files, Node compatibility, CLI dependency presence, root scripts, config conflicts, and commit hooks.
+Use it to check root workspace files, Node compatibility, CLI dependency presence, `repo:*` root scripts, stale config files, and commit hooks.
 
 `--strict` treats warnings as failures. `--redact` removes local absolute paths from shareable reports.
 

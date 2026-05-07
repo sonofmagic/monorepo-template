@@ -2,17 +2,10 @@
  * 升级时注入到 package.json 的脚本命令集合，保证常用脚本齐全。
  */
 export const scripts = {
-  'setup': 'repo setup',
-  'new': 'repo new',
-  'check': 'repo check',
-  'doctor': 'repo doctor',
-  'sync': 'repo sync',
-  'clean:repo': 'repo clean',
-  'mirror': 'repo mirror',
-  'script:init': 'repo init',
-  'script:sync': 'repo sync',
-  'script:clean': 'repo clean',
-  'script:mirror': 'repo mirror',
+  'repo:init': 'repo init',
+  'repo:new': 'repo new',
+  'repo:check': 'repo check',
+  'repo:doctor': 'repo doctor',
   'commitlint': 'commitlint --edit',
 }
 

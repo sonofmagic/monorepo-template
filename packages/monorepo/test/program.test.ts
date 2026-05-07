@@ -183,34 +183,31 @@ describe('commander program', () => {
 
     const { default: program } = await import('@/cli/program')
 
-    await program.parseAsync(['node', 'repo', 'setup', '--preset', 'minimal'])
+    await program.parseAsync(['node', 'repo', 'init', '--preset', 'minimal'])
     await program.parseAsync(['node', 'repo', 'new', 'demo', '--template', 'tsdown'])
     await program.parseAsync(['node', 'repo', 'new', 'demo-json', '--template', 'tsdown', '--json'])
     await program.parseAsync(['node', 'repo', 'new', 'demo-out', '--template', 'tsdown', '--out', 'plans/create.json'])
     await program.parseAsync(['node', 'repo', 'check', '--full'])
     await program.parseAsync(['node', 'repo', 'doctor'])
     await program.parseAsync(['node', 'repo', 'upgrade'])
-    await program.parseAsync(['node', 'repo', 'sync'])
-    await program.parseAsync(['node', 'repo', 'clean', '--yes', '--include-private', '--pinned-version', 'canary'])
-    await program.parseAsync(['node', 'repo', 'mirror'])
-    await program.parseAsync(['node', 'monorepo', 'workspace', 'upgrade'])
-    await program.parseAsync(['node', 'monorepo', 'workspace', 'init'])
-    await program.parseAsync(['node', 'monorepo', 'workspace', 'list', '--json', '--include-private', '--include-root', '--pattern', 'packages/*', '--pattern', 'apps/*'])
-    await program.parseAsync(['node', 'monorepo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
-    await program.parseAsync(['node', 'monorepo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
-    await program.parseAsync(['node', 'monorepo', 'env', 'info', '--json'])
-    await program.parseAsync(['node', 'monorepo', 'env', 'snapshot', '--json'])
-    await program.parseAsync(['node', 'monorepo', 'env', 'paths', '--json'])
-    await program.parseAsync(['node', 'monorepo', 'config', 'inspect', '--json'])
-    await program.parseAsync(['node', 'monorepo', 'env', 'mirror'])
-    await program.parseAsync(['node', 'monorepo', 'verify', 'pre-commit'])
-    await program.parseAsync(['node', 'monorepo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
-    await program.parseAsync(['node', 'monorepo', 'verify', 'pre-push'])
-    await program.parseAsync(['node', 'monorepo', 'verify', 'staged-typecheck', 'packages/monorepo/src/index.ts'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'prompt', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
-    await program.parseAsync(['node', 'monorepo', 'ai', 'prompt', 'new'])
-    await program.parseAsync(['node', 'monorepo', 'package', 'create'])
-    await program.parseAsync(['node', 'monorepo', 'skills', 'sync', '--codex'])
+    await program.parseAsync(['node', 'repo', 'workspace', 'upgrade'])
+    await program.parseAsync(['node', 'repo', 'workspace', 'init'])
+    await program.parseAsync(['node', 'repo', 'workspace', 'list', '--json', '--include-private', '--include-root', '--pattern', 'packages/*', '--pattern', 'apps/*'])
+    await program.parseAsync(['node', 'repo', 'tooling', 'init', 'eslint', 'vitest', '--force'])
+    await program.parseAsync(['node', 'repo', 'workspace', 'clean', '--yes', '--include-private', '--pinned-version', 'next'])
+    await program.parseAsync(['node', 'repo', 'env', 'info', '--json'])
+    await program.parseAsync(['node', 'repo', 'env', 'snapshot', '--json'])
+    await program.parseAsync(['node', 'repo', 'env', 'paths', '--json'])
+    await program.parseAsync(['node', 'repo', 'config', 'inspect', '--json'])
+    await program.parseAsync(['node', 'repo', 'env', 'mirror'])
+    await program.parseAsync(['node', 'repo', 'verify', 'pre-commit'])
+    await program.parseAsync(['node', 'repo', 'verify', 'commit-msg', '.git/COMMIT_EDITMSG'])
+    await program.parseAsync(['node', 'repo', 'verify', 'pre-push'])
+    await program.parseAsync(['node', 'repo', 'verify', 'staged-typecheck', 'packages/monorepo/src/index.ts'])
+    await program.parseAsync(['node', 'repo', 'ai', 'prompt', 'create', '--output', 'agentic.md', '--force', '--format', 'json'])
+    await program.parseAsync(['node', 'repo', 'ai', 'prompt', 'new'])
+    await program.parseAsync(['node', 'repo', 'package', 'create'])
+    await program.parseAsync(['node', 'repo', 'skills', 'sync', '--codex'])
 
     expect(initMock).toHaveBeenCalledWith(expect.any(String), { preset: 'minimal' })
     expect(runCreateFlowMock).toHaveBeenNthCalledWith(1, expect.any(String), 'demo', { template: 'tsdown' })
@@ -229,11 +226,6 @@ describe('commander program', () => {
       ignorePrivatePackage: false,
       ignoreRootPackage: false,
       patterns: ['packages/*', 'apps/*'],
-    })
-    expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
-      autoConfirm: true,
-      includePrivate: true,
-      pinnedVersion: 'canary',
     })
     expect(cleanMock).toHaveBeenCalledWith(expect.any(String), {
       autoConfirm: true,
@@ -277,7 +269,7 @@ describe('commander program', () => {
       targets: ['eslint', 'vitest'],
       force: true,
     })
-    expect(successMock).toHaveBeenCalledTimes(15)
+    expect(successMock).toHaveBeenCalledTimes(12)
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and `pnpm build`')
     expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and start the new workspace package')
     expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"packages"'))

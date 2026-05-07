@@ -35,6 +35,11 @@ function mergeDevDependencies(
     changed = true
   }
 
+  if ('repoctl' in current && '@icebreakers/monorepo' in current) {
+    delete current['@icebreakers/monorepo']
+    changed = true
+  }
+
   if (!changed && pkgJson.devDependencies) {
     return false
   }
@@ -79,8 +84,8 @@ export async function initTooling(cwd: string, options: InitToolingExecutionOpti
   }
 
   const packageJson = await fs.readJson<PackageJson>(pkgJsonPath)
-  const toolingPackageName = resolveToolingPackageName(packageJson)
-  const toolingImportSource = resolveToolingImportSource(toolingPackageName)
+  const toolingPackageName = resolveToolingPackageName()
+  const toolingImportSource = resolveToolingImportSource()
   const additions: Record<string, string> = {}
   const writtenFiles: string[] = []
   const skippedFiles: string[] = []

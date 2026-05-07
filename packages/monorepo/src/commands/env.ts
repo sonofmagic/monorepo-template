@@ -6,7 +6,7 @@ import os from 'node:os'
 import process from 'node:process'
 import { findWorkspaceDir } from '@pnpm/find-workspace-dir'
 import path from 'pathe'
-import { getMonorepoConfigCandidates } from '../core/config'
+import { getRepoctlConfigCandidates } from '../core/config'
 import { getWorkspacePackageSummaries } from '../core/workspace'
 import fs from '../utils/fs'
 import { resolveRecommendedCheckPlan } from './check'
@@ -62,8 +62,6 @@ export interface EnvPaths {
     workspaceManifest: EnvPathEntry
     repoctlConfig: EnvPathEntry
     repoctlConfigs: EnvPathEntry[]
-    legacyConfig: EnvPathEntry
-    legacyConfigs: EnvPathEntry[]
     toolingDir: EnvPathEntry
     reportsDir: EnvPathEntry
     doctorReport: EnvPathEntry
@@ -116,12 +114,11 @@ export async function collectEnvInfo(cwd: string): Promise<EnvInfo> {
 
 export async function collectEnvPaths(cwd: string): Promise<EnvPaths> {
   const workspaceDir = await findWorkspaceDir(cwd) ?? cwd
-  const configCandidates = getMonorepoConfigCandidates(workspaceDir)
+  const configCandidates = getRepoctlConfigCandidates(workspaceDir)
   const paths = {
     packageJson: path.join(workspaceDir, 'package.json'),
     workspaceManifest: path.join(workspaceDir, 'pnpm-workspace.yaml'),
     repoctlConfig: path.join(workspaceDir, 'repoctl.config.ts'),
-    legacyConfig: path.join(workspaceDir, 'monorepo.config.ts'),
     toolingDir: path.join(workspaceDir, 'tooling'),
     reportsDir: path.join(workspaceDir, 'reports'),
     doctorReport: path.join(workspaceDir, 'reports/doctor.json'),
@@ -137,9 +134,7 @@ export async function collectEnvPaths(cwd: string): Promise<EnvPaths> {
       packageJson: await createEnvPathEntry(workspaceDir, paths.packageJson),
       workspaceManifest: await createEnvPathEntry(workspaceDir, paths.workspaceManifest),
       repoctlConfig: await createEnvPathEntry(workspaceDir, paths.repoctlConfig),
-      repoctlConfigs: await Promise.all(configCandidates.repoctl.map(file => createEnvPathEntry(workspaceDir, file))),
-      legacyConfig: await createEnvPathEntry(workspaceDir, paths.legacyConfig),
-      legacyConfigs: await Promise.all(configCandidates.monorepo.map(file => createEnvPathEntry(workspaceDir, file))),
+      repoctlConfigs: await Promise.all(configCandidates.map(file => createEnvPathEntry(workspaceDir, file))),
       toolingDir: await createEnvPathEntry(workspaceDir, paths.toolingDir),
       reportsDir: await createEnvPathEntry(workspaceDir, paths.reportsDir),
       doctorReport: await createEnvPathEntry(workspaceDir, paths.doctorReport),

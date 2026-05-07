@@ -24,7 +24,7 @@ pnpm handles workspace dependencies. Turborepo coordinates tasks and caching. To
 
 repoctl adds the missing workflow layer:
 
-- `repo setup` aligns root scripts and standard files.
+- `repo init` aligns root scripts and standard files.
 - `repo doctor` checks whether the workspace is ready.
 - `repo new` creates packages and apps from known templates.
 - `repo check` previews and runs local verification.

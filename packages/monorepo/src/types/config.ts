@@ -41,7 +41,7 @@ export interface AiCommandConfig {
 }
 
 /**
- * `monorepo package create` 命令的配置项，兼容旧入口 `monorepo new/create`。
+ * `repo package create` 命令的配置项。
  */
 export interface CreateCommandConfig extends Partial<Omit<CreateNewProjectOptions, 'cwd'>> {
   /**
@@ -98,7 +98,7 @@ export interface CreateChoiceOption {
 }
 
 /**
- * `monorepo workspace clean` 命令配置，可控制自动选择、排除包等行为。
+ * `repo workspace clean` 命令配置，可控制自动选择、排除包等行为。
  */
 export interface CleanCommandConfig {
   /**
@@ -117,14 +117,14 @@ export interface CleanCommandConfig {
    */
   includePrivate?: boolean
   /**
-   * 强制写回的 @icebreakers/monorepo 版本。
+   * 强制写回的 repoctl 版本。
    * @default 当前依赖版本
    */
   pinnedVersion?: string
 }
 
 /**
- * `monorepo workspace upgrade` 命令配置，覆盖脚本、目标文件等能力。
+ * `repo workspace upgrade` 命令配置，覆盖脚本、目标文件等能力。
  */
 export interface UpgradeCommandConfig extends Partial<CliOpts> {
   /**
@@ -150,7 +150,7 @@ export interface UpgradeCommandConfig extends Partial<CliOpts> {
 }
 
 /**
- * `monorepo workspace init` / `monorepo tooling init` 共享配置，用于跳过部分初始化步骤并配置 tooling 默认目标。
+ * `repo workspace init` / `repo tooling init` 共享配置，用于跳过部分初始化步骤并配置 tooling 默认目标。
  */
 export interface InitCommandConfig {
   /**
@@ -221,6 +221,7 @@ export interface CommitlintToolingConfig extends IcebreakerCommitlintOptions {
 export interface EslintToolingConfig extends IcebreakerEslintOptions {
   /**
    * 额外传给 `createEslint(...userConfigs)` 的后续配置项。
+   * 在 `defineEslintConfig({ options, configs })` 中也可以放到顶层 `configs`。
    * @default []
    */
   configs?: IcebreakerEslintUserConfigItem[]
@@ -243,11 +244,11 @@ export interface StylelintToolingConfig extends IcebreakerStylelintConfigOptions
  */
 export interface LintStagedToolingConfig {
   /**
-   * 调用 monorepo CLI 的基础命令。
+   * 调用 repo CLI 的基础命令。
    * 通常保持为 `pnpm exec repo`，以便 Husky 与 lint-staged 入口统一。
    * @default 'pnpm exec repo'
    */
-  monorepoCommand?: string
+  repoCommand?: string
   /**
    * 直接透传完整的 lint-staged 原生配置。
    * 一旦提供，monorepo 默认规则将不再自动注入。
@@ -412,7 +413,7 @@ export interface HuskyToolingConfig {
 }
 
 /**
- * `repoctl.config.ts` / `monorepo.config.ts` 中 `tooling` 总配置。
+ * `repoctl.config.ts` 中 `tooling` 总配置。
  *
  * 每个字段分别映射到对应的配置工厂与验证命令。
  */
@@ -446,7 +447,7 @@ export interface MonorepoConfig {
   }
   /**
    * 按工程化能力分类的可选配置。
-   * 这些配置通常会被 `@icebreakers/monorepo/tooling` 中的 helper 消费。
+   * 这些配置通常会被 `repoctl/tooling` 中的 helper 消费。
    * @default {}
    */
   tooling?: ToolingConfig

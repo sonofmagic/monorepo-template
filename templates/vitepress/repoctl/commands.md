@@ -5,30 +5,30 @@
 ## 最推荐入口
 
 ```bash
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 pnpm exec repo templates
 pnpm exec repo new
 pnpm exec repo check
 ```
 
-模板生成仓库里的短脚本：
+模板生成仓库里的推荐根脚本：
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
-## `repo setup`
+## `repo init`
 
 ```bash
-repo setup
-repo setup --yes
-repo setup --preset minimal
-repo setup --preset standard --force
-repo setup --overwrite
+repo init
+repo init --yes
+repo init --preset minimal
+repo init --preset standard --force
+repo init --overwrite
 ```
 
 用途：
@@ -52,7 +52,7 @@ repo doctor --markdown --redact --out reports/doctor.md
 用途：
 
 - 诊断当前目录是不是可直接开始使用的 monorepo 根目录。
-- 检查 Node 版本、workspace 文件、CLI 依赖、根脚本、配置冲突和提交链路。
+- 检查 Node 版本、workspace 文件、CLI 依赖、根脚本、遗留配置和提交链路。
 - `--strict` 会把 warning 也视为失败，适合 CI 门禁。
 - `--json` 和 `--markdown` 适合自动化、PR、issue 和外部协作。
 - `--redact` 会脱敏 workspace、cwd、home 等绝对路径。

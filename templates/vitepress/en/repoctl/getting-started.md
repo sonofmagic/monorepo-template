@@ -26,15 +26,15 @@ If the repository was generated from this template, the dependency and root scri
 
 ```bash
 pnpm install
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 ```
 
-| Command        | Purpose                                                                     |
-| -------------- | --------------------------------------------------------------------------- |
-| `pnpm install` | Install workspace dependencies and local links                              |
-| `repo setup`   | Add recommended scripts, workspace patterns, and tooling entries            |
-| `repo doctor`  | Check root files, Node version, CLI dependency, config conflicts, and hooks |
+| Command        | Purpose                                                                       |
+| -------------- | ----------------------------------------------------------------------------- |
+| `pnpm install` | Install workspace dependencies and local links                                |
+| `repo init`    | Add recommended scripts, workspace patterns, and tooling entries              |
+| `repo doctor`  | Check root files, Node version, CLI dependency, stale config files, and hooks |
 
 Fix blocking issues reported by `doctor`, then run it again.
 
@@ -61,23 +61,23 @@ pnpm exec repo new sdk --template tsdown --json --out plans/sdk.json
 
 `--json` and `--out` imply `--dry-run`, which makes them suitable for CI, editor integrations, and scripts.
 
-## Use Short Root Scripts
+## Use Root Scripts
 
-After `repo setup`, daily commands can be shorter:
+After `repo init`, daily commands can be shorter:
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new sdk --template tsdown
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor -- --json
+pnpm run repo:new -- sdk --template tsdown
+pnpm run repo:check
 ```
 
-| Root script   | Equivalent CLI          |
-| ------------- | ----------------------- |
-| `pnpm setup`  | `pnpm exec repo setup`  |
-| `pnpm doctor` | `pnpm exec repo doctor` |
-| `pnpm new`    | `pnpm exec repo new`    |
-| `pnpm check`  | `pnpm exec repo check`  |
+| Root script                    | Equivalent CLI               |
+| ------------------------------ | ---------------------------- |
+| `pnpm run repo:init`           | `pnpm exec repo init`        |
+| `pnpm run repo:doctor -- args` | `pnpm exec repo doctor args` |
+| `pnpm run repo:new -- args`    | `pnpm exec repo new args`    |
+| `pnpm run repo:check`          | `pnpm exec repo check`       |
 
 ## Verify Before Committing
 
@@ -91,7 +91,7 @@ pnpm test
 Or use the repoctl verification entry:
 
 ```bash
-pnpm check
+pnpm run repo:check
 pnpm exec repo check --dry-run
 pnpm exec repo check --json --out reports/check-plan.json
 ```

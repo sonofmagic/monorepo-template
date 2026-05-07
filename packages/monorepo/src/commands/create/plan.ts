@@ -135,7 +135,7 @@ export async function resolveCreateNewProjectPlan(options?: CreateNewProjectOpti
   const templateDefinition = templateDefinitions[template]
 
   if (!templateDefinition) {
-    throw new Error(`未找到名为 ${template} 的模板，请检查 repoctl.config.ts 或 monorepo.config.ts`)
+    throw new Error(`未找到名为 ${template} 的模板，请检查 repoctl.config.ts`)
   }
 
   const sourceDir = path.join(templatesRoot, templateDefinition.source)

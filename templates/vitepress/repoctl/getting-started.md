@@ -26,7 +26,7 @@ pnpm add -D repoctl
 
 ```bash
 pnpm install
-pnpm exec repo setup
+pnpm exec repo init
 pnpm exec repo doctor
 ```
 
@@ -35,8 +35,8 @@ pnpm exec repo doctor
 | 命令           | 作用                                                |
 | -------------- | --------------------------------------------------- |
 | `pnpm install` | 安装 workspace 依赖并创建本地链接                   |
-| `repo setup`   | 补齐推荐根脚本、workspace patterns 和基础工具链入口 |
-| `repo doctor`  | 检查根目录、Node 版本、CLI 依赖、配置冲突和提交链路 |
+| `repo init`    | 补齐推荐根脚本、workspace patterns 和基础工具链入口 |
+| `repo doctor`  | 检查根目录、Node 版本、CLI 依赖、遗留配置和提交链路 |
 
 如果 `doctor` 报错，先按输出里的 `fix:` 处理。处理完再跑一次 `pnpm exec repo doctor`。
 
@@ -63,25 +63,25 @@ pnpm exec repo new sdk --template tsdown --json --out plans/sdk.json
 
 `--json` 和 `--out` 会隐含 `--dry-run`，适合 CI、编辑器和脚本读取创建计划。
 
-## 使用短脚本
+## 使用根脚本
 
-如果仓库已经通过 `repo setup` 或模板生成补齐了根脚本，日常可以写得更短：
+如果仓库已经通过 `repo init` 或模板生成补齐了根脚本，日常可以写得更短：
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new sdk --template tsdown
-pnpm check
+pnpm run repo:init
+pnpm run repo:doctor -- --json
+pnpm run repo:new -- sdk --template tsdown
+pnpm run repo:check
 ```
 
 对应关系：
 
-| 短脚本        | 等价命令                |
-| ------------- | ----------------------- |
-| `pnpm setup`  | `pnpm exec repo setup`  |
-| `pnpm doctor` | `pnpm exec repo doctor` |
-| `pnpm new`    | `pnpm exec repo new`    |
-| `pnpm check`  | `pnpm exec repo check`  |
+| 根脚本                         | 等价命令                     |
+| ------------------------------ | ---------------------------- |
+| `pnpm run repo:init`           | `pnpm exec repo init`        |
+| `pnpm run repo:doctor -- args` | `pnpm exec repo doctor args` |
+| `pnpm run repo:new -- args`    | `pnpm exec repo new args`    |
+| `pnpm run repo:check`          | `pnpm exec repo check`       |
 
 ## 提交前检查
 
@@ -95,7 +95,7 @@ pnpm test
 如果只想走 repoctl 推荐的本地检查入口：
 
 ```bash
-pnpm check
+pnpm run repo:check
 pnpm exec repo check --dry-run
 pnpm exec repo check --json --out reports/check-plan.json
 ```

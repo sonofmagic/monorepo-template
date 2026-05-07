@@ -40,15 +40,15 @@
 
 这不是一个“什么都能配”的框架，而是一套偏实战、偏收敛的默认值：
 
-| 维度     | 默认选择                                       |
-| -------- | ---------------------------------------------- |
-| 包管理   | `pnpm workspace`                               |
-| 任务编排 | `turborepo`                                    |
-| 语言     | TypeScript 优先                                |
-| 校验链路 | ESLint + Stylelint + typecheck + Vitest        |
-| 提交规范 | Husky + lint-staged + commitlint               |
-| 发包     | changesets                                     |
-| 命令入口 | `repo` 为主，`repoctl` / `monorepo` 为兼容入口 |
+| 维度     | 默认选择                                |
+| -------- | --------------------------------------- |
+| 包管理   | `pnpm workspace`                        |
+| 任务编排 | `turborepo`                             |
+| 语言     | TypeScript 优先                         |
+| 校验链路 | ESLint + Stylelint + typecheck + Vitest |
+| 提交规范 | Husky + lint-staged + commitlint        |
+| 发包     | changesets                              |
+| 命令入口 | `repo` 为主，`repoctl` 为完整包名入口   |
 
 这些选择的目的只有一个：减少“每个项目重新想一遍”的成本。
 
@@ -74,10 +74,10 @@
 ### 1. 更短的日常命令
 
 ```bash
-pnpm setup
-pnpm doctor
-pnpm new
-pnpm check
+pnpm exec repo init
+pnpm exec repo doctor
+pnpm run repo:new
+pnpm run repo:check
 ```
 
 不用先背完整 CLI，先把日常路径跑顺。
@@ -91,7 +91,7 @@ pnpm check
 - Node 版本对不对
 - 有没有安装 CLI 依赖
 - 根脚本齐不齐
-- `repoctl.config.ts` 和 `monorepo.config.ts` 有没有冲突
+- 是否仍残留已废弃的 `monorepo.config.ts`
 - Husky / lint-staged 链路是不是半残状态
 
 ### 3. `repo upgrade` 这种面向存量仓库的同步命令

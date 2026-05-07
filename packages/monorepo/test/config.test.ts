@@ -33,16 +33,15 @@ describe('monorepo config integration', () => {
     await fs.remove(root)
   })
 
-  it.skipIf(isCI)('throws when repoctl and monorepo config coexist', async () => {
+  it.skipIf(isCI)('ignores legacy monorepo config files', async () => {
     await vi.resetModules()
-    const root = await fs.mkdtemp(path.join(tmpdir(), 'repoctl-config-conflict-'))
+    const root = await fs.mkdtemp(path.join(tmpdir(), 'repoctl-config-legacy-'))
 
-    await writeConfig(root, `export default { commands: { clean: { autoConfirm: true } } }\n`, 'repoctl.config.ts')
     await writeConfig(root, `export default { commands: { clean: { autoConfirm: false } } }\n`, 'monorepo.config.ts')
 
     const { loadMonorepoConfig } = await import('@/core/config')
 
-    await expect(loadMonorepoConfig(root)).rejects.toThrow(/Found both repoctl and monorepo config files/)
+    expect(await loadMonorepoConfig(root)).toEqual({})
 
     await fs.remove(root)
   })
