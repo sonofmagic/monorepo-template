@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 4.0.4
+
+### Patch Changes
+
+- 🐛 **Update package homepage metadata and documentation links to repo.icebreaker.top.** [`cb6fd63`](https://github.com/sonofmagic/monorepo-template/commit/cb6fd63cfc18df526d2c42072711dba500096d57) by @sonofmagic
+
 ## 4.0.3
 
 ### Patch Changes
