@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.4
+
+### Patch Changes
+
+- 🐛 **Add VitePress llms.txt generation and highlight AI documentation entry points in the website template.** [`7382054`](https://github.com/sonofmagic/monorepo-template/commit/738205498217006b548ee03a8d03ecc356371cb8) by @sonofmagic
+
 ## 1.0.3
 
 ### Patch Changes
