@@ -11,7 +11,9 @@ const repoctlSidebar = [
       { text: '命令速查', link: '/repoctl/commands' },
       { text: '配置文件', link: '/repoctl/config' },
       { text: '模板与创建', link: '/repoctl/templates' },
+      { text: '工作流与 CI', link: '/repoctl/workflows' },
       { text: '排障与报告', link: '/repoctl/troubleshooting' },
+      { text: '命令别名', link: '/repoctl/aliases' },
     ],
   },
   {
@@ -50,7 +52,9 @@ const enSidebar = [
       { text: 'Command Reference', link: '/en/repoctl/commands' },
       { text: 'Configuration', link: '/en/repoctl/config' },
       { text: 'Templates', link: '/en/repoctl/templates' },
+      { text: 'Workflows and CI', link: '/en/repoctl/workflows' },
       { text: 'Troubleshooting', link: '/en/repoctl/troubleshooting' },
+      { text: 'Command Aliases', link: '/en/repoctl/aliases' },
     ],
   },
   {

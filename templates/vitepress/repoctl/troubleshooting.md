@@ -90,3 +90,9 @@ repo check --json --out reports/check-plan.json
 ```
 
 非 TTY 环境下，repoctl 不会弹出交互选择框。
+
+## 继续阅读
+
+- [工作流与 CI](./workflows.md)
+- [命令速查](./commands.md)
+- [命令别名](./aliases.md)

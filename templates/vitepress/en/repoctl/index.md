@@ -61,3 +61,13 @@ pnpm exec repoctl new
 ```
 
 The docs prefer `repo` so new users only need to remember one command name.
+
+## Keep Reading
+
+- [Getting Started](./getting-started.md)
+- [Command Reference](./commands.md)
+- [Configuration](./config.md)
+- [Templates](./templates.md)
+- [Workflows and CI](./workflows.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Command Aliases](./aliases.md)

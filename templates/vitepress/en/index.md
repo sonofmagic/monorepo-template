@@ -51,4 +51,5 @@ pnpm check
 - [Command Reference](./repoctl/commands.md)
 - [Configuration](./repoctl/config.md)
 - [Templates](./repoctl/templates.md)
+- [Workflows and CI](./repoctl/workflows.md)
 - [Knowledge Base: Why Monorepo](./knowledge/monorepo.md)

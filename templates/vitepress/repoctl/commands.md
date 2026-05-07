@@ -146,3 +146,9 @@ repo skills sync --codex
 ```
 
 分组命令适合维护者和自动化脚本。日常开发优先使用顶层命令。
+
+## 继续阅读
+
+- [工作流与 CI](./workflows.md)
+- [排障与报告](./troubleshooting.md)
+- [命令别名](./aliases.md)

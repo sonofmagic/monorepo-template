@@ -112,3 +112,9 @@ repo env support --markdown --redact --out reports/support.md
 repo config inspect
 repo skills sync --codex
 ```
+
+## Keep Reading
+
+- [Workflows and CI](./workflows.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Command Aliases](./aliases.md)

@@ -68,4 +68,6 @@ pnpm exec repoctl new
 - 查命令参数：[命令速查](./commands.md)
 - 固化团队默认值：[配置文件](./config.md)
 - 看可创建的模板：[模板与创建](./templates.md)
+- 接入 CI 和本地流程：[工作流与 CI](./workflows.md)
 - 生成排障报告：[排障与报告](./troubleshooting.md)
+- 熟悉短命令：[命令别名](./aliases.md)

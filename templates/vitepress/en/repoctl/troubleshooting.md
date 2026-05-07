@@ -88,3 +88,9 @@ repo setup --yes
 repo upgrade --no-overwrite
 repo check --json --out reports/check-plan.json
 ```
+
+## Keep Reading
+
+- [Workflows and CI](./workflows.md)
+- [Command Reference](./commands.md)
+- [Command Aliases](./aliases.md)

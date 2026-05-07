@@ -51,4 +51,5 @@ pnpm check
 - [命令速查](./repoctl/commands.md)
 - [配置文件](./repoctl/config.md)
 - [模板与创建](./repoctl/templates.md)
+- [工作流与 CI](./repoctl/workflows.md)
 - [知识库：为什么往 monorepo 方向演进](./monorepo/index.md)
