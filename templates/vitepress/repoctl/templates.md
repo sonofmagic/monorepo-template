@@ -35,6 +35,69 @@ repo new toolbox --template cli
 
 普通名字会自动放到模板约定的目录里，例如库包进入 `packages/`，应用进入 `apps/`。如果你传入带 `/` 的路径，例如 `packages/shared-utils`，repoctl 会尊重这个路径。
 
+## 按目标选择模板
+
+### 要发布 npm 库
+
+```bash
+repo new sdk --template tsdown
+```
+
+生成后先检查：
+
+- `package.json` 的 `name`、`exports`、`types`。
+- `tsdown.config.ts` 是否符合产物格式。
+- 是否需要补 `tsd` 类型测试。
+
+### 要沉淀 Vue 组件
+
+```bash
+repo new ui --template vue-lib
+```
+
+生成后先检查：
+
+- 组件入口是否只导出稳定 API。
+- 样式是否能通过 Stylelint。
+- 文档站或示例应用是否需要同步创建。
+
+### 要创建应用或服务
+
+```bash
+repo new web --template vue-hono
+repo new api --template hono-server
+```
+
+生成后先检查：
+
+- 运行时环境变量和部署平台约束。
+- `dev`、`build`、`typecheck` 脚本是否接入根任务。
+- 是否需要在 CI 里加入 E2E 或集成测试。
+
+### 要创建文档站
+
+```bash
+repo new docs --template vitepress
+```
+
+生成后先检查：
+
+- 导航和 sidebar 是否围绕产品或包名组织。
+- 是否需要中英文 locale。
+- 是否需要把 `repo templates --markdown` 输出写进文档。
+
+### 要创建 CLI
+
+```bash
+repo new toolbox --template cli
+```
+
+生成后先检查：
+
+- `bin` 字段是否符合最终命令名。
+- 参数解析、退出码和帮助信息是否可测试。
+- 是否需要把命令用法写入 README。
+
 ## 创建前预览
 
 ```bash
@@ -85,3 +148,9 @@ repo templates --check --json
 - 每个模板根目录都有 `package.json`。
 - 每个模板都有 category 和 description。
 - 模板源目录里没有会被脚手架过滤掉的临时或生成文件。
+
+## 继续阅读
+
+- [接入已有仓库](./adopt-existing.md)
+- [工作流与 CI](./workflows.md)
+- [配置文件](./config.md)

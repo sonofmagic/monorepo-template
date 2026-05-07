@@ -35,6 +35,69 @@ repo new toolbox --template cli
 
 Simple names are placed in the conventional target folder. Library templates go under `packages/`; app templates go under `apps/`. If you pass an explicit path such as `packages/shared-utils`, repoctl respects it.
 
+## Choose By Goal
+
+### Publish an npm library
+
+```bash
+repo new sdk --template tsdown
+```
+
+Check first:
+
+- `package.json` `name`, `exports`, and `types`.
+- Whether `tsdown.config.ts` matches the desired output format.
+- Whether public types need `tsd` tests.
+
+### Build reusable Vue components
+
+```bash
+repo new ui --template vue-lib
+```
+
+Check first:
+
+- Component entry points only expose stable APIs.
+- Styles pass Stylelint.
+- A docs site or example app should be created alongside it if needed.
+
+### Create an app or service
+
+```bash
+repo new web --template vue-hono
+repo new api --template hono-server
+```
+
+Check first:
+
+- Runtime environment variables and deployment constraints.
+- `dev`, `build`, and `typecheck` scripts are part of root tasks.
+- CI needs integration or E2E tests.
+
+### Create a docs site
+
+```bash
+repo new docs --template vitepress
+```
+
+Check first:
+
+- Nav and sidebar are organized around the product or package.
+- A second locale is required.
+- `repo templates --markdown` output should be written into docs.
+
+### Create a CLI
+
+```bash
+repo new toolbox --template cli
+```
+
+Check first:
+
+- The `bin` field matches the final command name.
+- Argument parsing, exit codes, and help output are testable.
+- README documents command usage.
+
 ## Preview Creation
 
 ```bash
@@ -57,3 +120,9 @@ repo templates --check --json
 ```
 
 The check validates duplicate sources and targets, existing source directories, package metadata, categories, descriptions, and temporary files that would be filtered by the scaffolder.
+
+## Keep Reading
+
+- [Adopt Existing Repositories](./adopt-existing.md)
+- [Workflows and CI](./workflows.md)
+- [Configuration](./config.md)
