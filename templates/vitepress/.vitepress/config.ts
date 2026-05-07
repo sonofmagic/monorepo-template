@@ -1,76 +1,149 @@
 import Tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
-// https://vitepress.dev/reference/site-config
+
+const repoctlSidebar = [
+  {
+    text: 'repoctl',
+    items: [
+      { text: '概览', link: '/repoctl/' },
+      { text: '快速开始', link: '/repoctl/getting-started' },
+      { text: '命令速查', link: '/repoctl/commands' },
+      { text: '配置文件', link: '/repoctl/config' },
+      { text: '模板与创建', link: '/repoctl/templates' },
+      { text: '排障与报告', link: '/repoctl/troubleshooting' },
+    ],
+  },
+  {
+    text: '知识库',
+    items: [
+      { text: '为什么往 monorepo 方向演进', link: '/monorepo/' },
+      { text: '如何管理 monorepo', link: '/monorepo/manage' },
+      { text: '发包与变更日志', link: '/monorepo/publish' },
+      { text: '如何复用 js 代码', link: '/why/how-to-reuse-js-code' },
+      { text: 'JS 文件的各种后缀', link: '/why/js-cjs-mjs' },
+      { text: 'CJS 和 ESM 关键字/全局变量对比', link: '/why/js-keywords' },
+      { text: '什么是 npm 包', link: '/why/what-is-npm-package' },
+      { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
+      { text: '改进并发布现代 npm 包', link: '/why/index' },
+    ],
+  },
+  {
+    text: '工具专题',
+    items: [
+      { text: 'pnpm', link: '/tools/pnpm' },
+      { text: 'turborepo', link: '/tools/turborepo' },
+      { text: 'changeset', link: '/tools/changeset' },
+      { text: 'husky', link: '/tools/husky' },
+      { text: 'lint-staged', link: '/tools/lint-staged' },
+      { text: 'renovate', link: '/tools/renovate' },
+    ],
+  },
+]
+
+const enSidebar = [
+  {
+    text: 'repoctl',
+    items: [
+      { text: 'Overview', link: '/en/repoctl/' },
+      { text: 'Getting Started', link: '/en/repoctl/getting-started' },
+      { text: 'Command Reference', link: '/en/repoctl/commands' },
+      { text: 'Configuration', link: '/en/repoctl/config' },
+      { text: 'Templates', link: '/en/repoctl/templates' },
+      { text: 'Troubleshooting', link: '/en/repoctl/troubleshooting' },
+    ],
+  },
+  {
+    text: 'Knowledge Base',
+    items: [
+      { text: 'Why Monorepo', link: '/en/knowledge/monorepo' },
+    ],
+  },
+]
+
 export default withMermaid(defineConfig({
   outDir: '.vitepress/dist',
-  title: 'icebreaker\'s monorepo',
-  description: 'A practical pnpm + turbo monorepo template with short onboarding commands and repo tooling.',
+  title: 'repoctl',
+  description: 'repoctl documentation for practical pnpm and Turborepo monorepos.',
+  lastUpdated: true,
+  cleanUrls: true,
+  head: [
+    ['link', { rel: 'icon', href: '/logo.jpg' }],
+  ],
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: '开始使用', link: '/' },
-      { text: '新手指南', link: '/getting-started' },
-      { text: 'Monorepo', link: '/monorepo/' },
-      { text: '工具专题', link: '/tools/turborepo' },
-      { text: '一些思考', link: '/thinking' },
-    ],
+    logo: '/logo.jpg',
+    search: {
+      provider: 'local',
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/sonofmagic/monorepo-template' },
     ],
-    outline: {
-      label: '目录',
-      level: [2, 3],
+  },
+  locales: {
+    root: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      title: 'repoctl',
+      description: '围绕 repoctl 的 pnpm + Turborepo monorepo 使用文档。',
+      themeConfig: {
+        nav: [
+          { text: 'repoctl', link: '/repoctl/' },
+          { text: '快速开始', link: '/repoctl/getting-started' },
+          { text: '命令', link: '/repoctl/commands' },
+          { text: '知识库', link: '/monorepo/' },
+          { text: '工具专题', link: '/tools/turborepo' },
+        ],
+        outline: {
+          label: '目录',
+          level: [2, 3],
+        },
+        sidebar: {
+          '/': repoctlSidebar,
+        },
+        editLink: {
+          pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/templates/vitepress/:path',
+          text: '为此页提供修改建议',
+        },
+        docFooter: {
+          prev: '上一页',
+          next: '下一页',
+        },
+        lastUpdated: {
+          text: '最后更新',
+        },
+      },
     },
-    logo: '/logo.jpg',
-    sidebar: {
-      '/': [
-        {
-          text: '开始使用',
-          items: [
-            { text: '首页', link: '/' },
-            { text: '新手使用指南', link: '/getting-started' },
-            { text: '一些思考', link: '/thinking' },
-          ],
+    en: {
+      label: 'English',
+      lang: 'en-US',
+      title: 'repoctl',
+      description: 'Documentation for using repoctl in practical pnpm and Turborepo monorepos.',
+      themeConfig: {
+        nav: [
+          { text: 'repoctl', link: '/en/repoctl/' },
+          { text: 'Getting Started', link: '/en/repoctl/getting-started' },
+          { text: 'Commands', link: '/en/repoctl/commands' },
+          { text: 'Knowledge Base', link: '/en/knowledge/monorepo' },
+        ],
+        outline: {
+          label: 'On This Page',
+          level: [2, 3],
         },
-        {
-          text: 'Monorepo',
-          items: [
-            { text: '为什么往 monorepo 方向演进', link: '/monorepo/' },
-            { text: '如何管理 monorepo', link: '/monorepo/manage' },
-            { text: '模板速查', link: '/monorepo/templates' },
-            { text: '命令速查', link: '/monorepo/commands' },
-            { text: '常见问题排障', link: '/monorepo/troubleshooting' },
-            { text: '发包与变更日志', link: '/monorepo/publish' },
-          ],
+        sidebar: {
+          '/en/': enSidebar,
         },
-        {
-          text: 'npm 与包',
-          items: [
-            { text: '如何复用 js 代码', link: '/why/how-to-reuse-js-code' },
-            { text: 'JS 文件的各种后缀', link: '/why/js-cjs-mjs' },
-            { text: 'CJS 和 ESM 关键字/全局变量对比', link: '/why/js-keywords' },
-            { text: '什么是 npm 包', link: '/why/what-is-npm-package' },
-            { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
-            { text: '改进并发布现代 npm 包', link: '/why/index' },
-          ],
+        editLink: {
+          pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/templates/vitepress/:path',
+          text: 'Edit this page',
         },
-        {
-          text: '相关的工具',
-          items: [
-            { text: 'pnpm', link: '/tools/pnpm' },
-            { text: 'turborepo', link: '/tools/turborepo' },
-            { text: 'changeset', link: '/tools/changeset' },
-            { text: 'husky', link: '/tools/husky' },
-            { text: 'lint-staged', link: '/tools/lint-staged' },
-            { text: 'renovate', link: '/tools/renovate' },
-          ],
+        docFooter: {
+          prev: 'Previous page',
+          next: 'Next page',
         },
-      ],
-    },
-    editLink: {
-      pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/templates/vitepress/:path',
-      text: '为此页提供修改建议',
+        lastUpdated: {
+          text: 'Last updated',
+        },
+      },
     },
   },
   vite: {
@@ -78,14 +151,6 @@ export default withMermaid(defineConfig({
       // @ts-ignore
       Tailwindcss(),
     ],
-    // server: {
-    //   hmr: {
-    //     overlay: false,
-    //   },
-    // },
   },
-  mermaid: {
-
-  },
-}),
-)
+  mermaid: {},
+}))
