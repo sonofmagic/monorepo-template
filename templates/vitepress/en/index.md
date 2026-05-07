@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: Commands
       link: /en/repoctl/commands
+    - theme: alt
+      text: AI Docs
+      link: /tools/llms-txt
 
 features:
   - title: Adopt existing workspaces
@@ -23,6 +26,8 @@ features:
     details: Scaffold libraries, apps, services, docs, and CLIs with interactive prompts or explicit template keys.
   - title: Make checks repeatable
     details: Preview and run local verification plans that match your lint, typecheck, build, test, and tsd workflow.
+  - title: AI-readable documentation
+    details: Generate llms.txt, llms-full.txt, and Markdown page output so AI coding tools can read the repoctl docs directly.
 ---
 
 ## Fast Path
@@ -54,4 +59,5 @@ pnpm check
 - [Configuration](./repoctl/config.md)
 - [Templates](./repoctl/templates.md)
 - [Workflows and CI](./repoctl/workflows.md)
+- [AI Docs: llms.txt](../tools/llms-txt.md)
 - [Knowledge Base: Why Monorepo](./knowledge/monorepo.md)

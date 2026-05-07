@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: 命令速查
       link: /repoctl/commands
+    - theme: alt
+      text: AI 文档入口
+      link: /tools/llms-txt
 
 features:
   - title: 从已有仓库开始
@@ -23,6 +26,8 @@ features:
     details: repo new 支持交互式创建、指定模板、dry-run、JSON 输出和创建计划落盘。
   - title: 把质量门禁变成日常命令
     details: repo check 统一预览和执行 lint、typecheck、build、test、tsd 等推荐校验。
+  - title: 给 AI 工具的文档入口
+    details: 构建时自动生成 llms.txt、llms-full.txt 和页面 Markdown，让 AI 编程工具更容易读取 repoctl 文档。
 ---
 
 ## 最短路径
@@ -54,4 +59,5 @@ pnpm check
 - [配置文件](./repoctl/config.md)
 - [模板与创建](./repoctl/templates.md)
 - [工作流与 CI](./repoctl/workflows.md)
+- [AI 文档入口：llms.txt](./tools/llms-txt.md)
 - [知识库：为什么往 monorepo 方向演进](./monorepo/index.md)

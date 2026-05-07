@@ -1,5 +1,6 @@
 import Tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
+import llmstxt from 'vitepress-plugin-llms'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
 const repoctlSidebar = [
@@ -30,6 +31,12 @@ const repoctlSidebar = [
       { text: '什么是 npm 包', link: '/why/what-is-npm-package' },
       { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
       { text: '改进并发布现代 npm 包', link: '/why/index' },
+    ],
+  },
+  {
+    text: 'AI',
+    items: [
+      { text: 'AI 文档入口', link: '/tools/llms-txt' },
     ],
   },
   {
@@ -99,6 +106,7 @@ export default withMermaid(defineConfig({
           { text: '快速开始', link: '/repoctl/getting-started' },
           { text: '命令', link: '/repoctl/commands' },
           { text: '知识库', link: '/monorepo/' },
+          { text: 'AI 文档', link: '/tools/llms-txt' },
           { text: '工具专题', link: '/tools/turborepo' },
         ],
         outline: {
@@ -132,6 +140,7 @@ export default withMermaid(defineConfig({
           { text: 'Getting Started', link: '/en/repoctl/getting-started' },
           { text: 'Commands', link: '/en/repoctl/commands' },
           { text: 'Knowledge Base', link: '/en/knowledge/monorepo' },
+          { text: 'AI Docs', link: '/tools/llms-txt' },
         ],
         outline: {
           label: 'On This Page',
@@ -158,6 +167,7 @@ export default withMermaid(defineConfig({
     plugins: [
       // @ts-ignore
       Tailwindcss(),
+      llmstxt(),
     ],
   },
   mermaid: {},
