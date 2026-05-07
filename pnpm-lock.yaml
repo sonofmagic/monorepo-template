@@ -111,6 +111,12 @@ importers:
         specifier: workspace:*
         version: link:../monorepo-templates
 
+  packages/create-repoctl:
+    dependencies:
+      create-icebreaker:
+        specifier: workspace:*
+        version: link:../create-icebreaker
+
   packages/monorepo:
     dependencies:
       '@icebreakers/commitlint-config':
@@ -12938,8 +12944,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.59.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.59.1
       debug: 4.4.3
       typescript: 6.0.3
     transitivePeerDependencies:
