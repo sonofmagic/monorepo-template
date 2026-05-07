@@ -1,3 +1,39 @@
 {
-  "extends": "repoctl/tsconfig"
+  "extends": "repoctl/tsconfig.json",
+  "references": [
+    {
+      "path": "./packages/create-icebreaker"
+    },
+    {
+      "path": "./packages/create-repoctl"
+    },
+    {
+      "path": "./packages/monorepo"
+    },
+    {
+      "path": "./packages/monorepo-templates"
+    },
+    {
+      "path": "./packages/repoctl"
+    },
+    {
+      "path": "./templates/cli"
+    },
+    {
+      "path": "./templates/client"
+    },
+    {
+      "path": "./templates/server"
+    },
+    {
+      "path": "./templates/tsdown"
+    },
+    {
+      "path": "./templates/vitepress"
+    },
+    {
+      "path": "./templates/vue-lib"
+    }
+  ],
+  "files": []
 }

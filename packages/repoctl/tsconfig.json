@@ -1,23 +1,23 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "paths": {
-      "repoctl": [
-        "./src/index.ts"
-      ],
-      "repoctl/cli": [
-        "./src/cli.ts"
-      ],
-      "repoctl/tooling": [
-        "./src/tooling-entry.ts"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
-    }
-  },
-  "include": [
-    "src",
-    "test-d"
-  ]
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "allowJs": true,
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
 }

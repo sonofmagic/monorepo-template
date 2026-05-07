@@ -37,8 +37,8 @@
       "types": "./dist/tooling-entry.d.mts",
       "default": "./dist/tooling-entry.mjs"
     },
-    "./tsconfig": "./tsconfig.base.json",
-    "./tsconfig.json": "./tsconfig.base.json",
+    "./tsconfig": "./tsconfig.json",
+    "./tsconfig.json": "./tsconfig.json",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
@@ -54,16 +54,16 @@
   "files": [
     "bin",
     "dist",
-    "tsconfig.base.json"
+    "tsconfig.json"
   ],
   "engines": {
     "node": ">=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0"
   },
   "scripts": {
-    "dev": "tsdown --watch --sourcemap",
-    "build": "tsdown",
+    "dev": "tsdown --tsconfig tsconfig.src.json --watch --sourcemap",
+    "build": "tsdown --tsconfig tsconfig.src.json",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "pnpm --filter @icebreakers/monorepo build && node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter @icebreakers/monorepo build && node ../../node_modules/typescript/bin/tsc -p tsconfig.src.json",
     "tsd": "pnpm --filter @icebreakers/monorepo build && pnpm build && tsd --files test-d/**/*.test-d.ts",
     "release": "pnpm publish",
     "lint": "eslint .",

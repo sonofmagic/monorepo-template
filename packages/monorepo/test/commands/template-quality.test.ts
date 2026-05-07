@@ -57,4 +57,10 @@ describe('generated template quality', () => {
     const assetTargets = await collectTextFiles(assetsDir)
     expect(assetTargets.some(file => file.includes('/tooling/load-tooling-module.mjs'))).toBe(false)
   })
+
+  it('does not depend on package exports for generated root tsconfig', async () => {
+    const content = await fs.readFile(`${assetsDir}/tsconfig.json`, 'utf8')
+    expect(content).toContain('repoctl/tsconfig.json')
+    expect(content).not.toContain('references')
+  })
 })

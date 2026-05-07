@@ -109,6 +109,12 @@ async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
       ? (src: string) => !huskySkippedEntryPattern.test(src)
       : undefined
     await copyEntry(from, to, overwriteExisting, filter)
+    if (target === 'tsconfig.json') {
+      await fs.writeFile(to, `${JSON.stringify({
+        extends: 'repoctl/tsconfig.json',
+        files: [],
+      }, null, 2)}\n`)
+    }
     if (stats.isDirectory()) {
       await renameGitignoreFiles(to)
     }
