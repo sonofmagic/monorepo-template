@@ -301,7 +301,7 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.36.3
-        version: 1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))(workerd@1.20260507.1)(wrangler@4.89.1)
+        version: 1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))(workerd@1.20260507.1)(wrangler@4.90.0)
       '@hono/node-server':
         specifier: ^2.0.2
         version: 2.0.2(hono@4.12.18)
@@ -348,8 +348,8 @@ importers:
         specifier: 3.2.8
         version: 3.2.8(typescript@6.0.3)
       wrangler:
-        specifier: ^4.89.1
-        version: 4.89.1
+        specifier: ^4.90.0
+        version: 4.90.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -369,8 +369,8 @@ importers:
         specifier: 0.22.0
         version: 0.22.0(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))(vue-tsc@3.2.8(typescript@6.0.3))
       wrangler:
-        specifier: ^4.89.1
-        version: 4.89.1
+        specifier: ^4.90.0
+        version: 4.90.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -9213,10 +9213,9 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.89.1:
-    resolution: {integrity: sha512-g0uA/F+lH/B6DgUcwe7tmkm3YKN6ITSMV73H0ouOYaaerS1ZVfX05lyoq/9a7UEMjlq0dlrnfFQDneWUINE4gw==}
+  wrangler@4.90.0:
+    resolution: {integrity: sha512-bmNIykl59TfCUn5xQgU7IWylSsPx3LQaPLMSAq2VQHt89CBrcj9qXQ0eYfjBCWA5XTBVgten391evt7xxtXwcA==}
     engines: {node: '>=22.0.0'}
-    deprecated: Account API tokens are not functioning correctly, please downgrade to v4.88.0
     hasBin: true
     peerDependencies:
       '@cloudflare/workers-types': ^4.20260507.1
@@ -9996,13 +9995,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260507.1
 
-  '@cloudflare/vite-plugin@1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))(workerd@1.20260507.1)(wrangler@4.89.1)':
+  '@cloudflare/vite-plugin@1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))(workerd@1.20260507.1)(wrangler@4.90.0)':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260507.1)
       miniflare: 4.20260507.1
       unenv: 2.0.0-rc.24
       vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4)
-      wrangler: 4.89.1
+      wrangler: 4.90.0
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -19348,7 +19347,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260507.1
       '@cloudflare/workerd-windows-64': 1.20260507.1
 
-  wrangler@4.89.1:
+  wrangler@4.90.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260507.1)
