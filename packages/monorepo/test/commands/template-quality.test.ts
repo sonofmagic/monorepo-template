@@ -58,6 +58,26 @@ describe('generated template quality', () => {
     expect(assetTargets.some(file => file.includes('/tooling/load-tooling-module.mjs'))).toBe(false)
   })
 
+  it('does not ship stale TypeScript deprecation suppressions', async () => {
+    const files = [
+      ...await collectTextFiles(assetsDir),
+      ...await collectTextFiles(templatesDir),
+    ]
+    const matches: string[] = []
+
+    for (const file of files) {
+      if (!generatedTextExtensions.has(file.slice(file.lastIndexOf('.')))) {
+        continue
+      }
+      const content = await fs.readFile(file, 'utf8')
+      if (content.includes('ignoreDeprecations')) {
+        matches.push(file)
+      }
+    }
+
+    expect(matches).toEqual([])
+  })
+
   it('does not depend on package exports for generated root tsconfig', async () => {
     const content = await fs.readFile(`${assetsDir}/tsconfig.json`, 'utf8')
     expect(content).toContain('repoctl/tsconfig.json')
