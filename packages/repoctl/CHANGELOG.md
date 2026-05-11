@@ -1,5 +1,13 @@
 # repoctl
 
+## 4.0.8
+
+### Patch Changes
+
+- 🐛 **Remove stale TypeScript `ignoreDeprecations` suppressions from published and generated tsconfig files.** [`77b6c50`](https://github.com/sonofmagic/monorepo-template/commit/77b6c500775a589edd952614cedda4f303a92847) by @sonofmagic
+- 📦 **Dependencies** [`77b6c50`](https://github.com/sonofmagic/monorepo-template/commit/77b6c500775a589edd952614cedda4f303a92847)
+  → `@icebreakers/monorepo@4.0.8`
+
 ## 4.0.7
 
 ### Patch Changes
