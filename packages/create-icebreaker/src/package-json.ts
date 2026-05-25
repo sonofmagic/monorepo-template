@@ -8,6 +8,10 @@ interface PackageJsonLike {
   [key: string]: unknown
 }
 
+const repoctlPackageName = 'repoctl'
+const legacyToolPackageName = '@icebreakers/monorepo'
+const publishedRepoctlVersion = 'latest'
+
 export async function updateRootPackageJson(targetDir: string, projectName: string) {
   const pkgPath = path.join(targetDir, 'package.json')
   const raw = await fs.readFile(pkgPath, 'utf8')
@@ -15,11 +19,11 @@ export async function updateRootPackageJson(targetDir: string, projectName: stri
   pkg.name = projectName
 
   const devDependencies = pkg.devDependencies
-  if (devDependencies && devDependencies['@icebreakers/monorepo']) {
-    delete devDependencies['@icebreakers/monorepo']
+  if (devDependencies && devDependencies[legacyToolPackageName]) {
+    delete devDependencies[legacyToolPackageName]
   }
-  if (devDependencies && devDependencies['repoctl']) {
-    delete devDependencies['repoctl']
+  if (devDependencies && devDependencies[repoctlPackageName]?.startsWith('workspace:')) {
+    devDependencies[repoctlPackageName] = publishedRepoctlVersion
   }
   if (devDependencies && Object.keys(devDependencies).length === 0) {
     delete pkg.devDependencies
