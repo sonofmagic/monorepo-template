@@ -211,14 +211,14 @@ importers:
   packages/monorepo-templates:
     dependencies:
       '@inquirer/checkbox':
-        specifier: ^5.1.5
-        version: 5.1.5(@types/node@25.9.1)
+        specifier: ^5.2.0
+        version: 5.2.0(@types/node@25.9.1)
       '@inquirer/input':
-        specifier: ^5.0.13
-        version: 5.0.13(@types/node@25.9.1)
+        specifier: ^5.1.0
+        version: 5.1.0(@types/node@25.9.1)
       '@inquirer/select':
-        specifier: ^5.1.5
-        version: 5.1.5(@types/node@25.9.1)
+        specifier: ^5.2.0
+        version: 5.2.0(@types/node@25.9.1)
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -272,8 +272,8 @@ importers:
         specifier: ^8.21.3
         version: 8.21.3(vue@3.5.34(typescript@6.0.3))
       '@tanstack/vue-virtual':
-        specifier: ^3.13.25
-        version: 3.13.25(vue@3.5.34(typescript@6.0.3))
+        specifier: ^3.13.26
+        version: 3.13.26(vue@3.5.34(typescript@6.0.3))
       '@trpc/client':
         specifier: ^11.17.0
         version: 11.17.0(@trpc/server@11.17.0(typescript@6.0.3))(typescript@6.0.3)
@@ -345,8 +345,8 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
       vue-tsc:
-        specifier: 3.3.1
-        version: 3.3.1(typescript@6.0.3)
+        specifier: 3.3.2
+        version: 3.3.2(typescript@6.0.3)
       wrangler:
         specifier: ^4.94.0
         version: 4.94.0
@@ -441,8 +441,8 @@ importers:
         specifier: ^3.5.34
         version: 3.5.34(typescript@6.0.3)
       vue-tsc:
-        specifier: ^3.3.1
-        version: 3.3.1(typescript@6.0.3)
+        specifier: ^3.3.2
+        version: 3.3.2(typescript@6.0.3)
 
 packages:
 
@@ -1912,12 +1912,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@inquirer/ansi@2.0.5':
-    resolution: {integrity: sha512-doc2sWgJpbFQ64UflSVd17ibMGDuxO1yKgOgLMwavzESnXjFWJqUeG8saYosqKpHp4kWiM5x1nXvEjbpx90gzw==}
+  '@inquirer/ansi@2.0.6':
+    resolution: {integrity: sha512-I/INw4sHGlVZ/afZOckpLiDP9SmbMl1g/GCqeHjLw1Afw/0PlRs2tRFgTGWmdI0hoNuWZn3y2iHNmG1vyECyQQ==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
 
-  '@inquirer/checkbox@5.1.5':
-    resolution: {integrity: sha512-Jmf9tgBHIEK5SAOB7swYfStqmtkZb00xOTpSQmkoGEpdxOTpJi9RS0A8bkfDPHTTItZRJrRdZrEMu25wyj0VfQ==}
+  '@inquirer/checkbox@5.2.0':
+    resolution: {integrity: sha512-1HJt+3fqxblp/GQjdntSyoSHYBc0e3CzXVgjFpKA6qFLd9FHBBqwN8Co0xYH6t2JVUZrtFwZ4bBiwptkiLxyOg==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -1925,8 +1925,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/core@11.1.10':
-    resolution: {integrity: sha512-a4Q5BXHQAHa9eO202sTaFCHFYVB3x5fauDuThEAdZ9gfn76pSxiKU7wWcEH0N1O0XmQvNfQNU6QXpiRxmYQx+A==}
+  '@inquirer/core@11.2.0':
+    resolution: {integrity: sha512-joR1YS2sI0us+9d0I8ViqFbrRLONO8CFTuyvBX4ZVBSch+VsZiugUABdrhBXXJR1VyEzvpz5SQCix3keETQ58g==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -1943,21 +1943,12 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/figures@2.0.5':
-    resolution: {integrity: sha512-NsSs4kzfm12lNetHwAn3GEuH317IzpwrMCbOuMIVytpjnJ90YYHNwdRgYGuKmVxwuIqSgqk3M5qqQt1cDk0tGQ==}
+  '@inquirer/figures@2.0.6':
+    resolution: {integrity: sha512-dsZgQtH2t5Q6ah3aPbZbeEZAxsD9qQu0DXf01AltuEfRTm+NoLN6+rLVbr+4edeEbNCp/wBNM6mALRWtsQpfkw==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
 
-  '@inquirer/input@5.0.13':
-    resolution: {integrity: sha512-0l0jCHlJnXIV8CTxwQC0C+5Ziq8WP22edWgmciW2xYvoeoSck4v5FvCS1ctKdqLLR0dUo93uAHgWHywgBSoRyw==}
-    engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
-    peerDependencies:
-      '@types/node': '>=18'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-
-  '@inquirer/select@5.1.5':
-    resolution: {integrity: sha512-6SRg6kHfK/sjLXOsuqNebuir+sjwrf/iWuRUnXgB2slzEewppI1WfzeS16XxDcOQmXBruMmmB9Cgrz7wsAxqMg==}
+  '@inquirer/input@5.1.0':
+    resolution: {integrity: sha512-sVZCz6P6e8tW5g2bSFel1oLpa6jK/u7BexFfrgTqR8syIdnHqy+iopnlSbYBZMsCK52chLjhGNBxt0eRqhsghw==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -1965,8 +1956,17 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/type@4.0.5':
-    resolution: {integrity: sha512-aetVUNeKNc/VriqXlw1NRSW0zhMBB0W4bNbWRJgzRl/3d0QNDQFfk0GO5SDdtjMZVg6o8ZKEiadd7SCCzoOn5Q==}
+  '@inquirer/select@5.2.0':
+    resolution: {integrity: sha512-6IzkcmEbEXfgVbxZ2d1UyJFbCBoc6dTofulFmrYuomIp88HXiVqRbqbg4/mbfZhvnNo6xYmnYo2AEmDof6fQkg==}
+    engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
+  '@inquirer/type@4.0.6':
+    resolution: {integrity: sha512-J+9tdxOskuYuGjsvGaq00AamhDgjR7anhEW2dP4QdQpFCMPngCeC/bCYWQ5NsMWZRdsy53is7kAHb/+7cwDk2g==}
     engines: {node: '>=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3523,8 +3523,8 @@ packages:
     resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
     engines: {node: '>=12'}
 
-  '@tanstack/virtual-core@3.15.0':
-    resolution: {integrity: sha512-0AwPGx0I8QxPYjAxShT/+z+ZOe9u8mW5rsXvivCTjRfRmz9a43+3mRyi4wwlyoUqOC56q/jatKa0Bh9M99BEHQ==}
+  '@tanstack/virtual-core@3.16.0':
+    resolution: {integrity: sha512-Er2N7q3WOiH6y2JLxsxNX+u2/sLqSsL0bxFgDjuiPiA7vKhZRm+IzcS17vRee3GNXr64UsesA5CAp9yTiIYw9A==}
 
   '@tanstack/vue-query-devtools@6.1.33':
     resolution: {integrity: sha512-ZjWN+UNeBgM4yf+PSpf/HVQA/hP/GOlOGLt9iy/zFK9pxguUVy69YG2ibe5kJmcHUlArsFSOHVqlUu2VCWcisA==}
@@ -3547,8 +3547,8 @@ packages:
     peerDependencies:
       vue: '>=3.2'
 
-  '@tanstack/vue-virtual@3.13.25':
-    resolution: {integrity: sha512-/ez+t68a5O4CgVysvk7Bav0XbSYSYufOVHZveXF+DYO9hvtg2UheYzR0YkniCeUtXmMjDne1dDqwBMkOmEUOow==}
+  '@tanstack/vue-virtual@3.13.26':
+    resolution: {integrity: sha512-4TmREKi8rKiQC8E2XVEMMgzWbrgHNYolkBgYTXVK1kqXmXRGz6xPWgBq20GUYWUDDhit94+g0ricUQKpZhWRmg==}
     peerDependencies:
       vue: ^2.7.0 || ^3.0.0
 
@@ -4102,8 +4102,8 @@ packages:
   '@vue/language-core@3.2.9':
     resolution: {integrity: sha512-ie0ojt/0fU/GfIogh+zgHbaYRPlt9S+cLOxcWwF7nTSFh897BVgnFKL2byT4kpp1mlqYWZ2psGwSniyE2xsxYw==}
 
-  '@vue/language-core@3.3.1':
-    resolution: {integrity: sha512-NP8g6V7x81NVOXbLupUvYY6i6LqUkjkVowe2epRedmpgaFCOdjgWHE/rQBvEJ4r7koAYODIjGeBWEdt6n7jYXQ==}
+  '@vue/language-core@3.3.2':
+    resolution: {integrity: sha512-CLwjSfHlPLhjd2qhuS3tTFtnOIWHXAM5u4X1DxmzlQ8j5bmOYlKCsSusOP7jCRJnlVg0mCTQtHU3vwFvopZGoQ==}
 
   '@vue/reactivity@3.5.34':
     resolution: {integrity: sha512-y9XDjCEuBp+98k+UL5dbYkh57AHU4o6cxZedOPXw3bmrZZYLQsVHguGurq7hVrPCSrQtrnz1f9dssyFr+dMXfQ==}
@@ -7137,9 +7137,9 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  mute-stream@3.0.0:
-    resolution: {integrity: sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
+  mute-stream@4.0.0:
+    resolution: {integrity: sha512-gSrprq0fJ3EiOErzjdIZrjysVVmJ4uu1QWfCDss5LypA5OXvrMje5Ym5z6V6RLyJ2eF87lasX7t6a0AnFvZblg==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
   nanoexec@1.1.0:
     resolution: {integrity: sha512-AFEBFWI+4vgstL3Czpbn8yCKBgN+b2d0qPdBCjmrOf9OOUUpLqBr+JocLJCfA5OYxKSmoOdEm6OWO5QraTNtDg==}
@@ -9139,8 +9139,8 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
-  vue-tsc@3.3.1:
-    resolution: {integrity: sha512-webBP3jhlxzhELZ2g+11KJ6pg5OVY1xWhWrj7N/yQMi1CrtxJnW+tUACyRVeDK0cQNLP2Va5HNYK8pe+7c+msw==}
+  vue-tsc@3.3.2:
+    resolution: {integrity: sha512-n7nQoA3YWW/eiDR8jMiv/uJvlg0uLGs+YgUrsTrf9EZaYSt3tuvMZb5V8+7Mvh/EH5pnY/hoVdgfjH+XcK+wwA==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
@@ -10872,25 +10872,25 @@ snapshots:
   '@img/sharp-win32-x64@0.34.5':
     optional: true
 
-  '@inquirer/ansi@2.0.5': {}
+  '@inquirer/ansi@2.0.6': {}
 
-  '@inquirer/checkbox@5.1.5(@types/node@25.9.1)':
+  '@inquirer/checkbox@5.2.0(@types/node@25.9.1)':
     dependencies:
-      '@inquirer/ansi': 2.0.5
-      '@inquirer/core': 11.1.10(@types/node@25.9.1)
-      '@inquirer/figures': 2.0.5
-      '@inquirer/type': 4.0.5(@types/node@25.9.1)
+      '@inquirer/ansi': 2.0.6
+      '@inquirer/core': 11.2.0(@types/node@25.9.1)
+      '@inquirer/figures': 2.0.6
+      '@inquirer/type': 4.0.6(@types/node@25.9.1)
     optionalDependencies:
       '@types/node': 25.9.1
 
-  '@inquirer/core@11.1.10(@types/node@25.9.1)':
+  '@inquirer/core@11.2.0(@types/node@25.9.1)':
     dependencies:
-      '@inquirer/ansi': 2.0.5
-      '@inquirer/figures': 2.0.5
-      '@inquirer/type': 4.0.5(@types/node@25.9.1)
+      '@inquirer/ansi': 2.0.6
+      '@inquirer/figures': 2.0.6
+      '@inquirer/type': 4.0.6(@types/node@25.9.1)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.0
-      mute-stream: 3.0.0
+      mute-stream: 4.0.0
       signal-exit: 4.1.0
     optionalDependencies:
       '@types/node': 25.9.1
@@ -10902,25 +10902,25 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.9.1
 
-  '@inquirer/figures@2.0.5': {}
+  '@inquirer/figures@2.0.6': {}
 
-  '@inquirer/input@5.0.13(@types/node@25.9.1)':
+  '@inquirer/input@5.1.0(@types/node@25.9.1)':
     dependencies:
-      '@inquirer/core': 11.1.10(@types/node@25.9.1)
-      '@inquirer/type': 4.0.5(@types/node@25.9.1)
+      '@inquirer/core': 11.2.0(@types/node@25.9.1)
+      '@inquirer/type': 4.0.6(@types/node@25.9.1)
     optionalDependencies:
       '@types/node': 25.9.1
 
-  '@inquirer/select@5.1.5(@types/node@25.9.1)':
+  '@inquirer/select@5.2.0(@types/node@25.9.1)':
     dependencies:
-      '@inquirer/ansi': 2.0.5
-      '@inquirer/core': 11.1.10(@types/node@25.9.1)
-      '@inquirer/figures': 2.0.5
-      '@inquirer/type': 4.0.5(@types/node@25.9.1)
+      '@inquirer/ansi': 2.0.6
+      '@inquirer/core': 11.2.0(@types/node@25.9.1)
+      '@inquirer/figures': 2.0.6
+      '@inquirer/type': 4.0.6(@types/node@25.9.1)
     optionalDependencies:
       '@types/node': 25.9.1
 
-  '@inquirer/type@4.0.5(@types/node@25.9.1)':
+  '@inquirer/type@4.0.6(@types/node@25.9.1)':
     optionalDependencies:
       '@types/node': 25.9.1
 
@@ -12737,7 +12737,7 @@ snapshots:
 
   '@tanstack/table-core@8.21.3': {}
 
-  '@tanstack/virtual-core@3.15.0': {}
+  '@tanstack/virtual-core@3.16.0': {}
 
   '@tanstack/vue-query-devtools@6.1.33(@tanstack/vue-query@5.100.14(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))':
     dependencies:
@@ -12758,9 +12758,9 @@ snapshots:
       '@tanstack/table-core': 8.21.3
       vue: 3.5.34(typescript@6.0.3)
 
-  '@tanstack/vue-virtual@3.13.25(vue@3.5.34(typescript@6.0.3))':
+  '@tanstack/vue-virtual@3.13.26(vue@3.5.34(typescript@6.0.3))':
     dependencies:
-      '@tanstack/virtual-core': 3.15.0
+      '@tanstack/virtual-core': 3.16.0
       vue: 3.5.34(typescript@6.0.3)
 
   '@trpc/client@11.17.0(@trpc/server@11.17.0(typescript@6.0.3))(typescript@6.0.3)':
@@ -13479,7 +13479,7 @@ snapshots:
       picomatch: 4.0.4
     optional: true
 
-  '@vue/language-core@3.3.1':
+  '@vue/language-core@3.3.2':
     dependencies:
       '@volar/language-core': 2.4.28
       '@vue/compiler-dom': 3.5.34
@@ -17084,7 +17084,7 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  mute-stream@3.0.0: {}
+  mute-stream@4.0.0: {}
 
   nanoexec@1.1.0(@types/node@25.9.1):
     dependencies:
@@ -19303,10 +19303,10 @@ snapshots:
       typescript: 6.0.3
     optional: true
 
-  vue-tsc@3.3.1(typescript@6.0.3):
+  vue-tsc@3.3.2(typescript@6.0.3):
     dependencies:
       '@volar/typescript': 2.4.28
-      '@vue/language-core': 3.3.1
+      '@vue/language-core': 3.3.2
       typescript: 6.0.3
 
   vue@3.5.34(typescript@6.0.3):
