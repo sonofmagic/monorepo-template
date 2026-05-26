@@ -1,5 +1,13 @@
 # create-repoctl
 
+## 0.0.6
+
+### Patch Changes
+
+- 🐛 **Keep repoctl in generated root package.json files created by the repoctl scaffold entry.** [`e126da6`](https://github.com/sonofmagic/monorepo-template/commit/e126da6a93ac0f79bfcfa70811588ad6e89cebc1) by @sonofmagic
+- 📦 **Dependencies** [`e126da6`](https://github.com/sonofmagic/monorepo-template/commit/e126da6a93ac0f79bfcfa70811588ad6e89cebc1)
+  → `create-icebreaker@1.0.8`
+
 ## 0.0.5
 
 ### Patch Changes

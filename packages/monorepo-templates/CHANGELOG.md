@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.8
+
+### Patch Changes
+
+- 🐛 **deps: upgrade** [`171cafa`](https://github.com/sonofmagic/monorepo-template/commit/171cafa4d5943754138cd7ff49434214a33b7919) by @sonofmagic
+
 ## 1.0.7
 
 ### Patch Changes
