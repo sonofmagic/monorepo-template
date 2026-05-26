@@ -1,5 +1,12 @@
 # repoctl
 
+## 4.0.9
+
+### Patch Changes
+
+- 📦 **Dependencies**
+  → `@icebreakers/monorepo@4.0.9`
+
 ## 4.0.8
 
 ### Patch Changes

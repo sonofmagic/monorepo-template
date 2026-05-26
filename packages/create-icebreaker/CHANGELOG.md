@@ -1,5 +1,13 @@
 # create-icebreaker
 
+## 1.0.8
+
+### Patch Changes
+
+- 🐛 **Keep repoctl in generated root package.json files created by the repoctl scaffold entry.** [`e126da6`](https://github.com/sonofmagic/monorepo-template/commit/e126da6a93ac0f79bfcfa70811588ad6e89cebc1) by @sonofmagic
+- 📦 **Dependencies** [`171cafa`](https://github.com/sonofmagic/monorepo-template/commit/171cafa4d5943754138cd7ff49434214a33b7919)
+  → `@icebreakers/monorepo-templates@1.0.8`
+
 ## 1.0.7
 
 ### Patch Changes
