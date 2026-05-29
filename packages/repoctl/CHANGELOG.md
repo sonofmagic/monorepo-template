@@ -1,5 +1,12 @@
 # repoctl
 
+## 4.0.11
+
+### Patch Changes
+
+- 📦 **Dependencies** [`d115c08`](https://github.com/sonofmagic/monorepo-template/commit/d115c08963412e9ee638e9d56e0f9feca75baf9d)
+  → `@icebreakers/monorepo@4.0.11`
+
 ## 4.0.10
 
 ### Patch Changes
