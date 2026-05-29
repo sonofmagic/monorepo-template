@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 4.0.11
+
+### Patch Changes
+
+- 🐛 **deps: upgrade** [`d115c08`](https://github.com/sonofmagic/monorepo-template/commit/d115c08963412e9ee638e9d56e0f9feca75baf9d) by @sonofmagic
+
 ## 4.0.10
 
 ### Patch Changes
