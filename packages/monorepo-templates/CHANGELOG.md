@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.10
+
+### Patch Changes
+
+- 🐛 **Remove the source repository's release tooling build step from generated template assets.** [`dd6f262`](https://github.com/sonofmagic/monorepo-template/commit/dd6f2628e70ee5af5e6d8caa4631b6a47d515a54) by @sonofmagic
+
 ## 1.0.9
 
 ### Patch Changes
