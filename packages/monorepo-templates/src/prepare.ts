@@ -163,6 +163,26 @@ async function writePublishedToolingConfigs() {
   }))
 }
 
+async function removeSourceRepoReleaseToolingBuildStep() {
+  const releaseWorkflowPath = path.join(assetsDir, '.github/workflows/release.yml')
+  if (!await pathExists(releaseWorkflowPath)) {
+    return
+  }
+
+  const content = await fs.readFile(releaseWorkflowPath, 'utf8')
+  const nextContent = content.replaceAll(
+    [
+      '',
+      '      - name: Build Release Tooling',
+      '        run: pnpm run tooling:build',
+    ].join('\n'),
+    '',
+  )
+  if (nextContent !== content) {
+    await fs.writeFile(releaseWorkflowPath, nextContent, 'utf8')
+  }
+}
+
 async function copyTemplates(repoRoot: string, overwriteExisting: boolean) {
   for (const template of templateChoices) {
     const from = path.join(repoRoot, 'templates', template.source)
@@ -186,5 +206,6 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   await resetDir(templatesDir, overwriteExisting)
   await copyAssets(repoRoot, overwriteExisting)
   await writePublishedToolingConfigs()
+  await removeSourceRepoReleaseToolingBuildStep()
   await copyTemplates(repoRoot, overwriteExisting)
 }

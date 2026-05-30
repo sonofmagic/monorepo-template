@@ -58,6 +58,12 @@ describe('generated template quality', () => {
     expect(assetTargets.some(file => file.includes('/tooling/load-tooling-module.mjs'))).toBe(false)
   })
 
+  it('does not ship source-repo-only release tooling build step', async () => {
+    const content = await fs.readFile(`${assetsDir}/.github/workflows/release.yml`, 'utf8')
+    expect(content).not.toContain('Build Release Tooling')
+    expect(content).not.toContain('pnpm run tooling:build')
+  })
+
   it('does not ship stale TypeScript deprecation suppressions', async () => {
     const files = [
       ...await collectTextFiles(assetsDir),
