@@ -1,5 +1,12 @@
 # @icebreakers/monorepo
 
+## 4.0.12
+
+### Patch Changes
+
+- 📦 **Dependencies** [`dd6f262`](https://github.com/sonofmagic/monorepo-template/commit/dd6f2628e70ee5af5e6d8caa4631b6a47d515a54)
+  → `@icebreakers/monorepo-templates@1.0.10`
+
 ## 4.0.11
 
 ### Patch Changes
