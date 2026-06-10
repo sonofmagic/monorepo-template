@@ -41,10 +41,15 @@ const publishedToolingConfigs = {
     '',
   ].join('\n'),
 }
+const sourceRepoReleaseToolingBuildStepPattern = /\r?\n\s+- name: Build Release Tooling\r?\n\s+run: pnpm run tooling:build\r?\n/g
 
 export interface PrepareAssetsOptions {
   overwriteExisting?: boolean
   silent?: boolean
+}
+
+export function removeSourceRepoReleaseToolingBuildStepContent(content: string) {
+  return content.replaceAll(sourceRepoReleaseToolingBuildStepPattern, '\n')
 }
 
 async function pathExists(targetPath: string) {
@@ -170,14 +175,7 @@ async function removeSourceRepoReleaseToolingBuildStep() {
   }
 
   const content = await fs.readFile(releaseWorkflowPath, 'utf8')
-  const nextContent = content.replaceAll(
-    [
-      '',
-      '      - name: Build Release Tooling',
-      '        run: pnpm run tooling:build',
-    ].join('\n'),
-    '',
-  )
+  const nextContent = removeSourceRepoReleaseToolingBuildStepContent(content)
   if (nextContent !== content) {
     await fs.writeFile(releaseWorkflowPath, nextContent, 'utf8')
   }
