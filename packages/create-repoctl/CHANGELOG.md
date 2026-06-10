@@ -1,5 +1,12 @@
 # create-repoctl
 
+## 0.0.9
+
+### Patch Changes
+
+- 📦 **Dependencies**
+  → `create-icebreaker@1.0.11`
+
 ## 0.0.8
 
 ### Patch Changes
