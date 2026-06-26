@@ -1,5 +1,14 @@
+import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import { logger } from '../core/logger'
+
+type HashInput = Parameters<ReturnType<typeof crypto.createHash>['update']>[0]
+
+function toHashInput(data: crypto.BinaryLike): HashInput {
+  return typeof data === 'string' || ArrayBuffer.isView(data)
+    ? data
+    : Buffer.from(data)
+}
 
 /**
  * 生成给定内容的 md5 摘要。
@@ -9,7 +18,7 @@ import { logger } from '../core/logger'
  */
 export function getFileHash(data: crypto.BinaryLike) {
   const hashSum = crypto.createHash('md5')
-  hashSum.update(data)
+  hashSum.update(toHashInput(data))
   return hashSum.digest('hex')
 }
 
