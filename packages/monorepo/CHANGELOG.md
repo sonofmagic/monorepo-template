@@ -1,5 +1,16 @@
 # @icebreakers/monorepo
 
+## 5.0.0
+
+### Major Changes
+
+- 🚀 **最低运行环境升级为 Node 22.12.0，并使用已修复 GitHub 元数据容错逻辑的 changelog 工具链。** [`89922fe`](https://github.com/sonofmagic/monorepo-template/commit/89922fe9bfd0b9528288f96df2648784a1e14a9d) by @sonofmagic
+
+### Patch Changes
+
+- 📦 **Dependencies** [`16b22ad`](https://github.com/sonofmagic/monorepo-template/commit/16b22adce6df418aef2af7827cf903fa9a00b2f4)
+  → `@icebreakers/monorepo-templates@1.0.12`
+
 ## 4.0.13
 
 ### Patch Changes

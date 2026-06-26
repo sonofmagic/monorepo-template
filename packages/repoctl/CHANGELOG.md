@@ -1,5 +1,16 @@
 # repoctl
 
+## 5.0.0
+
+### Major Changes
+
+- 🚀 **最低运行环境升级为 Node 22.12.0，并使用已修复 GitHub 元数据容错逻辑的 changelog 工具链。** [`89922fe`](https://github.com/sonofmagic/monorepo-template/commit/89922fe9bfd0b9528288f96df2648784a1e14a9d) by @sonofmagic
+
+### Patch Changes
+
+- 📦 **Dependencies** [`89922fe`](https://github.com/sonofmagic/monorepo-template/commit/89922fe9bfd0b9528288f96df2648784a1e14a9d)
+  → `@icebreakers/monorepo@5.0.0`
+
 ## 4.0.13
 
 ### Patch Changes
