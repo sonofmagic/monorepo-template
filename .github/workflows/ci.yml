@@ -54,7 +54,12 @@ jobs:
         run: pnpm build
 
       - name: Typecheck
+        if: ${{ matrix.os != 'windows-latest' || matrix.node-version != 22 }}
         run: pnpm typecheck
+
+      - name: Typecheck (Windows Node 22)
+        if: ${{ matrix.os == 'windows-latest' && matrix.node-version == 22 }}
+        run: pnpm exec turbo run typecheck --concurrency=1
 
       - name: TSD
         run: pnpm tsd
