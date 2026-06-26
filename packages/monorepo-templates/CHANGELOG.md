@@ -1,5 +1,11 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.12
+
+### Patch Changes
+
+- 🐛 **deps: upgrade** [`16b22ad`](https://github.com/sonofmagic/monorepo-template/commit/16b22adce6df418aef2af7827cf903fa9a00b2f4) by @sonofmagic
+
 ## 1.0.11
 
 ### Patch Changes
