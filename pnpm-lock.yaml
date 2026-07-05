@@ -114,8 +114,8 @@ importers:
         specifier: ^21.2.0
         version: 21.2.0(@types/node@26.1.0)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
       '@icebreakers/commitlint-config':
-        specifier: ^4.0.0
-        version: 4.0.0(conventional-changelog-conventionalcommits@9.3.1)
+        specifier: ^4.0.1
+        version: 4.0.1(conventional-changelog-conventionalcommits@10.2.0)
       '@icebreakers/eslint-config':
         specifier: ^6.0.0
         version: 6.0.0(@next/eslint-plugin-next@16.2.4)(@unocss/eslint-plugin@66.6.8(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-pnpm@1.6.1(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.5.0(jiti@2.7.0))(globals@17.7.0))(eslint@10.5.0(jiti@2.7.0))(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)(ts-declaration-location@1.0.7(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.9)
@@ -123,8 +123,8 @@ importers:
         specifier: workspace:*
         version: link:../monorepo-templates
       '@icebreakers/stylelint-config':
-        specifier: ^5.0.0
-        version: 5.0.0(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)
+        specifier: ^5.0.1
+        version: 5.0.1(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)
       '@pnpm/find-workspace-dir':
         specifier: ^1000.1.5
         version: 1000.1.5
@@ -939,10 +939,6 @@ packages:
     engines: {node: '>=22.12.0'}
     hasBin: true
 
-  '@commitlint/config-conventional@21.1.0':
-    resolution: {integrity: sha512-BIFl8xM+3SLy3jrblUC3wmQLCVbLty+++6o859BDCmybVrQdXmIWO+dlkGIbv/M2bBoC55wGuh0zGiw3TPjL1g==}
-    engines: {node: '>=22.12.0'}
-
   '@commitlint/config-conventional@21.2.0':
     resolution: {integrity: sha512-Qf8WRDVcyVd14if6VTWenebxFbKnVnbzPUJjlzjkyJGeHK2xCGd63Dr1XZzj0plXKQb9P0BfOxoc1HVeCo2BWQ==}
     engines: {node: '>=22.12.0'}
@@ -1001,10 +997,6 @@ packages:
 
   '@commitlint/top-level@21.2.0':
     resolution: {integrity: sha512-Y5gmQ+KxzqCrBFJfLvFEPvvwD3LDiNZoTT2yeFBm96M8qhmqSzQc5DvX3rheAaAMjyIvMXOCLS/mWfdpONsjyQ==}
-    engines: {node: '>=22.12.0'}
-
-  '@commitlint/types@21.1.0':
-    resolution: {integrity: sha512-YodnnnH1Cp+08nP8HGNJAIuB6L3/vdCTHVRTfF8Ik/wRCLOTsU9zwv3yO1cSPQRDa9CLYtE+UJ2K67r7CwMSFw==}
     engines: {node: '>=22.12.0'}
 
   '@commitlint/types@21.2.0':
@@ -1626,8 +1618,8 @@ packages:
     resolution: {integrity: sha512-oIT11nhZj8J3UEXBS2n5XLr+HFCN8/jlyXpxa78Q9w6ZWOMXpZfZdcHjnMqnOEp1ndqRuy5GV59FhR04HlAFQA==}
     engines: {node: '>=22.12.0'}
 
-  '@icebreakers/commitlint-config@4.0.0':
-    resolution: {integrity: sha512-nzBpj79Krt26/GrY93w6HOUR6itxH6m3uLV5OIgAxSSfqLSRTJBmPoe4WnvPAKBqYeciMQXpkcaMf3uxVufvDA==}
+  '@icebreakers/commitlint-config@4.0.1':
+    resolution: {integrity: sha512-65O9FTMnQ73LfPYZuF1jyZ2phCJIidjh54FKp2hiPswk2MP9M/rpFIv7vDIrU9TM+NEeX1erqaqUdssYzDEB9w==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       conventional-changelog-conventionalcommits: '>=9.0.0'
@@ -1643,6 +1635,11 @@ packages:
 
   '@icebreakers/stylelint-config@5.0.0':
     resolution: {integrity: sha512-RpGtYeeWNC5MRDz+kMFFpBRhkEUKjSb8y2AQm1TjyCR3PeG9BGNeYcGFcmw62lOGpy3awrdHzc1kIwN6PO6jng==}
+    engines: {node: '>=22.12.0'}
+    hasBin: true
+
+  '@icebreakers/stylelint-config@5.0.1':
+    resolution: {integrity: sha512-3Mb9Xc0f8FhyV5p6mf+UFw5Uk/ECf3dcXEWQWS56OyBjiG8b88gE7eKjBTyqgocLOzKArpPDEmMOxNVPcQpnAw==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -4254,9 +4251,6 @@ packages:
     resolution: {integrity: sha512-LHE+8BuR7RYGDKvnrmcuSq3tDcKv9OFEXQt/HpbZhY7V6h0zlUXutnAD82GiFx9rdieCMjkvtcsPqBwgUl1Iiw==}
     engines: {node: '>= 0.4'}
 
-  array-ify@1.0.0:
-    resolution: {integrity: sha512-c5AMf34bKdvPhQ7tBGhqkgKNUzMr4WUs+WDtC2ZUGOUncbxKMTvqxYctiseW3+L4bA8ec+GcZ6/A/FW4m8ukng==}
-
   array-includes@3.1.9:
     resolution: {integrity: sha512-FmeCCAenzH0KH381SPT5FZmiA/TmpndpcaShhfgEN9eCVjnFBqq3l1xrI42y8+PPLI6hypzou4GXw00WHmPBLQ==}
     engines: {node: '>= 0.4'}
@@ -4632,9 +4626,6 @@ packages:
     resolution: {integrity: sha512-0h+uSNtQGW3D98eQt3jJ8L06Fves8hncB4V/PKdw/Qb8Hnk19VaKuTr55UNRYiSoVa7WwrFls+rh3ux9agmkeQ==}
     engines: {node: '>= 12.0.0'}
 
-  compare-func@2.0.0:
-    resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
-
   compare-versions@6.1.1:
     resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
 
@@ -4664,10 +4655,6 @@ packages:
   conventional-changelog-conventionalcommits@10.2.0:
     resolution: {integrity: sha512-UtlM9GqolY7OmlQh5L/UEVoKsTUpTgUVy1PU8JN5gl5Ydaejb7WRklGliG1SKPxxj7hzA173eG3Kt5fYWE2pmg==}
     engines: {node: '>=22'}
-
-  conventional-changelog-conventionalcommits@9.3.1:
-    resolution: {integrity: sha512-dTYtpIacRpcZgrvBYvBfArMmK2xvIpv2TaxM0/ZI5CBtNUzvF2x0t15HsbRABWprS6UPmvj+PzHVjSx4qAVKyw==}
-    engines: {node: '>=18'}
 
   conventional-commits-parser@6.4.0:
     resolution: {integrity: sha512-tvRg7FIBNlyPzjdG8wWRlPHQJJHI7DylhtRGeU9Lq+JuoPh5BKpPRX83ZdLrvXuOSu5Eo/e7SzOQhU4Hd2Miuw==}
@@ -5059,10 +5046,6 @@ packages:
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
-
-  dot-prop@5.3.0:
-    resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
-    engines: {node: '>=8'}
 
   dotenv@17.4.0:
     resolution: {integrity: sha512-kCKF62fwtzwYm0IGBNjRUjtJgMfGapII+FslMHIjMR5KTnwEmBmWLDRSnc3XSNP8bNy34tekgQyDT0hr7pERRQ==}
@@ -6229,10 +6212,6 @@ packages:
   is-number@7.0.0:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
-
-  is-obj@2.0.0:
-    resolution: {integrity: sha512-drqDG3cbczxxEJRoOXcOjtdp1J/lyp1mNn0xaznRs8+muBhgQcrnbspox5X5fOw0HnMnbfDzvnEMEtqDEJEo8w==}
-    engines: {node: '>=8'}
 
   is-path-cwd@2.2.0:
     resolution: {integrity: sha512-w942bTcih8fdJPJmQHFzkS76NEP8Kzzvmw92cXsazb8intwLqPibPPdXf4ANdKV3rYMuuQYGIWtvz9JilB3NFQ==}
@@ -7503,6 +7482,10 @@ packages:
     resolution: {integrity: sha512-llSIe6RTX1djZ0WuXkNshyuKuKctxDWLpkm3sH/TDAmB/WFpajoETmNn8uWhSixm+GFfQKT6+SBtlOycGOsG6Q==}
     engines: {node: '>=22.12.0'}
 
+  postcss-tailwindcss@3.0.1:
+    resolution: {integrity: sha512-AFlKjW+ng2MG5udzjDGe0PEfGJmbBGagArwO2HdEBGFyffNWbagpEzA+0XqUwJjD/0VaZC/jybRPKaPUHwTELg==}
+    engines: {node: '>=22.12.0'}
+
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
@@ -8230,6 +8213,16 @@ packages:
 
   stylelint-plugin-tailwindcss@3.0.0:
     resolution: {integrity: sha512-JbUP3JGG8lWrZmW7z5wrTYT3Li6t0tVzlLbprd42i9UOc119Q2TD6Rpu5ONMPNCCwUWwQiY5D6C1TF2gVjy5dA==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      stylelint: ^17.4.0
+      tailwindcss: ^3.4.0 || ^4.0.0
+    peerDependenciesMeta:
+      tailwindcss:
+        optional: true
+
+  stylelint-plugin-tailwindcss@3.0.1:
+    resolution: {integrity: sha512-ApEJUZQSJt/QKw0xzX7Kr/HzdeYOia5NgRTzMXGc6RNvF8ddiv25+dRlfQp+dHAnEh/nwPvepiObDxkx1stKjA==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       stylelint: ^17.4.0
@@ -9957,11 +9950,6 @@ snapshots:
       - conventional-commits-parser
       - typescript
 
-  '@commitlint/config-conventional@21.1.0':
-    dependencies:
-      '@commitlint/types': 21.1.0
-      conventional-changelog-conventionalcommits: 9.3.1
-
   '@commitlint/config-conventional@21.2.0':
     dependencies:
       '@commitlint/types': 21.2.0
@@ -10049,11 +10037,6 @@ snapshots:
   '@commitlint/top-level@21.2.0':
     dependencies:
       escalade: 3.2.0
-
-  '@commitlint/types@21.1.0':
-    dependencies:
-      conventional-commits-parser: 6.4.0
-      picocolors: 1.1.1
 
   '@commitlint/types@21.2.0':
     dependencies:
@@ -10567,11 +10550,11 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@icebreakers/commitlint-config@4.0.0(conventional-changelog-conventionalcommits@9.3.1)':
+  '@icebreakers/commitlint-config@4.0.1(conventional-changelog-conventionalcommits@10.2.0)':
     dependencies:
-      '@commitlint/config-conventional': 21.1.0
-      '@commitlint/types': 21.1.0
-      conventional-changelog-conventionalcommits: 9.3.1
+      '@commitlint/config-conventional': 21.2.0
+      '@commitlint/types': 21.2.0
+      conventional-changelog-conventionalcommits: 10.2.0
 
   '@icebreakers/eslint-config@6.0.0(@next/eslint-plugin-next@16.2.4)(@unocss/eslint-plugin@66.6.8(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint-plugin-jsx-a11y@6.10.2(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-pnpm@1.6.1(eslint@10.5.0(jiti@2.7.0)))(eslint-plugin-vuejs-accessibility@2.5.0(eslint@10.5.0(jiti@2.7.0))(globals@17.7.0))(eslint@10.5.0(jiti@2.7.0))(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)(ts-declaration-location@1.0.7(typescript@6.0.3))(typescript@6.0.3)(vitest@4.1.9)':
     dependencies:
@@ -10630,6 +10613,22 @@ snapshots:
       stylelint-config-standard-scss: 17.0.0(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))
       stylelint-order: 8.1.1(stylelint@17.14.0(typescript@6.0.3))
       stylelint-plugin-tailwindcss: 3.0.0(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)
+    transitivePeerDependencies:
+      - postcss
+      - stylelint
+      - tailwindcss
+
+  '@icebreakers/stylelint-config@5.0.1(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)':
+    dependencies:
+      comment-json: 5.0.0
+      postcss-html: 1.8.1
+      stylelint-config-recess-order: 7.7.0(stylelint-order@8.1.1(stylelint@17.14.0(typescript@6.0.3)))(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-config-recommended: 18.0.0(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-config-recommended-scss: 17.0.1(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-config-recommended-vue: 1.6.1(postcss-html@1.8.1)(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-config-standard-scss: 17.0.0(postcss@8.5.16)(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-order: 8.1.1(stylelint@17.14.0(typescript@6.0.3))
+      stylelint-plugin-tailwindcss: 3.0.1(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2)
     transitivePeerDependencies:
       - postcss
       - stylelint
@@ -13599,8 +13598,6 @@ snapshots:
       is-array-buffer: 3.0.5
     optional: true
 
-  array-ify@1.0.0: {}
-
   array-includes@3.1.9:
     dependencies:
       call-bind: 1.0.9
@@ -13987,11 +13984,6 @@ snapshots:
 
   comment-parser@1.4.7: {}
 
-  compare-func@2.0.0:
-    dependencies:
-      array-ify: 1.0.0
-      dot-prop: 5.3.0
-
   compare-versions@6.1.1: {}
 
   concat-map@0.0.1: {}
@@ -14017,14 +14009,11 @@ snapshots:
     dependencies:
       '@conventional-changelog/template': 1.2.0
 
-  conventional-changelog-conventionalcommits@9.3.1:
-    dependencies:
-      compare-func: 2.0.0
-
   conventional-commits-parser@6.4.0:
     dependencies:
       '@simple-libs/stream-utils': 1.2.0
       meow: 13.2.0
+    optional: true
 
   conventional-commits-parser@7.0.0:
     dependencies:
@@ -14439,10 +14428,6 @@ snapshots:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
-
-  dot-prop@5.3.0:
-    dependencies:
-      is-obj: 2.0.0
 
   dotenv@17.4.0: {}
 
@@ -15937,8 +15922,6 @@ snapshots:
 
   is-number@7.0.0: {}
 
-  is-obj@2.0.0: {}
-
   is-path-cwd@2.2.0: {}
 
   is-path-inside@3.0.3: {}
@@ -17398,8 +17381,8 @@ snapshots:
     dependencies:
       htmlparser2: 8.0.2
       js-tokens: 9.0.1
-      postcss: 8.5.15
-      postcss-safe-parser: 6.0.0(postcss@8.5.15)
+      postcss: 8.5.16
+      postcss-safe-parser: 6.0.0(postcss@8.5.16)
 
   postcss-media-query-parser@0.2.3: {}
 
@@ -17410,9 +17393,9 @@ snapshots:
 
   postcss-resolve-nested-selector@0.1.6: {}
 
-  postcss-safe-parser@6.0.0(postcss@8.5.15):
+  postcss-safe-parser@6.0.0(postcss@8.5.16):
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.16
 
   postcss-safe-parser@7.0.1(postcss@8.5.15):
     dependencies:
@@ -17427,11 +17410,19 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
-  postcss-sorting@10.0.0(postcss@8.5.15):
+  postcss-sorting@10.0.0(postcss@8.5.16):
     dependencies:
-      postcss: 8.5.15
+      postcss: 8.5.16
 
   postcss-tailwindcss@3.0.0:
+    dependencies:
+      enhanced-resolve: 5.24.1
+      get-tsconfig: 4.14.0
+      postcss: 8.5.16
+      postcss-selector-parser: 7.1.4
+      postcss-value-parser: 4.2.0
+
+  postcss-tailwindcss@3.0.1:
     dependencies:
       enhanced-resolve: 5.24.1
       get-tsconfig: 4.14.0
@@ -18320,13 +18311,20 @@ snapshots:
 
   stylelint-order@8.1.1(stylelint@17.14.0(typescript@6.0.3)):
     dependencies:
-      postcss: 8.5.15
-      postcss-sorting: 10.0.0(postcss@8.5.15)
+      postcss: 8.5.16
+      postcss-sorting: 10.0.0(postcss@8.5.16)
       stylelint: 17.14.0(typescript@6.0.3)
 
   stylelint-plugin-tailwindcss@3.0.0(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2):
     dependencies:
       postcss-tailwindcss: 3.0.0
+      stylelint: 17.14.0(typescript@6.0.3)
+    optionalDependencies:
+      tailwindcss: 4.3.2
+
+  stylelint-plugin-tailwindcss@3.0.1(stylelint@17.14.0(typescript@6.0.3))(tailwindcss@4.3.2):
+    dependencies:
+      postcss-tailwindcss: 3.0.1
       stylelint: 17.14.0(typescript@6.0.3)
     optionalDependencies:
       tailwindcss: 4.3.2
