@@ -39,7 +39,7 @@
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
     "cf-typegen:check": "wrangler types --check",
-    "typecheck": "pnpm cf-typegen:check && tsc -p tsconfig.json"
+    "typecheck": "pnpm cf-typegen:check && tsc -p tsconfig.json && tsc -p tsconfig.worker.json"
   },
   "publishConfig": {
     "exports": {

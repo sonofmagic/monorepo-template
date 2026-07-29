@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": [
-      "ES2022",
-      "WebWorker"
+      "ES2022"
     ],
     "paths": {
       "@/*": [
@@ -12,12 +11,14 @@
     },
     "types": [
       "node",
-      "vitest/globals",
-      "./worker-configuration.d.ts"
+      "vitest/globals"
     ]
   },
   "include": [
     "src",
     "test"
+  ],
+  "exclude": [
+    "src/fetch-entry.ts"
   ]
 }

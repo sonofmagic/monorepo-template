@@ -136,7 +136,9 @@ function toCSSGradient(hour: number): string {
 const app = new Hono()
 
 app.get('*', async (c) => {
-  const request = c.req.raw
+  const request = c.req.raw as Request & {
+    cf?: { timezone?: string }
+  }
 
   // Base HTML style
   let html_style = `
