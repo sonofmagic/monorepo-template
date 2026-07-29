@@ -38,8 +38,8 @@
     "lint:fix": "eslint . --fix",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
-    "postinstall": "pnpm cf-typegen",
-    "typecheck": "tsc -p tsconfig.json"
+    "cf-typegen:check": "wrangler types --check",
+    "typecheck": "pnpm cf-typegen:check && tsc -p tsconfig.json"
   },
   "publishConfig": {
     "exports": {

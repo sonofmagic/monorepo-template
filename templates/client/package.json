@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
-    "postinstall": "pnpm cf-typegen",
-    "typecheck": "vue-tsc -b"
+    "cf-typegen:check": "wrangler types --check",
+    "typecheck": "pnpm cf-typegen:check && vue-tsc -b"
   },
   "dependencies": {
     "@faker-js/faker": "^10.5.0",
