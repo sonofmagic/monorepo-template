@@ -25,6 +25,8 @@
     "tsd": "turbo run tsd",
     "audit": "pnpm audit --audit-level=moderate",
     "audit:fix": "pnpm audit --fix",
+    "cf-typegen": "pnpm --filter @icebreakers/client --filter @icebreakers/server run cf-typegen",
+    "cf-typegen:check": "pnpm --filter @icebreakers/client --filter @icebreakers/server run cf-typegen:check",
     "typecheck": "turbo run typecheck",
     "format": "eslint . --fix",
     "validate": "pnpm run build && pnpm run lint && pnpm run typecheck && pnpm run tsd && pnpm run test",
