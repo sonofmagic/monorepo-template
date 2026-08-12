@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import process from 'node:process'
 import path from 'pathe'
 
@@ -56,6 +56,16 @@ async function readPreState(cwd: string) {
   }
 }
 
+async function hasPendingChangesets(cwd: string) {
+  try {
+    const entries = await readdir(path.join(cwd, '.changeset'), { withFileTypes: true })
+    return entries.some(entry => entry.isFile() && entry.name.endsWith('.md'))
+  }
+  catch {
+    return false
+  }
+}
+
 function resolveBranch(options: ReleaseOptions) {
   return options.branch?.trim() || process.env['GITHUB_REF_NAME']?.trim() || capture('git', ['rev-parse', '--abbrev-ref', 'HEAD'], options)
 }
@@ -75,6 +85,11 @@ export async function releaseStable(options: ReleaseOptions) {
   run('pnpm', ['run', 'build'], options)
   run('pnpm', ['run', 'lint'], options)
   run('pnpm', ['run', 'test'], options)
+
+  if (!await hasPendingChangesets(options.cwd)) {
+    return
+  }
+
   run('pnpm', ['exec', 'changeset', 'version'], options)
   run('pnpm', ['exec', 'changeset', 'publish'], options)
 }
@@ -97,6 +112,11 @@ export async function releasePrerelease(options: ReleaseOptions) {
   run('pnpm', ['run', 'build'], options)
   run('pnpm', ['run', 'lint'], options)
   run('pnpm', ['run', 'test'], options)
+
+  if (!await hasPendingChangesets(options.cwd)) {
+    return
+  }
+
   run('pnpm', ['exec', 'changeset', 'version'], options)
 
   const hasVersionChanges = (options.spawn ?? spawnSync)('git', ['diff', '--quiet', '--exit-code'], {

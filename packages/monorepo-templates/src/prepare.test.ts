@@ -16,7 +16,10 @@ describe('removeSourceRepoReleaseToolingBuildStepContent', () => {
       '        run: pnpm run tooling:build',
       '',
       '      - name: Create Release Pull Request or Publish to npm',
-      '        uses: changesets/action@v1',
+      '        uses: changesets/action@v2.0.0',
+      '        with:',
+      '          github-token: $' + '{{ secrets.GITHUB_TOKEN }}',
+      '          publish-script: pnpm exec repo release stable',
       '',
     ].join('\r\n')
 

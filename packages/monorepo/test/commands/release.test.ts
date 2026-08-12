@@ -15,12 +15,23 @@ async function createTempWorkspace(preState?: unknown) {
   const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-'))
   tempRoots.push(cwd)
 
+  await mkdir(path.join(cwd, '.changeset'), { recursive: true })
+
   if (preState) {
-    await mkdir(path.join(cwd, '.changeset'), { recursive: true })
     await writeFile(path.join(cwd, '.changeset/pre.json'), JSON.stringify(preState), 'utf8')
   }
 
   return cwd
+}
+
+async function writePendingChangeset(cwd: string, name = 'pending-change') {
+  await writeFile(path.join(cwd, '.changeset', `${name}.md`), [
+    '---',
+    '"repoctl": patch',
+    '---',
+    '',
+    'Release change.',
+  ].join('\n'), 'utf8')
 }
 
 function createSpawnMock(options: { diffStatus?: number } = {}) {
@@ -45,6 +56,7 @@ afterEach(async () => {
 describe('release commands', () => {
   it('runs the stable release sequence on main', async () => {
     const cwd = await createTempWorkspace()
+    await writePendingChangeset(cwd)
     const { calls, spawn } = createSpawnMock()
 
     await releaseStable({ branch: 'main', cwd, spawn: spawn as never })
@@ -55,6 +67,19 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'test'] },
       { command: 'pnpm', args: ['exec', 'changeset', 'version'] },
       { command: 'pnpm', args: ['exec', 'changeset', 'publish'] },
+    ])
+  })
+
+  it('skips stable publish when there are no pending changesets', async () => {
+    const cwd = await createTempWorkspace()
+    const { calls, spawn } = createSpawnMock()
+
+    await releaseStable({ branch: 'main', cwd, spawn: spawn as never })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
     ])
   })
 
@@ -80,6 +105,7 @@ describe('release commands', () => {
 
   it('skips prerelease publish when changeset version creates no changes', async () => {
     const cwd = await createTempWorkspace({ mode: 'pre', tag: 'next' })
+    await writePendingChangeset(cwd)
     const { calls, spawn } = createSpawnMock({ diffStatus: 0 })
 
     await releasePrerelease({ branch: 'next', cwd, spawn: spawn as never })
@@ -93,8 +119,22 @@ describe('release commands', () => {
     ])
   })
 
+  it('skips prerelease version when there are no pending changesets', async () => {
+    const cwd = await createTempWorkspace({ mode: 'pre', tag: 'next' })
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+
+    await releasePrerelease({ branch: 'next', cwd, spawn: spawn as never })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+    ])
+  })
+
   it('commits, publishes, and pushes prerelease version changes', async () => {
     const cwd = await createTempWorkspace({ mode: 'pre', tag: 'alpha' })
+    await writePendingChangeset(cwd)
     const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
 
     await releasePrerelease({ branch: 'alpha', cwd, spawn: spawn as never })

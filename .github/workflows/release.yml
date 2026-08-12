@@ -47,12 +47,12 @@ jobs:
         id: changesets
         uses: changesets/action@v2.0.0
         with:
-          publish: pnpm exec repo release stable
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          publish-script: pnpm exec repo release stable
         env:
           # this doesn't work but semantic-release works
           # see https://github.com/sonofmagic/npm-lib-rollup-template/blob/main/.github/workflows/release.yml#L46
           # NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           npm_config_registry: https://registry.npmjs.org
           # https://github.com/changesets/changesets/pull/1659
