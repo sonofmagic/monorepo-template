@@ -93,6 +93,10 @@ jobs:
             exit 1
           fi
 
+      - name: Snapshot release tags
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
+        run: git tag --list | sort > "$RUNNER_TEMP/release-tags-before.txt"
+
       - name: Publish unpublished versions to npm
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
         run: pnpm exec repo release stable
@@ -110,9 +114,35 @@ jobs:
           published_version="$(npm view "$RECOVERY_PACKAGE@$RECOVERY_VERSION" version)"
           test "$published_version" = "$RECOVERY_VERSION"
 
-      - name: Push recovered release tags
+      - name: Publish recovered release metadata
         if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        run: git push origin --follow-tags
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RECOVERY_PACKAGE: ${{ inputs.package }}
+          RECOVERY_VERSION: ${{ inputs.version }}
+        run: |
+          git tag --list | sort > "$RUNNER_TEMP/release-tags-after.txt"
+          comm -13 \
+            "$RUNNER_TEMP/release-tags-before.txt" \
+            "$RUNNER_TEMP/release-tags-after.txt" \
+            > "$RUNNER_TEMP/recovered-release-tags.txt"
+
+          expected_tag="$RECOVERY_PACKAGE@$RECOVERY_VERSION"
+          if ! grep -Fxq "$expected_tag" "$RUNNER_TEMP/recovered-release-tags.txt"; then
+            echo "Expected Changesets to create $expected_tag" >&2
+            exit 1
+          fi
+
+          while IFS= read -r tag; do
+            [[ -n "$tag" ]] || continue
+            git push origin "refs/tags/$tag"
+            gh release create "$tag" \
+              --verify-tag \
+              --target "$GITHUB_SHA" \
+              --title "$tag" \
+              --generate-notes
+          done < "$RUNNER_TEMP/recovered-release-tags.txt"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7

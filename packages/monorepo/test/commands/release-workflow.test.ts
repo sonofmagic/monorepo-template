@@ -11,7 +11,12 @@ describe('release workflow', () => {
     expect(workflow).toContain('Validate unpublished-version recovery')
     expect(workflow).toContain('run: pnpm exec repo release stable')
     expect(workflow).toContain('npm view \"$RECOVERY_PACKAGE@$RECOVERY_VERSION\" version')
-    expect(workflow).toContain('git push origin --follow-tags')
+    expect(workflow).toContain('Snapshot release tags')
+    expect(workflow).toContain('comm -13')
+    expect(workflow).toContain('grep -Fxq \"$expected_tag\"')
+    expect(workflow).toContain('git push origin \"refs/tags/$tag\"')
+    expect(workflow).toContain('gh release create \"$tag\"')
+    expect(workflow).not.toContain('git push origin --follow-tags')
   })
 
   it('does not run prerelease publishing for manual recovery dispatches', async () => {
