@@ -1,5 +1,17 @@
 # @icebreakers/monorepo-templates
 
+## 1.0.15
+
+### Patch Changes
+
+- 🐛 **Stop generated Cloudflare templates from rewriting Worker types during dependency installation, and add an explicit type freshness check to their typecheck scripts.** [`376b346`](https://github.com/sonofmagic/monorepo-template/commit/376b346748a23d2ad2738cc5a45772933d4aac74) by @sonofmagic
+
+- 🐛 **Keep the committed Cloudflare Worker types synchronized with Wrangler updates and add root commands for regenerating or checking both Worker templates.** [#786](https://github.com/sonofmagic/monorepo-template/pull/786) by @renovate
+
+- 🐛 **Isolate browser, Node.js, and Cloudflare Worker type environments in generated client and server templates.** [`6f0e68c`](https://github.com/sonofmagic/monorepo-template/commit/6f0e68c7f33b278b7794af9327dd8b2acfb6f326) by @sonofmagic
+
+- 🐛 **Handle Changesets v3 empty-version runs in repo release commands and update generated release workflows to changesets/action v2.** [`b580b94`](https://github.com/sonofmagic/monorepo-template/commit/b580b94619f8cffc3c482bf17e1f0cdca96106c7) by @sonofmagic
+
 ## 1.0.14
 
 ### Patch Changes

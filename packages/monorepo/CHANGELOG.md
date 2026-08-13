@@ -1,5 +1,13 @@
 # @icebreakers/monorepo
 
+## 5.0.3
+
+### Patch Changes
+
+- 🐛 **Handle Changesets v3 empty-version runs in repo release commands and update generated release workflows to changesets/action v2.** [`b580b94`](https://github.com/sonofmagic/monorepo-template/commit/b580b94619f8cffc3c482bf17e1f0cdca96106c7) by @sonofmagic
+- 📦 **Dependencies** [`376b346`](https://github.com/sonofmagic/monorepo-template/commit/376b346748a23d2ad2738cc5a45772933d4aac74)
+  → `@icebreakers/monorepo-templates@1.0.15`
+
 ## 5.0.2
 
 ### Patch Changes
