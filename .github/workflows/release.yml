@@ -63,7 +63,7 @@ jobs:
       - name: Create Release Pull Request or Publish to npm
         if: github.event_name != 'workflow_dispatch' || inputs.mode == 'changesets'
         id: changesets
-        uses: changesets/action@v2.0.0
+        uses: changesets/action@v2.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           publish-script: pnpm exec repo release stable
