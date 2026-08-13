@@ -8,6 +8,7 @@ import { resolveToolingConfig } from '../../core/config'
 
 const zeroSha = '0'.repeat(40)
 const typecheckExtensions = new Set(['.ts', '.tsx', '.mts', '.cts', '.vue'])
+const typecheckBasenames = new Set(['package.json'])
 const whitespacePattern = /\s+/
 const gitDirName = '.git'
 const defaultWorkspaceOrder = [
@@ -342,7 +343,10 @@ export function verifyStagedTypecheck(stagedFiles: string[], options: StagedType
   const spawn = options.spawn ?? spawnSync
   const workspaceDirs = [...new Set(
     stagedFiles
-      .filter(file => typecheckExtensions.has(path.extname(file)))
+      .filter((file) => {
+        const basename = path.basename(file)
+        return typecheckExtensions.has(path.extname(file)) || typecheckBasenames.has(basename)
+      })
       .map(file => resolveTypecheckWorkspaceDir(file, cwd)),
   )]
 

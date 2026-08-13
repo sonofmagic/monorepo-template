@@ -71,6 +71,7 @@ describe('verify commands', () => {
     verifyStagedTypecheck([
       'packages/monorepo/src/index.ts',
       'packages/monorepo/test/program.test.ts',
+      'templates/client/package.json',
       'README.md',
       'vitest.config.ts',
     ], {
@@ -80,7 +81,23 @@ describe('verify commands', () => {
 
     expect(spawnMock.mock.calls).toEqual([
       ['pnpm', ['--dir', path.join(repoRoot, 'packages/monorepo'), 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
+      ['pnpm', ['--dir', path.join(repoRoot, 'templates/client'), 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
       ['pnpm', ['--dir', repoRoot, 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
+    ])
+  })
+
+  it('routes package.json files to the owning workspace typecheck', () => {
+    const spawnMock = vi.fn(() => createSpawnResult())
+
+    verifyStagedTypecheck([
+      'templates/client/package.json',
+    ], {
+      cwd: repoRoot,
+      spawn: spawnMock as unknown as typeof import('node:child_process').spawnSync,
+    })
+
+    expect(spawnMock.mock.calls).toEqual([
+      ['pnpm', ['--dir', path.join(repoRoot, 'templates/client'), 'typecheck'], expect.objectContaining({ cwd: repoRoot, stdio: 'inherit' })],
     ])
   })
 
