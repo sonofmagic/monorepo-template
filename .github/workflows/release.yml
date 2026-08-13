@@ -9,6 +9,23 @@ on:
       - rc
       - next
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Release operation
+        required: true
+        default: changesets
+        type: choice
+        options:
+          - changesets
+          - publish-unpublished
+      package:
+        description: Package used to verify an unpublished-version recovery
+        required: false
+        type: string
+      version:
+        description: Version used to verify an unpublished-version recovery
+        required: false
+        type: string
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 env:
@@ -44,6 +61,7 @@ jobs:
         run: pnpm run tooling:build
 
       - name: Create Release Pull Request or Publish to npm
+        if: github.event_name != 'workflow_dispatch' || inputs.mode == 'changesets'
         id: changesets
         uses: changesets/action@v2.0.0
         with:
@@ -58,13 +76,51 @@ jobs:
           # https://github.com/changesets/changesets/pull/1659
           NPM_CONFIG_PROVENANCE: true
 
+      - name: Validate unpublished-version recovery
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
+        shell: bash
+        env:
+          RECOVERY_PACKAGE: ${{ inputs.package }}
+          RECOVERY_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ -z "$RECOVERY_PACKAGE" || -z "$RECOVERY_VERSION" ]]; then
+            echo "package and version are required for publish-unpublished" >&2
+            exit 1
+          fi
+          actual_version="$(pnpm --filter "$RECOVERY_PACKAGE" exec node -p "require('./package.json').version")"
+          if [[ "$actual_version" != "$RECOVERY_VERSION" ]]; then
+            echo "Expected $RECOVERY_PACKAGE@$RECOVERY_VERSION on main, found $actual_version" >&2
+            exit 1
+          fi
+
+      - name: Publish unpublished versions to npm
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
+        run: pnpm exec repo release stable
+        env:
+          npm_config_registry: https://registry.npmjs.org
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: Verify recovered npm version
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
+        shell: bash
+        env:
+          RECOVERY_PACKAGE: ${{ inputs.package }}
+          RECOVERY_VERSION: ${{ inputs.version }}
+        run: |
+          published_version="$(npm view "$RECOVERY_PACKAGE@$RECOVERY_VERSION" version)"
+          test "$published_version" = "$RECOVERY_VERSION"
+
+      - name: Push recovered release tags
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
+        run: git push origin --follow-tags
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   prerelease:
-    if: github.ref_name != 'main'
+    if: github.event_name == 'push' && github.ref_name != 'main'
     name: Prerelease
     runs-on: ubuntu-latest
     steps:
