@@ -30,12 +30,18 @@ describe('tooling factories', () => {
       repoCommand: 'pnpm exec repo',
     })
     const command = config['*.{ts,tsx,mts,cts,vue}']
+    const packageJsonCommand = config['**/package.json']
 
     expect(typeof command).toBe('function')
     if (typeof command !== 'function') {
       throw new TypeError('expected lint-staged rule to be callable')
     }
+    expect(typeof packageJsonCommand).toBe('function')
+    if (typeof packageJsonCommand !== 'function') {
+      throw new TypeError('expected **/package.json rule to be callable')
+    }
     expect(command(['src/index.ts'])).toContain('pnpm exec repo verify staged-typecheck')
+    expect(packageJsonCommand(['templates/client/package.json'])).toContain('pnpm exec repo verify staged-typecheck')
   })
 
   it('passes through complete lint-staged config when provided', () => {
@@ -181,11 +187,17 @@ describe('tooling factories', () => {
     })
 
     const command = lintStaged['*.{ts,tsx,mts,cts,vue}']
+    const packageJsonCommand = lintStaged['**/package.json']
     expect(typeof command).toBe('function')
     if (typeof command !== 'function') {
       throw new TypeError('expected lint-staged rule to be callable')
     }
+    expect(typeof packageJsonCommand).toBe('function')
+    if (typeof packageJsonCommand !== 'function') {
+      throw new TypeError('expected **/package.json rule to be callable')
+    }
     expect(command(['src/index.ts'])).toContain('repo verify staged-typecheck')
+    expect(packageJsonCommand(['templates/client/package.json'])).toContain('repo verify staged-typecheck')
   })
 
   it('reads define wrapper cwd from object input', async () => {

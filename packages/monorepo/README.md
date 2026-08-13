@@ -128,6 +128,7 @@ export default defineMonorepoConfig({
 - `pre-commit` 只检查 staged 文件
 - 样式文件会执行 `stylelint --fix --allow-empty-input`
 - `js`、`jsx`、`mjs`、`ts`、`tsx`、`mts`、`cts`、`vue` 文件会执行 `eslint --fix`
+- `**/package.json` 改动会按所在 workspace 继续执行 `typecheck`
 - `ts` / `tsx` / `mts` / `cts` / `vue` staged 文件会按最近的 workspace 执行 `typecheck`
 - Vue workspace 的 `typecheck` 通常是 `vue-tsc -b`
 - 纯 TypeScript workspace 的 `typecheck` 通常是 `tsc -p tsconfig.json`
