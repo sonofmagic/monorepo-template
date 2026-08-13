@@ -85,12 +85,6 @@ export async function releaseStable(options: ReleaseOptions) {
   run('pnpm', ['run', 'build'], options)
   run('pnpm', ['run', 'lint'], options)
   run('pnpm', ['run', 'test'], options)
-
-  if (!await hasPendingChangesets(options.cwd)) {
-    return
-  }
-
-  run('pnpm', ['exec', 'changeset', 'version'], options)
   run('pnpm', ['exec', 'changeset', 'publish'], options)
 }
 

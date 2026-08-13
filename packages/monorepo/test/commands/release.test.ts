@@ -54,9 +54,8 @@ afterEach(async () => {
 })
 
 describe('release commands', () => {
-  it('runs the stable release sequence on main', async () => {
+  it('publishes packages versioned by the merged release pull request', async () => {
     const cwd = await createTempWorkspace()
-    await writePendingChangeset(cwd)
     const { calls, spawn } = createSpawnMock()
 
     await releaseStable({ branch: 'main', cwd, spawn: spawn as never })
@@ -65,21 +64,7 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'build'] },
       { command: 'pnpm', args: ['run', 'lint'] },
       { command: 'pnpm', args: ['run', 'test'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'version'] },
       { command: 'pnpm', args: ['exec', 'changeset', 'publish'] },
-    ])
-  })
-
-  it('skips stable publish when there are no pending changesets', async () => {
-    const cwd = await createTempWorkspace()
-    const { calls, spawn } = createSpawnMock()
-
-    await releaseStable({ branch: 'main', cwd, spawn: spawn as never })
-
-    expect(calls).toEqual([
-      { command: 'pnpm', args: ['run', 'build'] },
-      { command: 'pnpm', args: ['run', 'lint'] },
-      { command: 'pnpm', args: ['run', 'test'] },
     ])
   })
 
