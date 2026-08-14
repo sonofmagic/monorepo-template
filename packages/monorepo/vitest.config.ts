@@ -18,11 +18,11 @@ const config = defineProject(mergeConfig(
       alias: [
         {
           find: '@',
-          replacement: path.resolve(__dirname, './src'),
+          replacement: path.resolve(import.meta.dirname, './src'),
         },
         {
           find: '@icebreakers/monorepo-templates',
-          replacement: path.resolve(__dirname, '../monorepo-templates/src/index.ts'),
+          replacement: path.resolve(import.meta.dirname, '../monorepo-templates/src/index.ts'),
         },
       ],
     },
