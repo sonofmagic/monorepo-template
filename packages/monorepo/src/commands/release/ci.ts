@@ -81,12 +81,14 @@ async function createReleasePullRequest(options: ReleaseCiOptions) {
   run('git', ['commit', '-m', 'chore(release): version packages'], options)
   run('git', ['push', '--force', 'origin', `HEAD:${releaseBranch}`], options)
 
-  await resolveGitHub(options).ensurePullRequest({
+  const github = resolveGitHub(options)
+  await github.ensurePullRequest({
     head: releaseBranch,
     base: 'main',
     title: 'chore(release): version packages',
     body: await buildReleasePullRequestBody(options.cwd, previousVersions),
   })
+  await github.closeLegacyReleasePullRequests?.({ head: 'changeset-release/main', base: 'main' })
   return true
 }
 

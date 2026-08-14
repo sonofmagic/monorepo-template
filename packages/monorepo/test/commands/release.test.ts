@@ -88,6 +88,7 @@ describe('release commands', () => {
     const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
     const github = {
       ensurePullRequest: vi.fn(async () => ({ number: 1, html_url: 'https://github.com/acme/repo/pull/1', state: 'open' })),
+      closeLegacyReleasePullRequests: vi.fn(async () => {}),
       ensureRelease: vi.fn(),
     }
 
@@ -111,6 +112,7 @@ describe('release commands', () => {
       base: 'main',
       body: expect.stringContaining('# Releases'),
     }))
+    expect(github.closeLegacyReleasePullRequests).toHaveBeenCalledWith({ head: 'changeset-release/main', base: 'main' })
   })
 
   it('prepares a stable release from pending pnpm intents', async () => {
