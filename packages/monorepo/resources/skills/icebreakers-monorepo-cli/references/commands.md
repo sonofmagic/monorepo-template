@@ -69,6 +69,26 @@ Usage:
 - --core: sync core config only (skip GitHub assets)
 - --outDir <dir>: write to another directory
 - --skip-overwrite: never overwrite existing files
+- --overwrite-release: explicitly replace an unmarked custom release workflow
+
+For the first migration of an existing project, bootstrap with
+`pnpm dlx repoctl@latest upgrade --yes`. Managed and official legacy release
+workflows are migrated automatically; unmarked custom workflows are preserved
+unless `--overwrite-release` is supplied.
+
+## release ci
+
+Purpose: provide the single GitHub Actions entrypoint for stable and prerelease orchestration.
+Usage:
+
+- `pnpm exec repo release ci`
+- `pnpm exec repo release ci --mode prepare`
+- `pnpm exec repo release ci --mode publish`
+- `pnpm exec repo release ci --mode publish-unpublished --package <name> --version <version>`
+
+The command uses `GITHUB_TOKEN`, `GITHUB_REPOSITORY`, `GITHUB_API_URL`, and
+`GITHUB_SHA` to upsert the Release PR, package tags, and GitHub Releases. It
+consumes `pnpm-publish-summary.json` and is safe to retry.
 
 ## workspace upgrade (alias: ws up)
 

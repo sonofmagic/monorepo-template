@@ -15,6 +15,24 @@ async function runReleaseAction(action: () => void | Promise<void>) {
 export function registerReleaseCommands(program: Command, cwd: string) {
   const releaseCommand = program.command('release').description('发布与 pnpm versioning 工具集')
 
+  releaseCommand.command('ci')
+    .description('在 CI 中自动准备、发布和恢复版本')
+    .option('--mode <mode>', 'auto / prepare / publish / publish-unpublished', 'auto')
+    .option('--package <name>', 'publish-unpublished 使用的 package')
+    .option('--version <version>', 'publish-unpublished 使用的版本')
+    .action(async (opts: { mode?: 'auto' | 'prepare' | 'publish' | 'publish-unpublished', package?: string, version?: string }) => {
+      await runReleaseAction(async () => {
+        const { releaseCi } = await import('@/commands')
+        await releaseCi({
+          cwd,
+          ...(opts.mode ? { mode: opts.mode } : {}),
+          ...(opts.package ? { packageName: opts.package } : {}),
+          ...(opts.version ? { packageVersion: opts.version } : {}),
+        })
+        logger.success('release CI finished!')
+      })
+    })
+
   const stableCommand = releaseCommand.command('stable')
     .description('在 main 分支执行正式发布')
     .action(async () => {

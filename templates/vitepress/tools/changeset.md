@@ -63,7 +63,13 @@ pnpm exec repo release pre publish
 
 ## CI 约定
 
+- 生成的 release workflow 只负责 checkout、安装依赖和权限声明，全部业务统一由 `pnpm exec repo release ci` 执行。
 - main push 先生成或更新 Release PR；Release PR 合并后才发布 npm。
 - alpha、beta、rc、next 分支要求所有可发布包位于对应 lane。
 - npm 发布使用 GitHub OIDC provenance，不需要长期保存 `NPM_TOKEN`。
 - 未发布版本恢复使用 workflow dispatch 的 `publish-unpublished` 模式，并按 package/version 校验后发布。
+- repoctl 通过 GitHub REST API 幂等创建或更新 Release PR、package tag 和 GitHub Release，重复执行不会重复创建元数据。
+
+存量项目首次迁移运行 `pnpm dlx repoctl@latest upgrade --yes`。带有
+`repoctl-managed: release/v2` 的 workflow 会自动升级；未标记的自定义
+workflow 默认保留，可在确认后使用 `repo upgrade --overwrite-release`。

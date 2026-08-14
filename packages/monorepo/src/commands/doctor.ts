@@ -5,6 +5,7 @@ import { satisfies } from 'semver'
 import YAML from 'yaml'
 import { getWorkspacePackages } from '../core/workspace'
 import fs from '../utils/fs'
+import { collectReleaseChecks } from './doctor/release'
 import { hasLegacyToolingReference } from './tooling-migration'
 
 export type DoctorStatus = 'pass' | 'warn' | 'fail'
@@ -441,6 +442,8 @@ export async function runDoctor(cwd: string) {
       fix: '运行 repo init --yes 追加缺失 workspace patterns。',
     }))
   }
+
+  checks.push(...await collectReleaseChecks(workspaceDir, pkgJson))
 
   const summary = summarizeChecks(checks)
   return {

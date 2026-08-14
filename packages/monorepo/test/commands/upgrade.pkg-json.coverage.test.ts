@@ -81,6 +81,26 @@ describe('upgrade pkg-json helpers coverage', () => {
     expect(target.devDependencies?.['@icebreakers/monorepo']).toBeUndefined()
   })
 
+  it('removes Changesets release dependencies during upgrade', () => {
+    const source: PackageJson = {
+      devDependencies: {
+        repoctl: '^0.0.1',
+      },
+    }
+    const target: PackageJson = {
+      devDependencies: {
+        '@changesets/cli': '^2.27.0',
+        '@icebreakers/changelog-github': '^1.0.0',
+        'repoctl': '^0.0.1',
+      },
+    }
+
+    setPkgJson(source, target)
+
+    expect(target.devDependencies?.['@changesets/cli']).toBeUndefined()
+    expect(target.devDependencies?.['@icebreakers/changelog-github']).toBeUndefined()
+  })
+
   it('exposes scripts list for consumers', () => {
     expect(Array.isArray(scriptsEntries)).toBe(true)
     expect(Object.fromEntries(scriptsEntries)).toEqual(scripts)

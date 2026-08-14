@@ -77,4 +77,11 @@ fixed group 必须整体切换 lane，不能只移动其中一个包。
 
 ## repoctl 的边界
 
-repoctl 负责发布前 build/lint/test、lane 一致性检查以及 CI 友好的命令入口；pnpm 负责变更意图、版本计算、changelog、ledger 和 registry 发布。
+生成的 GitHub Actions 只保留环境准备和一个 `pnpm exec repo release ci` 调用。
+repoctl 负责发布前 build/lint/test、lane 一致性检查、Release PR、npm
+发布、package tag 与 GitHub Release；pnpm 负责变更意图、版本计算、changelog、
+ledger 和 registry 发布细节。
+
+存量项目首次迁移运行 `pnpm dlx repoctl@latest upgrade --yes`，后续使用
+`pnpm exec repo upgrade --yes` 即可跟随 repoctl 升级。未标记的自定义 release
+workflow 默认不会被覆盖，确认后可使用 `repo upgrade --overwrite-release`。

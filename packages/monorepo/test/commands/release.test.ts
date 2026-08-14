@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releasePrerelease } from '@/commands/release'
+import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releaseCi, releasePrerelease } from '@/commands/release'
 
 interface SpawnCall {
   command: string
@@ -68,6 +68,50 @@ afterEach(async () => {
 })
 
 describe('release commands', () => {
+  it('auto mode publishes stable packages when main has no pending intents', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
+    ])
+  })
+
+  it('auto mode versions and opens the release PR when intents are pending', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+    const github = {
+      ensurePullRequest: vi.fn(async () => ({ number: 1, html_url: 'https://github.com/acme/repo/pull/1', state: 'open' })),
+      ensureRelease: vi.fn(),
+    }
+
+    await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never, github })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
+      { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
+      { command: 'git', args: ['config', 'user.name', 'github-actions[bot]'] },
+      { command: 'git', args: ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'] },
+      { command: 'git', args: ['checkout', '-B', 'release/pnpm-version'] },
+      { command: 'git', args: ['add', '-A'] },
+      { command: 'git', args: ['commit', '-m', 'chore(release): version packages'] },
+      { command: 'git', args: ['push', '--force', 'origin', 'HEAD:release/pnpm-version'] },
+    ])
+    expect(github.ensurePullRequest).toHaveBeenCalledWith(expect.objectContaining({
+      head: 'release/pnpm-version',
+      base: 'main',
+    }))
+  })
+
   it('prepares a stable release from pending pnpm intents', async () => {
     const cwd = await createTempWorkspace('main')
     await writePendingIntent(cwd)

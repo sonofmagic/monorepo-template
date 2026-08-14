@@ -3,28 +3,34 @@ import { rootDir } from '@/constants'
 import fs from '@/utils/fs'
 
 describe('release workflow', () => {
-  it('can recover versioned packages without consuming pending intents', async () => {
+  it('uses one repoctl entrypoint for release orchestration', async () => {
     const workflow = await fs.readFile(`${rootDir}/.github/workflows/release.yml`, 'utf8')
 
+    expect(workflow).toContain('# repoctl-managed: release/v2')
     expect(workflow).toContain('- publish-unpublished')
-    expect(workflow).toContain(`inputs.mode == 'prepare'`)
-    expect(workflow).toContain('Validate recovery input')
-    expect(workflow).toContain('run: pnpm exec repo release stable prepare')
-    expect(workflow).toContain('run: pnpm exec repo release stable publish')
-    expect(workflow).toContain('pnpm-publish-summary.json')
-    expect(workflow).toContain('peter-evans/create-pull-request@v8')
+    expect(workflow).toContain('REPO_RELEASE_MODE: $' + '{{ inputs.mode || \'auto\' }}')
+    expect(workflow).toContain('run: pnpm exec repo release ci')
+    expect(workflow).toContain('contents: write')
+    expect(workflow).toContain('pull-requests: write')
+    expect(workflow).toContain('id-token: write')
+    expect(workflow).toContain('NPM_CONFIG_PROVENANCE: true')
     expect(workflow).not.toContain('changesets/action')
     expect(workflow).not.toContain('changeset publish')
     expect(workflow).not.toContain('.changeset/pre.json')
-    expect(workflow).toContain('npm view \"$RECOVERY_PACKAGE@$RECOVERY_VERSION\" version')
-    expect(workflow).toContain('git push origin "refs/tags/$tag"')
-    expect(workflow).toContain('gh release create "$tag"')
-    expect(workflow).not.toContain('git push origin --follow-tags')
+    expect(workflow).not.toContain('peter-evans/create-pull-request')
+    expect(workflow).not.toContain('gh release')
+    expect(workflow).not.toContain('jq ')
+    expect(workflow).not.toContain('pnpm-publish-summary.json')
   })
 
-  it('does not run prerelease publishing for manual recovery dispatches', async () => {
+  it('keeps stable and prerelease branch triggers in the single workflow', async () => {
     const workflow = await fs.readFile(`${rootDir}/.github/workflows/release.yml`, 'utf8')
 
-    expect(workflow).toContain('if: github.event_name == \'push\' && github.ref_name != \'main\'')
+    expect(workflow).toContain('      - main')
+    expect(workflow).toContain('      - alpha')
+    expect(workflow).toContain('      - beta')
+    expect(workflow).toContain('      - rc')
+    expect(workflow).toContain('      - next')
+    expect(workflow).toContain('if: github.event_name == \'push\' || github.event_name == \'workflow_dispatch\'')
   })
 })

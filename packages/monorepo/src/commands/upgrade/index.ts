@@ -16,6 +16,7 @@ import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
+import { classifyReleaseWorkflow, migrateLegacyVersioning } from './release-migration'
 import { getAssetTargets } from './targets'
 import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
@@ -147,6 +148,14 @@ export async function upgradeMonorepo(opts: CliOpts) {
       continue
     }
     const targetPath = path.resolve(absOutDir, relPath)
+
+    if (relPath === '.github/workflows/release.yml' && await fs.pathExists(targetPath)) {
+      const workflowStatus = await classifyReleaseWorkflow(absOutDir)
+      if (workflowStatus === 'custom' && !merged.overwriteRelease) {
+        logger.warn('skip custom release workflow; use repo upgrade --overwrite-release to replace it')
+        continue
+      }
+    }
 
     try {
       if (relPath === 'package.json') {
@@ -308,4 +317,6 @@ export async function upgradeMonorepo(opts: CliOpts) {
     ...(merged.overwrite !== undefined ? { overwrite: merged.overwrite } : {}),
     ...(merged.noOverwrite !== undefined ? { noOverwrite: merged.noOverwrite } : {}),
   })
+
+  await migrateLegacyVersioning(absOutDir)
 }
