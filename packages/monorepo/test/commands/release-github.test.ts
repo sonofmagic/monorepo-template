@@ -58,7 +58,9 @@ describe('GitHub release client', () => {
   })
 
   it('fails with an actionable error when token is missing', async () => {
-    const client = new GitHubClient({ repository: 'acme/repo', fetch: vi.fn() })
+    // The release workflow exports GITHUB_TOKEN for the whole CLI process.
+    // Override it explicitly so this test remains isolated from CI runtime state.
+    const client = new GitHubClient({ token: '', repository: 'acme/repo', fetch: vi.fn() })
 
     await expect(client.ensureRelease({ tag: 'repo@1.0.0', target: 'abc123' })).rejects.toMatchObject({
       message: expect.stringContaining('GITHUB_TOKEN'),
