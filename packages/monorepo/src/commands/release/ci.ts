@@ -1,7 +1,7 @@
 import type { GitHubOperations } from './github'
 import type { PublishedPackage, ReleaseCiOptions, ReleaseMode, ReleaseOptions } from './types'
 import { spawnSync } from 'node:child_process'
-import { buildReleasePullRequestBody, readWorkspaceVersions } from './body'
+import { buildReleaseNoteDocument, readPendingIntentCommits, readWorkspaceVersions, renderGitHubRelease, renderReleasePullRequest } from './body'
 import { ReleaseCommandError } from './errors'
 import { GitHubClient } from './github'
 import { releasePrerelease } from './prerelease'
@@ -43,22 +43,38 @@ async function publishMetadata(packages: PublishedPackage[], options: ReleaseCiO
   }
   const github = resolveGitHub(options)
   const target = resolveTarget(options)
+  const releaseEnv = getReleaseEnv(options)
+  const metadata = {
+    ...(releaseEnv['GITHUB_REPOSITORY'] ? { repository: releaseEnv['GITHUB_REPOSITORY'] } : {}),
+    ...(releaseEnv['GITHUB_SERVER_URL'] ? { serverUrl: releaseEnv['GITHUB_SERVER_URL'] } : {}),
+  }
+  let noteDocument = await buildReleaseNoteDocument(options.cwd, undefined, metadata)
+  if (github.enrichReleaseNote) {
+    noteDocument = await github.enrichReleaseNote(noteDocument)
+  }
   for (const pkg of packages) {
     const tag = `${pkg.name}@${pkg.version}`
+    const packageDocument = {
+      ...noteDocument,
+      packages: noteDocument.packages.filter(item => item.name === pkg.name && item.version === pkg.version),
+      entries: noteDocument.entries.filter(entry => entry.packageName === pkg.name && entry.version === pkg.version),
+      compareUrls: noteDocument.compareUrls.filter(url => url.includes(encodeURIComponent(`${pkg.name}@`))),
+    }
+    const body = renderGitHubRelease(packageDocument, metadata)
     if (github.ensureTag) {
       await github.ensureTag({ tag, target })
-      await github.ensureRelease({ tag, target, prerelease })
+      await github.ensureRelease({ tag, target, prerelease, name: tag, body })
       continue
     }
     if (remoteTagExists(tag, options)) {
-      await github.ensureRelease({ tag, target, prerelease })
+      await github.ensureRelease({ tag, target, prerelease, name: tag, body })
       continue
     }
     if (!gitRefExists(tag, options)) {
       run('git', ['tag', '-a', tag, '-m', tag], options)
     }
     run('git', ['push', 'origin', `refs/tags/${tag}`], options)
-    await github.ensureRelease({ tag, target, prerelease })
+    await github.ensureRelease({ tag, target, prerelease, name: tag, body })
   }
 }
 
@@ -69,6 +85,7 @@ async function createReleasePullRequest(options: ReleaseCiOptions) {
   }
 
   const previousVersions = await readWorkspaceVersions(options.cwd)
+  const sourceCommits = await readPendingIntentCommits(options)
   const hasChanges = await prepareStable(options)
   if (!hasChanges) {
     return false
@@ -82,11 +99,21 @@ async function createReleasePullRequest(options: ReleaseCiOptions) {
   run('git', ['push', '--force', 'origin', `HEAD:${releaseBranch}`], options)
 
   const github = resolveGitHub(options)
+  const releaseEnv = getReleaseEnv(options)
+  const metadata = {
+    commits: sourceCommits,
+    ...(releaseEnv['GITHUB_REPOSITORY'] ? { repository: releaseEnv['GITHUB_REPOSITORY'] } : {}),
+    ...(releaseEnv['GITHUB_SERVER_URL'] ? { serverUrl: releaseEnv['GITHUB_SERVER_URL'] } : {}),
+  }
+  let noteDocument = await buildReleaseNoteDocument(options.cwd, previousVersions, metadata)
+  if (github.enrichReleaseNote) {
+    noteDocument = await github.enrichReleaseNote(noteDocument)
+  }
   await github.ensurePullRequest({
     head: releaseBranch,
     base: 'main',
     title: 'chore(release): version packages',
-    body: await buildReleasePullRequestBody(options.cwd, previousVersions),
+    body: renderReleasePullRequest(noteDocument, metadata),
   })
   await github.closeLegacyReleasePullRequests?.({ head: 'changeset-release/main', base: 'main' })
   return true

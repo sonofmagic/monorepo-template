@@ -1,3 +1,5 @@
+export { buildGitHubReleaseBody, buildReleaseNoteDocument, buildReleasePullRequestBody, readPendingIntentCommits, readWorkspaceVersions, renderGitHubRelease, renderReleasePullRequest } from './body'
+export type { ReleaseBodyMetadata, ReleaseCategory, ReleaseCommit, ReleaseNoteDocument, ReleaseNoteEntry } from './body'
 export { createReleasePullRequest, recoverUnpublished, releaseCi } from './ci'
 export { ReleaseCommandError } from './errors'
 export { GitHubApiError, GitHubClient } from './github'

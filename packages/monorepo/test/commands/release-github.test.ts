@@ -94,6 +94,59 @@ describe('GitHub release client', () => {
     expect(requestFetch).toHaveBeenNthCalledWith(3, 'https://api.github.com/repos/acme/repo/releases/tags/repo%401.0.0', expect.objectContaining({ method: 'GET' }))
   })
 
+  it('creates and updates release notes idempotently', async () => {
+    const createFetch = vi.fn()
+      .mockResolvedValueOnce(response({ message: 'Not Found' }, 404))
+      .mockResolvedValueOnce(response({ id: 5, html_url: 'https://github.com/acme/repo/releases/5', tag_name: 'repo@1.0.0' }, 201))
+    const createClient = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: createFetch })
+
+    await createClient.ensureRelease({ tag: 'repo@1.0.0', target: 'abc123', name: 'repo@1.0.0', body: '### Features' })
+
+    const createRequest = createFetch.mock.calls[1]?.[1] as RequestInit | undefined
+    expect(JSON.parse(String(createRequest?.body))).toMatchObject({ name: 'repo@1.0.0', body: '### Features' })
+    expect(JSON.parse(String(createRequest?.body))).not.toHaveProperty('generate_release_notes')
+
+    const updateFetch = vi.fn()
+      .mockResolvedValueOnce(response({ id: 5, html_url: 'https://github.com/acme/repo/releases/5', tag_name: 'repo@1.0.0' }))
+      .mockResolvedValueOnce(response({ id: 5, html_url: 'https://github.com/acme/repo/releases/5', tag_name: 'repo@1.0.0' }))
+    const updateClient = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: updateFetch })
+
+    await updateClient.ensureRelease({ tag: 'repo@1.0.0', target: 'abc123', body: 'Updated notes' })
+
+    expect(updateFetch).toHaveBeenNthCalledWith(2, 'https://api.github.com/repos/acme/repo/releases/5', expect.objectContaining({ method: 'PATCH' }))
+  })
+
+  it('enriches contributors and falls back when metadata requests fail', async () => {
+    const document = {
+      packages: [{ name: 'repo', version: '1.0.0' }],
+      entries: [{
+        packageName: 'repo',
+        version: '1.0.0',
+        category: 'fixes' as const,
+        summary: 'Fix #17.',
+        commits: [{ sha: 'abc123', subject: 'fix: release (#42)' }],
+        pullRequests: [42],
+        issues: [17],
+        authors: [],
+      }],
+      contributors: [],
+      compareUrls: [],
+    }
+    const requestFetch = vi.fn()
+      .mockResolvedValueOnce(response({ author: { login: 'alice' } }))
+      .mockResolvedValueOnce(response({ user: { login: 'bob' } }))
+      .mockResolvedValueOnce(response({ user: { login: 'carol' } }))
+    const client = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: requestFetch })
+
+    await expect(client.enrichReleaseNote(document)).resolves.toMatchObject({
+      contributors: ['alice', 'bob', 'carol'],
+      entries: [{ authors: ['alice'] }],
+    })
+
+    const fallbackClient = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: vi.fn().mockRejectedValue(new Error('offline')) })
+    await expect(fallbackClient.enrichReleaseNote(document)).resolves.toEqual(document)
+  })
+
   it('fails with an actionable error when token is missing', async () => {
     // The release workflow exports GITHUB_TOKEN for the whole CLI process.
     // Override it explicitly so this test remains isolated from CI runtime state.
