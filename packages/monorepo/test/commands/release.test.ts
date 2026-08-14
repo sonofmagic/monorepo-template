@@ -95,6 +95,7 @@ describe('release commands', () => {
     await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never, github })
 
     expect(calls).toEqual([
+      { command: 'git', args: ['log', '-1', '--format=%H', '--', '.changeset/pending-change.md'] },
       { command: 'pnpm', args: ['run', 'build'] },
       { command: 'pnpm', args: ['run', 'lint'] },
       { command: 'pnpm', args: ['run', 'test'] },

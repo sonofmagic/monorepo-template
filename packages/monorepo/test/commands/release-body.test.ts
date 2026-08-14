@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it } from 'vitest'
-import { buildReleasePullRequestBody } from '@/commands/release/body'
+import { buildReleasePullRequestBody, readPendingIntentCommits } from '@/commands/release/body'
 
 const tempRoots: string[] = []
 
@@ -62,5 +62,58 @@ describe('release pull request body', () => {
     ].join('\n'))
     expect(body).not.toContain('This PR was generated')
     expect(body).not.toContain('.changeset/ledger.yaml')
+  })
+
+  it('links source commits, pull requests, and issues from release metadata', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-links-'))
+    tempRoots.push(cwd)
+    const packageDir = path.join(cwd, 'packages', 'demo')
+    await mkdir(packageDir, { recursive: true })
+    await writeFile(path.join(cwd, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n', 'utf8')
+    await writeFile(path.join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/demo', version: '2.0.0' }), 'utf8')
+    await writeFile(path.join(packageDir, 'CHANGELOG.md'), '# @acme/demo\n\n## 2.0.0\n\n### Patch Changes\n\n- 修复 #17。\n', 'utf8')
+
+    const body = await buildReleasePullRequestBody(cwd, undefined, {
+      repository: 'acme/repo',
+      serverUrl: 'https://github.com',
+      commits: [{
+        sha: '0123456789abcdef0123456789abcdef01234567',
+        subject: 'fix: resolve release issue (#42)',
+      }],
+    })
+
+    expect(body).toContain('## Related links')
+    expect(body).toContain('[`0123456`](https://github.com/acme/repo/commit/0123456789abcdef0123456789abcdef01234567) fix: resolve release issue (#42)')
+    expect(body).toContain('[#42](https://github.com/acme/repo/pull/42)')
+    expect(body).toContain('[#17](https://github.com/acme/repo/issues/17)')
+  })
+
+  it('captures the commit that introduced each pending intent', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-intent-'))
+    tempRoots.push(cwd)
+    await mkdir(path.join(cwd, '.changeset'), { recursive: true })
+    await writeFile(path.join(cwd, '.changeset', 'pending.md'), '---\nrepoctl: patch\n---\n\nRelease change.\n', 'utf8')
+    await writeFile(path.join(cwd, '.changeset', 'README.md'), 'Documentation.\n', 'utf8')
+    const calls: string[][] = []
+    const sha = '0123456789abcdef0123456789abcdef01234567'
+    const spawn = (command: string, args: string[]) => {
+      calls.push([command, ...args])
+      if (args[0] === 'log') {
+        return { status: 0, stdout: sha }
+      }
+      return { status: 0, stdout: `${sha}\x1Ffix: release change (#42)\x1FCloses #17` }
+    }
+
+    const commits = await readPendingIntentCommits({ cwd, spawn: spawn as never })
+
+    expect(commits).toEqual([{
+      sha,
+      subject: 'fix: release change (#42)',
+      body: 'Closes #17',
+    }])
+    expect(calls).toEqual([
+      ['git', 'log', '-1', '--format=%H', '--', '.changeset/pending.md'],
+      ['git', 'show', '-s', '--format=%H%x1F%s%x1F%b', sha],
+    ])
   })
 })

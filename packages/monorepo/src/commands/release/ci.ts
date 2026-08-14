@@ -1,7 +1,7 @@
 import type { GitHubOperations } from './github'
 import type { PublishedPackage, ReleaseCiOptions, ReleaseMode, ReleaseOptions } from './types'
 import { spawnSync } from 'node:child_process'
-import { buildReleasePullRequestBody, readWorkspaceVersions } from './body'
+import { buildReleasePullRequestBody, readPendingIntentCommits, readWorkspaceVersions } from './body'
 import { ReleaseCommandError } from './errors'
 import { GitHubClient } from './github'
 import { releasePrerelease } from './prerelease'
@@ -69,6 +69,7 @@ async function createReleasePullRequest(options: ReleaseCiOptions) {
   }
 
   const previousVersions = await readWorkspaceVersions(options.cwd)
+  const sourceCommits = await readPendingIntentCommits(options)
   const hasChanges = await prepareStable(options)
   if (!hasChanges) {
     return false
@@ -82,11 +83,16 @@ async function createReleasePullRequest(options: ReleaseCiOptions) {
   run('git', ['push', '--force', 'origin', `HEAD:${releaseBranch}`], options)
 
   const github = resolveGitHub(options)
+  const releaseEnv = getReleaseEnv(options)
   await github.ensurePullRequest({
     head: releaseBranch,
     base: 'main',
     title: 'chore(release): version packages',
-    body: await buildReleasePullRequestBody(options.cwd, previousVersions),
+    body: await buildReleasePullRequestBody(options.cwd, previousVersions, {
+      commits: sourceCommits,
+      ...(releaseEnv['GITHUB_REPOSITORY'] ? { repository: releaseEnv['GITHUB_REPOSITORY'] } : {}),
+      ...(releaseEnv['GITHUB_SERVER_URL'] ? { serverUrl: releaseEnv['GITHUB_SERVER_URL'] } : {}),
+    }),
   })
   await github.closeLegacyReleasePullRequests?.({ head: 'changeset-release/main', base: 'main' })
   return true
