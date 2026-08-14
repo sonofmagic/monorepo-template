@@ -22,6 +22,7 @@ export interface ReleaseBodyMetadata {
 export interface ReleaseNoteEntry {
   packageName: string
   version: string
+  npmUrl?: string
   category: ReleaseCategory
   summary: string
   commits: ReleaseCommit[]
@@ -30,8 +31,16 @@ export interface ReleaseNoteEntry {
   authors: string[]
 }
 
+export interface ReleaseNotePackage {
+  name: string
+  version: string
+  previousVersion?: string
+  npmUrl?: string
+  previousNpmUrl?: string
+}
+
 export interface ReleaseNoteDocument {
-  packages: Array<{ name: string, version: string, previousVersion?: string }>
+  packages: ReleaseNotePackage[]
   entries: ReleaseNoteEntry[]
   contributors: string[]
   compareUrls: string[]
@@ -41,6 +50,7 @@ export interface PackageReleaseSource {
   name: string
   version: string
   previousVersion?: string
+  npmUrl?: string
   content: string
 }
 
@@ -143,4 +153,9 @@ export function buildPackageCompareUrl(release: PackageReleaseSource, metadata: 
   const previousTag = encodeURIComponent([release.name, release.previousVersion].join('@'))
   const currentTag = encodeURIComponent([release.name, release.version].join('@'))
   return [serverUrl, metadata.repository, 'compare', `${previousTag}...${currentTag}`].join('/')
+}
+
+export function buildNpmPackageUrl(name: string, version: string) {
+  const packagePath = name.startsWith('@') ? name : encodeURIComponent(name)
+  return `https://www.npmjs.com/package/${packagePath}/v/${encodeURIComponent(version)}`
 }

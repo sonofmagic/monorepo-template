@@ -53,13 +53,13 @@ describe('release pull request body', () => {
       '',
       '## 🚀 Features',
       '',
-      '- **@acme/demo**: 增加新的发布能力。',
+      '- **[@acme/demo@2.0.0](https://www.npmjs.com/package/@acme/demo/v/2.0.0)**: 增加新的发布能力。',
       '',
       '## Packages',
       '',
-      '| Package | Version |',
-      '| --- | --- |',
-      '| `@acme/demo` | `2.0.0` |',
+      '| Package | From | To |',
+      '| --- | --- | --- |',
+      '| `@acme/demo` | [`1.0.0`](https://www.npmjs.com/package/@acme/demo/v/1.0.0) | [`2.0.0`](https://www.npmjs.com/package/@acme/demo/v/2.0.0) |',
     ].join('\n'))
     expect(body).not.toContain('This PR was generated')
     expect(body).not.toContain('.changeset/ledger.yaml')
@@ -126,7 +126,9 @@ describe('release pull request body', () => {
     expect(body.indexOf('## 🚀 Features')).toBeLessThan(body.indexOf('## 🐞 Bug Fixes'))
     expect(body).toContain('<summary>🧰 Maintenance</summary>')
     expect(body).toContain('Thanks to @alice · @bob')
+    expect(body).toContain('https://www.npmjs.com/package/@acme/demo/v/2.0.0')
     expect(release).toContain('### 🚀 Features')
+    expect(release).toContain('[@acme/demo@2.0.0](https://www.npmjs.com/package/@acme/demo/v/2.0.0)')
     expect(release).not.toContain('## Packages')
     expect(release).toContain('View changes on GitHub')
   })
