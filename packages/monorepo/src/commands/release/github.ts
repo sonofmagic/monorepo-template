@@ -5,6 +5,11 @@ interface GitHubPullRequest {
   number: number
   html_url: string
   state: string
+  title?: string
+  body?: string | null
+  head?: {
+    ref?: string
+  }
 }
 
 interface GitHubRelease {
@@ -27,6 +32,11 @@ export interface EnsurePullRequestOptions {
   body: string
 }
 
+export interface CloseLegacyPullRequestsOptions {
+  head: string
+  base: string
+}
+
 export interface EnsureReleaseOptions {
   tag: string
   target: string
@@ -40,6 +50,7 @@ export interface EnsureTagOptions {
 
 export interface GitHubOperations {
   ensurePullRequest: (options: EnsurePullRequestOptions) => Promise<GitHubPullRequest>
+  closeLegacyReleasePullRequests?: (options: CloseLegacyPullRequestsOptions) => Promise<void>
   ensureRelease: (options: EnsureReleaseOptions) => Promise<GitHubRelease>
   ensureTag?: (options: EnsureTagOptions) => Promise<void>
 }
@@ -152,6 +163,23 @@ export class GitHubClient implements GitHubOperations {
       throw new GitHubApiError('GitHub did not return the created pull request', created.status)
     }
     return created.data
+  }
+
+  async closeLegacyReleasePullRequests(options: CloseLegacyPullRequestsOptions) {
+    const repository = this.getRepository()
+    const [owner] = repository.split('/')
+    const head = options.head.includes(':') ? options.head : `${owner}:${options.head}`
+    const query = new URLSearchParams({ state: 'open', head, base: options.base, per_page: '100' })
+    const listed = await this.request<GitHubPullRequest[]>('GET', `/pulls?${query.toString()}`)
+
+    for (const pullRequest of listed.data ?? []) {
+      const isLegacyRelease = pullRequest.head?.ref === options.head
+        && (pullRequest.title === 'Version Packages' || pullRequest.body?.includes('changesets/action') === true)
+      if (!isLegacyRelease) {
+        continue
+      }
+      await this.request<GitHubPullRequest>('PATCH', `/pulls/${pullRequest.number}`, { state: 'closed' })
+    }
   }
 
   async ensureRelease(options: EnsureReleaseOptions) {

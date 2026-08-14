@@ -44,6 +44,43 @@ describe('GitHub release client', () => {
     expect(requestFetch).toHaveBeenCalledTimes(2)
   })
 
+  it('closes the old Changesets release pull request during migration', async () => {
+    const requestFetch = vi.fn()
+      .mockResolvedValueOnce(response([{
+        number: 793,
+        title: 'Version Packages',
+        body: 'This PR was opened by the https://github.com/changesets/action GitHub action.',
+        head: { ref: 'changeset-release/main' },
+        html_url: 'https://github.com/acme/repo/pull/793',
+        state: 'open',
+      }]))
+      .mockResolvedValueOnce(response({ number: 793, state: 'closed' }))
+    const client = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: requestFetch })
+
+    await client.closeLegacyReleasePullRequests({ head: 'changeset-release/main', base: 'main' })
+
+    expect(requestFetch).toHaveBeenNthCalledWith(1, expect.stringContaining('/repos/acme/repo/pulls?'), expect.objectContaining({ method: 'GET' }))
+    expect(requestFetch).toHaveBeenNthCalledWith(2, 'https://api.github.com/repos/acme/repo/pulls/793', expect.objectContaining({ method: 'PATCH' }))
+    const request = requestFetch.mock.calls[1]?.[1] as RequestInit | undefined
+    expect(JSON.parse(String(request?.body))).toEqual({ state: 'closed' })
+  })
+
+  it('does not close a custom pull request on the legacy branch', async () => {
+    const requestFetch = vi.fn().mockResolvedValueOnce(response([{
+      number: 14,
+      title: 'Feature work',
+      body: 'Unrelated change',
+      head: { ref: 'changeset-release/main' },
+      html_url: 'https://github.com/acme/repo/pull/14',
+      state: 'open',
+    }]))
+    const client = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: requestFetch })
+
+    await client.closeLegacyReleasePullRequests({ head: 'changeset-release/main', base: 'main' })
+
+    expect(requestFetch).toHaveBeenCalledTimes(1)
+  })
+
   it('creates a release after a missing tag release and recovers a concurrent create', async () => {
     const requestFetch = vi.fn()
       .mockResolvedValueOnce(response({ message: 'Not Found' }, 404))
