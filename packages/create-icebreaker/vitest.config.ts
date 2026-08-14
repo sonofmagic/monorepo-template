@@ -6,7 +6,7 @@ export default defineConfig({
     alias: [
       {
         find: '@icebreakers/monorepo-templates',
-        replacement: path.resolve(__dirname, '../monorepo-templates/src/index.ts'),
+        replacement: path.resolve(import.meta.dirname, '../monorepo-templates/src/index.ts'),
       },
     ],
     passWithNoTests: true,
