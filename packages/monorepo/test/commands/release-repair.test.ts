@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { repairReleaseNotes } from '@/commands/release'
+import { buildGitHubReleaseBodyFromChangelog, repairReleaseNotes } from '@/commands/release'
 
 const tempRoots: string[] = []
 
@@ -80,6 +80,58 @@ describe('repair release notes', () => {
     })
 
     expect(result).toEqual({ repaired: [], skipped: ['@acme/demo@1.0.0', 'unrelated-tag'] })
+    expect(updateRelease).not.toHaveBeenCalled()
+  })
+
+  it('finds package directories that only existed in the historical tag', async () => {
+    const cwd = await createWorkspace()
+    const updateRelease = vi.fn()
+    const spawn = vi.fn((_: string, args: string[]) => {
+      if (args[0] === 'ls-tree') {
+        return { status: 0, stdout: 'packages/legacy/package.json\n' }
+      }
+      if (args[0] === 'show' && args[1] === '@acme/demo@1.0.0:packages/legacy/package.json') {
+        return { status: 0, stdout: JSON.stringify({ name: '@acme/demo' }) }
+      }
+      return {
+        status: 0,
+        stdout: '# @acme/legacy\n\n## 1.0.0\n\n### Patch Changes\n\n- 修复旧包路径。\n',
+      }
+    })
+
+    await expect(repairReleaseNotes({
+      cwd,
+      all: true,
+      spawn: spawn as never,
+      github: {
+        listReleases: vi.fn().mockResolvedValue([
+          { id: 3, html_url: 'https://github.com/acme/repo/releases/3', tag_name: '@acme/demo@1.0.0' },
+        ]),
+        updateRelease,
+      },
+    })).resolves.toMatchObject({ repaired: ['@acme/demo@1.0.0'] })
+    expect(updateRelease).toHaveBeenCalledWith(expect.objectContaining({ id: 3, body: expect.stringContaining('修复旧包路径') }))
+  })
+
+  it('does not write a release that already has the repaired body', async () => {
+    const cwd = await createWorkspace()
+    const changelog = '# @acme/demo\n\n## 1.0.0\n\n### Patch Changes\n\n- 已经是正确正文。\n'
+    const body = buildGitHubReleaseBodyFromChangelog('@acme/demo', '1.0.0', changelog)
+    const updateRelease = vi.fn()
+    const spawn = vi.fn(() => ({ status: 0, stdout: changelog }))
+
+    await repairReleaseNotes({
+      cwd,
+      all: true,
+      spawn: spawn as never,
+      github: {
+        listReleases: vi.fn().mockResolvedValue([
+          { id: 4, html_url: 'https://github.com/acme/repo/releases/4', tag_name: '@acme/demo@1.0.0', name: '@acme/demo@1.0.0', body },
+        ]),
+        updateRelease,
+      },
+    })
+
     expect(updateRelease).not.toHaveBeenCalled()
   })
 })

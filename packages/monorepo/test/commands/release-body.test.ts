@@ -151,6 +151,9 @@ describe('release pull request body', () => {
       '- 🐛 **修复旧格式** [`abcdef1`](https://github.com/acme/repo/commit/abcdef1234567890abcdef1234567890abcdef12) [#42](https://github.com/acme/repo/pull/42) by @alice',
       '- 📦 **Dependencies** [`1234567`](https://github.com/acme/repo/commit/1234567890abcdef1234567890abcdef12345678)',
       '  → `@acme/dependency@1.2.3`',
+      '- Updated dependencies [[`7654321`](https://github.com/acme/repo/commit/7654321)] :',
+      '  - @acme/foo@1.2.3',
+      '  - @acme/bar@2.3.4',
       '',
     ].join('\n'), 'utf8')
 
@@ -168,6 +171,7 @@ describe('release pull request body', () => {
     expect(release).toContain('修复旧格式')
     expect(release).toContain('### 🧰 Maintenance')
     expect(release).toContain('Updated dependency to @acme/dependency@1.2.3.')
+    expect(release).toContain('Updated dependencies: @acme/foo@1.2.3, @acme/bar@2.3.4.')
     expect(release).toContain('https://github.com/acme/repo/commit/abcdef1234567890abcdef1234567890abcdef12')
     expect(release).toContain('https://github.com/acme/repo/pull/42')
     expect(release).not.toContain('https://github.com/acme/repo/issues/42')

@@ -18,6 +18,7 @@ export interface GitHubRelease {
   html_url: string
   tag_name: string
   name?: string
+  body?: string | null
   draft?: boolean
   prerelease?: boolean
 }

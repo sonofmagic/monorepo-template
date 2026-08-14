@@ -135,21 +135,24 @@ interface NormalizedMarkdownEntry {
 
 function normalizeMarkdownEntry(item: { heading: string, summary: string }): NormalizedMarkdownEntry {
   const raw = item.summary.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim()
-  const commitMatches = [...raw.matchAll(/\[`?([0-9a-f]{7,40})`?\]\(([^)]+\/commit\/[^)]+)\)/gi)]
+  const commitMatches = [...raw.matchAll(/\[{1,2}`?([0-9a-f]{7,40})`?\]\(([^)]+\/commit\/[^)]+)\)/gi)]
   const pullRequests = [...raw.matchAll(/\[#(\d+)\]\(([^)]+\/pull\/\d+)\)/gi)].map(match => Number(match[1]))
   const issues = [...raw.matchAll(/\[#(\d+)\]\(([^)]+\/issues\/\d+)\)/gi)].map(match => Number(match[1]))
   const authors = [...raw.matchAll(/\bby\s+(@?[\w-]+(?:\[bot\])?)/gi)].map(match => match[1] as string)
   const arrowDependency = raw.match(/→\s*`([^`]+)`/)?.[1]
+  const dependencyVersions = [...raw.matchAll(/(?:^|\s)((?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+(?:-[\w.-]+)?)/g)].map(match => match[1] as string)
   const dependencyLabel = /\bdependenc(?:y|ies):/i.test(raw)
     ? raw.replace(/^.*?\bdependenc(?:y|ies):/i, '').trim().replace(/^[-*]\s*/, '').replace(/^`|`$/g, '')
     : undefined
-  const dependencyName = arrowDependency ?? dependencyLabel
-  const hasDependencyHeading = /Dependencies:|Dependency:|\*\*Dependencies\*\*|\*\*Dependency\*\*/i.test(raw)
+  const dependencyName = arrowDependency ?? (dependencyVersions.length ? [...new Set(dependencyVersions)].join(', ') : dependencyLabel)
+  const hasDependencyHeading = /\bupdated\s+dependenc(?:y|ies)\b|Dependencies:|Dependency:|\*\*Dependencies\*\*|\*\*Dependency\*\*/i.test(raw)
   const hasDependency = hasDependencyHeading || Boolean(dependencyName)
   const summary = hasDependency && dependencyName
-    ? `Updated dependency to ${dependencyName}.`
+    ? dependencyVersions.length > 1
+      ? `Updated dependencies: ${[...new Set(dependencyVersions)].join(', ')}.`
+      : `Updated dependency to ${dependencyName}.`
     : raw
-        .replace(/\[`?([0-9a-f]{7,40})`?\]\([^)]+\)/gi, '')
+        .replace(/\[{1,2}`?([0-9a-f]{7,40})`?\]\([^)]+\)/gi, '')
         .replace(/\[#\d+\]\([^)]+\)/g, '')
         .replace(/\bby\s+@?[\w-]+(?:\[bot\])?/gi, '')
         .replace(/\*\*/g, '')

@@ -7,7 +7,7 @@ import { getWorkspacePackages } from '../../core/workspace'
 import { buildGitHubReleaseBodyFromChangelog } from './body'
 import { ReleaseCommandError } from './errors'
 import { GitHubClient } from './github'
-import { getReleaseEnv } from './shared'
+import { capture, getReleaseEnv } from './shared'
 
 export interface RepairReleaseNotesOptions extends ReleaseOptions {
   tag?: string
@@ -31,6 +31,41 @@ function parseReleaseTag(tag: string) {
 
 function packagePath(cwd: string, rootDir: string) {
   return path.relative(cwd, rootDir).replaceAll('\\', '/')
+}
+
+async function findTaggedPackageDirectory(
+  tag: string,
+  packageName: string,
+  currentDirectories: Map<string, string>,
+  options: ReleaseOptions,
+) {
+  const currentDirectory = currentDirectories.get(packageName)
+  if (currentDirectory) {
+    return currentDirectory
+  }
+
+  let packageFiles: string[]
+  try {
+    packageFiles = capture('git', ['ls-tree', '-r', '--name-only', tag], options)
+      .split(/\r?\n/)
+      .filter(file => file === 'package.json' || file.endsWith('/package.json'))
+  }
+  catch {
+    return undefined
+  }
+
+  for (const packageFile of packageFiles) {
+    try {
+      const manifest = JSON.parse(capture('git', ['show', `${tag}:${packageFile}`], options)) as { name?: unknown }
+      if (manifest.name === packageName) {
+        return packageFile === 'package.json' ? '.' : path.dirname(packageFile)
+      }
+    }
+    catch {
+      // Ignore malformed or removed package manifests in historical tags.
+    }
+  }
+  return undefined
 }
 
 async function readTagChangelog(tag: string, relativePackagePath: string, options: ReleaseOptions) {
@@ -80,18 +115,26 @@ export async function repairReleaseNotes(options: RepairReleaseNotesOptions) {
 
   for (const release of selected) {
     const parsed = parseReleaseTag(release.tag_name)
-    const relativePath = parsed ? packageDirectories.get(parsed.packageName) : undefined
-    if (!parsed || !relativePath) {
+    if (!parsed) {
       skipped.push(release.tag_name)
       continue
     }
-    const changelog = await readTagChangelog(release.tag_name, relativePath, options)
+    let relativePath = await findTaggedPackageDirectory(release.tag_name, parsed.packageName, packageDirectories, options)
+    let changelog = relativePath
+      ? await readTagChangelog(release.tag_name, relativePath, options)
+      : undefined
+    if (!changelog) {
+      relativePath = await findTaggedPackageDirectory(release.tag_name, parsed.packageName, new Map(), options)
+      changelog = relativePath
+        ? await readTagChangelog(release.tag_name, relativePath, options)
+        : undefined
+    }
     if (!changelog) {
       skipped.push(release.tag_name)
       continue
     }
     const body = buildGitHubReleaseBodyFromChangelog(parsed.packageName, parsed.version, changelog, metadata)
-    if (!options.dryRun) {
+    if (!options.dryRun && (release.name !== release.tag_name || release.body !== body)) {
       await github.updateRelease({ id: release.id, name: release.tag_name, body })
     }
     repaired.push(release.tag_name)
