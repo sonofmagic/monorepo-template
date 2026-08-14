@@ -1,5 +1,38 @@
 # @icebreakers/monorepo
 
+## 5.1.0
+
+### Minor Changes
+
+- 迁移到 pnpm 原生 versioning，使用 `pnpm change`、`pnpm version -r`、`pnpm publish -r` 和 lanes 管理版本、变更日志与预发布流程。
+
+- 将 GitHub Release 编排下沉到 repoctl，新增统一的 `repo release ci` 入口，并支持旧模板 release workflow 与 Changesets prerelease 状态的一键迁移。
+
+### Patch Changes
+
+- 迁移到 pnpm 原生发布流程后，自动关闭旧 Changesets Release PR，避免同一批版本变更生成重复的 Release PR。
+
+- 统一生成按语义分类的人类可读 Release PR 和 GitHub Release 正文，并补充 package、提交、Pull Request、Issue、贡献者与版本对比链接。
+
+- 修复 Version Packages PR 合并后正式发布被错误跳过的问题，确保已更新版本但尚未发布到 npm 的包会继续执行发布。
+
+- 修复 release CI 未向 repoctl 注入 GitHub Actions 原生的 `github.token`，导致 Release PR、tag 和 GitHub Release 编排无法调用 GitHub API。
+
+- 在 Release PR 中展示变更来源的可点击 commit、Pull Request 和 Issue 链接。
+
+- 避免在尚未发布的 Release PR 中把目标版本链接到 npm，仅为已存在的旧版本和已发布的 GitHub Release 版本提供 npm 链接。
+
+- 在 Release Note 中显示包的升级前后版本，并为已发布版本补充 npm 链接。
+
+- 修复 repoctl 创建的 Release PR 只有固定说明、缺少实际包版本与 changelog 变更内容的问题。
+
+- 优化 Release PR 正文为发布包汇总表和分包变更详情，并移除面向实现的固定说明。
+
+- 修复 release CI 在注入 GitHub Actions token 后，单元测试继承运行时环境导致发布流程误报失败的问题。
+
+- Updated dependencies:
+  - @icebreakers/monorepo-templates@1.1.0
+
 ## 5.0.3
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @icebreakers/monorepo-templates
 
+## 1.1.0
+
+### Minor Changes
+
+- 迁移到 pnpm 原生 versioning，使用 `pnpm change`、`pnpm version -r`、`pnpm publish -r` 和 lanes 管理版本、变更日志与预发布流程。
+
+### Patch Changes
+
+- 修复 release CI 未向 repoctl 注入 GitHub Actions 原生的 `github.token`，导致 Release PR、tag 和 GitHub Release 编排无法调用 GitHub API。
+
+- 将 GitHub Release 编排下沉到 repoctl，新增统一的 `repo release ci` 入口，并支持旧模板 release workflow 与 Changesets prerelease 状态的一键迁移。
+
+- 修复模板 Vitest 配置在 Vite 原生配置加载器下的路径和扩展名兼容性警告。
+
 ## 1.0.15
 
 ### Patch Changes
