@@ -19,8 +19,8 @@ function formatReferenceLinks(entry: ReleaseNoteEntry, metadata: ReleaseBodyMeta
   return links.length ? ` ${links.join(' · ')}` : ''
 }
 
-function formatEntry(entry: ReleaseNoteEntry, metadata: ReleaseBodyMetadata) {
-  const packageLabel = entry.npmUrl
+function formatEntry(entry: ReleaseNoteEntry, metadata: ReleaseBodyMetadata, linkNpmVersion: boolean) {
+  const packageLabel = linkNpmVersion && entry.npmUrl
     ? `[${entry.packageName}@${entry.version}](${entry.npmUrl})`
     : `${entry.packageName}@${entry.version}`
   return `- **${packageLabel}**: ${entry.summary}${formatReferenceLinks(entry, metadata)}`
@@ -31,6 +31,7 @@ function formatCategoryEntries(
   category: ReleaseCategory,
   metadata: ReleaseBodyMetadata,
   headingLevel: 2 | 3,
+  linkNpmVersion: boolean,
 ) {
   const matching = entries.filter(entry => entry.category === category)
   if (!matching.length) {
@@ -39,7 +40,7 @@ function formatCategoryEntries(
   return [
     `${'#'.repeat(headingLevel)} ${categoryTitles[category]}`,
     '',
-    ...matching.map(entry => formatEntry(entry, metadata)),
+    ...matching.map(entry => formatEntry(entry, metadata, linkNpmVersion)),
   ]
 }
 
@@ -61,7 +62,7 @@ function formatVersion(version: string, npmUrl?: string) {
   return npmUrl ? `[\`${version}\`](${npmUrl})` : `\`${version}\``
 }
 
-function formatPackages(packages: ReleaseNoteDocument['packages']) {
+function formatPackages(packages: ReleaseNoteDocument['packages'], linkNpmVersion: boolean) {
   if (!packages.length) {
     return []
   }
@@ -72,7 +73,7 @@ function formatPackages(packages: ReleaseNoteDocument['packages']) {
     '| --- | --- | --- |',
     ...packages.map((pkg) => {
       const previous = pkg.previousVersion ? formatVersion(pkg.previousVersion, pkg.previousNpmUrl) : '—'
-      const current = formatVersion(pkg.version, pkg.npmUrl)
+      const current = formatVersion(pkg.version, linkNpmVersion ? pkg.npmUrl : undefined)
       return `| \`${pkg.name}\` | ${previous} | ${current} |`
     }),
   ]
@@ -84,18 +85,18 @@ export function renderReleasePullRequest(document: ReleaseNoteDocument, metadata
   const sections = ['# Release Notes', '', `> ${packageWord} updated · ${changeWord}`]
 
   for (const category of categoryOrder.filter(category => category !== 'maintenance')) {
-    const section = formatCategoryEntries(document.entries, category, metadata, 2)
+    const section = formatCategoryEntries(document.entries, category, metadata, 2, false)
     if (section.length) {
       sections.push('', '', ...section)
     }
   }
 
-  const maintenance = formatCategoryEntries(document.entries, 'maintenance', metadata, 2)
+  const maintenance = formatCategoryEntries(document.entries, 'maintenance', metadata, 2, false)
   if (maintenance.length) {
     sections.push('', '', '<details>', '<summary>🧰 Maintenance</summary>', '', ...maintenance.slice(2), '', '</details>')
   }
 
-  sections.push('', '', ...formatPackages(document.packages))
+  sections.push('', '', ...formatPackages(document.packages, false))
   sections.push('', '', ...formatContributors(document.contributors))
   return sections.join('\n').replace(/\n{3,}/g, '\n\n').trim()
 }
@@ -107,7 +108,7 @@ export function renderGitHubRelease(document: ReleaseNoteDocument, metadata: Rel
 
   const sections: string[] = []
   for (const category of categoryOrder) {
-    const section = formatCategoryEntries(document.entries, category, metadata, 3)
+    const section = formatCategoryEntries(document.entries, category, metadata, 3, true)
     if (section.length) {
       sections.push(...(sections.length ? ['', ...section] : section))
     }
