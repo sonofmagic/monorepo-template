@@ -1,5 +1,16 @@
 # create-icebreaker
 
+## 1.1.0
+
+### Minor Changes
+
+- 迁移到 pnpm 原生 versioning，使用 `pnpm change`、`pnpm version -r`、`pnpm publish -r` 和 lanes 管理版本、变更日志与预发布流程。
+
+### Patch Changes
+
+- Updated dependencies:
+  - @icebreakers/monorepo-templates@1.1.0
+
 ## 1.0.15
 
 ### Patch Changes
