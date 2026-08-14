@@ -112,9 +112,6 @@ describe('init helpers', () => {
       version: '0.0.0',
     }, { spaces: 2 })
 
-    await fs.writeFile(path.join(workspaceDir, '.changeset/config.json'), JSON.stringify({
-      changelog: ['@changesets/changelog-github', { repo: '' }],
-    }, null, 2))
     const workspaceFilepath = path.join(workspaceDir, 'pnpm-workspace.yaml')
     await fs.writeFile(workspaceFilepath, 'packages:\n  - packages/*\n')
 
@@ -143,8 +140,7 @@ describe('init helpers', () => {
     expect(updatedAlpha.repository).toMatchObject({ directory: 'packages/alpha' })
     expect(updatedAlpha.bugs.url).toBe('https://github.com/ice/awesome/issues')
 
-    const changeset = await fs.readJSON(path.join(workspaceDir, '.changeset/config.json'))
-    expect(changeset.changelog[1].repo).toBe('ice/awesome')
+    expect(await fs.pathExists(path.join(workspaceDir, '.changeset'))).toBe(true)
 
     const readme = await fs.readFile(path.join(workspaceDir, 'README.md'), 'utf8')
     expect(readme).toMatch(packagesHeadingPattern)

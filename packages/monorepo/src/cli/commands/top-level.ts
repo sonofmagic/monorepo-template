@@ -187,6 +187,7 @@ export function registerTopLevelCommands(program: Command, cwd: string) {
     .option('-y, --yes', '跳过交互并覆盖 drifted 标准资产')
     .option('--overwrite', '覆盖 drifted 标准资产')
     .option('--no-overwrite', '不覆盖 drifted 标准资产')
+    .option('--overwrite-release', '覆盖未标记的自定义 release workflow')
     .action(async (opts: CliOpts) => {
       const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))

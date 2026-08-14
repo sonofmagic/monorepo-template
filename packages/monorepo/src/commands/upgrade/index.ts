@@ -11,11 +11,12 @@ import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isIgnorableFsError, isMatch, setByPath, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
+import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
 import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
 import { setPkgJson } from './pkg-json'
+import { classifyReleaseWorkflow, migrateLegacyVersioning } from './release-migration'
 import { getAssetTargets } from './targets'
 import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
@@ -123,7 +124,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
-  // 旧版本默认跳过 changeset Markdown，可通过配置覆盖。
+  // 旧版本默认跳过 pnpm change intent Markdown，可通过配置覆盖。
   const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
   const scriptOverrides = upgradeConfig?.scripts
   const skipOverwrite = merged.noOverwrite ? true : merged.skipOverwrite
@@ -147,6 +148,14 @@ export async function upgradeMonorepo(opts: CliOpts) {
       continue
     }
     const targetPath = path.resolve(absOutDir, relPath)
+
+    if (relPath === '.github/workflows/release.yml' && await fs.pathExists(targetPath)) {
+      const workflowStatus = await classifyReleaseWorkflow(absOutDir)
+      if (workflowStatus === 'custom' && !merged.overwriteRelease) {
+        logger.warn('skip custom release workflow; use repo upgrade --overwrite-release to replace it')
+        continue
+      }
+    }
 
     try {
       if (relPath === 'package.json') {
@@ -243,24 +252,6 @@ export async function upgradeMonorepo(opts: CliOpts) {
         continue
       }
 
-      if (relPath === '.changeset/config.json' && repoName) {
-        const changesetJson = await fs.readJson(file.path)
-        setByPath(changesetJson, 'changelog.1.repo', repoName)
-        const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
-        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
-        const action = async () => {
-          await fs.outputFile(targetPath, data, 'utf8')
-          logger.success(targetPath)
-        }
-        await scheduleOverwrite(intent, {
-          relPath,
-          targetPath,
-          action,
-          pending: pendingOverwrites,
-        })
-        continue
-      }
-
       if (relPath === 'LICENSE') {
         const source = await fs.readFile(file.path)
         const intent = await evaluateWriteIntent(targetPath, { skipOverwrite: true, source })
@@ -326,4 +317,6 @@ export async function upgradeMonorepo(opts: CliOpts) {
     ...(merged.overwrite !== undefined ? { overwrite: merged.overwrite } : {}),
     ...(merged.noOverwrite !== undefined ? { noOverwrite: merged.noOverwrite } : {}),
   })
+
+  await migrateLegacyVersioning(absOutDir)
 }

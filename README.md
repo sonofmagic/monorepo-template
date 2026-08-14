@@ -4,7 +4,7 @@
 
 English | [中文版本](README.zh-CN.md)
 
-> A modern pnpm + Turbo Repo + Changesets starter that helps you bootstrap production-ready monorepos quickly.
+> A modern pnpm + Turbo Repo starter with native pnpm versioning for production-ready monorepos.
 
 ## Overview
 
@@ -14,10 +14,10 @@ monorepo-template is a production-oriented pnpm + Turbo monorepo template. It sh
 
 - **Modular Architecture**: Template sources live under `templates/` while reusable tooling lives in `packages/`, keeping responsibilities clear.
 - **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
-- **Unified Toolchain**: pnpm workspaces, Turbo task pipelines, Vitest, and Changesets streamline the entire lifecycle from development to release.
+- **Unified Toolchain**: pnpm workspaces and versioning, Turbo task pipelines, and Vitest streamline the entire lifecycle from development to release.
 - **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
 - **Extensible Template**: `repoctl` owns setup, sync, cleanup, package creation, checks, and release helpers. `repo` is the primary command, while `repoctl`, `rc`, and `@icebreakers/monorepo` remain compatibility entrypoints.
-- **CI/CD Ready**: Sample GitHub Actions configuration, Codecov integration, and `secrets.NPM_TOKEN` support automated publishing and coverage reporting.
+- **CI/CD Ready**: A minimal GitHub Actions entrypoint delegates release orchestration, provenance publishing, and GitHub metadata to `repoctl`.
 
 ## Quick Start
 
@@ -78,8 +78,10 @@ packages/
 | `pnpm build`                  | Execute a repository-wide build through Turbo.                       |
 | `pnpm test` / `pnpm test:dev` | Run Vitest once or in watch mode.                                    |
 | `pnpm lint`                   | Apply ESLint and Stylelint checks across the monorepo.               |
-| `pnpm changeset`              | Create an interactive Changeset for version bumps.                   |
-| `pnpm publish-packages`       | Shortcut for `repo release stable`.                                  |
+| `pnpm change`                 | Record a native pnpm change intent.                                  |
+| `pnpm change status`          | Preview the pending release plan.                                    |
+| `pnpm exec repo release ci`   | Run the CI release orchestrator.                                     |
+| `pnpm publish-packages`       | Run the stable pnpm publish flow.                                    |
 | `pnpm exec repo release pre`  | Manage prerelease enter, exit, and publish flows.                    |
 | `pnpm setup`                  | Bootstrap recommended workspace metadata and tooling.                |
 | `pnpm new <name>`             | Create a new package or app with the guided flow.                    |
@@ -101,11 +103,21 @@ packages/
 
 ## Release & Versioning
 
-Leverage Changesets plus GitHub Actions for automated versioning:
+Use pnpm's native versioning and the thin `repoctl` GitHub Actions entrypoint for automated releases:
 
-1. Capture changes with `pnpm changeset`, marking each update as patch, minor, or major.
-2. After merging, let CI publish stable releases from the `main` branch and prerelease tags from `alpha`, `beta`, `rc`, or `next`.
-3. Configure `secrets.NPM_TOKEN` in GitHub to allow npm publishing.
+1. Capture changes with `pnpm change`, then review the result with `pnpm change status`.
+2. `pnpm exec repo release ci` consumes intents, versions packages, and upserts the Release PR through the GitHub API.
+3. After the Release PR is merged, the same command publishes unpublished versions from `main`, creates package tags, and upserts GitHub Releases.
+4. Use `pnpm exec repo release pre enter <lane>` and `pnpm exec repo release pre publish` for alpha, beta, rc, or next lanes.
+5. Keep npm OIDC publishing enabled with the workflow's `id-token` permission.
+
+Existing projects can migrate their release contract with one bootstrap command:
+
+```bash
+pnpm dlx repoctl@latest upgrade --yes
+```
+
+After that, regular upgrades use `pnpm exec repo upgrade --yes`. Unmarked custom release workflows are preserved; use `repo upgrade --overwrite-release` only after reviewing the replacement.
 
 ## Quality Assurance
 

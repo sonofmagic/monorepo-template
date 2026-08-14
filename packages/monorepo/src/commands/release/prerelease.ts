@@ -1,0 +1,38 @@
+import type { ReleaseOptions } from './types'
+import { ReleaseCommandError } from './errors'
+import { assertLaneAssignments, hasGitChanges, hasPendingIntents, resolveBranch, run, runLane, runQualityChecks } from './shared'
+import { prereleaseBranches } from './types'
+
+export async function releasePrerelease(options: ReleaseOptions) {
+  const branch = resolveBranch(options)
+  if (!prereleaseBranches.has(branch)) {
+    throw new ReleaseCommandError(`repo release pre is only allowed on alpha, beta, rc, or next branches, got ${branch}`)
+  }
+
+  await assertLaneAssignments(branch, options)
+  runQualityChecks(options)
+  if (!await hasPendingIntents(options.cwd)) {
+    return
+  }
+
+  run('pnpm', ['version', '-r', '--no-git-checks'], options)
+  if (!hasGitChanges(options)) {
+    return
+  }
+
+  run('git', ['add', '-A'], options)
+  run('git', ['commit', '-m', `chore(release): ${branch} [skip ci]`], options)
+  run('pnpm', ['publish', '-r', '--tag', branch, '--report-summary', '--provenance', '--no-git-checks'], options)
+  run('git', ['push', '--follow-tags', 'origin', `HEAD:${branch}`], options)
+}
+
+export async function enterPrerelease(tag: string, options: ReleaseOptions) {
+  if (!prereleaseBranches.has(tag)) {
+    throw new ReleaseCommandError(`unknown prerelease lane ${tag}; expected alpha, beta, rc, or next`)
+  }
+  await runLane(tag, options)
+}
+
+export async function exitPrerelease(options: ReleaseOptions) {
+  await runLane('main', options)
+}

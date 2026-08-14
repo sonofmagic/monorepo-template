@@ -5,6 +5,7 @@ import { scriptsEntries } from './scripts'
 
 const NON_OVERRIDABLE_PREFIXES = ['workspace:', 'catalog:']
 const legacyToolPackageName = '@icebreakers/monorepo'
+const legacyReleaseDependencies = ['@changesets/cli', '@icebreakers/changelog-github']
 
 function parseVersion(input: unknown) {
   if (typeof input !== 'string' || input.trim().length === 0) {
@@ -117,6 +118,10 @@ export function setPkgJson(
   }
   if (legacyToolPackageName in targetDevDeps && 'repoctl' in targetDevDeps) {
     delete targetDevDeps[legacyToolPackageName]
+  }
+  for (const dependency of legacyReleaseDependencies) {
+    delete targetDeps[dependency]
+    delete targetDevDeps[dependency]
   }
   if (shouldEnsureRepoctl) {
     const nextVersion = `^${pkgVersion}`

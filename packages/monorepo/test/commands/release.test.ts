@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { enterPrerelease, exitPrerelease, releasePrerelease, releaseStable } from '@/commands/release'
+import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releaseCi, releasePrerelease } from '@/commands/release'
 
 interface SpawnCall {
   command: string
@@ -11,23 +11,37 @@ interface SpawnCall {
 
 const tempRoots: string[] = []
 
-async function createTempWorkspace(preState?: unknown) {
+async function createTempWorkspace(lane = 'next') {
   const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-'))
   tempRoots.push(cwd)
 
   await mkdir(path.join(cwd, '.changeset'), { recursive: true })
-
-  if (preState) {
-    await writeFile(path.join(cwd, '.changeset/pre.json'), JSON.stringify(preState), 'utf8')
-  }
+  await mkdir(path.join(cwd, 'packages', 'repoctl'), { recursive: true })
+  await mkdir(path.join(cwd, 'packages', 'private'), { recursive: true })
+  await writeFile(path.join(cwd, 'packages', 'repoctl', 'package.json'), JSON.stringify({
+    name: 'repoctl',
+    version: '1.0.0',
+  }), 'utf8')
+  await writeFile(path.join(cwd, 'packages', 'private', 'package.json'), JSON.stringify({
+    name: 'private-package',
+    version: '1.0.0',
+    private: true,
+  }), 'utf8')
+  await writeFile(path.join(cwd, 'pnpm-workspace.yaml'), [
+    'packages:',
+    '  - packages/*',
+    'versioning:',
+    '  lanes:',
+    `    repoctl: ${lane}`,
+  ].join('\n'), 'utf8')
 
   return cwd
 }
 
-async function writePendingChangeset(cwd: string, name = 'pending-change') {
+async function writePendingIntent(cwd: string, name = 'pending-change') {
   await writeFile(path.join(cwd, '.changeset', `${name}.md`), [
     '---',
-    '"repoctl": patch',
+    'repoctl: patch',
     '---',
     '',
     'Release change.',
@@ -54,43 +68,115 @@ afterEach(async () => {
 })
 
 describe('release commands', () => {
-  it('publishes packages versioned by the merged release pull request', async () => {
-    const cwd = await createTempWorkspace()
+  it('auto mode publishes stable packages when main has no pending intents', async () => {
+    const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()
 
-    await releaseStable({ branch: 'main', cwd, spawn: spawn as never })
+    await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never })
 
     expect(calls).toEqual([
       { command: 'pnpm', args: ['run', 'build'] },
       { command: 'pnpm', args: ['run', 'lint'] },
       { command: 'pnpm', args: ['run', 'test'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'publish'] },
+      { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
+    ])
+  })
+
+  it('auto mode versions and opens the release PR when intents are pending', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+    const github = {
+      ensurePullRequest: vi.fn(async () => ({ number: 1, html_url: 'https://github.com/acme/repo/pull/1', state: 'open' })),
+      ensureRelease: vi.fn(),
+    }
+
+    await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never, github })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
+      { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
+      { command: 'git', args: ['config', 'user.name', 'github-actions[bot]'] },
+      { command: 'git', args: ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'] },
+      { command: 'git', args: ['checkout', '-B', 'release/pnpm-version'] },
+      { command: 'git', args: ['add', '-A'] },
+      { command: 'git', args: ['commit', '-m', 'chore(release): version packages'] },
+      { command: 'git', args: ['push', '--force', 'origin', 'HEAD:release/pnpm-version'] },
+    ])
+    expect(github.ensurePullRequest).toHaveBeenCalledWith(expect.objectContaining({
+      head: 'release/pnpm-version',
+      base: 'main',
+    }))
+  })
+
+  it('prepares a stable release from pending pnpm intents', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+
+    await expect(prepareStable({ branch: 'main', cwd, spawn: spawn as never })).resolves.toBe(true)
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
+      { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
+    ])
+  })
+
+  it('does not version when there are no pending intents', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await expect(prepareStable({ branch: 'main', cwd, spawn: spawn as never })).resolves.toBe(false)
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+    ])
+  })
+
+  it('publishes packages versioned by the merged release pull request', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await publishStable({ branch: 'main', cwd, spawn: spawn as never })
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
     ])
   })
 
   it('rejects stable releases away from main', async () => {
-    const cwd = await createTempWorkspace()
+    const cwd = await createTempWorkspace('main')
     const { spawn } = createSpawnMock()
 
     await expect(
-      releaseStable({ branch: 'next', cwd, spawn: spawn as never }),
-    ).rejects.toThrow('repo release stable is only allowed on main')
+      publishStable({ branch: 'next', cwd, spawn: spawn as never }),
+    ).rejects.toThrow('repo release stable publish is only allowed on main')
     expect(spawn).not.toHaveBeenCalled()
   })
 
-  it('requires matching Changesets pre mode before prerelease publishing', async () => {
-    const cwd = await createTempWorkspace({ mode: 'pre', tag: 'beta' })
+  it('requires every package to be on the matching pnpm lane', async () => {
+    const cwd = await createTempWorkspace('beta')
     const { spawn } = createSpawnMock()
 
     await expect(
       releasePrerelease({ branch: 'alpha', cwd, spawn: spawn as never }),
-    ).rejects.toThrow('must already be in Changesets pre mode with matching tag')
+    ).rejects.toThrow('all publishable packages must be on the alpha lane')
     expect(spawn).not.toHaveBeenCalled()
   })
 
-  it('skips prerelease publish when changeset version creates no changes', async () => {
-    const cwd = await createTempWorkspace({ mode: 'pre', tag: 'next' })
-    await writePendingChangeset(cwd)
+  it('skips prerelease publish when version creates no changes', async () => {
+    const cwd = await createTempWorkspace('next')
+    await writePendingIntent(cwd)
     const { calls, spawn } = createSpawnMock({ diffStatus: 0 })
 
     await releasePrerelease({ branch: 'next', cwd, spawn: spawn as never })
@@ -99,14 +185,14 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'build'] },
       { command: 'pnpm', args: ['run', 'lint'] },
       { command: 'pnpm', args: ['run', 'test'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'version'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
       { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
     ])
   })
 
-  it('skips prerelease version when there are no pending changesets', async () => {
-    const cwd = await createTempWorkspace({ mode: 'pre', tag: 'next' })
-    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+  it('skips prerelease version when there are no pending intents', async () => {
+    const cwd = await createTempWorkspace('next')
+    const { calls, spawn } = createSpawnMock()
 
     await releasePrerelease({ branch: 'next', cwd, spawn: spawn as never })
 
@@ -118,8 +204,8 @@ describe('release commands', () => {
   })
 
   it('commits, publishes, and pushes prerelease version changes', async () => {
-    const cwd = await createTempWorkspace({ mode: 'pre', tag: 'alpha' })
-    await writePendingChangeset(cwd)
+    const cwd = await createTempWorkspace('alpha')
+    await writePendingIntent(cwd)
     const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
 
     await releasePrerelease({ branch: 'alpha', cwd, spawn: spawn as never })
@@ -128,25 +214,32 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'build'] },
       { command: 'pnpm', args: ['run', 'lint'] },
       { command: 'pnpm', args: ['run', 'test'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'version'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
       { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
       { command: 'git', args: ['add', '-A'] },
       { command: 'git', args: ['commit', '-m', 'chore(release): alpha [skip ci]'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'publish'] },
+      { command: 'pnpm', args: ['publish', '-r', '--tag', 'alpha', '--report-summary', '--provenance', '--no-git-checks'] },
       { command: 'git', args: ['push', '--follow-tags', 'origin', 'HEAD:alpha'] },
     ])
   })
 
-  it('wraps Changesets prerelease enter and exit commands', async () => {
-    const cwd = await createTempWorkspace()
+  it('moves all publishable packages between pnpm lanes', async () => {
+    const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()
 
-    enterPrerelease('rc', { cwd, spawn: spawn as never })
-    exitPrerelease({ cwd, spawn: spawn as never })
+    await enterPrerelease('rc', { cwd, spawn: spawn as never })
+    await exitPrerelease({ cwd, spawn: spawn as never })
 
     expect(calls).toEqual([
-      { command: 'pnpm', args: ['exec', 'changeset', 'pre', 'enter', 'rc'] },
-      { command: 'pnpm', args: ['exec', 'changeset', 'pre', 'exit'] },
+      { command: 'pnpm', args: ['lane', 'rc', '--filter', 'repoctl'] },
+      { command: 'pnpm', args: ['lane', 'main', '--filter', 'repoctl'] },
     ])
+  })
+
+  it('parses pnpm publish summaries for release metadata', () => {
+    expect(parsePublishSummary(JSON.stringify({
+      publishedPackages: [{ name: 'repoctl', version: '1.2.3' }],
+    }))).toEqual([{ name: 'repoctl', version: '1.2.3' }])
+    expect(() => parsePublishSummary('{"publishedPackages":[{}]}')).toThrow('invalid package entry')
   })
 })

@@ -77,11 +77,10 @@ afterEach(() => {
 })
 
 describe('init helpers coverage', () => {
-  it('updates changeset config, package manifests and readme content', async () => {
+  it('initializes pnpm change intents, package manifests and readme content', async () => {
     const workspaceDir = '/repo'
     const workspaceFilepath = `${workspaceDir}/pnpm-workspace.yaml`
     files.set(workspaceFilepath, '')
-    files.set(`${workspaceDir}/.changeset/config.json`, JSON.stringify({ changelog: [null, { repo: '' }] }))
     files.set(`${workspaceDir}/.github/ISSUE_TEMPLATE/config.yml`, [
       'blank_issues_enabled: false',
       'contact_links:',
@@ -111,12 +110,11 @@ describe('init helpers coverage', () => {
     ])
 
     await setChangeset(ctx)
-    const updatedChangeset = JSON.parse(files.get(`${workspaceDir}/.changeset/config.json`) ?? '{}')
-    expect(updatedChangeset.changelog[1].repo).toBe('ice/awesome')
+    expect(outputJsonMock).not.toHaveBeenCalled()
 
     const gitUrlWithoutRepo = { ...(ctx.gitUrl ?? gitUrlParse('https://github.com/ice/awesome.git')), full_name: '' }
     await setChangeset({ ...ctx, gitUrl: gitUrlWithoutRepo })
-    expect(outputJsonMock).toHaveBeenCalledTimes(1)
+    expect(outputJsonMock).not.toHaveBeenCalled()
 
     await setPkgJson(ctx)
     const pkgA = JSON.parse(files.get(`${workspaceDir}/packages/a/package.json`) ?? '{}')

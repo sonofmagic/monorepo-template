@@ -12,7 +12,7 @@ description: repoctl 文档站的知识库入口，汇总 monorepo 管理、现�
 | -------------------------------------------------- | ---------------------------------- |
 | [为什么往 monorepo 方向演进](../monorepo/index.md) | 判断多包仓库是否值得合并管理       |
 | [如何管理 monorepo](../monorepo/manage.md)         | 理解 workspace、任务编排和依赖边界 |
-| [发包与变更日志](../monorepo/publish.md)           | 设计 changeset、版本和发布链路     |
+| [发包与变更日志](../monorepo/publish.md)           | 设计 pnpm intent、版本和发布链路   |
 | [monorepo 命令参考](../monorepo/commands.md)       | 查看通用 monorepo 操作命令         |
 | [monorepo 模板体系](../monorepo/templates.md)      | 理解模板如何减少重复初始化         |
 | [monorepo 排障](../monorepo/troubleshooting.md)    | 排查依赖、构建、类型和发布问题     |

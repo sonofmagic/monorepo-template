@@ -1,47 +1,10 @@
 # monorepo 发包与变更日志
 
-这套模板默认推荐用 `changesets` 管理版本和 changelog。原因不是“它很流行”，而是它对 monorepo 的工作方式最顺手：
+这套模板默认使用 pnpm 原生 versioning。它保留 Changesets 格式的变更意图，同时把版本计算、依赖传播、changelog 和发布收进 pnpm 本身。
 
-- 变更是按包记录的
-- 版本升级能自动联动内部依赖
-- changelog 可以稳定产出
-- 很容易接到 CI 里
+## 日常流程
 
-repoctl 在发布流程里的位置很明确：它不替代 `changesets` 发布版本，而是在发布前帮你确认仓库状态、模板资产和校验计划。
-
-## repoctl 在发布前做什么
-
-```bash
-pnpm exec repo doctor --strict
-pnpm exec repo check --full
-pnpm exec repo env support --markdown --redact --out reports/support.md
-```
-
-| 命令                   | 发布前价值                                               |
-| ---------------------- | -------------------------------------------------------- |
-| `repo doctor --strict` | 确认仓库结构、Node、脚本、配置和提交链路没有漂移         |
-| `repo check --full`    | 跑根脚本里的 lint/typecheck/test/build 计划              |
-| `repo env support`     | 保存环境、配置、doctor 和 check plan，方便发布失败后回溯 |
-
-发布本身仍交给 `changesets`：
-
-```bash
-pnpm changeset
-pnpm exec repo release stable
-```
-
-正式发布只走 `main`；`alpha`、`beta`、`rc`、`next` 只做 Changesets 的 prerelease，并发布对应 tag 包。
-
-## 一条务实的发布流程
-
-先把顺序记住：
-
-1. 写代码
-2. 跑校验
-3. 生成 changeset
-4. 合并后 version / publish
-
-对应到命令，一般是：
+先完成质量校验，再记录变更：
 
 ```bash
 pnpm build
@@ -49,212 +12,76 @@ pnpm lint
 pnpm typecheck
 pnpm tsd
 pnpm test
-pnpm changeset
+pnpm change
+pnpm change status
 ```
 
-如果你改的是公开类型或类库 API，`tsd` 不要省。
+变更意图文件放在 `.changeset/*.md`，描述受影响包和 patch/minor/major。不要手动修改包版本。
 
-## 为什么推荐 `changesets`
+## Release PR
 
-| 需求           | `changesets` 的做法                       |
-| -------------- | ----------------------------------------- |
-| 记录哪些包变了 | 每次变更生成单独的 `.changeset/*.md` 文件 |
-| 控制版本类型   | 明确选择 `patch` / `minor` / `major`      |
-| 自动生成日志   | `changeset version` 统一产出 changelog    |
-| 联动内部包版本 | 自动改内部依赖引用                        |
-| CI 自动发布    | 可接 `changesets/action`                  |
-
-## 日常开发阶段怎么做
-
-### 1. 本地先把质量门过掉
+main push 会运行：
 
 ```bash
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm tsd
-pnpm test
+pnpm version -r --dry-run
+pnpm version -r
 ```
 
-这一点和仓库的提交要求是一致的。
-
-### 2. 记录 changeset
+CI 将版本号、各包 `CHANGELOG.md` 和 `.changeset/ledger.yaml` 提交到 Release PR。合并 Release PR 后，下一次 main push 执行：
 
 ```bash
-pnpm changeset
+pnpm publish -r --report-summary --provenance --no-git-checks
 ```
 
-按提示选择：
+pnpm 根据 registry 中已有的版本自动跳过已发布包。CI 读取 `pnpm-publish-summary.json` 创建 `package@version` tag 和 GitHub Release，发布操作可以安全重试。
 
-1. 哪些包受影响
-2. 这些包分别是 `patch` / `minor` / `major`
-3. 这次改动怎么写进 changelog
+## Workspace versioning 配置
 
-示例：
-
-```md
----
-"@my/utils": minor
-"@my/ui": patch
----
-
-- feat(utils): 新增时间格式化工具
-- fix(ui): 修复按钮禁用态样式
-```
-
-### 3. 合并前看一眼影响面
-
-changeset 文件本身就是最便宜的“发布预告”。代码评审时顺手看一下，通常就能避免：
-
-- 漏记某个包
-- 版本类型选错
-- changelog 写得太含糊
-
-## 发布阶段怎么做
-
-### 手动流程
-
-```bash
-pnpm exec repo release stable
-```
-
-`repo release stable` 会先执行构建、lint 和测试，再调用 `changeset version` 与 `changeset publish`。其中 `changeset version` 会做这些事：
-
-- 更新受影响包的版本号
-- 调整内部依赖版本
-- 生成或更新每个包的 `CHANGELOG.md`
-
-### CI 自动流程
-
-模板推荐结合 `changesets/action`。
-
-一个常见的工作流结构如下：
+根 `pnpm-workspace.yaml` 中的关键配置：
 
 ```yaml
-name: Release
-
-on:
-  push:
-    branches:
-      - main
-      - alpha
-      - beta
-      - rc
-      - next
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write
-
-env:
-  HUSKY: 0
-
-jobs:
-  release:
-    if: github.ref_name == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
-      - run: pnpm install
-      - name: Create Release Pull Request or Publish to npm
-        uses: changesets/action@v2.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          publish-script: pnpm exec repo release stable
-        env:
-          NPM_CONFIG_PROVENANCE: true
-
-  prerelease:
-    if: github.ref_name != 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install
-      - run: git config user.name "github-actions[bot]"
-      - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - name: Publish Prerelease
-        run: pnpm exec repo release pre publish
+versioning:
+  fixed:
+    - ['@icebreakers/monorepo', repoctl]
+  ignore:
+    - '@icebreakers/client'
+  changelog:
+    storage: repository
 ```
 
-## 关于 npm 鉴权
+`fixed` 保证组内包同版本；`ignore` 排除 private 包；`repository` 让 changelog 作为源代码提交。
 
-现在更推荐在 CI 里使用 OIDC，而不是长期保存一个会过期的 `NPM_TOKEN`。
+## Prerelease lanes
 
-原因很现实：
+预发布使用 pnpm lanes：
 
-- token 会过期
-- token 泄漏风险更高
-- OIDC 更适合自动化发布
-
-所以工作流里建议保留：
-
-```yaml
-permissions:
-  id-token: write
+```bash
+pnpm exec repo release pre enter beta
+git add pnpm-workspace.yaml && git commit -m "chore(release): enter beta lane"
+git push
+pnpm exec repo release pre publish
 ```
 
-## 常见发布约束
+预发布版本为 `X.Y.Z-beta.N`，并使用 npm `beta` dist-tag。退出时运行：
 
-### 私有包不会被发布
-
-如果一个包是：
-
-```json
-{
-  "private": true
-}
+```bash
+pnpm exec repo release pre exit
+git add pnpm-workspace.yaml && git commit -m "chore(release): exit prerelease lane"
 ```
 
-那么它通常不会进入 npm 发布流程。
+fixed group 必须整体切换 lane，不能只移动其中一个包。
 
-### 没有 changeset 就不会有版本 PR
+## 恢复未发布版本
 
-如果你改了公开包，却没有提交 `.changeset/*.md`，那么后续版本流转通常会断掉。
+如果版本提交已合并但 npm 发布失败，在 Release workflow 手动选择 `publish-unpublished`，填入 package 和 version。CI 会校验 main 上的 manifest 版本，使用 pnpm 发布并重新生成 tag 和 GitHub Release 元数据。
 
-### 先 build 再发
+## repoctl 的边界
 
-这个仓库的约定很明确：先 build，再 lint / typecheck / tsd / test，再谈发布。不要跳步。
+生成的 GitHub Actions 只保留环境准备和一个 `pnpm exec repo release ci` 调用。
+repoctl 负责发布前 build/lint/test、lane 一致性检查、Release PR、npm
+发布、package tag 与 GitHub Release；pnpm 负责变更意图、版本计算、changelog、
+ledger 和 registry 发布细节。
 
-## 常见问题
-
-### 为什么没有生成 changelog？
-
-通常是下面几种原因：
-
-- 没有执行 `pnpm changeset version`
-- `.changeset/*.md` 没有提交
-- 受影响包实际没有进入版本计算
-
-### 如何跳过某个包的发布？
-
-- 在 changeset 里不要勾选它
-- 或者把它标记为 `private: true`
-
-### 为什么要在 PR 阶段就看 changeset？
-
-因为它本质上是在回答一个非常具体的问题：
-
-“这次改动准备怎么影响发布面？”
-
-这个问题越早看，越不容易在合并后补救。
-
-## 继续阅读
-
-- [如何管理 monorepo](./manage.md)
-- [repoctl 工作流与 CI](../repoctl/workflows.md)
-- [repoctl 排障与报告](../repoctl/troubleshooting.md)
-- [命令别名](../repoctl/aliases.md)
+存量项目首次迁移运行 `pnpm dlx repoctl@latest upgrade --yes`，后续使用
+`pnpm exec repo upgrade --yes` 即可跟随 repoctl 升级。未标记的自定义 release
+workflow 默认不会被覆盖，确认后可使用 `repo upgrade --overwrite-release`。

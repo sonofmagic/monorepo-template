@@ -63,5 +63,5 @@ Key areas:
 - create: default template and template directory
 - clean: auto confirm and pinned version control
 - upgrade: overwrite behavior and extra targets
-- init: skip steps for README/package.json/changeset
+- init: skip steps for README/package.json/pnpm change intent setup
 - mirror: add or override env mirrors

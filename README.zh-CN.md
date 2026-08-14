@@ -4,7 +4,7 @@
 
 中文 | [English Version](README.md)
 
-> 基于 pnpm、Turbo Repo 与 Changesets 的现代多包模板，帮助你快速搭建企业级 Monorepo。
+> 基于 pnpm、Turbo Repo 与 pnpm 原生 versioning 的现代多包模板，帮助你快速搭建企业级 Monorepo。
 
 ## 概览
 
@@ -14,10 +14,10 @@ monorepo-template 面向实际项目，内置统一的构建、测试、发布�
 
 - **模块化结构**：模板源代码集中在 `templates/`，可复用工具包位于 `packages/`，职责清晰。
 - **集中式脚手架资源**：`@icebreakers/monorepo-templates` 打包骨架、模板与升级资产，供 `monorepo` 与 `create-icebreaker` 统一使用。
-- **统一工具链**：pnpm 工作区、Turbo 任务编排、Vitest 单测与 Changesets 发布覆盖开发到交付的全流程。
+- **统一工具链**：pnpm 工作区与版本管理、Turbo 任务编排和 Vitest 单测覆盖开发到交付的全流程。
 - **工程规范**：集成 ESLint、Stylelint、Husky、Commitlint，自动化保障代码质量与提交信息。
 - **可扩展模板**：`repoctl` 内置 setup、sync、clean、new、check 与 release helpers。`repo` 作为主推荐命令，`repoctl`、`rc` 和 `@icebreakers/monorepo` 保留为兼容入口。
-- **CI/CD 友好**：示例 GitHub Actions 配置、Codecov 集成与 `secrets.NPM_TOKEN` 支持自动化发布及覆盖率上报。
+- **CI/CD 友好**：极简 GitHub Actions 入口将版本准备、npm provenance、tag 与 GitHub Release 编排统一交给 `repoctl`。
 
 ## 快速开始
 
@@ -78,8 +78,10 @@ packages/
 | `pnpm build`                  | 通过 Turbo 执行整仓构建。                 |
 | `pnpm test` / `pnpm test:dev` | 运行 Vitest（一次性 / 监听模式）。        |
 | `pnpm lint`                   | 在整个仓库执行 ESLint 与 Stylelint。      |
-| `pnpm changeset`              | 交互式生成版本变更记录。                  |
-| `pnpm publish-packages`       | `repo release stable` 的快捷脚本。        |
+| `pnpm change`                 | 使用 pnpm 原生方式记录版本变更意图。      |
+| `pnpm change status`          | 预览待发布的版本计划。                    |
+| `pnpm exec repo release ci`   | 执行 CI 发版编排（准备、发布或恢复）。    |
+| `pnpm publish-packages`       | 执行正式版 pnpm 发布流程。                |
 | `pnpm exec repo release pre`  | 管理 prerelease 的进入、退出与发布。      |
 | `pnpm setup`                  | 初始化推荐的 workspace 元数据与 tooling。 |
 | `pnpm new <name>`             | 使用引导式流程创建新的包或应用。          |
@@ -101,11 +103,21 @@ packages/
 
 ## 发布与版本管理
 
-结合 Changesets 与 GitHub Actions 实现自动化版本管理：
+结合 pnpm 原生 versioning 与极简 GitHub Actions 入口实现自动化发版：
 
-1. 通过 `pnpm changeset` 记录改动类型（patch/minor/major）。
-2. 合并后由 CI 在 `main` 分支发布正式包，在 `alpha`、`beta`、`rc`、`next` 分支发布 pre tag 包。
-3. 在 GitHub 仓库配置 `secrets.NPM_TOKEN`，允许 Actions 推送到 npm。
+1. 通过 `pnpm change` 记录改动，并用 `pnpm change status` 检查版本计划。
+2. `pnpm exec repo release ci` 消费 intent、生成版本，并通过 GitHub API 创建或更新 Release PR。
+3. Release PR 合并后，同一个命令从 `main` 发布尚未发布的版本，并创建 package tag 与 GitHub Release。
+4. 使用 `pnpm exec repo release pre enter <lane>` 和 `pnpm exec repo release pre publish` 管理 alpha、beta、rc、next 预发布轨道。
+5. 发布使用 GitHub OIDC，不需要长期保存 npm token。
+
+存量项目首次迁移只需要执行一次：
+
+```bash
+pnpm dlx repoctl@latest upgrade --yes
+```
+
+之后恢复使用 `pnpm exec repo upgrade --yes`。未标记的自定义 release workflow 默认保留，确认替换内容后再使用 `repo upgrade --overwrite-release`。
 
 ## 质量保障
 

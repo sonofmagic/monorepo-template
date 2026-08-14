@@ -1,24 +1,12 @@
 import type { Context } from '../../core/context'
 import path from 'pathe'
-import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 
 /**
- * 将 changeset 配置中的仓库地址指向当前项目，方便自动生成变更日志链接。
+ * 保留兼容的初始化入口，并确保 pnpm change 有可写入的 intent 目录。
  */
 export default async function (ctx: Context) {
-  const { gitUrl, workspaceFilepath } = ctx
-
-  if (gitUrl && await fs.exists(workspaceFilepath)) {
-    const changesetConfigPath = path.resolve(path.dirname(workspaceFilepath), '.changeset/config.json')
-    if (await fs.exists(changesetConfigPath)) {
-      const changesetConfig = await fs.readJson(
-        changesetConfigPath,
-      )
-      if (gitUrl.full_name) {
-        setByPath(changesetConfig, 'changelog.1.repo', gitUrl.full_name)
-        await fs.outputJson(changesetConfigPath, changesetConfig, { spaces: 2 })
-      }
-    }
+  if (await fs.exists(ctx.workspaceDir)) {
+    await fs.ensureDir(path.join(ctx.workspaceDir, '.changeset'))
   }
 }

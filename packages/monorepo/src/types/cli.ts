@@ -42,4 +42,9 @@ export interface CliOpts {
    * @default false
    */
   noOverwrite?: boolean
+  /**
+   * 是否允许覆盖未标记的自定义 release workflow。
+   * @default false
+   */
+  overwriteRelease?: boolean
 }

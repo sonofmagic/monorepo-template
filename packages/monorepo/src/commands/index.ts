@@ -5,6 +5,7 @@ import type { ConfigInspection } from './config'
 import type { CreateNewProjectOptions, CreateNewProjectPlan } from './create'
 import type { DoctorCheck, DoctorReport, DoctorStatus, DoctorSummary } from './doctor'
 import type { EnvInfo, EnvPathEntry, EnvPaths, EnvSnapshot, EnvSupportBundle } from './env'
+import type { EnsurePullRequestOptions, EnsureReleaseOptions, EnsureTagOptions, GitHubClientOptions, GitHubOperations } from './release'
 import type { SkillTarget, SyncSkillsOptions } from './skills'
 import type { CheckTemplatesOptions, TemplateHealthCheck, TemplateHealthReport, TemplateHealthStatus, TemplateHealthSummary } from './templates'
 import type { CommitMsgVerifyOptions, PreCommitVerifyOptions, PrePushVerifyOptions, StagedTypecheckOptions, VerifyCommandOptions } from './verify'
@@ -19,7 +20,7 @@ import { runDoctor } from './doctor'
 import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot, collectEnvSupportBundle } from './env'
 import { init, initMetadata, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
 import { setVscodeBinaryMirror } from './mirror'
-import { enterPrerelease, exitPrerelease, releasePrerelease, releaseStable } from './release'
+import { createReleasePullRequest, enterPrerelease, exitPrerelease, GitHubApiError, GitHubClient, parsePublishSummary, prepareStable, publishStable, recoverUnpublished, releaseCi, releasePrerelease, releaseStable } from './release'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
 import { checkTemplates } from './templates'
 import { upgradeMonorepo } from './upgrade'
@@ -37,6 +38,9 @@ export type {
   DoctorReport,
   DoctorStatus,
   DoctorSummary,
+  EnsurePullRequestOptions,
+  EnsureReleaseOptions,
+  EnsureTagOptions,
   EnvInfo,
   EnvPathEntry,
   EnvPaths,
@@ -44,6 +48,8 @@ export type {
   EnvSupportBundle,
   GenerateAgenticTemplateOptions,
   GetWorkspacePackagesOptions,
+  GitHubClientOptions,
+  GitHubOperations,
   PreCommitVerifyOptions,
   PrePushVerifyOptions,
   RecommendedCheckMode,
@@ -68,6 +74,7 @@ export {
   collectEnvSnapshot,
   collectEnvSupportBundle,
   createNewProject,
+  createReleasePullRequest,
   createTimestampFolderName,
   defaultAgenticBaseDir,
   enterPrerelease,
@@ -81,6 +88,8 @@ export {
   getWorkspaceData,
   getWorkspacePackages,
   GitClient,
+  GitHubApiError,
+  GitHubClient,
   init,
   initMetadata,
   initTooling,
@@ -88,6 +97,11 @@ export {
   inspectMonorepoConfig,
   loadAgenticTasks,
   normalizeInitToolingTargets,
+  parsePublishSummary,
+  prepareStable,
+  publishStable,
+  recoverUnpublished,
+  releaseCi,
   releasePrerelease,
   releaseStable,
   resolveCreateNewProjectPlan,

@@ -6,6 +6,14 @@ packages:
 
 minimumReleaseAge: 0
 
+versioning:
+  fixed:
+    - ['@icebreakers/monorepo', repoctl]
+  ignore:
+    - '@icebreakers/client'
+  changelog:
+    storage: repository
+
 allowBuilds:
   '@tailwindcss/oxide': true
   esbuild: true

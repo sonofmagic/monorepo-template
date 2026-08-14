@@ -23,14 +23,15 @@ exports[`lib > setPkgJson casae 1 1`] = `
     "lint": "turbo run lint",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
-    "publish-packages": "turbo run build lint test && changeset version && changeset publish",
-    "release": "changeset",
+    "publish-packages": "repo release stable publish",
+    "release": "pnpm change",
     "repo:check": "repo check",
     "repo:doctor": "repo doctor",
     "repo:init": "repo init",
     "repo:new": "repo new",
     "test": "vitest run --coverage.enabled",
     "test:dev": "vitest",
+    "version-packages": "pnpm version -r",
   },
 }
 `;

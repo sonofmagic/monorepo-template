@@ -1,3 +1,4 @@
+# repoctl-managed: release/v2
 name: Release
 
 on:
@@ -13,33 +14,37 @@ on:
       mode:
         description: Release operation
         required: true
-        default: changesets
+        default: auto
         type: choice
         options:
-          - changesets
+          - auto
+          - prepare
+          - publish
           - publish-unpublished
       package:
-        description: Package used to verify an unpublished-version recovery
+        description: Package used for unpublished-version recovery
         required: false
         type: string
       version:
-        description: Version used to verify an unpublished-version recovery
+        description: Version used for unpublished-version recovery
         required: false
         type: string
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 env:
   HUSKY: 0
+  NPM_CONFIG_PROVENANCE: true
+  npm_config_registry: https://registry.npmjs.org
 
 permissions:
-  contents: write # to create release (changesets/action)
-  issues: write # to post issue comments (changesets/action)
-  pull-requests: write # to create pull request (changesets/action)
-  id-token: write # to use OpenID Connect token for provenance (changesets/action)
+  contents: write
+  pull-requests: write
+  id-token: write
 
 jobs:
   release:
-    if: github.ref_name == 'main'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -53,131 +58,17 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - name: Install Dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
 
       - name: Build Release Tooling
         run: pnpm run tooling:build
 
-      - name: Create Release Pull Request or Publish to npm
-        if: github.event_name != 'workflow_dispatch' || inputs.mode == 'changesets'
-        id: changesets
-        uses: changesets/action@v2.1.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          publish-script: pnpm exec repo release stable
+      - name: Run repo release CI
         env:
-          # this doesn't work but semantic-release works
-          # see https://github.com/sonofmagic/npm-lib-rollup-template/blob/main/.github/workflows/release.yml#L46
-          # NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          npm_config_registry: https://registry.npmjs.org
-          # https://github.com/changesets/changesets/pull/1659
-          NPM_CONFIG_PROVENANCE: true
-
-      - name: Validate unpublished-version recovery
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        shell: bash
-        env:
-          RECOVERY_PACKAGE: ${{ inputs.package }}
-          RECOVERY_VERSION: ${{ inputs.version }}
-        run: |
-          if [[ -z "$RECOVERY_PACKAGE" || -z "$RECOVERY_VERSION" ]]; then
-            echo "package and version are required for publish-unpublished" >&2
-            exit 1
-          fi
-          actual_version="$(pnpm --filter "$RECOVERY_PACKAGE" exec node -p "require('./package.json').version")"
-          if [[ "$actual_version" != "$RECOVERY_VERSION" ]]; then
-            echo "Expected $RECOVERY_PACKAGE@$RECOVERY_VERSION on main, found $actual_version" >&2
-            exit 1
-          fi
-
-      - name: Snapshot release tags
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        run: git tag --list | sort > "$RUNNER_TEMP/release-tags-before.txt"
-
-      - name: Publish unpublished versions to npm
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        run: pnpm exec repo release stable
-        env:
-          npm_config_registry: https://registry.npmjs.org
-          NPM_CONFIG_PROVENANCE: true
-
-      - name: Verify recovered npm version
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        shell: bash
-        env:
-          RECOVERY_PACKAGE: ${{ inputs.package }}
-          RECOVERY_VERSION: ${{ inputs.version }}
-        run: |
-          published_version="$(npm view "$RECOVERY_PACKAGE@$RECOVERY_VERSION" version)"
-          test "$published_version" = "$RECOVERY_VERSION"
-
-      - name: Publish recovered release metadata
-        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'publish-unpublished'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RECOVERY_PACKAGE: ${{ inputs.package }}
-          RECOVERY_VERSION: ${{ inputs.version }}
-        run: |
-          git tag --list | sort > "$RUNNER_TEMP/release-tags-after.txt"
-          comm -13 \
-            "$RUNNER_TEMP/release-tags-before.txt" \
-            "$RUNNER_TEMP/release-tags-after.txt" \
-            > "$RUNNER_TEMP/recovered-release-tags.txt"
-
-          expected_tag="$RECOVERY_PACKAGE@$RECOVERY_VERSION"
-          if ! grep -Fxq "$expected_tag" "$RUNNER_TEMP/recovered-release-tags.txt"; then
-            echo "Expected Changesets to create $expected_tag" >&2
-            exit 1
-          fi
-
-          while IFS= read -r tag; do
-            [[ -n "$tag" ]] || continue
-            git push origin "refs/tags/$tag"
-            gh release create "$tag" \
-              --verify-tag \
-              --target "$GITHUB_SHA" \
-              --title "$tag" \
-              --generate-notes
-          done < "$RUNNER_TEMP/recovered-release-tags.txt"
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v7
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  prerelease:
-    if: github.event_name == 'push' && github.ref_name != 'main'
-    name: Prerelease
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v7
-
-      - uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install Dependencies
-        run: pnpm i
-
-      - name: Build Release Tooling
-        run: pnpm run tooling:build
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Publish Prerelease
-        run: pnpm exec repo release pre publish
-        env:
-          npm_config_registry: https://registry.npmjs.org
-          NPM_CONFIG_PROVENANCE: true
+          REPO_RELEASE_MODE: ${{ inputs.mode || 'auto' }}
+          REPO_RELEASE_PACKAGE: ${{ inputs.package }}
+          REPO_RELEASE_VERSION: ${{ inputs.version }}
+        run: pnpm exec repo release ci
