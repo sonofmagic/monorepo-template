@@ -33,6 +33,25 @@ export function registerReleaseCommands(program: Command, cwd: string) {
       })
     })
 
+  const notesCommand = releaseCommand.command('notes').description('维护 GitHub Release 正文')
+  notesCommand.command('repair')
+    .description('按每个发布 tag 对应的 changelog 重建 GitHub Release 正文')
+    .option('--all', '修复所有可识别的 GitHub Release')
+    .option('--tag <package@version>', '只修复指定 package@version')
+    .option('--dry-run', '只生成并统计，不更新 GitHub Release')
+    .action(async (opts: { all?: boolean, tag?: string, dryRun?: boolean }) => {
+      await runReleaseAction(async () => {
+        const { repairReleaseNotes } = await import('@/commands')
+        const result = await repairReleaseNotes({
+          cwd,
+          ...(opts.all ? { all: true } : {}),
+          ...(opts.tag ? { tag: opts.tag } : {}),
+          ...(opts.dryRun ? { dryRun: true } : {}),
+        })
+        logger.success(`release notes repaired: ${result.repaired.length}; skipped: ${result.skipped.length}`)
+      })
+    })
+
   const stableCommand = releaseCommand.command('stable')
     .description('在 main 分支执行正式发布')
     .action(async () => {

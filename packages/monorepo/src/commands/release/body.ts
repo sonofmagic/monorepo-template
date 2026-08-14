@@ -7,6 +7,7 @@ import { buildEntries } from './notes/entries'
 import {
   buildNpmPackageUrl,
   buildPackageCompareUrl,
+  isAutomationContributor,
   parseIntentPackages,
   parseIntentSummary,
   readVersionSection,
@@ -128,6 +129,24 @@ function buildReleasePackage(release: PackageRelease) {
   }
 }
 
+function buildReleaseNoteDocumentFromReleases(releases: PackageRelease[], metadata: ReleaseBodyMetadata) {
+  const entries = releases.flatMap(release => buildEntries(release, metadata.commits ?? []))
+  const contributors = [...new Set([
+    ...(metadata.contributors ?? []),
+    ...entries.flatMap(entry => entry.authors),
+  ])].filter(value => !isAutomationContributor(value))
+  const compareUrls = releases
+    .map(release => buildPackageCompareUrl(release, metadata))
+    .filter((url): url is string => Boolean(url))
+
+  return {
+    packages: releases.map(buildReleasePackage),
+    entries,
+    contributors,
+    compareUrls,
+  } satisfies ReleaseNoteDocument
+}
+
 export async function buildReleaseNoteDocument(
   cwd: string,
   previousVersions?: Map<string, string>,
@@ -162,21 +181,27 @@ export async function buildReleaseNoteDocument(
     }
   }
 
-  const entries = releases.flatMap(release => buildEntries(release, metadata.commits ?? []))
-  const contributors = [...new Set([
-    ...(metadata.contributors ?? []),
-    ...entries.flatMap(entry => entry.authors),
-  ])].filter(value => !/github-actions|dependabot|\[bot\]$/i.test(value))
-  const compareUrls = releases
-    .map(release => buildPackageCompareUrl(release, metadata))
-    .filter((url): url is string => Boolean(url))
+  return buildReleaseNoteDocumentFromReleases(releases, metadata)
+}
 
-  return {
-    packages: releases.map(buildReleasePackage),
-    entries,
-    contributors,
-    compareUrls,
-  } satisfies ReleaseNoteDocument
+export function buildGitHubReleaseBodyFromChangelog(
+  packageName: string,
+  packageVersion: string,
+  changelog: string,
+  metadata: ReleaseBodyMetadata = {},
+) {
+  const section = readVersionSection(changelog, packageVersion)
+  if (!section?.content) {
+    return 'No significant changes.'
+  }
+  const release: PackageRelease = {
+    name: packageName,
+    version: packageVersion,
+    ...(section.previousVersion ? { previousVersion: section.previousVersion } : {}),
+    npmUrl: buildNpmPackageUrl(packageName, packageVersion),
+    content: section.content,
+  }
+  return renderGitHubRelease(buildReleaseNoteDocumentFromReleases([release], metadata), metadata)
 }
 
 export async function buildReleasePullRequestBody(

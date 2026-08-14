@@ -199,4 +199,37 @@ describe('GitHub release client', () => {
     const request = requestFetch.mock.calls[1]?.[1] as RequestInit | undefined
     expect(JSON.parse(String(request?.body))).toEqual({ ref: 'refs/tags/repo@1.0.0', sha: 'abc123' })
   })
+
+  it('lists releases and updates a repaired release body', async () => {
+    const listFetch = vi.fn().mockResolvedValueOnce(response([
+      { id: 8, html_url: 'https://github.com/acme/repo/releases/8', tag_name: 'repo@1.0.0' },
+    ]))
+    const listClient = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: listFetch })
+
+    await expect(listClient.listReleases()).resolves.toHaveLength(1)
+    expect(listFetch).toHaveBeenCalledWith('https://api.github.com/repos/acme/repo/releases?per_page=100&page=1', expect.objectContaining({ method: 'GET' }))
+
+    const updateFetch = vi.fn().mockResolvedValueOnce(response({ id: 8, html_url: 'https://github.com/acme/repo/releases/8', tag_name: 'repo@1.0.0' }))
+    const updateClient = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: updateFetch })
+    await updateClient.updateRelease({ id: 8, name: 'repo@1.0.0', body: '### 🐞 Bug Fixes' })
+
+    expect(updateFetch).toHaveBeenCalledWith('https://api.github.com/repos/acme/repo/releases/8', expect.objectContaining({ method: 'PATCH' }))
+    const request = updateFetch.mock.calls[0]?.[1] as RequestInit | undefined
+    expect(JSON.parse(String(request?.body))).toEqual({ name: 'repo@1.0.0', body: '### 🐞 Bug Fixes' })
+  })
+
+  it('continues listing releases across pagination boundaries', async () => {
+    const firstPage = Array.from({ length: 100 }, (_, index) => ({
+      id: index + 1,
+      html_url: `https://github.com/acme/repo/releases/${index + 1}`,
+      tag_name: `repo@1.0.${index}`,
+    }))
+    const requestFetch = vi.fn()
+      .mockResolvedValueOnce(response(firstPage))
+      .mockResolvedValueOnce(response([{ id: 101, html_url: 'https://github.com/acme/repo/releases/101', tag_name: 'repo@2.0.0' }]))
+    const client = new GitHubClient({ token: 'token', repository: 'acme/repo', fetch: requestFetch })
+
+    await expect(client.listReleases()).resolves.toHaveLength(101)
+    expect(requestFetch).toHaveBeenNthCalledWith(2, 'https://api.github.com/repos/acme/repo/releases?per_page=100&page=2', expect.objectContaining({ method: 'GET' }))
+  })
 })

@@ -134,6 +134,47 @@ describe('release pull request body', () => {
     expect(release).toContain('View changes on GitHub')
   })
 
+  it('normalizes legacy Changesets entries before rendering a release', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-legacy-'))
+    tempRoots.push(cwd)
+    const packageDir = path.join(cwd, 'packages', 'demo')
+    await mkdir(packageDir, { recursive: true })
+    await writeFile(path.join(cwd, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n', 'utf8')
+    await writeFile(path.join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/demo', version: '2.0.0' }), 'utf8')
+    await writeFile(path.join(packageDir, 'CHANGELOG.md'), [
+      '# @acme/demo',
+      '',
+      '## 2.0.0',
+      '',
+      '### Patch Changes',
+      '',
+      '- 🐛 **修复旧格式** [`abcdef1`](https://github.com/acme/repo/commit/abcdef1234567890abcdef1234567890abcdef12) [#42](https://github.com/acme/repo/pull/42) by @alice',
+      '- 📦 **Dependencies** [`1234567`](https://github.com/acme/repo/commit/1234567890abcdef1234567890abcdef12345678)',
+      '  → `@acme/dependency@1.2.3`',
+      '',
+    ].join('\n'), 'utf8')
+
+    const release = await buildGitHubReleaseBody(cwd, '@acme/demo', '2.0.0', {
+      repository: 'acme/repo',
+      serverUrl: 'https://github.com',
+      commits: [{
+        sha: 'fedcba9876543210fedcba9876543210fedcba98',
+        subject: 'fix: legacy release',
+        author: 'renovate[bot]',
+      }],
+    })
+
+    expect(release).toContain('### 🐞 Bug Fixes')
+    expect(release).toContain('修复旧格式')
+    expect(release).toContain('### 🧰 Maintenance')
+    expect(release).toContain('Updated dependency to @acme/dependency@1.2.3.')
+    expect(release).toContain('https://github.com/acme/repo/commit/abcdef1234567890abcdef1234567890abcdef12')
+    expect(release).toContain('https://github.com/acme/repo/pull/42')
+    expect(release).not.toContain('https://github.com/acme/repo/issues/42')
+    expect(release).not.toContain('### Patch Changes')
+    expect(release).not.toContain('renovate[bot]')
+  })
+
   it('renders an empty package release without empty headings', async () => {
     const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-empty-'))
     tempRoots.push(cwd)

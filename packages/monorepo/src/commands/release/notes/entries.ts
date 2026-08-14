@@ -5,6 +5,12 @@ function parseReferences(commits: ReleaseCommit[], content: string) {
   const pullRequests = new Set<number>()
   const issues = new Set<number>()
   for (const message of [...commits.map(commit => [commit.subject, commit.body ?? ''].join('\n')), content]) {
+    for (const match of message.matchAll(/\]\([^)]*\/pull\/(\d+)\)/g)) {
+      pullRequests.add(Number(match[1]))
+    }
+    for (const match of message.matchAll(/\]\([^)]*\/issues\/(\d+)\)/g)) {
+      issues.add(Number(match[1]))
+    }
     for (const match of message.matchAll(/\(#(\d+)\)/g)) {
       pullRequests.add(Number(match[1]))
     }
@@ -54,6 +60,9 @@ function sourceCategory(commits: ReleaseCommit[]) {
 }
 
 function classifyChange(heading: string, summary: string, commits: ReleaseCommit[]): ReleaseCategory {
+  if (/dependenc(?:y|ies)/i.test(heading)) {
+    return 'maintenance'
+  }
   const fromCommit = sourceCategory(commits)
   if (fromCommit) {
     return fromCommit
@@ -114,6 +123,67 @@ function readMarkdownEntries(content: string) {
   return entries.length ? entries : [{ heading: 'Patch Changes', summary: content.trim() }]
 }
 
+interface NormalizedMarkdownEntry {
+  heading: string
+  summary: string
+  commits: ReleaseCommit[]
+  pullRequests: number[]
+  issues: number[]
+  authors: string[]
+  raw: string
+}
+
+function normalizeMarkdownEntry(item: { heading: string, summary: string }): NormalizedMarkdownEntry {
+  const raw = item.summary.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim()
+  const commitMatches = [...raw.matchAll(/\[`?([0-9a-f]{7,40})`?\]\(([^)]+\/commit\/[^)]+)\)/gi)]
+  const pullRequests = [...raw.matchAll(/\[#(\d+)\]\(([^)]+\/pull\/\d+)\)/gi)].map(match => Number(match[1]))
+  const issues = [...raw.matchAll(/\[#(\d+)\]\(([^)]+\/issues\/\d+)\)/gi)].map(match => Number(match[1]))
+  const authors = [...raw.matchAll(/\bby\s+(@?[\w-]+(?:\[bot\])?)/gi)].map(match => match[1] as string)
+  const arrowDependency = raw.match(/→\s*`([^`]+)`/)?.[1]
+  const dependencyLabel = /\bdependenc(?:y|ies):/i.test(raw)
+    ? raw.replace(/^.*?\bdependenc(?:y|ies):/i, '').trim().replace(/^[-*]\s*/, '').replace(/^`|`$/g, '')
+    : undefined
+  const dependencyName = arrowDependency ?? dependencyLabel
+  const hasDependencyHeading = /Dependencies:|Dependency:|\*\*Dependencies\*\*|\*\*Dependency\*\*/i.test(raw)
+  const hasDependency = hasDependencyHeading || Boolean(dependencyName)
+  const summary = hasDependency && dependencyName
+    ? `Updated dependency to ${dependencyName}.`
+    : raw
+        .replace(/\[`?([0-9a-f]{7,40})`?\]\([^)]+\)/gi, '')
+        .replace(/\[#\d+\]\([^)]+\)/g, '')
+        .replace(/\bby\s+@?[\w-]+(?:\[bot\])?/gi, '')
+        .replace(/\*\*/g, '')
+        .replace(/`/g, '')
+        .replace(/^[-*]\s+/, '')
+        .replace(/^[^\p{L}\p{N}]+/u, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+  const categoryHint = /🚨|breaking/i.test(raw)
+    ? '🚨'
+    : /🚀|✨/.test(raw)
+      ? '🚀'
+      : /🐛|🐞/.test(raw)
+        ? '🐞'
+        : hasDependency
+          ? 'Dependencies'
+          : ''
+  const commits = commitMatches.map(match => ({
+    sha: match[2]?.match(/\/commit\/([0-9a-f]{7,40})/i)?.[1] ?? match[1] as string,
+    subject: `${hasDependency ? 'chore' : categoryHint === '🐞' ? 'fix' : categoryHint === '🚀' ? 'feat' : 'chore'}: ${summary}`,
+    ...(authors[0] ? { author: authors[0] } : {}),
+    summary,
+  }))
+  return {
+    heading: categoryHint ? `${item.heading} ${categoryHint}` : item.heading,
+    summary,
+    commits,
+    pullRequests: [...new Set(pullRequests)],
+    issues: [...new Set(issues)],
+    authors: [...new Set(authors)],
+    raw,
+  }
+}
+
 function commitsForPackage(commits: ReleaseCommit[], packageName: string) {
   return uniqueCommits(commits.filter(commit => !commit.packages?.length || commit.packages.includes(packageName)))
 }
@@ -150,22 +220,23 @@ function commitsForEntry(commits: ReleaseCommit[], summary: string) {
 export function buildEntries(release: PackageReleaseSource, commits: ReleaseCommit[]) {
   const packageCommits = commitsForPackage(commits, release.name)
   return readMarkdownEntries(release.content).flatMap((item): ReleaseNoteEntry[] => {
-    const summary = item.summary.replace(/^[-*]\s+/, '').replace(/\n+/g, ' ').trim()
+    const normalized = normalizeMarkdownEntry(item)
+    const summary = normalized.summary
     if (!summary) {
       return []
     }
-    const entryCommits = commitsForEntry(packageCommits, summary)
-    const refs = parseReferences(entryCommits, summary)
+    const entryCommits = uniqueCommits([...commitsForEntry(packageCommits, summary), ...normalized.commits])
+    const refs = parseReferences(entryCommits, [normalized.raw, summary].join('\n'))
     return [{
       packageName: release.name,
       version: release.version,
       ...(release.npmUrl ? { npmUrl: release.npmUrl } : {}),
-      category: classifyChange(item.heading, summary, entryCommits),
+      category: classifyChange(normalized.heading, summary, entryCommits),
       summary,
       commits: entryCommits,
-      pullRequests: refs.pullRequests,
-      issues: refs.issues,
-      authors: entryCommits.map(commit => commit.author).filter((author): author is string => Boolean(author)),
+      pullRequests: [...new Set([...refs.pullRequests, ...normalized.pullRequests])].sort((a, b) => a - b),
+      issues: [...new Set([...refs.issues, ...normalized.issues])].sort((a, b) => a - b),
+      authors: [...new Set([...normalized.authors, ...entryCommits.map(commit => commit.author).filter((author): author is string => Boolean(author))])],
     }]
   })
 }
