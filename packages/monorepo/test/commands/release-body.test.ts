@@ -45,10 +45,22 @@ describe('release pull request body', () => {
     ])
     const body = await buildReleasePullRequestBody(cwd, previousVersions)
 
-    expect(body).toContain('# Releases')
-    expect(body).toContain('## @acme/demo@2.0.0')
-    expect(body).toContain('- 增加新的发布能力。')
-    expect(body).not.toContain('旧版本内容')
-    expect(body).not.toContain('@acme/unchanged')
+    expect(body).toBe([
+      '# Releases',
+      '',
+      '| Package | Version |',
+      '| --- | --- |',
+      '| `@acme/demo` | `2.0.0` |',
+      '',
+      '---',
+      '',
+      '## `@acme/demo` `2.0.0`',
+      '',
+      '### Minor Changes',
+      '',
+      '- 增加新的发布能力。',
+    ].join('\n'))
+    expect(body).not.toContain('This PR was generated')
+    expect(body).not.toContain('.changeset/ledger.yaml')
   })
 })
