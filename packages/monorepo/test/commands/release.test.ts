@@ -109,6 +109,7 @@ describe('release commands', () => {
     expect(github.ensurePullRequest).toHaveBeenCalledWith(expect.objectContaining({
       head: 'release/pnpm-version',
       base: 'main',
+      body: expect.stringContaining('# Releases'),
     }))
   })
 
