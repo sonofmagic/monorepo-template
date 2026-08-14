@@ -61,7 +61,7 @@
 
 ### 发包流程
 
-我采用了 `changesets`，它在 `monorepo` 环境下发布非常方便。功能非常的多，具体可以查看官方文档。
+现在使用 pnpm 原生 versioning：用 `pnpm change` 记录意图，用 `pnpm version -r` 生成版本和 changelog，再用 `pnpm publish -r` 发布。版本计划保留在 `.changeset/ledger.yaml`，预发布则由 pnpm lanes 管理。
 
 ### Github 相关配置
 

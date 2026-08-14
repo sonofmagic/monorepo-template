@@ -30,8 +30,9 @@
     "typecheck": "turbo run typecheck",
     "format": "eslint . --fix",
     "validate": "pnpm run build && pnpm run lint && pnpm run typecheck && pnpm run tsd && pnpm run test",
-    "release": "changeset",
-    "publish-packages": "repo release stable",
+    "release": "pnpm change",
+    "version-packages": "pnpm version -r",
+    "publish-packages": "repo release stable publish",
     "release:pre": "repo release pre publish",
     "------": "--------------",
     "preinstall": "npx only-allow pnpm",
@@ -52,9 +53,7 @@
     "--------": "----------------"
   },
   "devDependencies": {
-    "@changesets/cli": "^3.0.0",
     "@commitlint/cli": "^21.2.1",
-    "@icebreakers/changelog-github": "^2.0.0",
     "@icebreakers/monorepo": "workspace:*",
     "@types/node": "^26.2.0",
     "@types/semver": "^7.8.0",

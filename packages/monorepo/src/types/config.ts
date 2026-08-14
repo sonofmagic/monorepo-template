@@ -143,7 +143,7 @@ export interface UpgradeCommandConfig extends Partial<CliOpts> {
    */
   scripts?: Record<string, string>
   /**
-   * 是否跳过生成 changeset markdown。
+   * 是否跳过生成 pnpm change intent markdown。
    * @default true
    */
   skipChangesetMarkdown?: boolean
@@ -164,7 +164,7 @@ export interface InitCommandConfig {
    */
   skipPkgJson?: boolean
   /**
-   * 是否跳过 changeset 的更新。
+   * 是否跳过 pnpm versioning 元数据的更新。
    * @default false
    */
   skipChangeset?: boolean

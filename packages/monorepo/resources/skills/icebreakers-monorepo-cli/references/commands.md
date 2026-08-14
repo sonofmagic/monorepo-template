@@ -85,7 +85,7 @@ Usage:
 
 ## workspace init (alias: ws init)
 
-Purpose: initialize workspace metadata such as README, package.json, changeset, and issue template.
+Purpose: initialize workspace metadata such as README, package.json, pnpm change intent support, and issue template.
 Usage:
 
 - npx repoctl init

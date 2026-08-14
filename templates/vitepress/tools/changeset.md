@@ -1,98 +1,69 @@
-# Changesets
+# pnpm Versioning
 
-[Changesets](https://github.com/changesets/changesets)。它帮助你在 **monorepo** 或多包项目中更有条理地维护变更日志（changelog）、版本号升级策略以及自动化发布流程。
+本模板使用 pnpm 11 原生 versioning 管理 monorepo 的变更意图、版本号、changelog 和发布。变更意图仍然使用 `.changeset/*.md` 格式，因此每次改动可以独立提交，不会直接修改包版本。
 
-在 repoctl 体系里，Changesets 负责“版本和发布”，repoctl 负责“发布前仓库是否健康”。
-
-```bash
-pnpm exec repo doctor --strict
-pnpm exec repo check --full
-pnpm changeset
-pnpm exec repo release stable
-```
-
-继续看：[monorepo 发包与变更日志](../monorepo/publish.md)。
-
-## 1. 什么是 Changeset？
-
-- **核心思想**：每一次改动，不直接修改 `package.json` 里的版本号，而是通过写一个 `changeset` 文件（通常放在 `.changeset` 文件夹下）。
-- **作用**：
-  - 记录每次改动影响了哪些包（哪些需要 bump 版本）。
-  - 指定改动类型（`patch`、`minor`、`major`）。
-  - 自动生成 **Changelog**。
-  - 自动修改 `package.json` 的版本号。
-  - 与 CI/CD 集成后，可以实现一键自动发版。
-
-## 2. 如何使用 Changesets？
-
-### 安装
+## 日常开发
 
 ```bash
-npm install --save-dev @changesets/cli
+pnpm change
+pnpm change status
 ```
 
-### 初始化
+`pnpm change` 会询问受影响的包、patch/minor/major 类型和 changelog 摘要。脚本或自动化场景可以直接指定：
 
 ```bash
-npx changeset init
+pnpm change --bump patch --summary "修复空输入崩溃" repoctl
 ```
 
-会生成一个 `.changeset` 文件夹，里面包含配置文件。
+变更意图会写入 `.changeset/`，与代码一起提交。`pnpm change status` 只预览计划，不会修改文件。
 
-### 添加变更
+## 版本与 changelog
 
-当你完成某个功能或修复后，运行：
+在 Release PR 中由 CI 消费变更意图：
 
 ```bash
-npx changeset
+pnpm version -r --dry-run
+pnpm version -r
 ```
 
-它会问：
+`pnpm version -r` 会更新受影响包、传播 workspace 依赖、生成 `CHANGELOG.md`，并把消费记录追加到 `.changeset/ledger.yaml`。仓库配置使用 `versioning.changelog.storage: repository`，所以 changelog 会和版本提交一起审查。
 
-1. 哪些包受影响？
-2. 这是 **patch**（补丁）、**minor**（新功能）、还是 **major**（重大变更）？
-3. 变更的描述是什么？
+`@icebreakers/monorepo` 与 `repoctl` 属于 pnpm fixed group，任一包需要发布时两者始终使用同一个版本。
 
-这会生成一个类似这样的文件：
+## 发布
 
-```yaml
-# .changeset/sweet-pandas-sing.md
----
-my-package: patch
----
-
-修复了登录时的 bug
-```
-
-### 应用版本更新
-
-当积累了多个 changeset 后，可以执行：
+正式发布由 Release PR 合并后的 main workflow 完成：
 
 ```bash
-npx changeset version
+pnpm publish -r --report-summary --provenance --no-git-checks
 ```
 
-它会根据 changeset 文件：
+pnpm 会跳过 registry 中已经存在的版本，并把新发布包写入 `pnpm-publish-summary.json`。CI 根据 summary 创建 `package@version` Git tag 和 GitHub Release，因此重复执行不会重新发布已存在版本。
 
-- 更新对应包的版本号。
-- 生成/更新 `CHANGELOG.md`。
-
-### 发布
-
-最后可以发布：
+本地推荐使用 repoctl 包装命令：
 
 ```bash
-npx changeset publish
+pnpm exec repo release stable prepare
+pnpm exec repo release stable publish
 ```
 
-会自动调用 `npm publish`，把包发到 npm registry。
+## Prerelease lanes
 
-## 3. 在 Monorepo 中的优势
+alpha、beta、rc、next 是 pnpm lanes，而不是 Changesets pre 状态：
 
-- 避免多人协作时冲突：大家都往 `.changeset` 添加文件，不会直接改 `package.json`。
-- 统一生成 changelog：自动保证每个版本的改动都被记录。
-- 自动化发布：和 GitHub Actions 等 CI 工具结合，可在合并到主分支后自动发版。
+```bash
+pnpm exec repo release pre enter alpha
+git add pnpm-workspace.yaml && git commit -m "chore(release): enter alpha lane"
+git push
 
-## 总结
+pnpm exec repo release pre publish
+```
 
-**Changeset 就是一个版本管理与发版工具**，它通过“先记录再统一处理”的方式，帮助 npm 包（尤其是 monorepo）保持版本升级和 changelog 的一致性与可追溯性。
+退出预发布轨道时执行 `pnpm exec repo release pre exit`，提交 `pnpm-workspace.yaml` 后合并回 main。lane 切换必须覆盖 fixed group 的全部包。
+
+## CI 约定
+
+- main push 先生成或更新 Release PR；Release PR 合并后才发布 npm。
+- alpha、beta、rc、next 分支要求所有可发布包位于对应 lane。
+- npm 发布使用 GitHub OIDC provenance，不需要长期保存 `NPM_TOKEN`。
+- 未发布版本恢复使用 workflow dispatch 的 `publish-unpublished` 模式，并按 package/version 校验后发布。

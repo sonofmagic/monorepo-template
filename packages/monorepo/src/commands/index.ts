@@ -19,7 +19,7 @@ import { runDoctor } from './doctor'
 import { collectEnvInfo, collectEnvPaths, collectEnvSnapshot, collectEnvSupportBundle } from './env'
 import { init, initMetadata, initTooling, initToolingTargets, normalizeInitToolingTargets } from './init'
 import { setVscodeBinaryMirror } from './mirror'
-import { enterPrerelease, exitPrerelease, releasePrerelease, releaseStable } from './release'
+import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releasePrerelease, releaseStable } from './release'
 import { getSkillTargetPaths, skillTargets, syncSkills } from './skills'
 import { checkTemplates } from './templates'
 import { upgradeMonorepo } from './upgrade'
@@ -88,6 +88,9 @@ export {
   inspectMonorepoConfig,
   loadAgenticTasks,
   normalizeInitToolingTargets,
+  parsePublishSummary,
+  prepareStable,
+  publishStable,
   releasePrerelease,
   releaseStable,
   resolveCreateNewProjectPlan,

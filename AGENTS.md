@@ -40,7 +40,7 @@ When building TypeScript libraries (type-focused APIs or public type definitions
 
 ## Commit & Pull Request Guidelines
 
-Commits must conform to Conventional Commit syntax; recent history uses prefixes like `feat`, `fix`, and `chore`. Example: `feat(server): add auth router`. Use `pnpm commit` (commitlint prompt) or ensure your manual message passes `pnpm commitlint --edit`. Before opening a PR, make sure `pnpm lint` and `pnpm test` succeed, link related issues, and provide screenshots or logs for user-facing changes. Touching publishable packages requires a changeset (`pnpm changeset`) so releases stay traceable.
+Commits must conform to Conventional Commit syntax; recent history uses prefixes like `feat`, `fix`, and `chore`. Example: `feat(server): add auth router`. Use `pnpm commit` (commitlint prompt) or ensure your manual message passes `pnpm commitlint --edit`. Before opening a PR, make sure `pnpm lint` and `pnpm test` succeed, link related issues, and provide screenshots or logs for user-facing changes. Touching publishable packages requires a pnpm change intent (`pnpm change`) so releases stay traceable.
 
 For AI-generated or AI-assisted changes, use this verification order before commit or PR:
 

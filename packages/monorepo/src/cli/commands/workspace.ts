@@ -150,7 +150,7 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     })
 
   workspaceCommand.command('init')
-    .description('初始化工作区元信息（README、package.json、changeset、issue template）')
+    .description('初始化工作区元信息（README、package.json、pnpm intent、issue template）')
     .alias('i')
     .action(async () => {
       const { initMetadata } = await import('@/commands')

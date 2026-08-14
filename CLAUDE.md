@@ -45,11 +45,11 @@ This is a pnpm + Turbo monorepo template designed for production-ready projects.
 
 ### Release & Publishing
 
-| Command                              | Description                                                |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `pnpm changeset`                     | Create an interactive changeset for version bumps          |
-| `pnpm publish-packages`              | Run `repo release stable` for stable Changesets publishing |
-| `pnpm exec repo release pre publish` | Run prerelease publishing on alpha/beta/rc/next branches   |
+| Command                              | Description                          |
+| ------------------------------------ | ------------------------------------ |
+| `pnpm change`                        | Record a native pnpm change intent   |
+| `pnpm publish-packages`              | Run the stable pnpm publish flow     |
+| `pnpm exec repo release pre publish` | Run lane-based prerelease publishing |
 
 ### Monorepo Helper Scripts
 
@@ -108,14 +108,14 @@ Workspaces use `workspace:*` protocol for internal dependencies. Root `package.j
 
 ## Publishing Workflow
 
-This monorepo uses Changesets for version management:
+This monorepo uses pnpm native versioning:
 
 1. Make changes to packages
-2. Run `pnpm changeset` to describe changes (patch/minor/major)
-3. After merging, let CI publish from `main` for stable releases, or from `alpha` / `beta` / `rc` / `next` for prerelease tags
-4. Ensure `secrets.NPM_TOKEN` is configured in GitHub for automated publishing
+2. Run `pnpm change` to describe changes (patch/minor/major)
+3. Review with `pnpm change status`, then let CI create the version Release PR
+4. After merging, CI publishes from `main`; use pnpm lanes for prerelease tags
 
-When modifying publishable packages, always create a changeset so releases stay traceable.
+When modifying publishable packages, always create a pnpm change intent with `pnpm change` so releases stay traceable.
 
 ## Template Customization
 

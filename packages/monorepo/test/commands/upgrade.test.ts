@@ -116,12 +116,12 @@ describe('upgradeMonorepo overwrite logic', () => {
     expect(rewritten).toBe(reference)
 
     await upgradeMonorepo({ outDir })
-    expect(checkboxMock).toHaveBeenCalledTimes(1)
+    expect(checkboxMock).toHaveBeenCalledTimes(2)
 
     await fs.remove(root)
   })
 
-  it.skipIf(CI.isCI)('supports interactive selection and updates changeset repo', async () => {
+  it.skipIf(CI.isCI)('supports interactive selection without legacy config migration', async () => {
     const checkboxMock = vi.fn(async (options: { message?: string, choices?: Array<{ value: string }> }) => {
       if (options?.message === '选择你需要的文件') {
         return ['.changeset']
@@ -159,9 +159,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     await upgradeMonorepo({ outDir, interactive: true })
 
     const configPath = path.join(outDir, '.changeset/config.json')
-    expect(await fs.pathExists(configPath)).toBe(true)
-    const config = await fs.readJSON(configPath)
-    expect(config.changelog[1].repo).toBe('ice/awesome')
+    expect(await fs.pathExists(configPath)).toBe(false)
     expect(checkboxMock).toHaveBeenCalled()
 
     await fs.remove(root)

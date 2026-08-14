@@ -11,7 +11,7 @@ import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
-import { escapeStringRegexp, isIgnorableFsError, isMatch, setByPath, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
+import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
 import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
 import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from './overwrite'
@@ -123,7 +123,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
   const regexpArr = targets.map((x) => {
     return new RegExp(`^${escapeStringRegexp(x)}`)
   })
-  // 旧版本默认跳过 changeset Markdown，可通过配置覆盖。
+  // 旧版本默认跳过 pnpm change intent Markdown，可通过配置覆盖。
   const skipChangesetMarkdown = upgradeConfig?.skipChangesetMarkdown ?? true
   const scriptOverrides = upgradeConfig?.scripts
   const skipOverwrite = merged.noOverwrite ? true : merged.skipOverwrite
@@ -229,24 +229,6 @@ export async function upgradeMonorepo(opts: CliOpts) {
         if (exists && isAgentsMarkdownEquivalent(target, data)) {
           continue
         }
-        const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
-        const action = async () => {
-          await fs.outputFile(targetPath, data, 'utf8')
-          logger.success(targetPath)
-        }
-        await scheduleOverwrite(intent, {
-          relPath,
-          targetPath,
-          action,
-          pending: pendingOverwrites,
-        })
-        continue
-      }
-
-      if (relPath === '.changeset/config.json' && repoName) {
-        const changesetJson = await fs.readJson(file.path)
-        setByPath(changesetJson, 'changelog.1.repo', repoName)
-        const data = `${JSON.stringify(changesetJson, undefined, 2)}\n`
         const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(data))
         const action = async () => {
           await fs.outputFile(targetPath, data, 'utf8')

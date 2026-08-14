@@ -125,7 +125,6 @@ describe('upgrade command coverage', () => {
       { path: '/assets/folder', isFile: false },
       { path: '/assets/package.json', isFile: true },
       { path: '/assets/missing.json', isFile: true },
-      { path: '/assets/.changeset/config.json', isFile: true },
       { path: '/assets/.changeset/skip.md', isFile: true },
       { path: '/assets/LICENSE', isFile: true },
       { path: '/assets/.github/ISSUE_TEMPLATE/config.yml', isFile: true },
@@ -175,8 +174,6 @@ describe('upgrade command coverage', () => {
       dependencies: {},
       devDependencies: {},
     })
-    jsonContents.set('/assets/.changeset/config.json', { changelog: [null, { repo: '' }] })
-
     pathExistsMock.mockImplementation(async (targetPath: string) => {
       if (targetPath.endsWith('missing.json')) {
         return false

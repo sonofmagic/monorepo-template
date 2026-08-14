@@ -47,7 +47,7 @@
 | 语言     | TypeScript 优先                         |
 | 校验链路 | ESLint + Stylelint + typecheck + Vitest |
 | 提交规范 | Husky + lint-staged + commitlint        |
-| 发包     | changesets                              |
+| 发包     | pnpm versioning                         |
 | 命令入口 | `repo` 为主，`repoctl` 为完整包名入口   |
 
 这些选择的目的只有一个：减少“每个项目重新想一遍”的成本。

@@ -2,7 +2,7 @@
 
 `repoctl` is the user-facing package name for this monorepo toolkit. Its recommended command is `repo`.
 
-The CLI does not replace pnpm, Turborepo, or changesets. It gives teams a stable layer for common monorepo actions: setup, diagnostics, scaffolding, local verification, and template asset upgrades.
+The CLI does not replace pnpm, Turborepo, or pnpm versioning. It gives teams a stable layer for common monorepo actions: setup, diagnostics, scaffolding, local verification, and template asset upgrades.
 
 ## When To Use It
 

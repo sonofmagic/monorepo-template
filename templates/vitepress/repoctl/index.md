@@ -2,7 +2,7 @@
 
 `repoctl` 是这套模板推荐给使用者的包名。默认命令是 `repo`，目标是把 pnpm workspace、Turborepo、模板创建、诊断报告和提交前校验收敛到一组稳定入口里。
 
-它不替代 pnpm、Turbo 或 changesets，而是把这些工具在 monorepo 里的常见动作串起来。
+它不替代 pnpm、Turbo 或 pnpm versioning，而是把这些工具在 monorepo 里的常见动作串起来。
 
 ## 什么时候使用 repoctl
 
