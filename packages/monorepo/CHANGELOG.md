@@ -1,5 +1,11 @@
 # @icebreakers/monorepo
 
+## 5.0.4
+
+### Patch Changes
+
+- 🐛 **修复 Version Packages PR 合并后正式发布被错误跳过的问题，确保已更新版本但尚未发布到 npm 的包会继续执行发布。** [#792](https://github.com/sonofmagic/monorepo-template/pull/792) by @sonofmagic
+
 ## 5.0.3
 
 ### Patch Changes
