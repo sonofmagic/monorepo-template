@@ -1,3 +1,4 @@
+import type { ReleaseNoteDocument } from '@/commands/release'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
@@ -90,6 +91,7 @@ describe('release commands', () => {
       ensurePullRequest: vi.fn(async () => ({ number: 1, html_url: 'https://github.com/acme/repo/pull/1', state: 'open' })),
       closeLegacyReleasePullRequests: vi.fn(async () => {}),
       ensureRelease: vi.fn(),
+      enrichReleaseNote: vi.fn(async (document: ReleaseNoteDocument) => ({ ...document, contributors: ['alice'] })),
     }
 
     await releaseCi({ mode: 'auto', branch: 'main', cwd, spawn: spawn as never, github })
@@ -111,8 +113,9 @@ describe('release commands', () => {
     expect(github.ensurePullRequest).toHaveBeenCalledWith(expect.objectContaining({
       head: 'release/pnpm-version',
       base: 'main',
-      body: expect.stringContaining('# Releases'),
+      body: expect.stringContaining('Thanks to @alice'),
     }))
+    expect(github.enrichReleaseNote).toHaveBeenCalledOnce()
     expect(github.closeLegacyReleasePullRequests).toHaveBeenCalledWith({ head: 'changeset-release/main', base: 'main' })
   })
 
@@ -238,6 +241,47 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['lane', 'rc', '--filter', 'repoctl'] },
       { command: 'pnpm', args: ['lane', 'main', '--filter', 'repoctl'] },
     ])
+  })
+
+  it('publishes the normalized package release body', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writeFile(path.join(cwd, 'packages', 'repoctl', 'CHANGELOG.md'), [
+      '# repoctl',
+      '',
+      '## 1.0.0',
+      '',
+      '### Patch Changes',
+      '',
+      '- 修复发布说明。',
+      '',
+      '## 0.9.0',
+      '',
+      '- Previous release.',
+    ].join('\n'), 'utf8')
+    await writeFile(path.join(cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+      publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
+    }), 'utf8')
+    const { spawn } = createSpawnMock()
+    const github = {
+      ensurePullRequest: vi.fn(),
+      ensureTag: vi.fn(),
+      ensureRelease: vi.fn(),
+    }
+
+    await releaseCi({
+      mode: 'publish',
+      branch: 'main',
+      cwd,
+      spawn: spawn as never,
+      github: github as never,
+      env: { GITHUB_SHA: 'abc123', GITHUB_REPOSITORY: 'acme/repo' },
+    })
+
+    expect(github.ensureRelease).toHaveBeenCalledWith(expect.objectContaining({
+      tag: 'repoctl@1.0.0',
+      name: 'repoctl@1.0.0',
+      body: expect.stringContaining('### 🐞 Bug Fixes'),
+    }))
   })
 
   it('parses pnpm publish summaries for release metadata', () => {

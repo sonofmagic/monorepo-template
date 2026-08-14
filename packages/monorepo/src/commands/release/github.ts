@@ -1,4 +1,6 @@
+import type { ReleaseNoteDocument } from './notes/model'
 import process from 'node:process'
+import { logger } from '../../core/logger'
 import { ReleaseCommandError } from './errors'
 
 interface GitHubPullRequest {
@@ -7,15 +9,22 @@ interface GitHubPullRequest {
   state: string
   title?: string
   body?: string | null
-  head?: {
-    ref?: string
-  }
+  head?: { ref?: string }
 }
 
 interface GitHubRelease {
   id: number
   html_url: string
   tag_name: string
+}
+
+interface GitHubCommit {
+  author?: { login?: string } | null
+  commit?: { author?: { name?: string } | null }
+}
+
+interface GitHubIssue {
+  user?: { login?: string } | null
 }
 
 export interface GitHubClientOptions {
@@ -41,6 +50,8 @@ export interface EnsureReleaseOptions {
   tag: string
   target: string
   prerelease?: boolean
+  name?: string
+  body?: string
 }
 
 export interface EnsureTagOptions {
@@ -53,6 +64,7 @@ export interface GitHubOperations {
   closeLegacyReleasePullRequests?: (options: CloseLegacyPullRequestsOptions) => Promise<void>
   ensureRelease: (options: EnsureReleaseOptions) => Promise<GitHubRelease>
   ensureTag?: (options: EnsureTagOptions) => Promise<void>
+  enrichReleaseNote?: (document: ReleaseNoteDocument) => Promise<ReleaseNoteDocument>
 }
 
 export class GitHubApiError extends ReleaseCommandError {
@@ -131,38 +143,26 @@ export class GitHubClient implements GitHubOperations {
     const listed = await this.request<GitHubPullRequest[]>('GET', `/pulls?${query.toString()}`)
     const existing = listed.data?.[0]
     if (existing) {
-      await this.request<GitHubPullRequest>('PATCH', `/pulls/${existing.number}`, {
-        title: options.title,
-        body: options.body,
-        base: options.base,
-      })
+      await this.request<GitHubPullRequest>('PATCH', `/pulls/${existing.number}`, { title: options.title, body: options.body, base: options.base })
       return existing
     }
-    let created: { status: number, data: GitHubPullRequest | undefined }
     try {
-      created = await this.request<GitHubPullRequest>('POST', '/pulls', {
-        title: options.title,
-        body: options.body,
-        head: options.head,
-        base: options.base,
-      })
+      const created = await this.request<GitHubPullRequest>('POST', '/pulls', { title: options.title, body: options.body, head: options.head, base: options.base })
+      if (!created.data) {
+        throw new GitHubApiError('GitHub did not return the created pull request', created.status)
+      }
+      return created.data
     }
     catch (error) {
       if (!(error instanceof GitHubApiError) || error.status !== 422) {
         throw error
       }
-      // Another runner may have created the same PR between the list and
-      // create requests. Re-list once and return the winner.
       const recovered = await this.request<GitHubPullRequest[]>('GET', `/pulls?${query.toString()}`)
       if (recovered.data?.[0]) {
         return recovered.data[0]
       }
       throw error
     }
-    if (!created.data) {
-      throw new GitHubApiError('GitHub did not return the created pull request', created.status)
-    }
-    return created.data
   }
 
   async closeLegacyReleasePullRequests(options: CloseLegacyPullRequestsOptions) {
@@ -171,14 +171,11 @@ export class GitHubClient implements GitHubOperations {
     const head = options.head.includes(':') ? options.head : `${owner}:${options.head}`
     const query = new URLSearchParams({ state: 'open', head, base: options.base, per_page: '100' })
     const listed = await this.request<GitHubPullRequest[]>('GET', `/pulls?${query.toString()}`)
-
     for (const pullRequest of listed.data ?? []) {
-      const isLegacyRelease = pullRequest.head?.ref === options.head
-        && (pullRequest.title === 'Version Packages' || pullRequest.body?.includes('changesets/action') === true)
-      if (!isLegacyRelease) {
-        continue
+      const isLegacyRelease = pullRequest.head?.ref === options.head && (pullRequest.title === 'Version Packages' || pullRequest.body?.includes('changesets/action') === true)
+      if (isLegacyRelease) {
+        await this.request<GitHubPullRequest>('PATCH', `/pulls/${pullRequest.number}`, { state: 'closed' })
       }
-      await this.request<GitHubPullRequest>('PATCH', `/pulls/${pullRequest.number}`, { state: 'closed' })
     }
   }
 
@@ -193,14 +190,22 @@ export class GitHubClient implements GitHubOperations {
       }
     }
     if (existing) {
+      if (options.body !== undefined || options.name !== undefined) {
+        const updated = await this.request<GitHubRelease>('PATCH', `/releases/${existing.id}`, {
+          ...(options.name === undefined ? {} : { name: options.name }),
+          ...(options.body === undefined ? {} : { body: options.body }),
+          prerelease: options.prerelease ?? false,
+        })
+        return updated.data ?? existing
+      }
       return existing
     }
     try {
       const created = await this.request<GitHubRelease>('POST', '/releases', {
         tag_name: options.tag,
         target_commitish: options.target,
-        name: options.tag,
-        generate_release_notes: true,
+        name: options.name ?? options.tag,
+        ...(options.body === undefined ? { generate_release_notes: true } : { body: options.body }),
         prerelease: options.prerelease ?? false,
       })
       if (!created.data) {
@@ -220,6 +225,39 @@ export class GitHubClient implements GitHubOperations {
     }
   }
 
+  async enrichReleaseNote(document: ReleaseNoteDocument) {
+    try {
+      const commitAuthors = new Map<string, string>()
+      const commitShas = [...new Set(document.entries.flatMap(entry => entry.commits.map(commit => commit.sha)))]
+      for (const sha of commitShas) {
+        const response = await this.request<GitHubCommit>('GET', `/commits/${encodeURIComponent(sha)}`)
+        const author = response.data?.author?.login || response.data?.commit?.author?.name
+        if (author) {
+          commitAuthors.set(sha, author)
+        }
+      }
+      const referenceNumbers = [...new Set(document.entries.flatMap(entry => [...entry.pullRequests, ...entry.issues]))]
+      const referenceAuthors = new Set<string>()
+      for (const number of referenceNumbers) {
+        const response = await this.request<GitHubIssue>('GET', `/issues/${number}`)
+        const author = response.data?.user?.login
+        if (author) {
+          referenceAuthors.add(author)
+        }
+      }
+      const entries = document.entries.map((entry) => {
+        const authors = [...new Set([...entry.authors, ...entry.commits.map(commit => commitAuthors.get(commit.sha)).filter((author): author is string => Boolean(author))])]
+        return authors.length ? { ...entry, authors } : entry
+      })
+      return { ...document, entries, contributors: [...new Set([...document.contributors, ...commitAuthors.values(), ...referenceAuthors])] }
+    }
+    catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      logger.warn(`GitHub release note metadata enrichment skipped: ${message}`)
+      return document
+    }
+  }
+
   async ensureTag(options: EnsureTagOptions) {
     const endpoint = `/git/ref/tags/${encodeURIComponent(options.tag)}`
     try {
@@ -231,18 +269,13 @@ export class GitHubClient implements GitHubOperations {
         throw error
       }
     }
-
     try {
-      await this.request('POST', '/git/refs', {
-        ref: `refs/tags/${options.tag}`,
-        sha: options.target,
-      })
+      await this.request('POST', '/git/refs', { ref: `refs/tags/${options.tag}`, sha: options.target })
     }
     catch (error) {
       if (!(error instanceof GitHubApiError) || error.status !== 422) {
         throw error
       }
-      // A concurrent runner may have created the same ref.
       await this.request('GET', endpoint)
     }
   }
