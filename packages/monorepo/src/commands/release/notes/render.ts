@@ -20,7 +20,10 @@ function formatReferenceLinks(entry: ReleaseNoteEntry, metadata: ReleaseBodyMeta
 }
 
 function formatEntry(entry: ReleaseNoteEntry, metadata: ReleaseBodyMetadata) {
-  return `- **${entry.packageName}**: ${entry.summary}${formatReferenceLinks(entry, metadata)}`
+  const packageLabel = entry.npmUrl
+    ? `[${entry.packageName}@${entry.version}](${entry.npmUrl})`
+    : `${entry.packageName}@${entry.version}`
+  return `- **${packageLabel}**: ${entry.summary}${formatReferenceLinks(entry, metadata)}`
 }
 
 function formatCategoryEntries(
@@ -54,6 +57,10 @@ function formatContributors(contributors: string[]) {
     : []
 }
 
+function formatVersion(version: string, npmUrl?: string) {
+  return npmUrl ? `[\`${version}\`](${npmUrl})` : `\`${version}\``
+}
+
 function formatPackages(packages: ReleaseNoteDocument['packages']) {
   if (!packages.length) {
     return []
@@ -61,9 +68,13 @@ function formatPackages(packages: ReleaseNoteDocument['packages']) {
   return [
     '## Packages',
     '',
-    '| Package | Version |',
-    '| --- | --- |',
-    ...packages.map(pkg => `| \`${pkg.name}\` | \`${pkg.version}\` |`),
+    '| Package | From | To |',
+    '| --- | --- | --- |',
+    ...packages.map((pkg) => {
+      const previous = pkg.previousVersion ? formatVersion(pkg.previousVersion, pkg.previousNpmUrl) : '—'
+      const current = formatVersion(pkg.version, pkg.npmUrl)
+      return `| \`${pkg.name}\` | ${previous} | ${current} |`
+    }),
   ]
 }
 

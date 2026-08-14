@@ -159,6 +159,7 @@ export function buildEntries(release: PackageReleaseSource, commits: ReleaseComm
     return [{
       packageName: release.name,
       version: release.version,
+      ...(release.npmUrl ? { npmUrl: release.npmUrl } : {}),
       category: classifyChange(item.heading, summary, entryCommits),
       summary,
       commits: entryCommits,

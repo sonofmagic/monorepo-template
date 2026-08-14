@@ -5,6 +5,7 @@ import path from 'pathe'
 import { getWorkspacePackages } from '../../core/workspace'
 import { buildEntries } from './notes/entries'
 import {
+  buildNpmPackageUrl,
   buildPackageCompareUrl,
   parseIntentPackages,
   parseIntentSummary,
@@ -17,12 +18,15 @@ import { capture } from './shared'
 interface PackageJsonVersion {
   name?: unknown
   version?: unknown
+  private?: unknown
 }
 
 interface PackageRelease {
   name: string
   version: string
   previousVersion?: string
+  npmUrl?: string
+  private?: boolean
   content: string
 }
 
@@ -108,6 +112,22 @@ export async function readWorkspaceVersions(cwd: string) {
   return versions
 }
 
+function buildReleasePackage(release: PackageRelease) {
+  const packageLinks: { npmUrl?: string, previousNpmUrl?: string } = {}
+  if (!release.private) {
+    packageLinks.npmUrl = release.npmUrl ?? buildNpmPackageUrl(release.name, release.version)
+    if (release.previousVersion) {
+      packageLinks.previousNpmUrl = buildNpmPackageUrl(release.name, release.previousVersion)
+    }
+  }
+  return {
+    name: release.name,
+    version: release.version,
+    ...(release.previousVersion ? { previousVersion: release.previousVersion } : {}),
+    ...packageLinks,
+  }
+}
+
 export async function buildReleaseNoteDocument(
   cwd: string,
   previousVersions?: Map<string, string>,
@@ -134,6 +154,9 @@ export async function buildReleaseNoteDocument(
       const previousVersion = previousVersions?.get(manifest.name) || release.previousVersion
       releases.push({
         ...release,
+        ...(manifest.private === true
+          ? { private: true }
+          : { npmUrl: buildNpmPackageUrl(manifest.name, manifest.version) }),
         ...(previousVersion ? { previousVersion } : {}),
       })
     }
@@ -149,11 +172,7 @@ export async function buildReleaseNoteDocument(
     .filter((url): url is string => Boolean(url))
 
   return {
-    packages: releases.map(release => ({
-      name: release.name,
-      version: release.version,
-      ...(release.previousVersion ? { previousVersion: release.previousVersion } : {}),
-    })),
+    packages: releases.map(buildReleasePackage),
     entries,
     contributors,
     compareUrls,
