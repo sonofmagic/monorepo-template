@@ -1,6 +1,7 @@
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prepareStable, publishStable, releaseCi } from '@/commands/release'
+import { logger } from '@/core/logger'
 import { cleanupReleaseTempRoots, createSpawnMock, createTempWorkspace, writePendingIntent } from './release-fixtures'
 
 afterEach(async () => {
@@ -21,6 +22,7 @@ describe('release lifecycle configuration', () => {
         qualityScripts: ['quality:release', 'test:packages'],
         hooks: {
           beforeVersion: ['catalog:sync'],
+          verify: ['release:verify'],
           afterVersion: ['versions:check'],
         },
       },
@@ -31,6 +33,7 @@ describe('release lifecycle configuration', () => {
       { command: 'pnpm', args: ['run', 'catalog:sync'] },
       { command: 'pnpm', args: ['run', 'quality:release'] },
       { command: 'pnpm', args: ['run', 'test:packages'] },
+      { command: 'pnpm', args: ['run', 'release:verify'] },
       { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
       { command: 'pnpm', args: ['run', 'versions:check'] },
       { command: 'git', args: ['diff', '--quiet', '--exit-code'] },
@@ -52,6 +55,27 @@ describe('release lifecycle configuration', () => {
     expect(calls).toEqual([{ command: 'pnpm', args: ['run', 'quality:release'] }])
   })
 
+  it('stops before versioning when a verify hook fails', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ statuses: { 'pnpm run release:verify': 1 } })
+
+    await expect(prepareStable({
+      branch: 'main',
+      cwd,
+      config: {
+        qualityScripts: ['quality:release'],
+        hooks: { verify: ['release:verify'] },
+      },
+      spawn: spawn as never,
+    })).rejects.toThrow('command failed: pnpm run release:verify')
+
+    expect(calls).toEqual([
+      { command: 'pnpm', args: ['run', 'quality:release'] },
+      { command: 'pnpm', args: ['run', 'release:verify'] },
+    ])
+  })
+
   it('rejects stable publish while change intents are pending', async () => {
     const cwd = await createTempWorkspace('main')
     await writePendingIntent(cwd)
@@ -70,19 +94,21 @@ describe('release lifecycle configuration', () => {
       diffStatus: 1,
       publishedPackages: [{ name: 'repoctl', version: '1.1.0-alpha.0' }],
     })
+    const ensureRelease = vi.fn()
+    const ensureTag = vi.fn()
 
     await releaseCi({
       branch: 'alpha',
       cwd,
       env: { GITHUB_SHA: 'abc123' },
-      github: { ensurePullRequest: vi.fn(), ensureRelease: vi.fn(), ensureTag: vi.fn() },
+      github: { ensurePullRequest: vi.fn(), ensureRelease, ensureTag },
       config: {
         qualityScripts: ['quality:release'],
         hooks: {
           beforeVersion: ['catalog:sync'],
           afterVersion: ['versions:check'],
           beforePublish: ['publish:check'],
-          afterPublish: ['release:sync'],
+          afterPublish: [{ script: 'release:sync' }],
         },
       },
       spawn: spawn as never,
@@ -105,9 +131,11 @@ describe('release lifecycle configuration', () => {
       REPO_RELEASE_PUBLISHED_PACKAGES: JSON.stringify([{ name: 'repoctl', version: '1.1.0-alpha.0' }]),
       REPO_RELEASE_PUBLISH_SUMMARY: path.resolve(cwd, 'pnpm-publish-summary.json'),
     })
+    expect(ensureTag.mock.invocationCallOrder[0]).toBeLessThan(ensureRelease.mock.invocationCallOrder[0]!)
+    expect(ensureRelease.mock.invocationCallOrder[0]).toBeLessThan(spawn.mock.invocationCallOrder.at(-1)!)
   })
 
-  it('runs post-publish hooks when no npm packages were published', async () => {
+  it('skips post-publish hooks when no npm packages were published', async () => {
     const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()
 
@@ -117,7 +145,7 @@ describe('release lifecycle configuration', () => {
       cwd,
       config: {
         qualityScripts: ['quality:release'],
-        hooks: { beforePublish: ['publish:check'], afterPublish: ['release:sync'] },
+        hooks: { beforePublish: ['publish:check'], afterPublish: [{ script: 'release:sync' }] },
       },
       spawn: spawn as never,
     })
@@ -126,7 +154,6 @@ describe('release lifecycle configuration', () => {
       { command: 'pnpm', args: ['run', 'quality:release'] },
       { command: 'pnpm', args: ['run', 'publish:check'] },
       { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
-      { command: 'pnpm', args: ['run', 'release:sync'] },
     ])
   })
 
@@ -148,7 +175,7 @@ describe('release lifecycle configuration', () => {
       github,
       config: {
         qualityScripts: ['quality:release'],
-        hooks: { beforePublish: ['publish:check'], afterPublish: ['release:sync'] },
+        hooks: { beforePublish: ['publish:check'], afterPublish: [{ script: 'release:sync' }] },
       },
       packageName: 'repoctl',
       packageVersion: '1.0.0',
@@ -176,8 +203,28 @@ describe('release lifecycle configuration', () => {
       cwd,
       env: { GITHUB_SHA: 'abc123' },
       github: { ensurePullRequest: vi.fn(), ensureRelease: vi.fn(), ensureTag: vi.fn() },
-      config: { hooks: { afterPublish: ['release:sync'] } },
+      config: { hooks: { afterPublish: [{ script: 'release:sync' }] } },
       spawn: spawn as never,
     })).rejects.toThrow('command failed: pnpm run release:sync')
+  })
+
+  it('warns and preserves the release when an optional post-publish hook fails', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { spawn } = createSpawnMock({
+      publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
+      statuses: { 'pnpm run release:sync': 1 },
+    })
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => undefined)
+
+    await expect(releaseCi({
+      mode: 'publish',
+      branch: 'main',
+      cwd,
+      env: { GITHUB_SHA: 'abc123' },
+      github: { ensurePullRequest: vi.fn(), ensureRelease: vi.fn(), ensureTag: vi.fn() },
+      config: { hooks: { afterPublish: [{ script: 'release:sync', continueOnError: true }] } },
+      spawn: spawn as never,
+    })).resolves.toEqual([{ name: 'repoctl', version: '1.0.0' }])
+    expect(warn).toHaveBeenCalledWith('release afterPublish hook failed and was ignored: release:sync')
   })
 })

@@ -2,12 +2,13 @@ import type { ReleaseCommandConfig } from '../../types/config'
 import type { PublishedPackage, ReleaseOptions } from './types'
 import process from 'node:process'
 import path from 'pathe'
+import { logger } from '../../core/logger'
 import { ReleaseCommandError } from './errors'
 import { run } from './shared'
 
 const defaultQualityScripts = ['build', 'lint', 'test']
 
-type ReleaseHookPhase = keyof NonNullable<ReleaseCommandConfig['hooks']>
+type ReleaseHookPhase = Exclude<keyof NonNullable<ReleaseCommandConfig['hooks']>, 'afterPublish' | 'verify'>
 
 function validateScriptName(script: string) {
   const normalizedScript = script.trim()
@@ -35,6 +36,7 @@ function runScripts(scripts: string[], options: ReleaseOptions, extraEnv?: NodeJ
 
 export function runQualityScripts(options: ReleaseOptions) {
   runScripts(options.config?.qualityScripts ?? defaultQualityScripts, options)
+  runScripts(options.config?.hooks?.verify ?? [], options)
 }
 
 export function runReleaseHooks(phase: ReleaseHookPhase, options: ReleaseOptions) {
@@ -42,8 +44,23 @@ export function runReleaseHooks(phase: ReleaseHookPhase, options: ReleaseOptions
 }
 
 export function runAfterPublishHooks(packages: PublishedPackage[], options: ReleaseOptions) {
-  runScripts(options.config?.hooks?.afterPublish ?? [], options, {
+  if (!packages.length) {
+    return
+  }
+
+  const extraEnv = {
     REPO_RELEASE_PUBLISHED_PACKAGES: JSON.stringify(packages),
     REPO_RELEASE_PUBLISH_SUMMARY: path.resolve(options.cwd, 'pnpm-publish-summary.json'),
-  })
+  }
+  for (const hook of options.config?.hooks?.afterPublish ?? []) {
+    try {
+      runScripts([hook.script], options, extraEnv)
+    }
+    catch (error) {
+      if (!hook.continueOnError) {
+        throw error
+      }
+      logger.warn(`release afterPublish hook failed and was ignored: ${hook.script}`)
+    }
+  }
 }

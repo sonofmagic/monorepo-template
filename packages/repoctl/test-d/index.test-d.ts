@@ -11,10 +11,11 @@ expectType<MonorepoConfig>(defineMonorepoConfig({
     release: {
       qualityScripts: ['release:lint'],
       hooks: {
+        verify: ['release:verify'],
         beforeVersion: ['catalog:sync'],
         afterVersion: ['versions:check'],
         beforePublish: ['versions:check'],
-        afterPublish: ['marketplace:publish'],
+        afterPublish: [{ script: 'marketplace:publish', continueOnError: true }],
       },
     },
   },

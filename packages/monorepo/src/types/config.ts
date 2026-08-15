@@ -412,6 +412,16 @@ export interface HuskyToolingConfig {
   commitMsgCommand?: string
 }
 
+export interface ReleaseAfterPublishHookConfig {
+  /** package.json 中要通过 `pnpm run` 执行的脚本名。 */
+  script: string
+  /**
+   * 脚本失败时是否只记录警告并继续。
+   * @default false
+   */
+  continueOnError?: boolean
+}
+
 export interface ReleaseCommandConfig {
   /**
    * version 与 publish 阶段执行的根 package.json 校验脚本。
@@ -420,6 +430,12 @@ export interface ReleaseCommandConfig {
    */
   qualityScripts?: string[]
   hooks?: {
+    /**
+     * qualityScripts 通过后追加执行的校验脚本。
+     * 任一脚本失败都会中止版本或发布流程。
+     * @default []
+     */
+    verify?: string[]
     /**
      * pnpm version 前执行的根 package.json 脚本。
      * @default []
@@ -437,10 +453,10 @@ export interface ReleaseCommandConfig {
     beforePublish?: string[]
     /**
      * npm metadata 与 GitHub Release 处理完成后执行的根 package.json 脚本。
-     * 即使没有 npm 包发布也会执行。
+     * 仅在确有 npm 包发布后执行。
      * @default []
      */
-    afterPublish?: string[]
+    afterPublish?: ReleaseAfterPublishHookConfig[]
   }
 }
 
