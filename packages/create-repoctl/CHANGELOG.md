@@ -1,5 +1,16 @@
 # create-repoctl
 
+## 0.1.0
+
+### Minor Changes
+
+- Reposition repoctl as the task-first CLI for pnpm and Turborepo monorepos, add English-default and Simplified Chinese CLI/documentation support, make create-repoctl the canonical workspace creator, and keep compatibility entrypoints working.
+
+### Patch Changes
+
+- Updated dependencies:
+  - @icebreakers/monorepo-templates@1.2.0
+
 ## 0.0.14
 
 ### Patch Changes
