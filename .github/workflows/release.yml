@@ -68,7 +68,7 @@ jobs:
 
       - name: Run repo release CI
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.REPOCTL_RELEASE_TOKEN || secrets.CHANGESETS_RELEASE_TOKEN || github.token }}
           REPO_RELEASE_MODE: ${{ inputs.mode || 'auto' }}
           REPO_RELEASE_PACKAGE: ${{ inputs.package }}
           REPO_RELEASE_VERSION: ${{ inputs.version }}

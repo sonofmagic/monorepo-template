@@ -412,6 +412,32 @@ export interface HuskyToolingConfig {
   commitMsgCommand?: string
 }
 
+export interface ReleaseAfterPublishHookConfig {
+  /** package.json 中要通过 `pnpm run` 执行的脚本名。 */
+  script: string
+  /**
+   * 脚本失败时是否只记录警告并继续。
+   * @default false
+   */
+  continueOnError?: boolean
+}
+
+export interface ReleaseCommandConfig {
+  hooks?: {
+    /**
+     * 内置 build、lint、test 通过后追加执行的校验脚本。
+     * 任一脚本失败都会中止版本或发布流程。
+     * @default []
+     */
+    verify?: string[]
+    /**
+     * 确有 npm 包发布后执行的脚本。
+     * @default []
+     */
+    afterPublish?: ReleaseAfterPublishHookConfig[]
+  }
+}
+
 /**
  * `repoctl.config.ts` 中 `tooling` 总配置。
  *
@@ -444,6 +470,7 @@ export interface MonorepoConfig {
     upgrade?: UpgradeCommandConfig
     init?: InitCommandConfig
     mirror?: MirrorCommandConfig
+    release?: ReleaseCommandConfig
   }
   /**
    * 按工程化能力分类的可选配置。

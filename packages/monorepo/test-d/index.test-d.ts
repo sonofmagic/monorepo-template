@@ -1,5 +1,5 @@
 /* eslint-disable perfectionist/sort-imports */
-import type { CliOpts, CreateChoiceOption, CreateNewProjectPlan, MonorepoCommitlintConfig, MonorepoTsconfig, MonorepoVitestConfigResult, MonorepoVitestProjectConfigResult, PackageJson, WorkspacePackageSummaryData } from '..'
+import type { CliOpts, CreateChoiceOption, CreateNewProjectPlan, MonorepoCommitlintConfig, MonorepoConfig, MonorepoTsconfig, MonorepoVitestConfigResult, MonorepoVitestProjectConfigResult, PackageJson, ReleaseCommandConfig, WorkspacePackageSummaryData } from '..'
 import { clearWorkspaceCache, createMonorepoCommitlintConfig, createMonorepoEslintConfig, createMonorepoLintStagedConfig, createMonorepoStylelintConfig, createMonorepoTsconfig, createMonorepoVitestConfig, defineCommitlintConfig, defineEslintConfig, defineVitestConfig, defineVitestProjectConfig, getCreateChoices, getFileHash, getTemplateMap, getWorkspacePackageSummaries, resolveCreateNewProjectPlan, templateMap } from '..'
 import { expectAssignable, expectType } from 'tsd'
 
@@ -15,6 +15,22 @@ const templates = getTemplateMap()
 expectType<string | undefined>(templates['tsdown']?.source)
 expectAssignable<CliOpts>({ cwd: '.', core: true })
 expectAssignable<PackageJson>({ name: 'demo' })
+expectAssignable<ReleaseCommandConfig>({
+  hooks: {
+    verify: ['release:verify'],
+    afterPublish: [{ script: 'release:sync', continueOnError: true }],
+  },
+})
+expectAssignable<MonorepoConfig>({
+  commands: {
+    release: {
+      hooks: {
+        verify: ['release:verify'],
+        afterPublish: [{ script: 'release:sync' }],
+      },
+    },
+  },
+})
 expectAssignable<object>(createMonorepoCommitlintConfig())
 expectAssignable<object>(createMonorepoEslintConfig())
 expectAssignable<object>(createMonorepoEslintConfig({ ignores: ['dist/**'] }, { rules: { 'no-console': 'off' } }))

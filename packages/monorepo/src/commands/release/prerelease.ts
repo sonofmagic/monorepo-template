@@ -1,6 +1,6 @@
 import type { ReleaseOptions } from './types'
 import { ReleaseCommandError } from './errors'
-import { assertLaneAssignments, hasGitChanges, hasPendingIntents, resolveBranch, run, runLane, runQualityChecks } from './shared'
+import { assertLaneAssignments, clearPublishSummary, hasGitChanges, hasPendingIntents, readPublishSummary, resolveBranch, run, runLane, runQualityChecks } from './shared'
 import { prereleaseBranches } from './types'
 
 export async function releasePrerelease(options: ReleaseOptions) {
@@ -22,8 +22,10 @@ export async function releasePrerelease(options: ReleaseOptions) {
 
   run('git', ['add', '-A'], options)
   run('git', ['commit', '-m', `chore(release): ${branch} [skip ci]`], options)
+  await clearPublishSummary(options.cwd)
   run('pnpm', ['publish', '-r', '--tag', branch, '--report-summary', '--provenance', '--no-git-checks'], options)
   run('git', ['push', '--follow-tags', 'origin', `HEAD:${branch}`], options)
+  return readPublishSummary(options.cwd)
 }
 
 export async function enterPrerelease(tag: string, options: ReleaseOptions) {

@@ -1,4 +1,5 @@
 import type { ReleaseNoteDocument } from '@/commands/release'
+import { writeFileSync } from 'node:fs'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'pathe'
@@ -50,19 +51,38 @@ async function writePendingIntent(cwd: string, name = 'pending-change') {
   ].join('\n'), 'utf8')
 }
 
-function createSpawnMock(options: { diffStatus?: number } = {}) {
+function createSpawnMock(options: {
+  diffStatus?: number
+  publishedPackages?: Array<{ name: string, version: string }>
+  statuses?: Record<string, number>
+  stdout?: Record<string, string>
+} = {}) {
   const calls: SpawnCall[] = []
-  const spawn = vi.fn((command: string, args: string[]) => {
+  const hookEnvs: NodeJS.ProcessEnv[] = []
+  const spawn = vi.fn((command: string, args: string[], spawnOptions?: { cwd?: string, env?: NodeJS.ProcessEnv }) => {
     calls.push({ command, args })
+    const commandLine = `${command} ${args.join(' ')}`
+
+    if (command === 'pnpm' && args[0] === 'publish' && spawnOptions?.cwd) {
+      writeFileSync(path.join(spawnOptions.cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+        publishedPackages: options.publishedPackages ?? [],
+      }))
+    }
+    if (command === 'pnpm' && args[0] === 'run' && !['build', 'lint', 'test'].includes(args[1] ?? '')) {
+      hookEnvs.push(spawnOptions?.env ?? {})
+    }
 
     if (command === 'git' && args.join(' ') === 'diff --quiet --exit-code') {
       return { status: options.diffStatus ?? 0, stdout: '' }
     }
 
-    return { status: 0, stdout: '' }
+    return {
+      status: options.statuses?.[commandLine] ?? 0,
+      stdout: options.stdout?.[commandLine] ?? '',
+    }
   })
 
-  return { calls, spawn }
+  return { calls, hookEnvs, spawn }
 }
 
 afterEach(async () => {
@@ -137,6 +157,42 @@ describe('release commands', () => {
     ])
   })
 
+  it('runs verify hooks after built-in checks and before versioning', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+
+    await prepareStable({
+      branch: 'main',
+      cwd,
+      hooks: { verify: ['release:verify', 'release:audit'] },
+      spawn: spawn as never,
+    })
+
+    expect(calls.slice(0, 6)).toEqual([
+      { command: 'pnpm', args: ['run', 'build'] },
+      { command: 'pnpm', args: ['run', 'lint'] },
+      { command: 'pnpm', args: ['run', 'test'] },
+      { command: 'pnpm', args: ['run', 'release:verify'] },
+      { command: 'pnpm', args: ['run', 'release:audit'] },
+      { command: 'pnpm', args: ['version', '-r', '--no-git-checks'] },
+    ])
+  })
+
+  it('stops the release when a verify hook fails', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ statuses: { 'pnpm run release:verify': 2 } })
+
+    await expect(prepareStable({
+      branch: 'main',
+      cwd,
+      hooks: { verify: ['release:verify'] },
+      spawn: spawn as never,
+    })).rejects.toThrow('release verify hook failed: release:verify')
+    expect(calls).not.toContainEqual({ command: 'pnpm', args: ['version', '-r', '--no-git-checks'] })
+  })
+
   it('does not version when there are no pending intents', async () => {
     const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()
@@ -161,6 +217,16 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'test'] },
       { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
     ])
+  })
+
+  it('clears stale publish summaries before reading the current result', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writeFile(path.join(cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+      publishedPackages: [{ name: 'stale-package', version: '9.9.9' }],
+    }), 'utf8')
+    const { spawn } = createSpawnMock()
+
+    await expect(publishStable({ branch: 'main', cwd, spawn: spawn as never })).resolves.toEqual([])
   })
 
   it('rejects stable releases away from main', async () => {
@@ -232,6 +298,109 @@ describe('release commands', () => {
     ])
   })
 
+  it('runs after-publish hooks for prerelease packages', async () => {
+    const cwd = await createTempWorkspace('alpha')
+    await writePendingIntent(cwd)
+    const { calls, hookEnvs, spawn } = createSpawnMock({
+      diffStatus: 1,
+      publishedPackages: [{ name: 'repoctl', version: '1.1.0-alpha.0' }],
+    })
+
+    await releaseCi({
+      branch: 'alpha',
+      cwd,
+      env: { GITHUB_SHA: 'abc123' },
+      github: { ensureRelease: vi.fn(), ensureTag: vi.fn() } as never,
+      hooks: { afterPublish: [{ script: 'release:sync' }] },
+      spawn: spawn as never,
+    })
+
+    expect(calls.at(-1)).toEqual({ command: 'pnpm', args: ['run', 'release:sync'] })
+    expect(hookEnvs[0]).toMatchObject({
+      REPO_RELEASE_PUBLISHED_PACKAGES: JSON.stringify([{ name: 'repoctl', version: '1.1.0-alpha.0' }]),
+      REPO_RELEASE_PUBLISH_SUMMARY: path.resolve(cwd, 'pnpm-publish-summary.json'),
+    })
+  })
+
+  it('does not run after-publish hooks when no packages were published', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await releaseCi({
+      mode: 'publish',
+      branch: 'main',
+      cwd,
+      hooks: { afterPublish: [{ script: 'release:sync' }] },
+      spawn: spawn as never,
+    })
+
+    expect(calls).not.toContainEqual({ command: 'pnpm', args: ['run', 'release:sync'] })
+  })
+
+  it('runs after-publish hooks after unpublished-version recovery', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock({
+      publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
+      stdout: {
+        [`pnpm --filter repoctl exec node -p require('./package.json').version`]: '1.0.0',
+        'npm view repoctl@1.0.0 version': '1.0.0',
+      },
+    })
+    const github = { ensureRelease: vi.fn(), ensureTag: vi.fn() }
+
+    await releaseCi({
+      mode: 'publish-unpublished',
+      branch: 'main',
+      cwd,
+      github: github as never,
+      hooks: { afterPublish: [{ script: 'release:sync' }] },
+      packageName: 'repoctl',
+      packageVersion: '1.0.0',
+      spawn: spawn as never,
+    })
+
+    expect(github.ensureRelease).toHaveBeenCalledOnce()
+    expect(calls.at(-1)).toEqual({ command: 'pnpm', args: ['run', 'release:sync'] })
+  })
+
+  it('warns and preserves a release when an optional after-publish hook fails', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { spawn } = createSpawnMock({
+      publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
+      statuses: { 'pnpm run release:sync': 1 },
+    })
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => undefined)
+
+    await expect(releaseCi({
+      mode: 'publish',
+      branch: 'main',
+      cwd,
+      env: { GITHUB_SHA: 'abc123' },
+      github: { ensureRelease: vi.fn(), ensureTag: vi.fn() } as never,
+      hooks: { afterPublish: [{ script: 'release:sync', continueOnError: true }] },
+      spawn: spawn as never,
+    })).resolves.toEqual([{ name: 'repoctl', version: '1.0.0' }])
+    expect(warn).toHaveBeenCalledWith('release afterPublish hook failed and was ignored: release:sync')
+  })
+
+  it('fails when a required after-publish hook fails', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { spawn } = createSpawnMock({
+      publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
+      statuses: { 'pnpm run release:sync': 1 },
+    })
+
+    await expect(releaseCi({
+      mode: 'publish',
+      branch: 'main',
+      cwd,
+      env: { GITHUB_SHA: 'abc123' },
+      github: { ensureRelease: vi.fn(), ensureTag: vi.fn() } as never,
+      hooks: { afterPublish: [{ script: 'release:sync' }] },
+      spawn: spawn as never,
+    })).rejects.toThrow('release afterPublish hook failed: release:sync')
+  })
+
   it('moves all publishable packages between pnpm lanes', async () => {
     const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()
@@ -260,10 +429,9 @@ describe('release commands', () => {
       '',
       '- Previous release.',
     ].join('\n'), 'utf8')
-    await writeFile(path.join(cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+    const { spawn } = createSpawnMock({
       publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
-    }), 'utf8')
-    const { spawn } = createSpawnMock()
+    })
     const github = {
       ensurePullRequest: vi.fn(),
       ensureTag: vi.fn(),

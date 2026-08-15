@@ -1,11 +1,12 @@
 import type { PublishedPackage, ReleaseOptions } from './types'
 import { spawnSync } from 'node:child_process'
-import { access, readdir, readFile } from 'node:fs/promises'
+import { access, readdir, readFile, rm } from 'node:fs/promises'
 import process from 'node:process'
 import path from 'pathe'
 import YAML from 'yaml'
 import { getWorkspaceData } from '../../core/workspace'
 import { ReleaseCommandError } from './errors'
+import { runReleaseVerifyHooks } from './hooks'
 
 export function run(command: string, args: string[], options: ReleaseOptions) {
   const result = (options.spawn ?? spawnSync)(command, args, {
@@ -118,6 +119,11 @@ export function runQualityChecks(options: ReleaseOptions) {
   run('pnpm', ['run', 'build'], options)
   run('pnpm', ['run', 'lint'], options)
   run('pnpm', ['run', 'test'], options)
+  runReleaseVerifyHooks(options)
+}
+
+export async function clearPublishSummary(cwd: string) {
+  await rm(path.join(cwd, 'pnpm-publish-summary.json'), { force: true })
 }
 
 export function parsePublishSummary(content: string): PublishedPackage[] {

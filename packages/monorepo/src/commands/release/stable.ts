@@ -1,6 +1,6 @@
 import type { ReleaseOptions } from './types'
 import { ReleaseCommandError } from './errors'
-import { assertStableLaneAssignments, hasGitChanges, hasPendingIntents, resolveBranch, run, runQualityChecks } from './shared'
+import { assertStableLaneAssignments, clearPublishSummary, hasGitChanges, hasPendingIntents, readPublishSummary, resolveBranch, run, runQualityChecks } from './shared'
 
 export async function prepareStable(options: ReleaseOptions) {
   const branch = resolveBranch(options)
@@ -23,10 +23,12 @@ export async function publishStable(options: ReleaseOptions) {
   }
   await assertStableLaneAssignments(options)
   runQualityChecks(options)
+  await clearPublishSummary(options.cwd)
   run('pnpm', ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'], options)
+  return readPublishSummary(options.cwd)
 }
 
 /** Compatibility entry point retained for existing generated repositories. */
 export async function releaseStable(options: ReleaseOptions) {
-  await publishStable(options)
+  return publishStable(options)
 }

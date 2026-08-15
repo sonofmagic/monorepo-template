@@ -46,6 +46,23 @@ describe('monorepo config integration', () => {
     await fs.remove(root)
   })
 
+  it.skipIf(isCI)('loads release lifecycle hooks from repoctl config', async () => {
+    await vi.resetModules()
+    const root = await fs.mkdtemp(path.join(tmpdir(), 'repoctl-config-release-'))
+
+    await writeConfig(root, `export default { commands: { release: { hooks: { verify: ['release:verify'], afterPublish: [{ script: 'release:sync', continueOnError: true }] } } } }\n`)
+
+    const { resolveCommandConfig } = await import('@/core/config')
+    expect(await resolveCommandConfig('release', root)).toEqual({
+      hooks: {
+        verify: ['release:verify'],
+        afterPublish: [{ script: 'release:sync', continueOnError: true }],
+      },
+    })
+
+    await fs.remove(root)
+  })
+
   it.skipIf(isCI)('overrides create command defaults', async () => {
     await vi.resetModules()
     const root = await fs.mkdtemp(path.join(tmpdir(), 'monorepo-config-create-'))

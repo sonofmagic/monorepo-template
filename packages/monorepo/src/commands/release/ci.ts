@@ -5,8 +5,9 @@ import { logger } from '../../core/logger'
 import { buildReleaseNoteDocument, readPendingIntentCommits, readWorkspaceVersions, renderGitHubRelease, renderReleasePullRequest } from './body'
 import { ReleaseCommandError } from './errors'
 import { GitHubClient } from './github'
+import { runAfterPublishHooks } from './hooks'
 import { releasePrerelease } from './prerelease'
-import { capture, getReleaseEnv, hasPendingIntents, readPublishSummary, resolveBranch, run } from './shared'
+import { capture, clearPublishSummary, getReleaseEnv, hasPendingIntents, readPublishSummary, resolveBranch, run } from './shared'
 import { prepareStable, publishStable } from './stable'
 import { prereleaseBranches } from './types'
 
@@ -143,12 +144,16 @@ async function recoverUnpublished(options: ReleaseCiOptions) {
     throw new ReleaseCommandError(`expected ${packageName}@${packageVersion} in the workspace, found ${actualVersion}`)
   }
 
+  await clearPublishSummary(options.cwd)
   run('pnpm', ['publish', '-r', '--filter', packageName, '--report-summary', '--provenance', '--no-git-checks'], options)
   const publishedVersion = capture('npm', ['view', `${packageName}@${packageVersion}`, 'version'], options)
   if (publishedVersion !== packageVersion) {
     throw new ReleaseCommandError(`npm did not report ${packageName}@${packageVersion} after recovery`)
   }
-  await publishMetadata(await readPublishSummary(options.cwd), options)
+  const packages = await readPublishSummary(options.cwd)
+  await publishMetadata(packages, options)
+  runAfterPublishHooks(packages, options)
+  return packages
 }
 
 function resolveMode(options: ReleaseCiOptions): ReleaseMode {
@@ -166,13 +171,13 @@ export async function releaseCi(options: ReleaseCiOptions) {
     return
   }
   if (mode === 'publish') {
-    await publishStable(options)
-    await publishMetadata(await readPublishSummary(options.cwd), options)
-    return
+    const packages = await publishStable(options)
+    await publishMetadata(packages, options)
+    runAfterPublishHooks(packages, options)
+    return packages
   }
   if (mode === 'publish-unpublished') {
-    await recoverUnpublished(options)
-    return
+    return recoverUnpublished(options)
   }
   if (mode !== 'auto') {
     throw new ReleaseCommandError(`unknown release CI mode ${mode}; expected auto, prepare, publish, or publish-unpublished`)
@@ -180,9 +185,10 @@ export async function releaseCi(options: ReleaseCiOptions) {
 
   const branch = resolveBranch(options)
   if (prereleaseBranches.has(branch)) {
-    await releasePrerelease(options)
-    await publishMetadata(await readPublishSummary(options.cwd), options, true)
-    return
+    const packages = await releasePrerelease(options) ?? []
+    await publishMetadata(packages, options, true)
+    runAfterPublishHooks(packages, options)
+    return packages
   }
   if (branch !== 'main') {
     throw new ReleaseCommandError(`repo release ci only supports main, alpha, beta, rc, or next branches, got ${branch}`)
@@ -191,8 +197,10 @@ export async function releaseCi(options: ReleaseCiOptions) {
     await createReleasePullRequest(options)
     return
   }
-  await publishStable(options)
-  await publishMetadata(await readPublishSummary(options.cwd), options)
+  const packages = await publishStable(options)
+  await publishMetadata(packages, options)
+  runAfterPublishHooks(packages, options)
+  return packages
 }
 
 export { createReleasePullRequest, recoverUnpublished }
