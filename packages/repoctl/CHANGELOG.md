@@ -1,5 +1,16 @@
 # repoctl
 
+## 5.4.0
+
+### Minor Changes
+
+- 完善发布后钩子的实际发布判断与容错配置，并修复打包后 doctor 的 Vitest 依赖解析。
+
+### Patch Changes
+
+- Updated dependencies:
+  - @icebreakers/monorepo@5.4.0
+
 ## 5.3.0
 
 ### Patch Changes
