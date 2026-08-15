@@ -412,6 +412,38 @@ export interface HuskyToolingConfig {
   commitMsgCommand?: string
 }
 
+export interface ReleaseCommandConfig {
+  /**
+   * version 与 publish 阶段执行的根 package.json 校验脚本。
+   * 配置后完整替换内置的 build、lint、test。
+   * @default ['build', 'lint', 'test']
+   */
+  qualityScripts?: string[]
+  hooks?: {
+    /**
+     * pnpm version 前执行的根 package.json 脚本。
+     * @default []
+     */
+    beforeVersion?: string[]
+    /**
+     * pnpm version 后执行的根 package.json 脚本。
+     * @default []
+     */
+    afterVersion?: string[]
+    /**
+     * pnpm publish 前执行的根 package.json 脚本。
+     * @default []
+     */
+    beforePublish?: string[]
+    /**
+     * npm metadata 与 GitHub Release 处理完成后执行的根 package.json 脚本。
+     * 即使没有 npm 包发布也会执行。
+     * @default []
+     */
+    afterPublish?: string[]
+  }
+}
+
 /**
  * `repoctl.config.ts` 中 `tooling` 总配置。
  *
@@ -444,6 +476,7 @@ export interface MonorepoConfig {
     upgrade?: UpgradeCommandConfig
     init?: InitCommandConfig
     mirror?: MirrorCommandConfig
+    release?: ReleaseCommandConfig
   }
   /**
    * 按工程化能力分类的可选配置。

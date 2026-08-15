@@ -1,5 +1,41 @@
 import { describe, expect, it } from 'vitest'
-import { removeSourceRepoReleaseToolingBuildStepContent } from './prepare'
+import YAML from 'yaml'
+import { removeSourceRepoReleaseToolingBuildStepContent, sanitizePublishedWorkspaceContent } from './prepare'
+
+describe('sanitizePublishedWorkspaceContent', () => {
+  it('removes source repository package identities and preserves generic versioning settings', () => {
+    const content = [
+      'packages:',
+      '  - packages/*',
+      'versioning:',
+      '  fixed:',
+      '    - [repoctl, "@icebreakers/monorepo"]',
+      '  ignore:',
+      '    - private-package',
+      '  lanes:',
+      '    repoctl: next',
+      '  changelog:',
+      '    storage: repository',
+      '  updateInternalDependencies: patch',
+    ].join('\n')
+
+    const workspace = YAML.parse(sanitizePublishedWorkspaceContent(content))
+
+    expect(workspace).toEqual({
+      packages: ['packages/*'],
+      versioning: {
+        changelog: { storage: 'repository' },
+        updateInternalDependencies: 'patch',
+      },
+    })
+  })
+
+  it('leaves workspace files without versioning configuration unchanged', () => {
+    const content = 'packages:\n  - packages/*\n'
+
+    expect(sanitizePublishedWorkspaceContent(content)).toBe(content)
+  })
+})
 
 describe('removeSourceRepoReleaseToolingBuildStepContent', () => {
   it('removes source-only release tooling build step from CRLF workflows', () => {

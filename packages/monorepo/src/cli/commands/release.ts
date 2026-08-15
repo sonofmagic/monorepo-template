@@ -1,5 +1,7 @@
 import type { Command } from '@icebreakers/monorepo-templates'
+import type { ReleaseOptions } from '../../commands/release/types'
 import process from 'node:process'
+import { resolveCommandConfig } from '../../core/config'
 import { logger } from '../../core/logger'
 import { localize } from '../../i18n'
 
@@ -10,6 +12,14 @@ async function runReleaseAction(action: () => void | Promise<void>) {
   catch (error) {
     logger.error(error instanceof Error ? error.message : String(error))
     process.exitCode = 1
+  }
+}
+
+async function resolveReleaseOptions(cwd: string): Promise<ReleaseOptions> {
+  const config = await resolveCommandConfig('release', cwd)
+  return {
+    cwd,
+    ...(config ? { config } : {}),
   }
 }
 
@@ -24,8 +34,9 @@ export function registerReleaseCommands(program: Command, cwd: string) {
     .action(async (opts: { mode?: 'auto' | 'prepare' | 'publish' | 'publish-unpublished', package?: string, version?: string }) => {
       await runReleaseAction(async () => {
         const { releaseCi } = await import('@/commands')
+        const releaseOptions = await resolveReleaseOptions(cwd)
         await releaseCi({
-          cwd,
+          ...releaseOptions,
           ...(opts.mode ? { mode: opts.mode } : {}),
           ...(opts.package ? { packageName: opts.package } : {}),
           ...(opts.version ? { packageVersion: opts.version } : {}),
@@ -60,8 +71,8 @@ export function registerReleaseCommands(program: Command, cwd: string) {
     .description(localize('Run a stable release from main', '在 main 分支执行正式发布'))
     .action(async () => {
       await runReleaseAction(async () => {
-        const { releaseStable } = await import('@/commands')
-        await releaseStable({ cwd })
+        const { releaseCi } = await import('@/commands')
+        await releaseCi({ ...await resolveReleaseOptions(cwd), mode: 'publish' })
         logger.success(localize('Stable release finished.', '稳定版发布完成。'))
       })
     })
@@ -70,8 +81,8 @@ export function registerReleaseCommands(program: Command, cwd: string) {
     .description(localize('Consume pnpm change intents and prepare a Release PR', '消费 pnpm change intents 并准备 Release PR'))
     .action(async () => {
       await runReleaseAction(async () => {
-        const { prepareStable } = await import('@/commands')
-        await prepareStable({ cwd })
+        const { releaseCi } = await import('@/commands')
+        await releaseCi({ ...await resolveReleaseOptions(cwd), mode: 'prepare' })
         logger.success(localize('Stable release preparation finished.', '稳定版发布准备完成。'))
       })
     })
@@ -80,8 +91,8 @@ export function registerReleaseCommands(program: Command, cwd: string) {
     .description(localize('Publish versions on main that are not yet on npm', '发布 main 分支上尚未发布的包'))
     .action(async () => {
       await runReleaseAction(async () => {
-        const { publishStable } = await import('@/commands')
-        await publishStable({ cwd })
+        const { releaseCi } = await import('@/commands')
+        await releaseCi({ ...await resolveReleaseOptions(cwd), mode: 'publish' })
         logger.success(localize('Stable package publish finished.', '稳定版包发布完成。'))
       })
     })
@@ -93,8 +104,8 @@ export function registerReleaseCommands(program: Command, cwd: string) {
     .description(localize('Publish a prerelease from an alpha, beta, rc, or next lane', '在 alpha/beta/rc/next 分支发布 prerelease'))
     .action(async () => {
       await runReleaseAction(async () => {
-        const { releasePrerelease } = await import('@/commands')
-        await releasePrerelease({ cwd })
+        const { releaseCi } = await import('@/commands')
+        await releaseCi(await resolveReleaseOptions(cwd))
         logger.success(localize('Prerelease finished.', '预发布完成。'))
       })
     })

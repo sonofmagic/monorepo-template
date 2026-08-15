@@ -47,6 +47,7 @@
   "scripts": {
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
+    "test": "vitest run",
     "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
     "tsd": "pnpm build && tsd --files test-d/**/*.test-d.ts",
     "sync:assets": "pnpm run build && node dist/cli.mjs",
@@ -58,7 +59,8 @@
     "@inquirer/input": "^5.1.2",
     "@inquirer/select": "^5.2.1",
     "commander": "^15.0.0",
-    "nanoexec": "^1.1.0"
+    "nanoexec": "^1.1.0",
+    "yaml": "^2.9.0"
   },
   "publishConfig": {
     "access": "public"

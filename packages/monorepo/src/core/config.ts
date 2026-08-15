@@ -136,6 +136,7 @@ export type {
   LintStagedToolingConfig,
   MirrorCommandConfig,
   MonorepoConfig,
+  ReleaseCommandConfig,
   StylelintToolingConfig,
   ToolingConfig,
   UpgradeCommandConfig,

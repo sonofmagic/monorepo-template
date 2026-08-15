@@ -14,6 +14,13 @@ interface PackageJsonLike {
   devDependencies?: Record<string, string | undefined>
 }
 
+function hasValidFixedGroups(fixed: unknown) {
+  return fixed === undefined || (
+    Array.isArray(fixed)
+    && fixed.every(group => Array.isArray(group) && group.length > 0 && group.every(name => typeof name === 'string' && name.trim().length > 0))
+  )
+}
+
 function check(id: string, title: string, status: DoctorCheck['status'], detail: string, fix?: string): DoctorCheck {
   return { id, title, status, detail, ...(fix ? { fix } : {}) }
 }
@@ -103,12 +110,12 @@ export async function collectReleaseChecks(workspaceDir: string, pkgJson: Packag
 
     try {
       const workspace = YAML.parse(await readFile(path.join(workspaceDir, 'pnpm-workspace.yaml'), 'utf8')) as { versioning?: { fixed?: unknown, changelog?: { storage?: string } } }
-      const hasFixed = Array.isArray(workspace.versioning?.fixed) && workspace.versioning!.fixed.length > 0
+      const hasValidFixed = hasValidFixedGroups(workspace.versioning?.fixed)
       const hasRepositoryChangelog = workspace.versioning?.changelog?.storage === 'repository'
       checks.push(
-        hasFixed && hasRepositoryChangelog
-          ? check('release-versioning-config', 'release versioning config', 'pass', localize('pnpm fixed groups and repository changelog storage are configured.', 'pnpm fixed group 与 repository changelog 配置完整。'))
-          : check('release-versioning-config', 'release versioning config', 'warn', localize('pnpm-workspace.yaml is missing required fixed groups or repository changelog storage.', 'pnpm-workspace.yaml 缺少 release 所需的 fixed 或 repository changelog 配置。'), localize('Run repo upgrade --yes to synchronize pnpm versioning configuration.', '运行 repo upgrade --yes 同步 pnpm versioning 配置。')),
+        hasValidFixed && hasRepositoryChangelog
+          ? check('release-versioning-config', 'release versioning config', 'pass', localize('pnpm fixed groups are valid and repository changelog storage is configured.', 'pnpm fixed group 配置合法，且已配置 repository changelog。'))
+          : check('release-versioning-config', 'release versioning config', 'warn', localize('pnpm-workspace.yaml has invalid fixed groups or is missing repository changelog storage.', 'pnpm-workspace.yaml 的 fixed group 配置不合法，或缺少 repository changelog 配置。'), localize('Run repo upgrade --yes to synchronize pnpm versioning configuration.', '运行 repo upgrade --yes 同步 pnpm versioning 配置。')),
       )
     }
     catch {

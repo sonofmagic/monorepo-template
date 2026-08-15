@@ -187,6 +187,24 @@ describe('release pull request body', () => {
     await expect(buildGitHubReleaseBody(cwd, 'missing', '1.0.0')).resolves.toBe('No significant changes.')
   })
 
+  it('renders Chinese release categories and labels', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-zh-'))
+    tempRoots.push(cwd)
+    const packageDir = path.join(cwd, 'packages', 'demo')
+    await mkdir(packageDir, { recursive: true })
+    await writeFile(path.join(cwd, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n', 'utf8')
+    await writeFile(path.join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/demo', version: '1.0.0' }), 'utf8')
+    await writeFile(path.join(packageDir, 'CHANGELOG.md'), '# @acme/demo\n\n## 1.0.0\n\n### Patch Changes\n\n- 修复发布错误。\n', 'utf8')
+
+    const body = await buildReleasePullRequestBody(cwd, undefined, { locale: 'zh-CN' })
+    const release = await buildGitHubReleaseBody(cwd, '@acme/demo', '1.0.0', { locale: 'zh-CN' })
+
+    expect(body).toContain('# 发布说明')
+    expect(body).toContain('## 🐞 问题修复')
+    expect(body).toContain('## 包')
+    expect(release).toContain('### 🐞 问题修复')
+  })
+
   it('merges package ownership when one commit adds multiple intents', () => {
     expect(uniqueCommits([
       { sha: 'abc123', subject: 'feat: release', packages: ['first'], summary: 'First change.' },

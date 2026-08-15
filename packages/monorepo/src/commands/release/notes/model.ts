@@ -1,3 +1,4 @@
+import type { RepoctlLocale } from '../../../i18n'
 import YAML from 'yaml'
 
 export type ReleaseCategory = 'breaking' | 'features' | 'fixes' | 'performance' | 'docs' | 'maintenance' | 'other'
@@ -17,6 +18,7 @@ export interface ReleaseBodyMetadata {
   repository?: string
   serverUrl?: string
   contributors?: string[]
+  locale?: RepoctlLocale
 }
 
 export interface ReleaseNoteEntry {
@@ -72,6 +74,16 @@ export const categoryTitles: Record<ReleaseCategory, string> = {
   docs: '📚 Documentation',
   maintenance: '🧰 Maintenance',
   other: '🧩 Other Changes',
+}
+
+export const zhCNCategoryTitles: Record<ReleaseCategory, string> = {
+  breaking: '🚨 破坏性变更',
+  features: '🚀 新功能',
+  fixes: '🐞 问题修复',
+  performance: '🏎 性能优化',
+  docs: '📚 文档',
+  maintenance: '🧰 维护',
+  other: '🧩 其他变更',
 }
 
 export function readVersionSection(changelog: string, version: string) {

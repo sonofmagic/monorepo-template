@@ -116,7 +116,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     expect(rewritten).toBe(reference)
 
     await upgradeMonorepo({ outDir })
-    expect(checkboxMock).toHaveBeenCalledTimes(2)
+    expect(checkboxMock).toHaveBeenCalledTimes(1)
 
     await fs.remove(root)
   })

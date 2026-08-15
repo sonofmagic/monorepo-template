@@ -6,6 +6,19 @@ import { expectAssignable, expectType } from 'tsd'
 expectType<void>(clearWorkspaceCache())
 expectType<Promise<WorkspacePackageSummaryData>>(getWorkspacePackageSummaries('.'))
 expectType<MonorepoConfig>(defineMonorepoConfig({}))
+expectType<MonorepoConfig>(defineMonorepoConfig({
+  commands: {
+    release: {
+      qualityScripts: ['release:lint'],
+      hooks: {
+        beforeVersion: ['catalog:sync'],
+        afterVersion: ['versions:check'],
+        beforePublish: ['versions:check'],
+        afterPublish: ['marketplace:publish'],
+      },
+    },
+  },
+}))
 expectType<Promise<MonorepoVitestConfigResult>>(defineVitestConfig())
 expectType<Promise<MonorepoVitestProjectConfigResult>>(defineVitestProjectConfig())
 expectAssignable<Promise<object>>(defineEslintConfig({ options: { ignores: ['dist/**'] }, configs: [{ rules: { 'no-console': 'off' } }] }))

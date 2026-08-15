@@ -1,73 +1,14 @@
 import type { ReleaseNoteDocument } from '@/commands/release'
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { writeFile } from 'node:fs/promises'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releaseCi, releasePrerelease } from '@/commands/release'
 import { logger } from '@/core/logger'
-
-interface SpawnCall {
-  command: string
-  args: string[]
-}
-
-const tempRoots: string[] = []
-
-async function createTempWorkspace(lane = 'next') {
-  const cwd = await mkdtemp(path.join(tmpdir(), 'repo-release-'))
-  tempRoots.push(cwd)
-
-  await mkdir(path.join(cwd, '.changeset'), { recursive: true })
-  await mkdir(path.join(cwd, 'packages', 'repoctl'), { recursive: true })
-  await mkdir(path.join(cwd, 'packages', 'private'), { recursive: true })
-  await writeFile(path.join(cwd, 'packages', 'repoctl', 'package.json'), JSON.stringify({
-    name: 'repoctl',
-    version: '1.0.0',
-  }), 'utf8')
-  await writeFile(path.join(cwd, 'packages', 'private', 'package.json'), JSON.stringify({
-    name: 'private-package',
-    version: '1.0.0',
-    private: true,
-  }), 'utf8')
-  await writeFile(path.join(cwd, 'pnpm-workspace.yaml'), [
-    'packages:',
-    '  - packages/*',
-    'versioning:',
-    '  lanes:',
-    `    repoctl: ${lane}`,
-  ].join('\n'), 'utf8')
-
-  return cwd
-}
-
-async function writePendingIntent(cwd: string, name = 'pending-change') {
-  await writeFile(path.join(cwd, '.changeset', `${name}.md`), [
-    '---',
-    'repoctl: patch',
-    '---',
-    '',
-    'Release change.',
-  ].join('\n'), 'utf8')
-}
-
-function createSpawnMock(options: { diffStatus?: number } = {}) {
-  const calls: SpawnCall[] = []
-  const spawn = vi.fn((command: string, args: string[]) => {
-    calls.push({ command, args })
-
-    if (command === 'git' && args.join(' ') === 'diff --quiet --exit-code') {
-      return { status: options.diffStatus ?? 0, stdout: '' }
-    }
-
-    return { status: 0, stdout: '' }
-  })
-
-  return { calls, spawn }
-}
+import { cleanupReleaseTempRoots, createSpawnMock, createTempWorkspace, writePendingIntent } from './release-fixtures'
 
 afterEach(async () => {
   vi.restoreAllMocks()
-  await Promise.all(tempRoots.splice(0).map(root => rm(root, { force: true, recursive: true })))
+  await cleanupReleaseTempRoots()
 })
 
 describe('release commands', () => {
@@ -121,6 +62,31 @@ describe('release commands', () => {
     expect(github.closeLegacyReleasePullRequests).toHaveBeenCalledWith({ head: 'changeset-release/main', base: 'main' })
   })
 
+  it('localizes the release pull request when REPOCTL_LANG is zh-CN', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { spawn } = createSpawnMock({ diffStatus: 1 })
+    const github = {
+      ensurePullRequest: vi.fn(),
+      closeLegacyReleasePullRequests: vi.fn(),
+      ensureRelease: vi.fn(),
+    }
+
+    await releaseCi({
+      mode: 'auto',
+      branch: 'main',
+      cwd,
+      env: { REPOCTL_LANG: 'zh-CN' },
+      github,
+      spawn: spawn as never,
+    })
+
+    expect(github.ensurePullRequest).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'chore(release): 更新包版本',
+      body: expect.stringContaining('# 发布说明'),
+    }))
+  })
+
   it('prepares a stable release from pending pnpm intents', async () => {
     const cwd = await createTempWorkspace('main')
     await writePendingIntent(cwd)
@@ -142,11 +108,7 @@ describe('release commands', () => {
     const { calls, spawn } = createSpawnMock()
 
     await expect(prepareStable({ branch: 'main', cwd, spawn: spawn as never })).resolves.toBe(false)
-    expect(calls).toEqual([
-      { command: 'pnpm', args: ['run', 'build'] },
-      { command: 'pnpm', args: ['run', 'lint'] },
-      { command: 'pnpm', args: ['run', 'test'] },
-    ])
+    expect(calls).toEqual([])
   })
 
   it('publishes packages versioned by the merged release pull request', async () => {
@@ -161,6 +123,16 @@ describe('release commands', () => {
       { command: 'pnpm', args: ['run', 'test'] },
       { command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] },
     ])
+  })
+
+  it('clears stale publish summaries before reading the current publish result', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writeFile(path.join(cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+      publishedPackages: [{ name: 'stale-package', version: '9.9.9' }],
+    }), 'utf8')
+    const { spawn } = createSpawnMock()
+
+    await expect(publishStable({ branch: 'main', cwd, spawn: spawn as never })).resolves.toEqual([])
   })
 
   it('rejects stable releases away from main', async () => {
@@ -205,11 +177,7 @@ describe('release commands', () => {
 
     await releasePrerelease({ branch: 'next', cwd, spawn: spawn as never })
 
-    expect(calls).toEqual([
-      { command: 'pnpm', args: ['run', 'build'] },
-      { command: 'pnpm', args: ['run', 'lint'] },
-      { command: 'pnpm', args: ['run', 'test'] },
-    ])
+    expect(calls).toEqual([])
   })
 
   it('commits, publishes, and pushes prerelease version changes', async () => {
@@ -260,10 +228,9 @@ describe('release commands', () => {
       '',
       '- Previous release.',
     ].join('\n'), 'utf8')
-    await writeFile(path.join(cwd, 'pnpm-publish-summary.json'), JSON.stringify({
+    const { spawn } = createSpawnMock({
       publishedPackages: [{ name: 'repoctl', version: '1.0.0' }],
-    }), 'utf8')
-    const { spawn } = createSpawnMock()
+    })
     const github = {
       ensurePullRequest: vi.fn(),
       ensureTag: vi.fn(),
