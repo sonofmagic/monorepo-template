@@ -1,5 +1,13 @@
 # @icebreakers/monorepo
 
+## 5.1.1
+
+### Patch Changes
+
+- 在 Release CI 结束时汇总输出成功发布的包名与版本，便于直接确认本次发布结果。
+
+- 规范化历史 Changesets changelog 的 Release Note，修复依赖条目、提交/Issue 链接和自动化贡献者的错误归类，并提供可幂等重建 GitHub Release 正文的命令。
+
 ## 5.1.0
 
 ### Minor Changes
