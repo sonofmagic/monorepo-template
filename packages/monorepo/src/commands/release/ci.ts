@@ -1,6 +1,7 @@
 import type { GitHubOperations } from './github'
 import type { PublishedPackage, ReleaseCiOptions, ReleaseMode, ReleaseOptions } from './types'
 import { spawnSync } from 'node:child_process'
+import { logger } from '../../core/logger'
 import { buildReleaseNoteDocument, readPendingIntentCommits, readWorkspaceVersions, renderGitHubRelease, renderReleasePullRequest } from './body'
 import { ReleaseCommandError } from './errors'
 import { GitHubClient } from './github'
@@ -37,8 +38,18 @@ function resolveTarget(options: ReleaseOptions) {
   return getReleaseEnv(options)['GITHUB_SHA']?.trim() || capture('git', ['rev-parse', 'HEAD'], options)
 }
 
+function formatPublishedPackageSummary(packages: PublishedPackage[]) {
+  return [
+    'Published packages:',
+    ...(packages.length
+      ? packages.map(pkg => `  - ${pkg.name}@${pkg.version}`)
+      : ['  (none)']),
+  ].join('\n')
+}
+
 async function publishMetadata(packages: PublishedPackage[], options: ReleaseCiOptions, prerelease = false) {
   if (!packages.length) {
+    logger.success(formatPublishedPackageSummary(packages))
     return
   }
   const github = resolveGitHub(options)
@@ -76,6 +87,7 @@ async function publishMetadata(packages: PublishedPackage[], options: ReleaseCiO
     run('git', ['push', 'origin', `refs/tags/${tag}`], options)
     await github.ensureRelease({ tag, target, prerelease, name: tag, body })
   }
+  logger.success(formatPublishedPackageSummary(packages))
 }
 
 async function createReleasePullRequest(options: ReleaseCiOptions) {

@@ -29,7 +29,6 @@ export function registerReleaseCommands(program: Command, cwd: string) {
           ...(opts.package ? { packageName: opts.package } : {}),
           ...(opts.version ? { packageVersion: opts.version } : {}),
         })
-        logger.success('release CI finished!')
       })
     })
 

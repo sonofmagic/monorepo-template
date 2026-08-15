@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enterPrerelease, exitPrerelease, parsePublishSummary, prepareStable, publishStable, releaseCi, releasePrerelease } from '@/commands/release'
+import { logger } from '@/core/logger'
 
 interface SpawnCall {
   command: string
@@ -65,6 +66,7 @@ function createSpawnMock(options: { diffStatus?: number } = {}) {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks()
   await Promise.all(tempRoots.splice(0).map(root => rm(root, { force: true, recursive: true })))
 })
 
@@ -267,6 +269,7 @@ describe('release commands', () => {
       ensureTag: vi.fn(),
       ensureRelease: vi.fn(),
     }
+    const success = vi.spyOn(logger, 'success').mockImplementation(() => undefined)
 
     await releaseCi({
       mode: 'publish',
@@ -282,6 +285,7 @@ describe('release commands', () => {
       name: 'repoctl@1.0.0',
       body: expect.stringContaining('### 🐞 Bug Fixes'),
     }))
+    expect(success).toHaveBeenCalledWith('Published packages:\n  - repoctl@1.0.0')
   })
 
   it('parses pnpm publish summaries for release metadata', () => {
