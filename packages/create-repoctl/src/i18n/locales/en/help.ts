@@ -1,0 +1,17 @@
+export const help = {
+  argumentsTitle: 'Arguments:',
+  choicesLabel: 'choices:',
+  commandsTitle: 'Commands:',
+  defaultLabel: 'default:',
+  description: 'Create a repoctl-managed pnpm and Turborepo workspace',
+  envLabel: 'env:',
+  targetArgument: 'Target directory',
+  templatesOption: 'Comma-separated template keys or indexes to include',
+  forceOption: 'Remove an existing target directory before creating the workspace',
+  globalOptionsTitle: 'Global Options:',
+  helpOption: 'Display help for command',
+  languageOption: 'Output language: en or zh-CN',
+  optionsTitle: 'Options:',
+  presetLabel: 'preset:',
+  usageTitle: 'Usage:',
+} as const

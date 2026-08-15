@@ -3,6 +3,7 @@ import { readdir } from 'node:fs/promises'
 import { getTemplateChoices, shouldSkipTemplatePath } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import { templatesDir as defaultTemplatesDir } from '../constants'
+import { localize } from '../i18n'
 import fs from '../utils/fs'
 
 export type TemplateHealthStatus = 'pass' | 'warn' | 'fail'
@@ -92,15 +93,15 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
     ? {
         id: 'unique-source',
         status: 'fail',
-        title: '模板 source 唯一性',
-        detail: `存在重复 source：${sourceDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`,
-        fix: '调整 template-data.mjs，确保每个模板 key 指向独立 source。',
+        title: localize('Template source uniqueness', '模板 source 唯一性'),
+        detail: localize(`Duplicate sources: ${sourceDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`, `存在重复 source：${sourceDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`),
+        fix: localize('Update template-data.mjs so every template has a unique source.', '调整 template-data.mjs，确保每个模板 key 指向独立 source。'),
       }
     : {
         id: 'unique-source',
         status: 'pass',
-        title: '模板 source 唯一性',
-        detail: '所有模板 source 都是唯一的。',
+        title: localize('Template source uniqueness', '模板 source 唯一性'),
+        detail: localize('Every template source is unique.', '所有模板 source 都是唯一的。'),
       })
 
   const targetDuplicates = checkDuplicates(choices, 'target')
@@ -108,15 +109,15 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
     ? {
         id: 'unique-target',
         status: 'fail',
-        title: '模板 target 唯一性',
-        detail: `存在重复 target：${targetDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`,
-        fix: '调整 template-data.mjs，避免多个模板默认写入同一目标目录。',
+        title: localize('Template target uniqueness', '模板 target 唯一性'),
+        detail: localize(`Duplicate targets: ${targetDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`, `存在重复 target：${targetDuplicates.map(([value, first, second]) => `${value} (${first}, ${second})`).join(', ')}`),
+        fix: localize('Update template-data.mjs so every template has a unique target.', '调整 template-data.mjs，避免多个模板默认写入同一目标目录。'),
       }
     : {
         id: 'unique-target',
         status: 'pass',
-        title: '模板 target 唯一性',
-        detail: '所有模板 target 都是唯一的。',
+        title: localize('Template target uniqueness', '模板 target 唯一性'),
+        detail: localize('Every template target is unique.', '所有模板 target 都是唯一的。'),
       })
 
   for (const choice of choices) {
@@ -129,16 +130,16 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
           id: 'source-dir',
           template: choice.key,
           status: 'pass',
-          title: '模板目录',
-          detail: `${choice.key} source exists: ${path.relative(templatesDir, sourceDir)}`,
+          title: localize('Template directory', '模板目录'),
+          detail: localize(`${choice.key} source exists: ${path.relative(templatesDir, sourceDir)}`, `${choice.key} 源目录存在：${path.relative(templatesDir, sourceDir)}`),
         }
       : {
           id: 'source-dir',
           template: choice.key,
           status: 'fail',
-          title: '模板目录',
-          detail: `${choice.key} 缺少 source 目录：${sourceDir}`,
-          fix: '补齐模板目录，或修正 template-data.mjs 中的 source。',
+          title: localize('Template directory', '模板目录'),
+          detail: localize(`${choice.key} is missing source directory: ${sourceDir}`, `${choice.key} 缺少 source 目录：${sourceDir}`),
+          fix: localize('Add the directory or correct template-data.mjs.', '补齐模板目录，或修正 template-data.mjs 中的 source。'),
         })
 
     checks.push(await fs.pathExists(packageJsonPath)
@@ -146,16 +147,16 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
           id: 'package-json',
           template: choice.key,
           status: 'pass',
-          title: '模板 package.json',
-          detail: `${choice.key} 包含 package.json。`,
+          title: localize('Template package.json', '模板 package.json'),
+          detail: localize(`${choice.key} contains package.json.`, `${choice.key} 包含 package.json。`),
         }
       : {
           id: 'package-json',
           template: choice.key,
           status: 'fail',
-          title: '模板 package.json',
-          detail: `${choice.key} 缺少 package.json。`,
-          fix: '模板根目录应包含 package.json，脚手架会基于它重写 name/version/repository。',
+          title: localize('Template package.json', '模板 package.json'),
+          detail: localize(`${choice.key} is missing package.json.`, `${choice.key} 缺少 package.json。`),
+          fix: localize('Template roots need package.json so scaffolding can rewrite metadata.', '模板根目录应包含 package.json，脚手架会基于它重写 name/version/repository。'),
         })
 
     checks.push(choice.category && choice.description
@@ -163,16 +164,16 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
           id: 'metadata',
           template: choice.key,
           status: 'pass',
-          title: '模板元数据',
-          detail: `${choice.key} 已声明 category 和 description。`,
+          title: localize('Template metadata', '模板元数据'),
+          detail: localize(`${choice.key} declares category and description.`, `${choice.key} 已声明 category 和 description。`),
         }
       : {
           id: 'metadata',
           template: choice.key,
           status: 'warn',
-          title: '模板元数据',
-          detail: `${choice.key} 缺少 category 或 description。`,
-          fix: '补充 template-data.mjs 中的 category 和 description，方便 CLI 和文档展示。',
+          title: localize('Template metadata', '模板元数据'),
+          detail: localize(`${choice.key} is missing category or description.`, `${choice.key} 缺少 category 或 description。`),
+          fix: localize('Add category and description in template-data.mjs.', '补充 template-data.mjs 中的 category 和 description，方便 CLI 和文档展示。'),
         })
 
     if (!sourceExists) {
@@ -188,16 +189,16 @@ export async function checkTemplates(options: CheckTemplatesOptions = {}): Promi
           id: 'filtered-files',
           template: choice.key,
           status: 'fail',
-          title: '模板临时文件',
-          detail: `${choice.key} 包含会被脚手架过滤的文件：${skippedFiles.join(', ')}`,
-          fix: '删除模板源目录里的临时、缓存或生成文件。',
+          title: localize('Temporary template files', '模板临时文件'),
+          detail: localize(`${choice.key} contains filtered files: ${skippedFiles.join(', ')}`, `${choice.key} 包含会被脚手架过滤的文件：${skippedFiles.join(', ')}`),
+          fix: localize('Remove temporary, cache, or generated files from the template source.', '删除模板源目录里的临时、缓存或生成文件。'),
         }
       : {
           id: 'filtered-files',
           template: choice.key,
           status: 'pass',
-          title: '模板临时文件',
-          detail: `${choice.key} 没有检测到会被过滤的临时文件。`,
+          title: localize('Temporary template files', '模板临时文件'),
+          detail: localize(`${choice.key} contains no filtered temporary files.`, `${choice.key} 没有检测到会被过滤的临时文件。`),
         })
   }
 

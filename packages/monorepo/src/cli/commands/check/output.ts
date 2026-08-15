@@ -1,5 +1,6 @@
 import type { RecommendedCheckPlan } from '../../../commands/check'
 import os from 'node:os'
+import { localize } from '../../../i18n'
 
 interface CheckOutputOptions {
   json?: boolean
@@ -9,8 +10,8 @@ interface CheckOutputOptions {
 
 function formatCheckPlan(plan: RecommendedCheckPlan) {
   const lines = [
-    `cwd: ${plan.cwd}`,
-    `mode: ${plan.mode}`,
+    localize(`cwd: ${plan.cwd}`, `当前目录：${plan.cwd}`),
+    localize(`mode: ${plan.mode}`, `模式：${plan.mode}`),
     '',
   ]
 
@@ -30,7 +31,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
     .join('<br>')
 
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
   ].join('\n')
@@ -38,7 +39,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
 
 function formatCheckPlanMarkdown(plan: RecommendedCheckPlan) {
   return [
-    '# Repo check plan',
+    localize('# Repo check plan', '# Repo 检查计划'),
     '',
     formatMarkdownTable([
       ['cwd', plan.cwd],
@@ -46,7 +47,7 @@ function formatCheckPlanMarkdown(plan: RecommendedCheckPlan) {
       ['commands', plan.commands.length],
     ]),
     '',
-    '## Commands',
+    localize('## Commands', '## 命令'),
     '',
     ...plan.commands.map(command => `- \`${command.command}\` - ${command.description}`),
   ].join('\n')

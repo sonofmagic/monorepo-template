@@ -2,16 +2,17 @@
 
 ## Project Structure & Module Organization
 
-This pnpm + Turbo monorepo keeps template sources under `templates/` (`cli`, `client`, `server`, `vitepress`, `tsdown`, `vue-lib`) and reusable tooling under `packages/` (e.g., `monorepo`, `create-icebreaker`). Shared TypeScript and build settings live in root configs such as `turbo.json`, `tsconfig.json`, and `eslint.config.js`. Tests sit alongside their targets in `test/*.test.ts`, and each app owns its public assets (`public/`, `worker/`) to keep deployments self-contained.
+This repository is the source workspace for repoctl, a task-first CLI for pnpm and Turborepo monorepos. Product packages live under `packages/`: `repoctl` is the recommended entrypoint, `monorepo` contains the core engine, `monorepo-templates` distributes managed assets, and the create packages provide primary and compatibility bootstrap commands. Private template source workspaces live under `templates/`; they are product assets, not independently published packages. Shared TypeScript and build settings live in root configs such as `turbo.json`, `tsconfig.json`, and `eslint.config.js`.
 
 ## Build, Test, and Development Commands
 
-- `pnpm install` — set up workspaces; ensure Node 20+ as defined in `package.json`.
+- `pnpm install` — set up workspaces; ensure Node 22.12+ as defined in `package.json`.
 - `pnpm dev` — run `turbo run dev --parallel` for all apps that expose a `dev` script.
 - `pnpm build` — execute `turbo run build` to build every workspace with caching.
 - `pnpm test` / `pnpm test:dev` — run Vitest suites once or in watch mode across packages.
 - `pnpm lint` — invoke `turbo run lint` to apply ESLint/Stylelint policies repo-wide.
-- `pnpm script:sync` & `pnpm script:clean` — use the monorepo helper to align dependency versions or clear generated artifacts.
+- `pnpm repo:doctor` — diagnose the source workspace with the same repoctl entrypoint delivered to users.
+- `pnpm --filter @icebreakers/monorepo-templates sync:assets` — refresh the managed assets and template copies from repository sources.
 
 ## Coding Style & Naming Conventions
 

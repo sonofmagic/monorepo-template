@@ -2,18 +2,24 @@
   "name": "@icebreakers/website",
   "type": "module",
   "version": "0.0.1",
-  "description": "https://repo.icebreaker.top source code",
+  "private": true,
+  "description": "Documentation website for repoctl",
   "author": "ice breaker <hi@sonofmagic.top>",
   "homepage": "https://repo.icebreaker.top",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "url": "git+https://github.com/sonofmagic/repoctl.git",
     "directory": "templates/vitepress"
   },
   "bugs": {
-    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+    "url": "https://github.com/sonofmagic/repoctl/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "repoctl",
+    "documentation",
+    "vitepress",
+    "monorepo"
+  ],
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",

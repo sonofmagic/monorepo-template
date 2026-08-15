@@ -10,6 +10,7 @@ import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
+import { localize } from '../../i18n'
 import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { resolveCreateNewProjectPlan } from './plan'
 
@@ -167,7 +168,7 @@ async function updateWorkspaceManifest(workspaceDir: string, targetName: string)
 export async function createNewProject(options?: CreateNewProjectOptions) {
   const plan = await resolveCreateNewProjectPlan(options)
   if (plan.targetExists) {
-    throw new Error(`${pc.red('目标目录已存在')}: ${path.relative(plan.cwd, plan.targetDir)}`)
+    throw new Error(`${pc.red(localize('Target directory already exists', '目标目录已存在'))}: ${path.relative(plan.cwd, plan.targetDir)}`)
   }
 
   await fs.ensureDir(plan.targetDir)
@@ -195,5 +196,5 @@ export async function createNewProject(options?: CreateNewProjectOptions) {
 
   await updateWorkspaceManifest(plan.cwd, plan.targetName)
 
-  logger.success(`${pc.bgGreenBright(pc.white(`[${plan.template}]`))} ${plan.targetName} 项目创建成功！`)
+  logger.success(localize(`${pc.bgGreenBright(pc.white(`[${plan.template}]`))} Created ${plan.targetName}.`, `${pc.bgGreenBright(pc.white(`[${plan.template}]`))} ${plan.targetName} 项目创建成功！`))
 }

@@ -1,6 +1,7 @@
 import type { DoctorReport, DoctorStatus } from '../../../commands/doctor'
 import os from 'node:os'
 import pc from 'picocolors'
+import { localize } from '../../../i18n'
 
 interface DoctorOutputOptions {
   json?: boolean
@@ -25,8 +26,8 @@ function formatDoctorReport(report: DoctorReport, color = false) {
     : (value: DoctorStatus) => value.toUpperCase()
 
   const lines = [
-    `workspace: ${report.workspaceDir}`,
-    `packages: ${report.packageCount}`,
+    localize(`workspace: ${report.workspaceDir}`, `工作区：${report.workspaceDir}`),
+    localize(`packages: ${report.packageCount}`, `包数量：${report.packageCount}`),
     '',
   ]
 
@@ -34,15 +35,15 @@ function formatDoctorReport(report: DoctorReport, color = false) {
     lines.push(`[${status(check.status)}] ${check.title}`)
     lines.push(`  ${check.detail}`)
     if (check.fix) {
-      lines.push(`  fix: ${check.fix}`)
+      lines.push(localize(`  fix: ${check.fix}`, `  修复：${check.fix}`))
     }
   }
 
   lines.push('')
   lines.push(
     color
-      ? `summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`
-      : `summary: ${report.summary.pass} pass, ${report.summary.warn} warn, ${report.summary.fail} fail`,
+      ? localize(`summary: ${pc.green(String(report.summary.pass))} pass, ${pc.yellow(String(report.summary.warn))} warn, ${pc.red(String(report.summary.fail))} fail`, `摘要：${pc.green(String(report.summary.pass))} 通过，${pc.yellow(String(report.summary.warn))} 警告，${pc.red(String(report.summary.fail))} 失败`)
+      : localize(`summary: ${report.summary.pass} pass, ${report.summary.warn} warn, ${report.summary.fail} fail`, `摘要：${report.summary.pass} 通过，${report.summary.warn} 警告，${report.summary.fail} 失败`),
   )
 
   return lines.join('\n')
@@ -56,7 +57,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
     .join('<br>')
 
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
   ].join('\n')
@@ -66,7 +67,7 @@ function formatDoctorMarkdown(report: DoctorReport) {
   const warningsAndFailures = report.checks.filter(check => check.status !== 'pass')
 
   return [
-    '# Repo doctor report',
+    localize('# Repo doctor report', '# Repo doctor 诊断报告'),
     '',
     formatMarkdownTable([
       ['workspace', report.workspaceDir],
@@ -78,13 +79,13 @@ function formatDoctorMarkdown(report: DoctorReport) {
     '',
     ...(warningsAndFailures.length > 0
       ? [
-          '## Findings',
+          localize('## Findings', '## 问题'),
           '',
-          ...warningsAndFailures.map(check => `- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`),
+          ...warningsAndFailures.map(check => localize(`- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`, `- ${check.status}: ${check.title}${check.fix ? `（修复：${check.fix}）` : ''}`)),
           '',
         ]
       : []),
-    '## Checks',
+    localize('## Checks', '## 检查项'),
     '',
     ...report.checks.map(check => `- ${check.status}: ${check.title}`),
   ].join('\n')

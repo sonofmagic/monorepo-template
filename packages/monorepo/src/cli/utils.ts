@@ -1,6 +1,7 @@
 import type { InitToolingTarget } from '../commands/init/tooling/types'
 import type { CleanCommandConfig, CliOpts } from '../types'
 import { initToolingTargets } from '../commands/init/tooling/types'
+import { localize } from '../i18n'
 
 export interface CleanCommandOptions {
   yes?: boolean
@@ -42,7 +43,7 @@ export function normalizeToolingTargets(tooling: string[]) {
 
   const unknown = tooling.filter(item => !initToolingTargets.includes(item as InitToolingTarget))
   if (unknown.length > 0) {
-    throw new Error(`未知的 init tooling 目标: ${unknown.join(', ')}`)
+    throw new Error(localize(`Unknown init tooling target: ${unknown.join(', ')}`, `未知的 init tooling 目标: ${unknown.join(', ')}`))
   }
   return tooling as InitToolingTarget[]
 }

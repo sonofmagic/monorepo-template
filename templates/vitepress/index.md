@@ -3,34 +3,34 @@ layout: home
 
 hero:
   name: repoctl
-  text: 让 pnpm monorepo 的日常操作更短、更稳
-  tagline: 用一套 CLI 管理初始化、诊断、创建模板、提交前校验和模板资产同步。
+  text: Short, stable workflows for pnpm monorepos
+  tagline: Initialize, diagnose, scaffold, verify, and upgrade practical Turborepo workspaces from one CLI.
   image:
     src: /logo.jpg
     alt: repoctl logo
   actions:
     - theme: brand
-      text: 快速开始
+      text: Get Started
       link: /repoctl/getting-started
     - theme: alt
-      text: 命令速查
+      text: Commands
       link: /repoctl/commands
     - theme: alt
-      text: AI 文档入口
+      text: AI Docs
       link: /ai/
 
 features:
-  - title: 从已有仓库开始
-    details: 安装 repoctl 后运行 setup 和 doctor，先把 workspace、根脚本、配置冲突和提交链路检查清楚。
-  - title: 用模板创建包和应用
-    details: repo new 支持交互式创建、指定模板、dry-run、JSON 输出和创建计划落盘。
-  - title: 把质量门禁变成日常命令
-    details: repo check 统一预览和执行 lint、typecheck、build、test、tsd 等推荐校验。
-  - title: 给 AI 工具的文档入口
-    details: 构建时自动生成 llms.txt、llms-full.txt 和页面 Markdown，让 AI 编程工具更容易读取 repoctl 文档。
+  - title: Adopt existing workspaces
+    details: Run setup and doctor to align workspace patterns, root scripts, config files, and commit hooks.
+  - title: Create packages and apps
+    details: Scaffold libraries, apps, services, docs, and CLIs with interactive prompts or explicit template keys.
+  - title: Make checks repeatable
+    details: Preview and run local verification plans that match your lint, typecheck, build, test, and tsd workflow.
+  - title: AI-readable documentation
+    details: Generate llms.txt, llms-full.txt, and Markdown page output so AI coding tools can read the repoctl docs directly.
 ---
 
-## 最短路径
+## Fast Path
 
 ```bash
 pnpm add -D repoctl
@@ -40,7 +40,7 @@ pnpm exec repo new
 pnpm exec repo check
 ```
 
-在由模板生成的仓库里，同一套工作流会暴露成更短的根脚本：
+Generated repositories expose the same workflow as shorter root scripts:
 
 ```bash
 pnpm run repo:init
@@ -49,18 +49,15 @@ pnpm run repo:new
 pnpm run repo:check
 ```
 
-## 你可以继续阅读
+## Keep Reading
 
-- [repoctl 概览](./repoctl/index.md)
-- [快速开始](./repoctl/getting-started.md)
-- [接入已有仓库](./repoctl/adopt-existing.md)
-- [按场景选命令](./repoctl/scenarios.md)
-- [执行模型](./repoctl/execution-model.md)
-- [命令速查](./repoctl/commands.md)
-- [校验链路](./repoctl/checks.md)
-- [doctor 诊断](./repoctl/doctor.md)
-- [配置文件](./repoctl/config.md)
-- [模板与创建](./repoctl/templates.md)
-- [模板资产治理](./repoctl/template-assets.md)
-- [工作流与 CI](./repoctl/workflows.md)
-- [报告与自动化输出](./repoctl/reports.md)
+- [repoctl Overview](./repoctl/index.md)
+- [Getting Started](./repoctl/getting-started.md)
+- [Adopt Existing Repositories](./repoctl/adopt-existing.md)
+- [Choose By Scenario](./repoctl/scenarios.md)
+- [Command Reference](./repoctl/commands.md)
+- [Configuration](./repoctl/config.md)
+- [Templates](./repoctl/templates.md)
+- [Workflows and CI](./repoctl/workflows.md)
+- [AI Docs: llms.txt](./ai/llms-txt.md)
+- [Knowledge Base](./knowledge/index.md)

@@ -1,5 +1,6 @@
 import type { EnvInfo, EnvPaths, EnvSnapshot } from '../../../commands/env'
 import os from 'node:os'
+import { localize } from '../../../i18n'
 
 export interface EnvOutputOptions {
   json?: boolean
@@ -15,7 +16,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
     .join('<br>')
 
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
   ].join('\n')
@@ -35,7 +36,7 @@ function formatEnvInfo(info: EnvInfo) {
 
 function formatEnvInfoMarkdown(info: EnvInfo) {
   return [
-    '# Repo environment',
+    localize('# Repo environment', '# Repo 环境'),
     '',
     formatMarkdownTable([
       ['cwd', info.cwd],
@@ -50,7 +51,7 @@ function formatEnvInfoMarkdown(info: EnvInfo) {
 }
 
 function formatEnvPathEntry(label: string, entry: EnvPaths['paths']['packageJson']) {
-  return `${label}: ${entry.relativePath} (${entry.exists ? 'exists' : 'missing'})`
+  return localize(`${label}: ${entry.relativePath} (${entry.exists ? 'exists' : 'missing'})`, `${label}：${entry.relativePath}（${entry.exists ? '存在' : '缺失'}）`)
 }
 
 function formatEnvPaths(paths: EnvPaths) {
@@ -73,22 +74,22 @@ function formatEnvPaths(paths: EnvPaths) {
 
 function formatEnvPathsMarkdown(paths: EnvPaths) {
   return [
-    '# Repo paths',
+    localize('# Repo paths', '# Repo 路径'),
     '',
     formatMarkdownTable([
       ['cwd', paths.cwd],
       ['workspace', paths.workspaceDir],
     ]),
     '',
-    '## Files',
+    localize('## Files', '## 文件'),
     '',
-    '| Path | Relative path | Status |',
+    localize('| Path | Relative path | Status |', '| 路径 | 相对路径 | 状态 |'),
     '| --- | --- | --- |',
     ...Object.entries(paths.paths)
       .flatMap(([label, value]) => Array.isArray(value)
         ? value.map(entry => [label, entry] as const)
         : [[label, value] as const])
-      .map(([label, entry]) => `| ${label} | ${entry.relativePath} | ${entry.exists ? 'exists' : 'missing'} |`),
+      .map(([label, entry]) => `| ${label} | ${entry.relativePath} | ${entry.exists ? localize('exists', '存在') : localize('missing', '缺失')} |`),
   ].join('\n')
 }
 
@@ -108,11 +109,11 @@ function formatEnvSnapshotMarkdown(snapshot: EnvSnapshot) {
   const warningsAndFailures = snapshot.doctor.checks.filter(check => check.status !== 'pass')
 
   return [
-    '# Repo environment snapshot',
+    localize('# Repo environment snapshot', '# Repo 环境快照'),
     '',
-    `Generated at: ${snapshot.generatedAt}`,
+    localize(`Generated at: ${snapshot.generatedAt}`, `生成时间：${snapshot.generatedAt}`),
     '',
-    '## Environment',
+    localize('## Environment', '## 环境'),
     '',
     formatMarkdownTable([
       ['cwd', snapshot.env.cwd],
@@ -124,7 +125,7 @@ function formatEnvSnapshotMarkdown(snapshot: EnvSnapshot) {
       ['platform', `${snapshot.env.platform}/${snapshot.env.arch}`],
     ]),
     '',
-    '## Diagnostics',
+    localize('## Diagnostics', '## 诊断'),
     '',
     formatMarkdownTable([
       ['doctor pass', snapshot.doctor.summary.pass],
@@ -135,13 +136,13 @@ function formatEnvSnapshotMarkdown(snapshot: EnvSnapshot) {
     '',
     ...(warningsAndFailures.length > 0
       ? [
-          '## Doctor findings',
+          localize('## Doctor findings', '## Doctor 问题'),
           '',
-          ...warningsAndFailures.map(check => `- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`),
+          ...warningsAndFailures.map(check => localize(`- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`, `- ${check.status}: ${check.title}${check.fix ? `（修复：${check.fix}）` : ''}`)),
           '',
         ]
       : []),
-    '## Check plan',
+    localize('## Check plan', '## 检查计划'),
     '',
     ...snapshot.checkPlan.commands.map(command => `- \`${command.command}\` - ${command.description}`),
   ].join('\n')

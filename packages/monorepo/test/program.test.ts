@@ -270,8 +270,8 @@ describe('commander program', () => {
       force: true,
     })
     expect(successMock).toHaveBeenCalledTimes(12)
-    expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and `pnpm build`')
-    expect(infoMock).toHaveBeenCalledWith('next: run `pnpm install` and start the new workspace package')
+    expect(infoMock).toHaveBeenCalledWith('Next: run `pnpm install` and `pnpm build`.')
+    expect(infoMock).toHaveBeenCalledWith('Next: run `pnpm install` and start the new workspace package.')
     expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"packages"'))
     expect(warnMock).not.toHaveBeenCalled()
     expect(errorMock).not.toHaveBeenCalled()

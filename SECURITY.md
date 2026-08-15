@@ -1,21 +1,19 @@
 # Security Policy
 
-## Supported Versions
+English | [简体中文](SECURITY.zh-CN.md)
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+## Supported versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+Security fixes are provided for the latest stable major release of `repoctl` and its fixed-version core package. Upgrade to the latest release before reporting a problem that may already be resolved.
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
-Use this section to tell people how to report a vulnerability.
+Do not open a public issue for a suspected vulnerability. Use GitHub's private vulnerability reporting for `sonofmagic/repoctl`:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+https://github.com/sonofmagic/repoctl/security/advisories/new
+
+Include the affected version, environment, impact, reproduction steps, and any suggested mitigation. Maintainers will acknowledge a complete report as soon as practical and coordinate validation, remediation, and disclosure with the reporter.
+
+## Scope
+
+Reports involving repoctl command execution, generated workflow security, release credentials, dependency handling, path traversal, or unsafe template extraction are in scope. Vulnerabilities in third-party tools should also be reported upstream when appropriate.

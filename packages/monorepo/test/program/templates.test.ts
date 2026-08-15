@@ -33,8 +33,8 @@ describe('commander program templates command', () => {
     const { default: program } = await import('@/cli/program')
     await program.parseAsync(['node', 'repo', 'templates', 'tsdwon'])
 
-    expect(errorMock).toHaveBeenCalledWith('unknown template: tsdwon')
-    expect(infoMock).toHaveBeenCalledWith('did you mean `tsdown`?')
+    expect(errorMock).toHaveBeenCalledWith('Unknown template: tsdwon')
+    expect(infoMock).toHaveBeenCalledWith('Did you mean `tsdown`?')
     expect(process.exitCode).toBe(1)
 
     process.exitCode = previousExitCode

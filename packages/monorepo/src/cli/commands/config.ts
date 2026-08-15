@@ -3,6 +3,7 @@ import type { ConfigInspection } from '../../commands/config'
 import os from 'node:os'
 import path from 'pathe'
 import { logger } from '../../core/logger'
+import { localize } from '../../i18n'
 import fs from '../../utils/fs'
 
 interface ConfigInspectCliOptions {
@@ -16,10 +17,10 @@ function formatConfigInspection(inspection: ConfigInspection) {
   const commandKeys = Object.keys(inspection.config.commands ?? {})
   const toolingKeys = Object.keys(inspection.config.tooling ?? {})
   return [
-    `cwd: ${inspection.cwd}`,
-    `file: ${inspection.file ?? '-'}`,
-    `commands: ${commandKeys.length > 0 ? commandKeys.join(', ') : '-'}`,
-    `tooling: ${toolingKeys.length > 0 ? toolingKeys.join(', ') : '-'}`,
+    localize(`cwd: ${inspection.cwd}`, `当前目录：${inspection.cwd}`),
+    localize(`file: ${inspection.file ?? '-'}`, `文件：${inspection.file ?? '-'}`),
+    localize(`commands: ${commandKeys.length > 0 ? commandKeys.join(', ') : '-'}`, `命令：${commandKeys.length > 0 ? commandKeys.join(', ') : '-'}`),
+    localize(`tooling: ${toolingKeys.length > 0 ? toolingKeys.join(', ') : '-'}`, `Tooling：${toolingKeys.length > 0 ? toolingKeys.join(', ') : '-'}`),
   ].join('\n')
 }
 
@@ -31,7 +32,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
     .join('<br>')
 
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
   ].join('\n')
@@ -42,7 +43,7 @@ function formatConfigInspectionMarkdown(inspection: ConfigInspection) {
   const toolingKeys = Object.keys(inspection.config.tooling ?? {})
 
   return [
-    '# Repo config inspection',
+    localize('# Repo config inspection', '# Repo 配置检查'),
     '',
     formatMarkdownTable([
       ['cwd', inspection.cwd],
@@ -51,11 +52,11 @@ function formatConfigInspectionMarkdown(inspection: ConfigInspection) {
       ['tooling', toolingKeys.length],
     ]),
     '',
-    '## Commands',
+    localize('## Commands', '## 命令'),
     '',
     ...(commandKeys.length > 0 ? commandKeys.map(key => `- ${key}`) : ['- -']),
     '',
-    '## Tooling',
+    localize('## Tooling', '## Tooling 配置'),
     '',
     ...(toolingKeys.length > 0 ? toolingKeys.map(key => `- ${key}`) : ['- -']),
   ].join('\n')
@@ -108,19 +109,19 @@ async function emitConfigInspection(inspection: ConfigInspection, opts: ConfigIn
 
   const outFile = path.resolve(cwd, opts.out)
   await fs.outputFile(outFile, `${content}\n`, 'utf8')
-  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+  logger.success(localize(`Wrote ${path.relative(cwd, outFile)}`, `已写入 ${path.relative(cwd, outFile)}`))
 }
 
 export function registerConfigCommands(program: Command, cwd: string) {
-  const configCommand = program.command('config').alias('cfg').description('配置命令')
+  const configCommand = program.command('config').alias('cfg').description(localize('Configuration commands', '配置命令'))
 
   configCommand.command('inspect')
-    .description('输出当前 repoctl 配置文件和已解析配置')
+    .description(localize('Show the active repoctl config file and resolved configuration', '输出当前 repoctl 配置文件和已解析配置'))
     .alias('i')
-    .option('--json', '输出 JSON，方便脚本消费')
-    .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
-    .option('--out <file>', '把当前输出写入文件')
-    .option('--redact', '脱敏 cwd/configDir/home 绝对路径后再输出')
+    .option('--json', localize('Output JSON for scripts', '输出 JSON，方便脚本消费'))
+    .option('--markdown', localize('Output Markdown', '输出 Markdown，方便粘贴到 issue 或 PR'))
+    .option('--out <file>', localize('Write output to a file', '把当前输出写入文件'))
+    .option('--redact', localize('Redact cwd, configDir, and home paths', '脱敏 cwd/configDir/home 绝对路径后再输出'))
     .action(async (opts: ConfigInspectCliOptions) => {
       const { inspectMonorepoConfig } = await import('@/commands')
       await emitConfigInspection(await inspectMonorepoConfig(cwd), opts, cwd)

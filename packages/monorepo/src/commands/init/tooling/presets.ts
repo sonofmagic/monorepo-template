@@ -1,5 +1,6 @@
 import type { InitToolingContext, InitToolingPreset, InitToolingTarget } from './types'
 import { version } from '@/constants'
+import { localize } from '@/i18n'
 import { defineTsconfigConfig } from '@/tooling'
 import rootPackageJson from '../../../../../../package.json'
 import monorepoPackageJson from '../../../../package.json'
@@ -14,7 +15,7 @@ const packageDependencies = {
 function getDependencyVersion(name: string) {
   const version = packageDependencies[name]
   if (!version) {
-    throw new Error(`未找到依赖 ${name} 的版本信息`)
+    throw new Error(localize(`No version information was found for dependency ${name}.`, `未找到依赖 ${name} 的版本信息。`))
   }
   return version
 }

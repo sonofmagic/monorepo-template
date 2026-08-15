@@ -5,6 +5,7 @@ import { setByPath } from '@/utils'
 import fs from '@/utils/fs'
 import { resolveCommandConfig } from '../core/config'
 import { getWorkspaceData } from '../core/workspace'
+import { localize } from '../i18n'
 import { getSkillTargetPaths } from './skills'
 
 function mergeCleanConfig(base?: CleanCommandConfig, overrides?: Partial<CleanCommandConfig>): CleanCommandConfig {
@@ -50,7 +51,7 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
   else {
     // 默认提供多选列表，开发者可灵活勾选需要清理的包。
     cleanDirs = await checkbox<string>({
-      message: '请选择需要清理的目录',
+      message: localize('Select directories to remove', '请选择需要清理的目录'),
       choices: filteredPackages.map((x) => {
         const baseChoice = {
           name: path.relative(workspaceDir, x.rootDir),
@@ -82,7 +83,7 @@ export async function cleanProjects(cwd: string, overrides?: Partial<CleanComman
   }))
   const name = path.resolve(workspaceDir, 'package.json')
   const pkgJson = await fs.readJson(name)
-  // fix https://github.com/sonofmagic/monorepo-template/issues/76
+  // fix https://github.com/sonofmagic/repoctl/issues/76
   // 确保根目录仍旧依赖 repoctl。
   if (pkgJson.devDependencies && typeof pkgJson.devDependencies === 'object') {
     delete pkgJson.devDependencies['@icebreakers/monorepo']

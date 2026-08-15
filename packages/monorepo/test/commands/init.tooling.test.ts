@@ -106,7 +106,7 @@ describe('init tooling', () => {
     expect(result.writtenFiles).toEqual([])
     expect(result.skippedFiles).toEqual(['eslint.config.js'])
     expect(files.get('/repo/eslint.config.js')).toBe('// keep me\n')
-    expect(loggerInfoMock).toHaveBeenCalledWith('skip existing init target: eslint.config.js')
+    expect(loggerInfoMock).toHaveBeenCalledWith('Skipped existing init target: eslint.config.js')
 
     const packageJson = JSON.parse(files.get('/repo/package.json') ?? '{}')
     expect(packageJson.devDependencies['@icebreakers/eslint-config']).toBeUndefined()
@@ -123,7 +123,7 @@ describe('init tooling', () => {
 
     const { initTooling, normalizeInitToolingTargets } = await import('@/commands/init/tooling')
 
-    expect(() => normalizeInitToolingTargets(['unknown'])).toThrow('未知的 init tooling 目标')
+    expect(() => normalizeInitToolingTargets(['unknown'])).toThrow('Unknown init tooling target')
 
     const result = await initTooling('/repo', {
       all: true,

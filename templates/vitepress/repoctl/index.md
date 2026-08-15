@@ -1,23 +1,23 @@
-# repoctl 概览
+# repoctl Overview
 
-`repoctl` 是这套模板推荐给使用者的包名。默认命令是 `repo`，目标是把 pnpm workspace、Turborepo、模板创建、诊断报告和提交前校验收敛到一组稳定入口里。
+`repoctl` is the user-facing package name for this monorepo toolkit. Its recommended command is `repo`.
 
-它不替代 pnpm、Turbo 或 pnpm versioning，而是把这些工具在 monorepo 里的常见动作串起来。
+The CLI does not replace pnpm, Turborepo, or pnpm versioning. It gives teams a stable layer for common monorepo actions: setup, diagnostics, scaffolding, local verification, and template asset upgrades.
 
-## 什么时候使用 repoctl
+## When To Use It
 
-| 场景                                     | 推荐入口                 |
-| ---------------------------------------- | ------------------------ |
-| 给已有 pnpm workspace 补齐标准脚本和配置 | `pnpm exec repo init`    |
-| 判断当前仓库是不是能顺利开发             | `pnpm exec repo doctor`  |
-| 创建新的包、应用、文档站或 CLI           | `pnpm exec repo new`     |
-| 提交前复现推荐校验链路                   | `pnpm exec repo check`   |
-| 同步模板最新标准资产                     | `pnpm exec repo upgrade` |
-| 给 CI、编辑器或脚本读取结构化结果        | `--json --out <file>`    |
+| Goal                                                  | Command                  |
+| ----------------------------------------------------- | ------------------------ |
+| Add recommended scripts and workspace defaults        | `pnpm exec repo init`    |
+| Check whether a repository is ready to develop        | `pnpm exec repo doctor`  |
+| Create a package, app, docs site, service, or CLI     | `pnpm exec repo new`     |
+| Reproduce the recommended pre-commit or pre-push flow | `pnpm exec repo check`   |
+| Sync newer standard assets from the template          | `pnpm exec repo upgrade` |
+| Persist output for CI, editors, or issue reports      | `--json --out <file>`    |
 
-## 推荐命令层级
+## Recommended Command Layers
 
-### 1. 生成仓库里的 repo:\* 根脚本
+### repo:\* Root Scripts
 
 ```bash
 pnpm run repo:init
@@ -26,9 +26,9 @@ pnpm run repo:new
 pnpm run repo:check
 ```
 
-这是给日常开发和团队文档使用的入口。短、稳定、不需要先解释 CLI 包名，也不会和 pnpm 内置命令冲突。
+These are the best commands for day-to-day team docs. They are short, explicit, and do not collide with pnpm built-in commands.
 
-### 2. 明确调用 repo CLI
+### Explicit CLI Calls
 
 ```bash
 pnpm exec repo init
@@ -38,9 +38,9 @@ pnpm exec repo new sdk --template tsdown
 pnpm exec repo check --dry-run
 ```
 
-这是文档、CI、脚本和排障里最清楚的写法。
+Use this form in CI, scripts, troubleshooting docs, and reproducible examples.
 
-### 3. 分组命令
+### Grouped Commands
 
 ```bash
 pnpm exec repo ws ls
@@ -49,54 +49,26 @@ pnpm exec repo env support --markdown --redact
 pnpm exec repo config inspect
 ```
 
-这些入口适合已经熟悉 repoctl 的维护者，用来做更细的 workspace、tooling、环境和配置操作。
+Grouped commands are for maintainers and automation that need finer control.
 
-## repoctl 管什么
+## Command Entrypoints
 
-repoctl 把 monorepo 里最容易分散的动作收敛为五条主线：
-
-| 主线   | 代表命令                      | 解决的问题                                                |
-| ------ | ----------------------------- | --------------------------------------------------------- |
-| 初始化 | `repo init` / `repo upgrade`  | 生成或同步 workspace、根脚本、Husky、lint-staged 等资产   |
-| 诊断   | `repo doctor`                 | 判断仓库根目录、运行时、脚本、配置和提交链路是否就绪      |
-| 创建   | `repo templates` / `repo new` | 使用内置模板生成库、应用、服务、文档站和 CLI              |
-| 校验   | `repo check` / `repo verify`  | 统一 pre-commit、staged typecheck、pre-push 和 commit-msg |
-| 报告   | `repo env support`            | 输出可保存、可脱敏、可给 CI 和协作者读取的上下文          |
-
-这几条主线都支持非交互参数。需要自动化时，优先使用 `--json`、`--markdown`、`--out <file>`、`--redact` 和 `--dry-run` 组合。
-
-## 新人和维护者的边界
-
-| 角色       | 推荐只记住                                                         | 需要深入时再看                                              |
-| ---------- | ------------------------------------------------------------------ | ----------------------------------------------------------- |
-| 新成员     | `pnpm run repo:doctor`、`pnpm run repo:new`、`pnpm run repo:check` | [按场景选命令](./scenarios.md)                              |
-| 包维护者   | `repo templates`、`repo new --template`、`repo check --full`       | [模板资产治理](./template-assets.md)                        |
-| CI 维护者  | `repo doctor --strict`、`repo check --full`、`repo env support`    | [报告与自动化输出](./reports.md)                            |
-| 平台维护者 | `repo init`、`repo upgrade`、`repo config inspect`                 | [执行模型](./execution-model.md) 和 [配置文件](./config.md) |
-
-## 命令入口
-
-`repoctl` 包提供多个 bin，例如：
+The package exposes multiple bins:
 
 ```bash
 pnpm exec repoctl doctor
 pnpm exec repoctl new
 ```
 
-文档统一推荐 `repo`，是为了减少新人需要记住的名字。底层实现来自同一套 CLI。
+The docs prefer `repo` so new users only need to remember one command name.
 
-## 下一步
+## Keep Reading
 
-- 第一次接入：[快速开始](./getting-started.md)
-- 不知道用哪个命令：[按场景选命令](./scenarios.md)
-- 理解 CLI 怎么执行：[执行模型](./execution-model.md)
-- 查命令参数：[命令速查](./commands.md)
-- 理解本地校验：[校验链路](./checks.md)
-- 看 doctor 具体检查项：[doctor 诊断](./doctor.md)
-- 固化团队默认值：[配置文件](./config.md)
-- 看可创建的模板：[模板与创建](./templates.md)
-- 治理模板资产：[模板资产治理](./template-assets.md)
-- 接入 CI 和本地流程：[工作流与 CI](./workflows.md)
-- 生成机器可读报告：[报告与自动化输出](./reports.md)
-- 排查常见问题：[排障与报告](./troubleshooting.md)
-- 熟悉短命令：[命令别名](./aliases.md)
+- [Getting Started](./getting-started.md)
+- [Choose By Scenario](./scenarios.md)
+- [Command Reference](./commands.md)
+- [Configuration](./config.md)
+- [Templates](./templates.md)
+- [Workflows and CI](./workflows.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Command Aliases](./aliases.md)

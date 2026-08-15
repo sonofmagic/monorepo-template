@@ -48,7 +48,7 @@ describe('skills sync command', () => {
 
     const { syncSkills } = await import('@/commands/skills')
 
-    await expect(syncSkills({ cwd: '/repo' })).rejects.toThrow('未找到技能目录')
+    await expect(syncSkills({ cwd: '/repo' })).rejects.toThrow('Skill directory not found')
     expect(pathExistsMock).toHaveBeenCalledWith(expect.stringMatching(skillSourcePathPattern))
     expect(checkboxMock).not.toHaveBeenCalled()
     expect(removeMock).not.toHaveBeenCalled()
@@ -160,7 +160,7 @@ describe('skills sync command', () => {
     expect(checkboxMock).toHaveBeenCalledTimes(1)
     const promptOptions = checkboxMock.mock.calls[0]?.[0]
     expect(promptOptions).toEqual({
-      message: '请选择需要同步的技能目标',
+      message: 'Select skill synchronization targets',
       choices: [
         { name: 'codex', value: 'codex', checked: true },
         { name: 'claude', value: 'claude', checked: true },

@@ -2,18 +2,20 @@
   "name": "create-icebreaker",
   "type": "module",
   "version": "1.1.0",
-  "description": "Bootstrap the icebreaker monorepo template via npm create/pnpm create with optional cleanup",
+  "description": "Compatibility create command for repoctl-managed workspaces",
   "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
+  "homepage": "https://repo.icebreaker.top",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "url": "git+https://github.com/sonofmagic/repoctl.git",
     "directory": "packages/create-icebreaker"
   },
   "bugs": {
-    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+    "url": "https://github.com/sonofmagic/repoctl/issues"
   },
   "keywords": [
+    "repoctl",
     "monorepo",
     "create-app",
     "template",
@@ -43,12 +45,12 @@
   "scripts": {
     "dev": "tsdown --watch --sourcemap",
     "build": "tsdown",
-    "typecheck": "pnpm --filter @icebreakers/monorepo-templates build && node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "typecheck": "pnpm --filter create-repoctl build && node ../../node_modules/typescript/bin/tsc -p tsconfig.json",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@icebreakers/monorepo-templates": "workspace:*"
+    "create-repoctl": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

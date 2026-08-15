@@ -1,0 +1,18 @@
+export const errorMessages = {
+  commanderAllowedChoices: 'Allowed choices are',
+  commanderArgumentMissing: 'argument missing',
+  commanderDidYouMean: 'Did you mean',
+  commanderDidYouMeanOneOf: 'Did you mean one of',
+  commanderErrorPrefix: 'error:',
+  commanderMissingRequiredArgument: 'missing required argument',
+  commanderNotSpecified: 'not specified',
+  commanderRequiredOption: 'required option',
+  commanderTooManyArguments: 'too many arguments',
+  commanderUnknownCommand: 'unknown command',
+  commanderUnknownOption: 'unknown option',
+  tasksFileRequired: 'A tasks file path is required when using tasks mode.',
+  unknownCreateIntent: 'Unknown create intent: {intent}',
+  unknownInitTooling: 'Unknown init tooling target: {targets}',
+  missingPackageJsonForTooling: 'Cannot initialize tooling because package.json was not found: {path}',
+  missingDependencyVersion: 'No version information was found for dependency {name}.',
+} as const

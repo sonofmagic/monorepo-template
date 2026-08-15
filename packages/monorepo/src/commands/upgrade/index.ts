@@ -11,6 +11,7 @@ import { assetsDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
 import { GitClient } from '../../core/git'
 import { logger } from '../../core/logger'
+import { localize } from '../../i18n'
 import { escapeStringRegexp, isIgnorableFsError, isMatch, toWorkspaceGitignorePath, updateIssueTemplateConfig } from '../../utils'
 import { migrateLegacyToolingReferences } from '../tooling-migration'
 import { isAgentsMarkdownEquivalent, mergeAgentsMarkdown } from './agents'
@@ -18,59 +19,10 @@ import { evaluateWriteIntent, flushPendingOverwrites, scheduleOverwrite } from '
 import { setPkgJson } from './pkg-json'
 import { classifyReleaseWorkflow, migrateLegacyVersioning } from './release-migration'
 import { getAssetTargets } from './targets'
+import { isTextEquivalent, mergeGitignore } from './text'
 import { mergeWorkspaceManifest, normalizeWorkspaceManifest } from './workspace'
 
 export { setPkgJson }
-
-const crlfPattern = /\r\n/g
-
-function normalizeEol(input: string) {
-  return input.replace(crlfPattern, '\n')
-}
-
-function normalizeGitignoreLine(line: string) {
-  const trimmed = line.trim()
-  if (!trimmed) {
-    return ''
-  }
-  if (trimmed.startsWith('#')) {
-    return `#${trimmed.slice(1).trim()}`
-  }
-  return trimmed
-}
-
-function isTextEquivalent(left: string, right: string) {
-  return normalizeEol(left).trimEnd() === normalizeEol(right).trimEnd()
-}
-
-function mergeGitignore(source: string, target: string) {
-  const sourceLines = normalizeEol(source).split('\n')
-  const result = normalizeEol(target).split('\n')
-  const seen = new Set(
-    result
-      .map(line => normalizeGitignoreLine(line))
-      .filter(Boolean),
-  )
-
-  for (const line of sourceLines) {
-    const normalized = normalizeGitignoreLine(line)
-    if (!normalized || seen.has(normalized)) {
-      continue
-    }
-    seen.add(normalized)
-    result.push(line)
-  }
-
-  while (result.length) {
-    const last = result.at(-1)
-    if (last === undefined || last.trim().length > 0) {
-      break
-    }
-    result.pop()
-  }
-
-  return `${result.join('\n')}\n`
-}
 
 /**
  * 将 assets 目录的模版文件同步到工程中，实现一键升级脚手架能力。
@@ -106,11 +58,11 @@ export async function upgradeMonorepo(opts: CliOpts) {
     // 交互模式允许用户临时调整需要覆盖的文件集合。
     // https://github.com/pnpm/pnpm/blob/db420ab592666dbae77fdda3f5c04ed2c045846d/pkg-manager/plugin-commands-installation/src/update/index.ts
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
-      logger.info('skip interactive target selection in non-interactive mode')
+      logger.info(localize('Skipped interactive target selection in non-interactive mode.', '非交互模式下跳过交互式目标选择。'))
     }
     else {
       targets = await checkbox({
-        message: '选择你需要的文件',
+        message: localize('Select the files you need', '选择你需要的文件'),
         choices: targets.map((x) => {
           return {
             value: x,
@@ -152,7 +104,7 @@ export async function upgradeMonorepo(opts: CliOpts) {
     if (relPath === '.github/workflows/release.yml' && await fs.pathExists(targetPath)) {
       const workflowStatus = await classifyReleaseWorkflow(absOutDir)
       if (workflowStatus === 'custom' && !merged.overwriteRelease) {
-        logger.warn('skip custom release workflow; use repo upgrade --overwrite-release to replace it')
+        logger.warn(localize('Skipped custom release workflow; use repo upgrade --overwrite-release to replace it.', '已跳过自定义发布工作流；如需替换，请使用 repo upgrade --overwrite-release。'))
         continue
       }
     }

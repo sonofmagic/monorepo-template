@@ -3,208 +3,189 @@ import { defineConfig } from 'vitepress'
 import llmstxt from 'vitepress-plugin-llms'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
-const repoctlSidebar = [
-  {
-    text: 'repoctl',
-    items: [
-      { text: '概览', link: '/repoctl/' },
-      { text: '快速开始', link: '/repoctl/getting-started' },
-      { text: '接入已有仓库', link: '/repoctl/adopt-existing' },
-      { text: '按场景选命令', link: '/repoctl/scenarios' },
-      { text: '执行模型', link: '/repoctl/execution-model' },
-      { text: '命令速查', link: '/repoctl/commands' },
-      { text: '校验链路', link: '/repoctl/checks' },
-      { text: 'doctor 诊断', link: '/repoctl/doctor' },
-      { text: '配置文件', link: '/repoctl/config' },
-      { text: '模板与创建', link: '/repoctl/templates' },
-      { text: '模板资产治理', link: '/repoctl/template-assets' },
-      { text: '工作流与 CI', link: '/repoctl/workflows' },
-      { text: '报告与自动化输出', link: '/repoctl/reports' },
-      { text: '排障与报告', link: '/repoctl/troubleshooting' },
-      { text: '命令别名', link: '/repoctl/aliases' },
-    ],
-  },
-]
+interface SidebarLabels {
+  repoctl: string
+  repoctlItems: string[]
+  knowledge: string
+  knowledgeItems: string[]
+  packages: string
+  packageItems: string[]
+  ai: string
+  aiItems: string[]
+  tools: string
+  toolItems: string[]
+}
 
-const knowledgeSidebar = [
-  {
-    text: '知识库',
-    items: [
-      { text: '知识库首页', link: '/knowledge/' },
-      { text: '为什么往 monorepo 方向演进', link: '/monorepo/' },
-      { text: '如何管理 monorepo', link: '/monorepo/manage' },
-      { text: '发包与变更日志', link: '/monorepo/publish' },
-      { text: 'monorepo 命令参考', link: '/monorepo/commands' },
-      { text: 'monorepo 模板体系', link: '/monorepo/templates' },
-      { text: 'monorepo 排障', link: '/monorepo/troubleshooting' },
-    ],
-  },
-  {
-    text: '现代 npm 包',
-    items: [
-      { text: '如何复用 js 代码', link: '/why/how-to-reuse-js-code' },
-      { text: 'JS 文件的各种后缀', link: '/why/js-cjs-mjs' },
-      { text: 'CJS 和 ESM 关键字/全局变量对比', link: '/why/js-keywords' },
-      { text: '什么是 npm 包', link: '/why/what-is-npm-package' },
-      { text: '如何发布 npm 包', link: '/why/publish-basic-npm-package' },
-      { text: '改进并发布现代 npm 包', link: '/why/index' },
-      { text: '现代包指南', link: '/why/modern/' },
-      { text: 'ESM 与 CJS', link: '/why/modern/esm-vs-cjs' },
-      { text: '类型声明', link: '/why/modern/dts' },
-      { text: '包入口', link: '/why/modern/package-entry-points' },
-      { text: '构建工具', link: '/why/modern/bundlers' },
-      { text: 'TypeScript', link: '/why/modern/typescript' },
-    ],
-  },
+const repoctlPaths = [
+  '',
+  'getting-started',
+  'adopt-existing',
+  'scenarios',
+  'execution-model',
+  'commands',
+  'checks',
+  'doctor',
+  'config',
+  'templates',
+  'template-assets',
+  'workflows',
+  'reports',
+  'troubleshooting',
+  'aliases',
 ]
+const knowledgePaths = ['', 'manage', 'publish', 'commands', 'templates', 'troubleshooting']
+const packagePaths = [
+  'how-to-reuse-js-code',
+  'js-cjs-mjs',
+  'js-keywords',
+  'what-is-npm-package',
+  'publish-basic-npm-package',
+  'index',
+  'modern/',
+  'modern/esm-vs-cjs',
+  'modern/dts',
+  'modern/package-entry-points',
+  'modern/bundlers',
+  'modern/typescript',
+]
+const aiPaths = ['', 'llms-txt']
+const toolPaths = ['', 'pnpm', 'turborepo', 'changeset', 'husky', 'lint-staged', 'renovate', 'llms-txt']
 
-const aiSidebar = [
-  {
-    text: 'AI',
-    items: [
-      { text: 'AI 文档首页', link: '/ai/' },
-      { text: 'llms.txt', link: '/ai/llms-txt' },
-    ],
-  },
-]
+const englishLabels: SidebarLabels = {
+  repoctl: 'repoctl',
+  repoctlItems: ['Overview', 'Getting Started', 'Adopt Existing Repos', 'Choose By Scenario', 'Execution Model', 'Command Reference', 'Verification', 'Doctor', 'Configuration', 'Templates', 'Template Assets', 'Workflows and CI', 'Reports', 'Troubleshooting', 'Command Aliases'],
+  knowledge: 'Knowledge Base',
+  knowledgeItems: ['Why Monorepo', 'Managing A Monorepo', 'Publishing and Changelogs', 'Monorepo Commands', 'Template Systems', 'Troubleshooting'],
+  packages: 'Modern Packages',
+  packageItems: ['Reusing JavaScript', 'Module Extensions', 'Runtime Globals', 'What Is An npm Package?', 'Publishing A Package', 'Package Evolution', 'Modern Package Guide', 'ESM vs CommonJS', 'Type Declarations', 'Package Entry Points', 'Bundlers', 'TypeScript'],
+  ai: 'AI',
+  aiItems: ['AI Documentation', 'llms.txt'],
+  tools: 'Tool Guides',
+  toolItems: ['Overview', 'pnpm', 'Turborepo', 'pnpm Versioning', 'Husky', 'lint-staged', 'Renovate', 'llms.txt'],
+}
 
-const toolsSidebar = [
-  {
-    text: '工具专题',
-    items: [
-      { text: '工具专题首页', link: '/tools/' },
-      { text: 'pnpm', link: '/tools/pnpm' },
-      { text: 'turborepo', link: '/tools/turborepo' },
-      { text: 'changeset', link: '/tools/changeset' },
-      { text: 'husky', link: '/tools/husky' },
-      { text: 'lint-staged', link: '/tools/lint-staged' },
-      { text: 'renovate', link: '/tools/renovate' },
-    ],
-  },
-]
+const chineseLabels: SidebarLabels = {
+  repoctl: 'repoctl',
+  repoctlItems: ['概览', '快速开始', '接入已有仓库', '按场景选命令', '执行模型', '命令速查', '校验链路', 'Doctor 诊断', '配置文件', '模板与创建', '模板资产治理', '工作流与 CI', '报告与自动化输出', '排障', '命令别名'],
+  knowledge: '知识库',
+  knowledgeItems: ['为什么使用 Monorepo', '管理 Monorepo', '发包与变更日志', 'Monorepo 命令', '模板体系', '常见问题排障'],
+  packages: '现代 npm 包',
+  packageItems: ['复用 JavaScript', '模块文件后缀', '运行时关键字', '什么是 npm 包', '发布 npm 包', '包的演进', '现代包指南', 'ESM 与 CommonJS', '类型声明', '包入口', '构建工具', 'TypeScript'],
+  ai: 'AI',
+  aiItems: ['AI 文档', 'llms.txt'],
+  tools: '工具专题',
+  toolItems: ['概览', 'pnpm', 'Turborepo', 'pnpm Versioning', 'Husky', 'lint-staged', 'Renovate', 'llms.txt'],
+}
 
-const enSidebar = [
-  {
-    text: 'repoctl',
-    items: [
-      { text: 'Overview', link: '/en/repoctl/' },
-      { text: 'Getting Started', link: '/en/repoctl/getting-started' },
-      { text: 'Adopt Existing Repos', link: '/en/repoctl/adopt-existing' },
-      { text: 'Choose By Scenario', link: '/en/repoctl/scenarios' },
-      { text: 'Command Reference', link: '/en/repoctl/commands' },
-      { text: 'Configuration', link: '/en/repoctl/config' },
-      { text: 'Templates', link: '/en/repoctl/templates' },
-      { text: 'Workflows and CI', link: '/en/repoctl/workflows' },
-      { text: 'Troubleshooting', link: '/en/repoctl/troubleshooting' },
-      { text: 'Command Aliases', link: '/en/repoctl/aliases' },
-    ],
-  },
-  {
-    text: 'Knowledge Base',
-    items: [
-      { text: 'Why Monorepo', link: '/en/knowledge/monorepo' },
-    ],
-  },
-]
+function prefixed(prefix: string, section: string, paths: string[], labels: string[]) {
+  return paths.map((path, index) => ({
+    text: labels[index]!,
+    link: `${prefix}/${section}/${path}`.replace(/\/+/g, '/'),
+  }))
+}
+
+function createSidebars(prefix: '' | '/zh', labels: SidebarLabels) {
+  const repoctl = [{ text: labels.repoctl, items: prefixed(prefix, 'repoctl', repoctlPaths, labels.repoctlItems) }]
+  const knowledge = [
+    { text: labels.knowledge, items: prefixed(prefix, 'monorepo', knowledgePaths, labels.knowledgeItems) },
+    { text: labels.packages, items: prefixed(prefix, 'why', packagePaths, labels.packageItems) },
+  ]
+  const ai = [{ text: labels.ai, items: prefixed(prefix, 'ai', aiPaths, labels.aiItems) }]
+  const tools = [{ text: labels.tools, items: prefixed(prefix, 'tools', toolPaths, labels.toolItems) }]
+  return {
+    [`${prefix}/repoctl/`]: repoctl,
+    [`${prefix}/knowledge/`]: knowledge,
+    [`${prefix}/monorepo/`]: knowledge,
+    [`${prefix}/why/`]: knowledge,
+    [`${prefix}/ai/`]: ai,
+    [`${prefix}/tools/`]: tools,
+    [`${prefix || ''}/`]: repoctl,
+  }
+}
 
 export default withMermaid(defineConfig({
   outDir: '.vitepress/dist',
   title: 'repoctl',
-  description: 'repoctl documentation for practical pnpm and Turborepo monorepos.',
+  description: 'Task-first CLI for initializing, maintaining, validating, and releasing pnpm and Turborepo monorepos.',
   lastUpdated: true,
   cleanUrls: true,
-  head: [
-    ['link', { rel: 'icon', href: '/logo.jpg' }],
-  ],
+  head: [['link', { rel: 'icon', href: '/logo.jpg' }]],
   themeConfig: {
     logo: '/logo.jpg',
-    search: {
-      provider: 'local',
-    },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/sonofmagic/monorepo-template' },
-    ],
+    search: { provider: 'local' },
+    socialLinks: [{ icon: 'github', link: 'https://github.com/sonofmagic/repoctl' }],
   },
   locales: {
     root: {
-      label: '简体中文',
-      lang: 'zh-CN',
-      title: 'repoctl',
-      description: '围绕 repoctl 的 pnpm + Turborepo monorepo 使用文档。',
-      themeConfig: {
-        nav: [
-          { text: 'repoctl', link: '/repoctl/' },
-          { text: '快速开始', link: '/repoctl/getting-started' },
-          { text: '命令', link: '/repoctl/commands' },
-          { text: '知识库', link: '/knowledge/' },
-          { text: 'AI 文档', link: '/ai/' },
-          { text: '工具专题', link: '/tools/' },
-        ],
-        outline: {
-          label: '目录',
-          level: [2, 3],
-        },
-        sidebar: {
-          '/repoctl/': repoctlSidebar,
-          '/knowledge/': knowledgeSidebar,
-          '/monorepo/': knowledgeSidebar,
-          '/why/': knowledgeSidebar,
-          '/ai/': aiSidebar,
-          '/tools/': toolsSidebar,
-          '/': repoctlSidebar,
-        },
-        editLink: {
-          pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/templates/vitepress/:path',
-          text: '为此页提供修改建议',
-        },
-        docFooter: {
-          prev: '上一页',
-          next: '下一页',
-        },
-        lastUpdated: {
-          text: '最后更新',
-        },
-      },
-    },
-    en: {
       label: 'English',
       lang: 'en-US',
       title: 'repoctl',
-      description: 'Documentation for using repoctl in practical pnpm and Turborepo monorepos.',
+      description: 'Task-first CLI for practical pnpm and Turborepo monorepos.',
       themeConfig: {
         nav: [
-          { text: 'repoctl', link: '/en/repoctl/' },
-          { text: 'Getting Started', link: '/en/repoctl/getting-started' },
-          { text: 'Commands', link: '/en/repoctl/commands' },
-          { text: 'Knowledge Base', link: '/en/knowledge/monorepo' },
+          { text: 'repoctl', link: '/repoctl/' },
+          { text: 'Getting Started', link: '/repoctl/getting-started' },
+          { text: 'Commands', link: '/repoctl/commands' },
+          { text: 'Knowledge Base', link: '/knowledge/' },
           { text: 'AI Docs', link: '/ai/' },
+          { text: 'Tool Guides', link: '/tools/' },
         ],
-        outline: {
-          label: 'On This Page',
-          level: [2, 3],
-        },
-        sidebar: {
-          '/en/': enSidebar,
-        },
+        outline: { label: 'On This Page', level: [2, 3] },
+        sidebar: createSidebars('', englishLabels),
         editLink: {
-          pattern: 'https://github.com/sonofmagic/monorepo-template/edit/main/templates/vitepress/:path',
+          pattern: 'https://github.com/sonofmagic/repoctl/edit/main/templates/vitepress/:path',
           text: 'Edit this page',
         },
-        docFooter: {
-          prev: 'Previous page',
-          next: 'Next page',
+        docFooter: { prev: 'Previous page', next: 'Next page' },
+        lastUpdated: { text: 'Last updated' },
+      },
+    },
+    zh: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      link: '/zh/',
+      title: 'repoctl',
+      description: '面向 pnpm 与 Turborepo monorepo 的任务型 CLI。',
+      themeConfig: {
+        nav: [
+          { text: 'repoctl', link: '/zh/repoctl/' },
+          { text: '快速开始', link: '/zh/repoctl/getting-started' },
+          { text: '命令', link: '/zh/repoctl/commands' },
+          { text: '知识库', link: '/zh/knowledge/' },
+          { text: 'AI 文档', link: '/zh/ai/' },
+          { text: '工具专题', link: '/zh/tools/' },
+        ],
+        outline: { label: '目录', level: [2, 3] },
+        sidebar: createSidebars('/zh', chineseLabels),
+        editLink: {
+          pattern: 'https://github.com/sonofmagic/repoctl/edit/main/templates/vitepress/:path',
+          text: '为此页提供修改建议',
         },
-        lastUpdated: {
-          text: 'Last updated',
-        },
+        docFooter: { prev: '上一页', next: '下一页' },
+        lastUpdated: { text: '最后更新' },
       },
     },
   },
   vite: {
     plugins: [
-      // @ts-ignore
+      // @ts-ignore vitepress-plugin-llms currently exposes Vite 6 plugin types.
       Tailwindcss(),
-      llmstxt(),
+      llmstxt({
+        title: 'repoctl',
+        description: 'Task-first CLI for pnpm and Turborepo monorepos. Simplified Chinese documentation is available under /zh/.',
+        domain: 'https://repo.icebreaker.top',
+        ignoreFiles: [
+          'zh/**',
+          'en/**',
+          'CHANGELOG.md',
+          'thinking.md',
+          'why/examples/**',
+          '.vitepress/**',
+          '**/node_modules/**',
+          '**/internal/**',
+          '**/fixtures/**',
+        ],
+      }),
     ],
   },
   mermaid: {},

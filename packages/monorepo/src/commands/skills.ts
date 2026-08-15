@@ -4,6 +4,7 @@ import { checkbox } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import fs from '@/utils/fs'
 import { packageDir } from '../constants'
+import { localize } from '../i18n'
 
 /**
  * 内置 skills 目录名称。
@@ -64,13 +65,13 @@ export async function syncSkills(options: SyncSkillsOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   if (!(await fs.pathExists(skillSourceDir))) {
     const relative = path.relative(cwd, skillSourceDir)
-    throw new Error(`未找到技能目录：${relative || skillSourceDir}`)
+    throw new Error(localize(`Skill directory not found: ${relative || skillSourceDir}`, `未找到技能目录：${relative || skillSourceDir}`))
   }
 
   let targets = normalizeTargets(options.targets)
   if (!targets?.length) {
     const selections = await checkbox<SkillTarget>({
-      message: '请选择需要同步的技能目标',
+      message: localize('Select skill synchronization targets', '请选择需要同步的技能目标'),
       choices: skillTargets.map(target => ({
         name: target,
         value: target,

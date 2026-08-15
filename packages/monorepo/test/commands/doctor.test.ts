@@ -37,6 +37,27 @@ describe('runDoctor', () => {
     await fs.remove(workspaceDir)
   })
 
+  it('reports workspace protocol CLI versions without crashing', async () => {
+    const workspaceDir = await createTempWorkspace('monorepo-doctor-workspace-version-')
+    await fs.ensureDir(path.join(workspaceDir, '.github/workflows'))
+    await fs.writeFile(path.join(workspaceDir, 'pnpm-workspace.yaml'), 'packages:\n  - packages/*\n')
+    await fs.writeJSON(path.join(workspaceDir, 'package.json'), {
+      name: 'release-workspace',
+      devDependencies: { repoctl: 'workspace:*' },
+    })
+    await fs.writeFile(path.join(workspaceDir, '.github/workflows/release.yml'), '# repoctl-managed: release/v2\nname: Release\n')
+
+    const { runDoctor } = await import('@/commands/doctor')
+    const report = await runDoctor(workspaceDir)
+
+    expect(report.checks.find(check => check.id === 'release-cli-version')).toMatchObject({
+      status: 'warn',
+      detail: 'repoctl workspace:* does not guarantee release ci support.',
+    })
+
+    await fs.remove(workspaceDir)
+  })
+
   it('reports a healthy workspace with the recommended quick scripts', async () => {
     const workspaceDir = await createTempWorkspace('monorepo-doctor-pass-')
     const pkgDir = path.join(workspaceDir, 'packages/demo')
@@ -231,7 +252,7 @@ describe('runDoctor', () => {
 
     expect(toolingCheck?.status).toBe('warn')
     expect(toolingCheck?.detail).toContain('stylelint.config.js')
-    expect(toolingCheck?.fix).toBe('运行 repo upgrade --yes 迁移为直接 import repoctl/tooling，并保留现有配置语义。')
+    expect(toolingCheck?.fix).toBe('Run repo upgrade --yes to migrate to repoctl/tooling.')
 
     await fs.remove(workspaceDir)
   })

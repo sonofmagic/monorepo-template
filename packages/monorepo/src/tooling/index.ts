@@ -520,8 +520,8 @@ export async function defineTsconfigConfig(
  * 默认行为：
  * - `*.{js,jsx,mjs,ts,tsx,mts,cts}` 运行 `eslint --fix`
  * - `*.vue` 同时运行 `eslint --fix` 与 `stylelint --fix --allow-empty-input`
- * - `*.{ts,tsx,mts,cts,vue}` 调用 `pnpm exec repo verify staged-typecheck`
- * - `package.json` files in any workspace also trigger `pnpm exec repo verify staged-typecheck`
+ * - TypeScript/Vue files and workspace `package.json` files share one
+ *   `pnpm exec repo verify staged-typecheck` task to avoid concurrent builds
  * - 样式文件运行 `stylelint --fix --allow-empty-input`
  *
  * @param options 可配置 `repoCommand`，默认值为 `pnpm exec repo`
@@ -550,14 +550,7 @@ export function createMonorepoLintStagedConfig(options: MonorepoLintStagedConfig
       'eslint --fix',
       'stylelint --fix --allow-empty-input',
     ],
-    '*.{ts,tsx,mts,cts,vue}': (files) => {
-      const uniqueFiles = [...new Set(files)]
-      if (uniqueFiles.length === 0) {
-        return []
-      }
-      return `${repoCommand} verify staged-typecheck ${uniqueFiles.map(escapeForShell).join(' ')}`
-    },
-    '**/package.json': (files) => {
+    '*.{ts,tsx,mts,cts,vue,json}': (files) => {
       const uniqueFiles = [...new Set(files)]
       if (uniqueFiles.length === 0) {
         return []

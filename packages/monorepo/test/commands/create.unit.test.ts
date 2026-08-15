@@ -139,7 +139,7 @@ describe('createNewProject unit scenarios', () => {
     pathExistsMock.mockImplementation(async (targetPath: string) => targetPath === '/repo/demo' || targetPath.endsWith('package.json'))
     const { createNewProject } = await import('@/commands/create')
 
-    await expect(createNewProject({ cwd: '/repo', name: 'demo' })).rejects.toThrow('目标目录已存在')
+    await expect(createNewProject({ cwd: '/repo', name: 'demo' })).rejects.toThrow('Target directory already exists')
     expect(ensureDirMock).not.toHaveBeenCalled()
     expect(scaffoldTemplateMock).not.toHaveBeenCalled()
   })
@@ -229,11 +229,11 @@ describe('createNewProject unit scenarios', () => {
       author: 'ice breaker <hi@sonofmagic.top>',
       homepage: 'https://repo.icebreaker.top',
       bugs: {
-        url: 'https://github.com/sonofmagic/monorepo-template/issues',
+        url: 'https://github.com/sonofmagic/repoctl/issues',
       },
       repository: {
         type: 'git',
-        url: 'git+https://github.com/sonofmagic/monorepo-template.git',
+        url: 'git+https://github.com/sonofmagic/repoctl.git',
       },
     } as any)
     getRepoNameMock.mockImplementation(async () => undefined as any)

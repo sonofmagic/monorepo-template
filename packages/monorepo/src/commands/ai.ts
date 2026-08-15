@@ -2,6 +2,7 @@ import process from 'node:process'
 import path from 'pathe'
 import fs from '@/utils/fs'
 import { logger } from '../core/logger'
+import { localize } from '../i18n'
 
 export type AgenticTemplateFormat = 'md' | 'json'
 
@@ -29,25 +30,25 @@ export interface GenerateAgenticTemplateOptions {
 export type AgenticTemplateTask = string | (Omit<GenerateAgenticTemplateOptions, 'cwd'> & { name?: string })
 
 const agenticSections = [
-  '目标/产物',
-  '约束（性能/风格/兼容/不可改动范围）',
-  '验收标准（要跑的命令、预期输出/文件）',
-  '仓库路径',
-  '允许操作（可/不可写文件，可运行的命令清单，可否联网）',
-  '上下文线索（日志/文件/模块/相关 issue）',
-  '里程碑（根因→设计→实现→验证）',
+  ['Goal and deliverables', '目标与产物'],
+  ['Constraints (performance, style, compatibility, and protected scope)', '约束（性能、风格、兼容性和不可改动范围）'],
+  ['Acceptance criteria (commands, expected output, and files)', '验收标准（命令、预期输出和文件）'],
+  ['Repository paths', '仓库路径'],
+  ['Allowed operations (file writes, commands, and network access)', '允许操作（文件写入、可运行命令和网络访问）'],
+  ['Context (logs, files, modules, and related issues)', '上下文（日志、文件、模块和相关 issue）'],
+  ['Milestones (root cause, design, implementation, and verification)', '里程碑（根因、设计、实现和验证）'],
 ] as const
 
 export const defaultAgenticBaseDir = 'agentic/prompts'
 
 function renderMarkdownTemplate() {
-  return `${agenticSections.map(title => `## ${title}\n- `).join('\n\n')}\n`
+  return `${agenticSections.map(([english, chinese]) => `## ${localize(english, chinese)}\n- `).join('\n\n')}\n`
 }
 
 function renderJsonTemplate() {
   const payload: Record<string, string> = {}
-  for (const title of agenticSections) {
-    payload[title] = ''
+  for (const [english] of agenticSections) {
+    payload[english] = ''
   }
   return `${JSON.stringify(payload, null, 2)}\n`
 }
@@ -72,7 +73,7 @@ export async function generateAgenticTemplate(options: GenerateAgenticTemplateOp
   const baseDir = options.baseDir ?? defaultAgenticBaseDir
 
   if (format !== 'md' && format !== 'json') {
-    throw new Error(`不支持的模板格式：${format}`)
+    throw new Error(localize(`Unsupported template format: ${format}`, `不支持的模板格式：${format}`))
   }
 
   const template = format === 'md'
@@ -96,12 +97,14 @@ export async function generateAgenticTemplate(options: GenerateAgenticTemplateOp
   const exists = await fs.pathExists(targetPath)
 
   if (exists && !options.force) {
-    throw new Error(`目标文件已存在：${path.relative(cwd, targetPath)}`)
+    throw new Error(localize(`Target file already exists: ${path.relative(cwd, targetPath)}`, `目标文件已存在：${path.relative(cwd, targetPath)}`))
   }
 
   await fs.outputFile(targetPath, template, 'utf8')
-  const actionLabel = exists ? '已覆盖模板' : '已生成模板'
-  logger.success(`${actionLabel}：${path.relative(cwd, targetPath)}`)
+  const actionLabel = exists
+    ? localize('Overwrote template', '已覆盖模板')
+    : localize('Generated template', '已生成模板')
+  logger.success(`${actionLabel}: ${path.relative(cwd, targetPath)}`)
 
   return template
 }
@@ -110,7 +113,7 @@ export async function loadAgenticTasks(filePath: string, cwd: string) {
   const fullPath = path.resolve(cwd, filePath)
   const tasks = await fs.readJson(fullPath)
   if (!Array.isArray(tasks)) {
-    throw new TypeError('任务清单需要是数组')
+    throw new TypeError(localize('The task list must be an array.', '任务清单需要是数组'))
   }
   return tasks as AgenticTemplateTask[]
 }

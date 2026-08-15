@@ -6,6 +6,7 @@ import { createNewProject, getCreateChoices, resolveCreateNewProjectPlan } from 
 import { defaultTemplate } from '../../../commands/create'
 import { resolveCommandConfig } from '../../../core/config'
 import { logger } from '../../../core/logger'
+import { localize } from '../../../i18n'
 import fs from '../../../utils/fs'
 import { createIntentChoices } from './intents'
 
@@ -53,15 +54,15 @@ function formatPlanPath(cwd: string, targetPath: string) {
 
 function printCreatePlan(plan: CreateNewProjectPlan) {
   logger.log('')
-  logger.log('Create preview:')
-  logger.log(`  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`)
-  logger.log(`  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`)
-  logger.log(`  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`)
-  logger.log(`  package: ${plan.packageName}`)
-  logger.log(`  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`)
-  logger.log(`  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`)
+  logger.log(localize('Create preview:', '创建预览：'))
+  logger.log(localize(`  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`, `  模板：${plan.template}${plan.usedFallback ? `（从 ${plan.requestedTemplate} 回退）` : ''}`))
+  logger.log(localize(`  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`, `  源目录：${formatPlanPath(plan.cwd, plan.sourceDir)}`))
+  logger.log(localize(`  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`, `  目标目录：${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? '（已存在）' : ''}`))
+  logger.log(localize(`  package: ${plan.packageName}`, `  包名：${plan.packageName}`))
+  logger.log(localize(`  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`, `  package json：${plan.hasPackageJson ? plan.packageJsonFileName : '模板中未包含'}`))
+  logger.log(localize(`  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`, `  workspace 清单：pnpm-workspace.yaml 将包含 ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`))
   logger.log('')
-  logger.info('dry run only; no files were written')
+  logger.info(localize('Dry run only; no files were written.', '仅执行预览；未写入任何文件。'))
 }
 
 function printCreatePlanJson(plan: CreateNewProjectPlan) {
@@ -70,15 +71,15 @@ function printCreatePlanJson(plan: CreateNewProjectPlan) {
 
 function formatCreatePlan(plan: CreateNewProjectPlan) {
   return [
-    'Create preview:',
-    `  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`,
-    `  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`,
-    `  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`,
-    `  package: ${plan.packageName}`,
-    `  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`,
-    `  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`,
+    localize('Create preview:', '创建预览：'),
+    localize(`  template: ${plan.template}${plan.usedFallback ? ` (fallback from ${plan.requestedTemplate})` : ''}`, `  模板：${plan.template}${plan.usedFallback ? `（从 ${plan.requestedTemplate} 回退）` : ''}`),
+    localize(`  source: ${formatPlanPath(plan.cwd, plan.sourceDir)}`, `  源目录：${formatPlanPath(plan.cwd, plan.sourceDir)}`),
+    localize(`  target: ${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? ' (already exists)' : ''}`, `  目标目录：${formatPlanPath(plan.cwd, plan.targetDir)}${plan.targetExists ? '（已存在）' : ''}`),
+    localize(`  package: ${plan.packageName}`, `  包名：${plan.packageName}`),
+    localize(`  package json: ${plan.hasPackageJson ? plan.packageJsonFileName : 'not included in template'}`, `  package json：${plan.hasPackageJson ? plan.packageJsonFileName : '模板中未包含'}`),
+    localize(`  workspace manifest: pnpm-workspace.yaml will include ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`, `  workspace 清单：pnpm-workspace.yaml 将包含 ${plan.targetName.includes('/') ? `${plan.targetName.split('/')[0]}/*` : 'packages/*'}`),
     '',
-    'dry run only; no files were written',
+    localize('Dry run only; no files were written.', '仅执行预览；未写入任何文件。'),
   ].join('\n')
 }
 
@@ -100,7 +101,7 @@ async function emitCreatePlan(plan: CreateNewProjectPlan, options: RunCreateFlow
   const content = options.json ? JSON.stringify(plan, null, 2) : formatCreatePlan(plan)
   const outFile = path.resolve(cwd, options.out)
   await fs.outputFile(outFile, `${content}\n`, 'utf8')
-  logger.success(`wrote ${path.relative(cwd, outFile)}`)
+  logger.success(localize(`Wrote ${path.relative(cwd, outFile)}`, `已写入 ${path.relative(cwd, outFile)}`))
 }
 
 function handleCreateFlowError(error: unknown, json = false): RunCreateFlowResult {
@@ -142,18 +143,18 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
 
     if (!explicitTemplate) {
       const intent = await select({
-        message: '你要创建什么？',
+        message: localize('What do you want to create?', '你要创建什么？'),
         choices: createIntentChoices,
         default: 'library',
       })
       const intentChoice = createIntentChoices.find(item => item.value === intent)
       if (!intentChoice) {
-        throw new Error(`未找到 intent: ${intent}`)
+        throw new Error(localize(`Unknown create intent: ${intent}`, `未找到创建意图：${intent}`))
       }
 
       if (!packageName) {
         packageName = await input({
-          message: '请输入名称',
+          message: localize('Enter a name', '请输入名称'),
           default: 'my-module',
         })
       }
@@ -161,10 +162,10 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
       let type: CreateNewProjectOptions['type'] = intentChoice.defaultTemplate
       if (intent === 'library') {
         type = await select({
-          message: '请选择库模板',
+          message: localize('Select a library template', '请选择库模板'),
           choices: [
-            { name: 'TypeScript Library', value: 'tsdown', description: '通用 TS 库' },
-            { name: 'Vue Component Library', value: 'vue-lib', description: 'Vue 组件库' },
+            { name: 'TypeScript Library', value: 'tsdown', description: localize('General-purpose TypeScript library', '通用 TypeScript 库') },
+            { name: 'Vue Component Library', value: 'vue-lib', description: localize('Vue component library', 'Vue 组件库') },
           ],
           default: 'tsdown',
         })
@@ -191,13 +192,13 @@ export async function runCreateFlow(cwd: string, inputName: string | undefined, 
     }
     else if (!packageName) {
       packageName = await input({
-        message: '请输入包名',
+        message: localize('Enter the package name', '请输入包名'),
         default: createConfig?.name ?? 'my-package',
       })
     }
 
     const type: CreateNewProjectOptions['type'] = explicitTemplate ?? await select({
-      message: '请选择模板类型',
+      message: localize('Select a template type', '请选择模板类型'),
       choices: getCreateChoices(createConfig?.choices),
       default: defaultTemplate,
     })

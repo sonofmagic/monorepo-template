@@ -1,136 +1,54 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides repository-specific guidance for AI-assisted changes.
 
-## Project Overview
+## Product
 
-This is a pnpm + Turbo monorepo template designed for production-ready projects. Template sources live under `templates/` while reusable tooling lives under `packages/`.
+repoctl is a task-first CLI for initializing, diagnosing, creating, validating, upgrading, and releasing pnpm and Turborepo monorepos. The repository itself is the repoctl source workspace; templates are one product capability, not the repository's identity.
 
-### Architecture
+## Architecture
 
-- **`templates/`** - Template sources:
-  - `cli/` - CLI application scaffold
-  - `client/` - Vue.js web client with Cloudflare integration
-  - `server/` - Server/API layer (tsdown-based)
-  - `vitepress/` - VitePress documentation site
-  - `tsdown/` - TypeScript library build template
-  - `vue-lib/` - Vue component library template
+- `packages/repoctl`: recommended package, `repo` and `repoctl` bins, and public re-exports.
+- `packages/monorepo`: core engine, commands, reports, release orchestration, and tooling APIs.
+- `packages/monorepo-templates`: published built-in templates and managed workspace assets.
+- `packages/create-repoctl`: primary create command.
+- `packages/create-icebreaker`: compatibility create command.
+- `templates/*`: private source workspaces copied into the template-assets package.
+- `templates/vitepress`: repoctl documentation source and the VitePress template source.
 
-- **`packages/`** - Reusable tooling:
-  - `monorepo/` - @icebreakers/monorepo compatibility CLI and repoctl engine
-  - `create-icebreaker/` - npm create scaffolding tool
-  - `monorepo-templates/` - template asset bundle for npm
+## Commands
 
-### Build System
+The workspace requires Node.js 22.12+ and pnpm 11.
 
-- **Package Manager**: pnpm (enforced by preinstall hook, requires pnpm@11.21.0)
-- **Task Orchestration**: Turbo with caching and parallel execution
-- **Node Version**: >= 20.0.0
+```bash
+pnpm install
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm tsd
+pnpm test
+```
 
-## Development Commands
+Run verification in that order. Build first so tests and type tests exercise delivery artifacts. Refresh managed assets with:
 
-### Core Commands
+```bash
+pnpm --filter @icebreakers/monorepo-templates sync:assets
+```
 
-| Command          | Description                                       |
-| ---------------- | ------------------------------------------------- |
-| `pnpm install`   | Install all workspace dependencies                |
-| `pnpm dev`       | Run all apps in parallel (Turbo `dev --parallel`) |
-| `pnpm build`     | Build all workspaces with Turbo caching           |
-| `pnpm test`      | Run Vitest tests once                             |
-| `pnpm test:dev`  | Run Vitest in watch mode                          |
-| `pnpm lint`      | Run ESLint and Stylelint across all workspaces    |
-| `pnpm typecheck` | Run TypeScript type checking                      |
-| `pnpm format`    | Auto-fix code with ESLint                         |
-| `pnpm validate`  | Run typecheck + lint + test (full validation)     |
+Do not edit generated template copies or VitePress `.vitepress/dist` output manually.
 
-### Release & Publishing
+## Product contracts
 
-| Command                              | Description                          |
-| ------------------------------------ | ------------------------------------ |
-| `pnpm change`                        | Record a native pnpm change intent   |
-| `pnpm exec repo release ci`          | Run the CI release orchestrator      |
-| `pnpm publish-packages`              | Run the stable pnpm publish flow     |
-| `pnpm exec repo release pre publish` | Run lane-based prerelease publishing |
+- The package name is `repoctl`; `repo` is the recommended command.
+- `@icebreakers/monorepo`, `@icebreakers/monorepo-templates`, and `create-icebreaker` are supported compatibility or implementation packages.
+- CLI output defaults to English. `--lang zh-CN` and `REPOCTL_LANG=zh-CN` select Simplified Chinese.
+- JSON keys, command names, check IDs, and statuses are language-independent.
+- Documentation defaults to English at `/`; Simplified Chinese lives under `/zh/`.
 
-### Monorepo Helper Scripts
+## Release workflow
 
-| Command              | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `pnpm script:init`   | Initialize template settings                                 |
-| `pnpm script:sync`   | Synchronize dependency and script versions across workspaces |
-| `pnpm script:clean`  | Remove sample packages and generated artifacts               |
-| `pnpm script:mirror` | Mirror configurations across workspaces                      |
+Use `pnpm change` for publishable changes and inspect the result with `pnpm change status`. `pnpm exec repo release ci` owns Release PR preparation, npm publishing, tags, and GitHub Releases. Do not add release orchestration back to GitHub Actions.
 
-### Git & Committing
+## Code quality
 
-| Command                  | Description                                               |
-| ------------------------ | --------------------------------------------------------- |
-| `pnpm commit`            | Interactive commit prompt (enforces Conventional Commits) |
-| `pnpm commitlint --edit` | Validate commit message (runs as hook)                    |
-
-## Code Organization
-
-### Test Location
-
-Tests are colocated with their targets in `test/*.test.ts` directories within each workspace. This mirrors the monorepo convention that keeps unit tests adjacent to the code they test.
-
-### Public Assets
-
-Each app manages its own public assets (e.g., `public/`, `worker/`) to keep deployments self-contained.
-
-### Workspace Dependencies
-
-Workspaces use `workspace:*` protocol for internal dependencies. Root `package.json` contains shared devDependencies that are inherited by workspaces.
-
-## Coding Conventions
-
-- **File Naming**: kebab-case for files (e.g., `user-table.vue`, `api-client.ts`)
-- **Export Naming**: PascalCase for components, camelCase for utilities
-- **Indentation**: 2 spaces (enforced by `.editorconfig`)
-- **Line Endings**: LF (enforced by `.editorconfig`)
-- **Language**: TypeScript (`.ts`/`.tsx`) and Vue SFCs preferred
-
-## Quality & Standards
-
-- **ESLint**: `@icebreakers/eslint-config` - all changed JavaScript, TypeScript, and Vue code must pass ESLint before commit
-- **Stylelint**: `@icebreakers/stylelint-config` for CSS/SCSS and Vue style blocks; all style-related changes must pass Stylelint before commit
-- **Testing**: Vitest with v8 coverage (reports to `coverage/`)
-- **Commits**: Conventional Commits required (enforced by commitlint + Husky)
-- **Pre-commit Hooks**: Husky + lint-staged run staged-file ESLint/Stylelint checks and workspace typechecks
-- **Type Checking**: TypeScript workspaces must pass `tsc` via their `typecheck` script; Vue workspaces must pass `vue-tsc` via their `typecheck` script
-- **Pre-push Hooks**: pushes must pass repository-wide `pnpm lint` and `pnpm typecheck`, with additional `build` / `test` / `tsd` runs based on changed files
-
-## Refactoring Expectations
-
-- Treat any code file above roughly 300 lines as a refactor signal.
-- Do not keep extending already-large files when responsibilities can be split cleanly.
-- Prefer folder-based decomposition over suffix-only sibling files such as `xxx.config.ts` or `xxx.filter.ts`.
-- Before commit, review touched large files and split or restructure them when the new change would otherwise make them harder to maintain.
-
-## Publishing Workflow
-
-This monorepo uses pnpm native versioning:
-
-1. Make changes to packages
-2. Run `pnpm change` to describe changes (patch/minor/major)
-3. Review with `pnpm change status`, then let CI create the version Release PR
-4. After merging, CI publishes from `main`; use pnpm lanes for prerelease tags
-
-The generated release workflow is intentionally thin: GitHub Actions handles
-checkout, installation, and permissions, while `pnpm exec repo release ci`
-owns version preparation, Release PRs, npm publishing, package tags, and
-GitHub Releases. Existing projects can bootstrap the migration with
-`pnpm dlx repoctl@latest upgrade --yes`; unmarked custom workflows are
-protected unless `repo upgrade --overwrite-release` is supplied.
-
-When modifying publishable packages, always create a pnpm change intent with `pnpm change` so releases stay traceable.
-
-## Template Customization
-
-When adapting this template for a new project:
-
-- Remove unused apps/packages with `pnpm script:clean`
-- Duplicate existing templates to create new modules quickly
-- Run `pnpm script:init` to align workspace configuration
-- Keep versions synchronized with `pnpm script:sync`
-- Update `package.json` name, repository, bugs URLs
+Use folder-based decomposition when touched code exceeds 300 lines. All changed TypeScript and Vue files must pass ESLint and typecheck; style files must pass Stylelint. New or changed public TypeScript APIs require `tsd` coverage.

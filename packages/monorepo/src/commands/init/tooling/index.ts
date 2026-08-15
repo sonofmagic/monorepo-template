@@ -2,6 +2,7 @@ import type { InitToolingExecutionOptions, InitToolingResult, InitToolingTarget 
 import type { PackageJson } from '@/types'
 import path from 'pathe'
 import { logger } from '@/core/logger'
+import { localize } from '@/i18n'
 import fs from '@/utils/fs'
 import { initToolingPresets, resolveToolingImportSource, resolveToolingPackageName } from './presets'
 import { initToolingTargets } from './types'
@@ -62,7 +63,7 @@ function resolveTargets(options: InitToolingExecutionOptions): InitToolingTarget
 export function normalizeInitToolingTargets(input: string[]) {
   const unknown = input.filter(item => !initToolingTargets.includes(item as InitToolingTarget))
   if (unknown.length > 0) {
-    throw new Error(`未知的 init tooling 目标: ${unknown.join(', ')}`)
+    throw new Error(localize(`Unknown init tooling target: ${unknown.join(', ')}`, `未知的 init tooling 目标：${unknown.join(', ')}`))
   }
   return input as InitToolingTarget[]
 }
@@ -80,7 +81,7 @@ export async function initTooling(cwd: string, options: InitToolingExecutionOpti
 
   const pkgJsonPath = path.resolve(cwd, 'package.json')
   if (!await fs.pathExists(pkgJsonPath)) {
-    throw new Error(`未找到 package.json，无法初始化 tooling: ${pkgJsonPath}`)
+    throw new Error(localize(`Cannot initialize tooling because package.json was not found: ${pkgJsonPath}`, `未找到 package.json，无法初始化 tooling：${pkgJsonPath}`))
   }
 
   const packageJson = await fs.readJson<PackageJson>(pkgJsonPath)
@@ -104,7 +105,7 @@ export async function initTooling(cwd: string, options: InitToolingExecutionOpti
 
     if (exists && !options.force) {
       skippedFiles.push(preset.filepath)
-      logger.info(`skip existing init target: ${preset.filepath}`)
+      logger.info(localize(`Skipped existing init target: ${preset.filepath}`, `跳过已存在的初始化目标：${preset.filepath}`))
       continue
     }
 

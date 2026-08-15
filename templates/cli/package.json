@@ -2,18 +2,25 @@
   "name": "@icebreakers/cli",
   "type": "module",
   "version": "0.0.0",
-  "description": "icebreaker's cli template",
+  "private": true,
+  "description": "Internal CLI template shipped with repoctl",
   "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
+  "homepage": "https://repo.icebreaker.top",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "url": "git+https://github.com/sonofmagic/repoctl.git",
     "directory": "templates/cli"
   },
   "bugs": {
-    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+    "url": "https://github.com/sonofmagic/repoctl/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "repoctl",
+    "cli",
+    "template",
+    "typescript"
+  ],
   "bin": {
     "ice": "./dev/index.ts"
   },

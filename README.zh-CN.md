@@ -1,135 +1,96 @@
-# monorepo-template
+# repoctl
 
-[![codecov](https://codecov.io/gh/sonofmagic/monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/monorepo-template)
+[![codecov](https://codecov.io/gh/sonofmagic/repoctl/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/repoctl)
 
-中文 | [English Version](README.md)
+[English](README.md) | 简体中文
 
-> 基于 pnpm、Turbo Repo 与 pnpm 原生 versioning 的现代多包模板，帮助你快速搭建企业级 Monorepo。
+repoctl 是面向 pnpm 与 Turborepo monorepo 的任务型 CLI，用于初始化、维护、校验和发布工作区。它可以渐进接入已有仓库，也提供可选的内置模板来创建新的包与应用。
 
-## 概览
+## repoctl 管理什么
 
-monorepo-template 面向实际项目，内置统一的构建、测试、发布、代码风格与提交规范，适用于需要同时维护多个可部署应用和共享包的团队。
+- 通过 `repo init` 和 `repo doctor` 初始化并诊断工作区。
+- 通过 `repo templates` 和 `repo new` 创建包与应用。
+- 通过 `repo check` 和 `repo verify` 命令组执行可重复的本地校验。
+- 通过 `repoctl/tooling` 管理工程配置。
+- 默认保留非受管文件的工作区升级。
+- 基于 pnpm change intents 的正式发布与预发布。
+- 面向 CI、编辑器和排障流程的 JSON 与 Markdown 报告。
 
-## 主要特性
+## 安装
 
-- **模块化结构**：模板源代码集中在 `templates/`，可复用工具包位于 `packages/`，职责清晰。
-- **集中式脚手架资源**：`@icebreakers/monorepo-templates` 打包骨架、模板与升级资产，供 `monorepo` 与 `create-icebreaker` 统一使用。
-- **统一工具链**：pnpm 工作区与版本管理、Turbo 任务编排和 Vitest 单测覆盖开发到交付的全流程。
-- **工程规范**：集成 ESLint、Stylelint、Husky、Commitlint，自动化保障代码质量与提交信息。
-- **可扩展模板**：`repoctl` 内置 setup、sync、clean、new、check 与 release helpers。`repo` 作为主推荐命令，`repoctl`、`rc` 和 `@icebreakers/monorepo` 保留为兼容入口。
-- **CI/CD 友好**：极简 GitHub Actions 入口将版本准备、npm provenance、tag 与 GitHub Release 编排统一交给 `repoctl`。
-
-## 快速开始
-
-1. **准备环境**：确认 Node.js >= 20，并执行 `corepack enable` 启用 pnpm。
-2. **安装依赖**：运行 `pnpm install` 安装所有工作区依赖。
-3. **初始化仓库默认值**：运行 `pnpm setup` 同步推荐的 workspace 元数据与工程化配置。
-4. **创建下一个包或应用**：运行 `pnpm new my-package` 进入引导式创建流程。
-5. **本地开发**：使用 `pnpm dev` 启动 Turbo 并行开发任务，在各应用内快速迭代。
-6. **构建与验证**：依次运行 `pnpm check`、`pnpm build`、`pnpm test`、`pnpm lint`。
-7. **模板清理（可选）**：执行 `pnpm clean:repo` 清理示例包，为自定义项目腾出空间。
-
-### 快捷初始化
-
-- 引导式仓库维护：
-  - `pnpm setup`
-  - `pnpm new my-package`
-  - `pnpm check`
-- 直接使用 CLI 也可以：
-  - `pnpm exec repo setup`
-  - `pnpm exec repo new my-package`
-  - `pnpm exec repo check`
-- 零安装清理：`pnpm dlx repo@latest clean --yes`，需要保留 private 包时追加 `--include-private`。
-  `repoctl` 仍然兼容；`rc` 不作为主推荐入口，主要是为了降低和其他全局命令冲突的概率。
-- 一键脚手架：`pnpm create icebreaker` 或 `npm create icebreaker@latest`，进入交互模式，输入目标目录并选择保留的模板。可用 `--templates tsdown,vue-hono` 或 `--templates 1,3` 预选模板。
-
-## 仓库结构
-
-```text
-templates/
-  cli/          # CLI 程序脚手架
-  client/       # Web 客户端示例（如 Vue/React）
-  server/       # 服务端或 API 层入口
-  vitepress/    # 静态站点或文档站
-  tsdown/       # 基于 tsdown 的库模板
-  vue-lib/      # Vue 组件库模板
-packages/
-  monorepo/           # @icebreakers/monorepo 兼容包
-  repoctl/            # 包名，对外导出更短的 `repo` 命令
-  create-icebreaker/  # npm create 脚手架
-  monorepo-templates/ # 模板、骨架与资产资源包
-```
-
-- `templates/cli`：CLI 工具示例。
-- `templates/client`：前端富客户端范例。
-- `templates/server`：服务端或 API 框架入口。
-- `templates/vitepress`：营销页或文档站示例。
-- `templates/tsdown`：基于 tsdown 的库模板。
-- `templates/vue-lib`：Vue 组件库模板。
-- `packages/*`：共享库与脚手架工具，可被各应用复用。
-- 根目录配置文件（如 `turbo.json`、`tsconfig.json`、`eslint.config.js`）确保跨工作区设置一致。
-
-## 常用脚本
-
-| 命令                          | 说明                                      |
-| ----------------------------- | ----------------------------------------- |
-| `pnpm install`                | 安装所有工作区依赖。                      |
-| `pnpm dev`                    | 并行运行所有包含 `dev` 脚本的工作区。     |
-| `pnpm build`                  | 通过 Turbo 执行整仓构建。                 |
-| `pnpm test` / `pnpm test:dev` | 运行 Vitest（一次性 / 监听模式）。        |
-| `pnpm lint`                   | 在整个仓库执行 ESLint 与 Stylelint。      |
-| `pnpm change`                 | 使用 pnpm 原生方式记录版本变更意图。      |
-| `pnpm change status`          | 预览待发布的版本计划。                    |
-| `pnpm exec repo release ci`   | 执行 CI 发版编排（准备、发布或恢复）。    |
-| `pnpm publish-packages`       | 执行正式版 pnpm 发布流程。                |
-| `pnpm exec repo release pre`  | 管理 prerelease 的进入、退出与发布。      |
-| `pnpm setup`                  | 初始化推荐的 workspace 元数据与 tooling。 |
-| `pnpm new <name>`             | 使用引导式流程创建新的包或应用。          |
-| `pnpm check`                  | 执行推荐的本地校验。                      |
-| `pnpm exec repo setup`        | `pnpm setup` 的 CLI 直连写法。            |
-| `pnpm exec repo new`          | 直接使用 CLI 创建新包或应用。             |
-| `pnpm exec repo check`        | 直接使用 CLI 执行本地校验。               |
-| `pnpm script:init`            | 通过兼容脚本初始化模板配置。              |
-| `pnpm script:sync`            | 通过 `repoctl` 同步仓库资产。             |
-| `pnpm script:clean`           | 清理示例包及生成产物。                    |
-| `pnpm script:mirror`          | 写入 VS Code 终端镜像环境变量。           |
-
-## 模板使用流程
-
-- 使用 `pnpm create icebreaker` 在新目录中生成精简后的工作区。
-- 在已有工作区中，优先使用 `pnpm setup`、`pnpm new` 与 `pnpm check` 作为默认维护路径。
-- 安装依赖后执行 `pnpm install`、`pnpm dev` 开始开发。
-- 根据团队需求继续增删应用/包或复制模板扩展模块。
-
-## 发布与版本管理
-
-结合 pnpm 原生 versioning 与极简 GitHub Actions 入口实现自动化发版：
-
-1. 通过 `pnpm change` 记录改动，并用 `pnpm change status` 检查版本计划。
-2. `pnpm exec repo release ci` 消费 intent、生成版本，并通过 GitHub API 创建或更新 Release PR。
-3. Release PR 合并后，同一个命令从 `main` 发布尚未发布的版本，并创建 package tag 与 GitHub Release。
-4. 使用 `pnpm exec repo release pre enter <lane>` 和 `pnpm exec repo release pre publish` 管理 alpha、beta、rc、next 预发布轨道。
-5. 发布使用 GitHub OIDC，不需要长期保存 npm token。
-
-存量项目首次迁移只需要执行一次：
+repoctl 需要 Node.js 22.12 或更高版本。
 
 ```bash
-pnpm dlx repoctl@latest upgrade --yes
+pnpm add -D repoctl
 ```
 
-之后恢复使用 `pnpm exec repo upgrade --yes`。未标记的自定义 release workflow 默认保留，确认替换内容后再使用 `repo upgrade --overwrite-release`。
+包名是 `repoctl`，推荐命令是 `repo`。
 
-## 质量保障
+```bash
+pnpm exec repo init
+pnpm exec repo doctor
+pnpm exec repo templates
+pnpm exec repo new my-package
+pnpm exec repo check
+```
 
-- **代码规范**：`.editorconfig` 约定两空格缩进与 LF 换行，ESLint 与 Stylelint 保证多包一致性。
-- **提交校验**：Husky 与 lint-staged 会在提交前对 staged 文件执行 ESLint/Stylelint 自动修复。
-- **测试与覆盖率**：运行 `pnpm test -- --coverage`，在 `coverage/` 输出覆盖率报告。
-- **持续升级**：执行 `npx repo@latest` 获取模板最新能力；`npx repoctl@latest` 仍保留兼容。
+当脚本中更适合使用完整名称时，也可以使用 `repoctl`；两个 bin 提供相同命令。
 
-## 更多资源
+## 创建工作区
 
-- 官方文档：https://repo.icebreaker.top/
-- 贡献指南：参阅 `CONTRIBUTING.md` 了解协作流程。
-- 行为准则：查看 `CODE_OF_CONDUCT.md` 了解社区守则。
-- 安全策略：遵循 `SECURITY.md` 汇报安全问题。
-- 许可证：详见 `LICENSE` 了解项目开源协议。
+```bash
+npm create repoctl@latest
+# 或
+pnpm create repoctl
+```
+
+create 命令会让你选择需要的内置模板，然后进入 `repo init`、`repo doctor`、`repo new` 与 `repo check` 的标准工作流。
+
+## 国际化
+
+CLI 默认输出英文。可通过参数或环境变量显式切换为简体中文：
+
+```bash
+pnpm exec repo --lang zh-CN doctor
+REPOCTL_LANG=zh-CN pnpm exec repo doctor
+```
+
+支持 `en` 和 `zh-CN`。JSON 字段、检查 ID、状态和命令名不会随语言变化。
+
+## 包结构
+
+| 包                                                               | 职责                                     |
+| ---------------------------------------------------------------- | ---------------------------------------- |
+| [`repoctl`](packages/repoctl)                                    | 推荐 CLI 与公共 API 入口                 |
+| [`@icebreakers/monorepo`](packages/monorepo)                     | Core engine 与高级程序化 API             |
+| [`@icebreakers/monorepo-templates`](packages/monorepo-templates) | 内置模板和受管工作区资产                 |
+| [`create-repoctl`](packages/create-repoctl)                      | 推荐的 `npm create` / `pnpm create` 入口 |
+| [`create-icebreaker`](packages/create-icebreaker)                | 兼容 create 入口                         |
+
+`templates/` 下的工作区是私有源码资产，通过 `@icebreakers/monorepo-templates` 交付，不再作为独立 npm 包发布。
+
+## 开发
+
+```bash
+corepack enable
+pnpm install
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm tsd
+pnpm test
+```
+
+修改可发布包时使用 `pnpm change` 记录变更，并通过 `pnpm change status` 检查发布计划。
+
+## 相关链接
+
+- 文档：https://repo.icebreaker.top
+- GitHub：https://github.com/sonofmagic/repoctl
+- Issues：https://github.com/sonofmagic/repoctl/issues
+- 安全策略：[SECURITY.md](SECURITY.md)
+- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
+
+## 许可证
+
+[MIT](LICENSE)

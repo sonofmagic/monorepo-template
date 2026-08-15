@@ -1,5 +1,6 @@
 import type { EnvInfo, EnvSupportBundle } from '../../../commands/env'
 import os from 'node:os'
+import { localize } from '../../../i18n'
 
 interface EnvSupportOutputOptions {
   json?: boolean
@@ -41,7 +42,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | undefined]>)
     .join('<br>')
 
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatCell(value)} |`),
   ].join('\n')
@@ -51,11 +52,11 @@ function formatSupportBundleMarkdown(bundle: EnvSupportBundle) {
   const warningsAndFailures = bundle.doctor.checks.filter(check => check.status !== 'pass')
 
   return [
-    '# Repo support bundle',
+    localize('# Repo support bundle', '# Repo 支持信息包'),
     '',
-    `Generated at: ${bundle.generatedAt}`,
+    localize(`Generated at: ${bundle.generatedAt}`, `生成时间：${bundle.generatedAt}`),
     '',
-    '## Environment',
+    localize('## Environment', '## 环境'),
     '',
     formatMarkdownTable([
       ['cwd', bundle.env.cwd],
@@ -67,7 +68,7 @@ function formatSupportBundleMarkdown(bundle: EnvSupportBundle) {
       ['platform', `${bundle.env.platform}/${bundle.env.arch}`],
     ]),
     '',
-    '## Diagnostics',
+    localize('## Diagnostics', '## 诊断'),
     '',
     formatMarkdownTable([
       ['doctor pass', bundle.doctor.summary.pass],
@@ -79,17 +80,17 @@ function formatSupportBundleMarkdown(bundle: EnvSupportBundle) {
     '',
     ...(warningsAndFailures.length > 0
       ? [
-          '## Doctor findings',
+          localize('## Doctor findings', '## Doctor 问题'),
           '',
-          ...warningsAndFailures.map(check => `- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`),
+          ...warningsAndFailures.map(check => localize(`- ${check.status}: ${check.title}${check.fix ? ` (fix: ${check.fix})` : ''}`, `- ${check.status}: ${check.title}${check.fix ? `（修复：${check.fix}）` : ''}`)),
           '',
         ]
       : []),
-    '## Check plan',
+    localize('## Check plan', '## 检查计划'),
     '',
     ...bundle.checkPlan.commands.map(command => `- \`${command.command}\` - ${command.description}`),
     '',
-    '## Report paths',
+    localize('## Report paths', '## 报告路径'),
     '',
     formatMarkdownTable([
       ['doctor', bundle.paths.paths.doctorReport.relativePath],

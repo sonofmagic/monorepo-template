@@ -44,12 +44,12 @@ describe('ai prompt create command', () => {
 
     const content = await generateAgenticTemplate({ cwd: '/repo' })
 
-    expect(content).toContain('目标/产物')
-    expect(content).toContain('里程碑（根因→设计→实现→验证）')
+    expect(content).toContain('Goal and deliverables')
+    expect(content).toContain('Milestones (root cause, design, implementation, and verification)')
     expect(ensureDirMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030')
     expect(pathExistsMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030/prompt.md')
-    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030/prompt.md', expect.stringContaining('目标/产物'), 'utf8')
-    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('已生成模板'))
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/prompts/20250214-102030/prompt.md', expect.stringContaining('Goal and deliverables'), 'utf8')
+    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('Generated template'))
   })
 
   it('writes template with name/baseDir and reports overwrite', async () => {
@@ -93,8 +93,8 @@ describe('ai prompt create command', () => {
 
     expect(ensureDirMock).toHaveBeenCalledWith('/repo/agentic')
     expect(pathExistsMock).toHaveBeenCalledWith('/repo/agentic/checkout.json')
-    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/checkout.json', expect.stringContaining('"目标/产物"'), 'utf8')
-    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('已覆盖模板'))
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/checkout.json', expect.stringContaining('"Goal and deliverables"'), 'utf8')
+    expect(successMock).toHaveBeenCalledWith(expect.stringContaining('Overwrote template'))
     expect(content.trim().startsWith('{')).toBe(true)
   })
 
@@ -138,8 +138,8 @@ describe('ai prompt create command', () => {
     expect(readJsonMock).toHaveBeenCalledWith('/repo/agentic/tasks.json')
     expect(ensureDirMock).toHaveBeenCalledWith('/repo/agentic')
     expect(pathExistsMock).toHaveBeenCalledWith('/repo/agentic/checkout.md')
-    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/checkout.md', expect.stringContaining('目标/产物'), 'utf8')
-    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/payments.json', expect.stringContaining('"目标/产物"'), 'utf8')
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/checkout.md', expect.stringContaining('Goal and deliverables'), 'utf8')
+    expect(outputFileMock).toHaveBeenCalledWith('/repo/agentic/payments.json', expect.stringContaining('"Goal and deliverables"'), 'utf8')
     expect(successMock).toHaveBeenCalledTimes(2)
   })
 

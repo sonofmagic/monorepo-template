@@ -1,6 +1,7 @@
 import type { Command } from '@icebreakers/monorepo-templates'
 import process from 'node:process'
 import { logger } from '../../core/logger'
+import { localize } from '../../i18n'
 
 async function runReleaseAction(action: () => void | Promise<void>) {
   try {
@@ -13,13 +14,13 @@ async function runReleaseAction(action: () => void | Promise<void>) {
 }
 
 export function registerReleaseCommands(program: Command, cwd: string) {
-  const releaseCommand = program.command('release').description('发布与 pnpm versioning 工具集')
+  const releaseCommand = program.command('release').description(localize('Release and pnpm versioning commands', '发布与 pnpm versioning 工具集'))
 
   releaseCommand.command('ci')
-    .description('在 CI 中自动准备、发布和恢复版本')
-    .option('--mode <mode>', 'auto / prepare / publish / publish-unpublished', 'auto')
-    .option('--package <name>', 'publish-unpublished 使用的 package')
-    .option('--version <version>', 'publish-unpublished 使用的版本')
+    .description(localize('Prepare, publish, or recover versions in CI', '在 CI 中自动准备、发布和恢复版本'))
+    .option('--mode <mode>', localize('auto / prepare / publish / publish-unpublished', 'auto / prepare / publish / publish-unpublished'), 'auto')
+    .option('--package <name>', localize('Package used by publish-unpublished mode', 'publish-unpublished 使用的 package'))
+    .option('--version <version>', localize('Version used by publish-unpublished mode', 'publish-unpublished 使用的版本'))
     .action(async (opts: { mode?: 'auto' | 'prepare' | 'publish' | 'publish-unpublished', package?: string, version?: string }) => {
       await runReleaseAction(async () => {
         const { releaseCi } = await import('@/commands')
@@ -29,15 +30,16 @@ export function registerReleaseCommands(program: Command, cwd: string) {
           ...(opts.package ? { packageName: opts.package } : {}),
           ...(opts.version ? { packageVersion: opts.version } : {}),
         })
+        logger.success(localize('Release CI finished.', 'Release CI 完成。'))
       })
     })
 
-  const notesCommand = releaseCommand.command('notes').description('维护 GitHub Release 正文')
+  const notesCommand = releaseCommand.command('notes').description(localize('Manage GitHub Release notes', '维护 GitHub Release 正文'))
   notesCommand.command('repair')
-    .description('按每个发布 tag 对应的 changelog 重建 GitHub Release 正文')
-    .option('--all', '修复所有可识别的 GitHub Release')
-    .option('--tag <package@version>', '只修复指定 package@version')
-    .option('--dry-run', '只生成并统计，不更新 GitHub Release')
+    .description(localize('Rebuild GitHub Release notes from the changelog for each release tag', '按每个发布 tag 对应的 changelog 重建 GitHub Release 正文'))
+    .option('--all', localize('Repair every recognized GitHub Release', '修复所有可识别的 GitHub Release'))
+    .option('--tag <package@version>', localize('Repair only the specified package@version', '只修复指定 package@version'))
+    .option('--dry-run', localize('Generate and summarize without updating GitHub Releases', '只生成并统计，不更新 GitHub Release'))
     .action(async (opts: { all?: boolean, tag?: string, dryRun?: boolean }) => {
       await runReleaseAction(async () => {
         const { repairReleaseNotes } = await import('@/commands')
@@ -47,71 +49,74 @@ export function registerReleaseCommands(program: Command, cwd: string) {
           ...(opts.tag ? { tag: opts.tag } : {}),
           ...(opts.dryRun ? { dryRun: true } : {}),
         })
-        logger.success(`release notes repaired: ${result.repaired.length}; skipped: ${result.skipped.length}`)
+        logger.success(localize(
+          `Release notes repaired: ${result.repaired.length}; skipped: ${result.skipped.length}`,
+          `Release 正文已修复：${result.repaired.length}；已跳过：${result.skipped.length}`,
+        ))
       })
     })
 
   const stableCommand = releaseCommand.command('stable')
-    .description('在 main 分支执行正式发布')
+    .description(localize('Run a stable release from main', '在 main 分支执行正式发布'))
     .action(async () => {
       await runReleaseAction(async () => {
         const { releaseStable } = await import('@/commands')
         await releaseStable({ cwd })
-        logger.success('stable release finished!')
+        logger.success(localize('Stable release finished.', '稳定版发布完成。'))
       })
     })
 
   stableCommand.command('prepare')
-    .description('消费 pnpm change intents 并准备 Release PR')
+    .description(localize('Consume pnpm change intents and prepare a Release PR', '消费 pnpm change intents 并准备 Release PR'))
     .action(async () => {
       await runReleaseAction(async () => {
         const { prepareStable } = await import('@/commands')
         await prepareStable({ cwd })
-        logger.success('stable release preparation finished!')
+        logger.success(localize('Stable release preparation finished.', '稳定版发布准备完成。'))
       })
     })
 
   stableCommand.command('publish')
-    .description('发布 main 分支上尚未发布的包')
+    .description(localize('Publish versions on main that are not yet on npm', '发布 main 分支上尚未发布的包'))
     .action(async () => {
       await runReleaseAction(async () => {
         const { publishStable } = await import('@/commands')
         await publishStable({ cwd })
-        logger.success('stable package publish finished!')
+        logger.success(localize('Stable package publish finished.', '稳定版包发布完成。'))
       })
     })
 
-  const preCommand = releaseCommand.command('pre').description('执行或管理 prerelease 发布')
+  const preCommand = releaseCommand.command('pre').description(localize('Run or manage prereleases', '执行或管理 prerelease 发布'))
 
   preCommand.command('publish')
     .alias('run')
-    .description('在 alpha/beta/rc/next 分支发布 prerelease')
+    .description(localize('Publish a prerelease from an alpha, beta, rc, or next lane', '在 alpha/beta/rc/next 分支发布 prerelease'))
     .action(async () => {
       await runReleaseAction(async () => {
         const { releasePrerelease } = await import('@/commands')
         await releasePrerelease({ cwd })
-        logger.success('prerelease finished!')
+        logger.success(localize('Prerelease finished.', '预发布完成。'))
       })
     })
 
   preCommand.command('enter')
-    .description('进入 pnpm prerelease lane')
-    .argument('<tag>', 'alpha / beta / rc / next')
+    .description(localize('Enter a pnpm prerelease lane', '进入 pnpm prerelease lane'))
+    .argument('<tag>', localize('alpha / beta / rc / next', 'alpha / beta / rc / next'))
     .action(async (tag: string) => {
       await runReleaseAction(async () => {
         const { enterPrerelease } = await import('@/commands')
         await enterPrerelease(tag, { cwd })
-        logger.success(`entered ${tag} prerelease mode!`)
+        logger.success(localize(`Entered ${tag} prerelease mode.`, `已进入 ${tag} 预发布模式。`))
       })
     })
 
   preCommand.command('exit')
-    .description('退出 pnpm prerelease lane')
+    .description(localize('Exit the pnpm prerelease lane', '退出 pnpm prerelease lane'))
     .action(async () => {
       await runReleaseAction(async () => {
         const { exitPrerelease } = await import('@/commands')
         await exitPrerelease({ cwd })
-        logger.success('exited prerelease mode!')
+        logger.success(localize('Exited prerelease mode.', '已退出预发布模式。'))
       })
     })
 }

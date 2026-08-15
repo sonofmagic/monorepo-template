@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'
+import { localize } from '../i18n'
 import fs from '../utils/fs'
 import { verifyCommitMsg, verifyPreCommit, verifyStagedTypecheck } from './verify'
 
@@ -37,7 +38,7 @@ export function resolveRecommendedCheckPlan(options: RecommendedCheckOptions): R
         {
           name: 'commit-msg',
           command: `repo verify commit-msg ${editFile}`,
-          description: '校验 commit message 文件是否符合提交规范。',
+          description: localize('Validate a commit message file.', '校验 commit message 文件是否符合提交规范。'),
         },
       ],
     }
@@ -51,7 +52,7 @@ export function resolveRecommendedCheckPlan(options: RecommendedCheckOptions): R
         {
           name: 'pre-push',
           command: 'repo verify pre-push',
-          description: '执行完整 pre-push 校验，包含整仓 lint/typecheck，并按变更范围运行 build/test/tsd。',
+          description: localize('Run full pre-push verification with lint, typecheck, build, test, and tsd.', '执行完整 pre-push 校验，包含整仓 lint/typecheck，并按变更范围运行 build/test/tsd。'),
         },
       ],
     }
@@ -65,12 +66,12 @@ export function resolveRecommendedCheckPlan(options: RecommendedCheckOptions): R
         {
           name: 'pre-commit',
           command: 'repo verify pre-commit',
-          description: '执行 pre-commit 校验。',
+          description: localize('Run pre-commit verification.', '执行 pre-commit 校验。'),
         },
         {
           name: 'staged-typecheck',
           command: 'repo verify staged-typecheck <staged files>',
-          description: '按暂存 TypeScript/Vue 文件所在 workspace 路由 typecheck。',
+          description: localize('Route typecheck to workspaces containing staged TypeScript or Vue files.', '按暂存 TypeScript/Vue 文件所在 workspace 路由 typecheck。'),
         },
       ],
     }
@@ -83,7 +84,7 @@ export function resolveRecommendedCheckPlan(options: RecommendedCheckOptions): R
       {
         name: 'pre-commit',
         command: 'repo verify pre-commit',
-        description: '执行默认轻量本地校验。',
+        description: localize('Run the default lightweight local verification.', '执行默认轻量本地校验。'),
       },
     ],
   }
@@ -118,7 +119,7 @@ export async function resolveFullWorkspaceCheckPlan(cwd: string): Promise<Recomm
     .map(name => ({
       name,
       command: `pnpm ${name}`,
-      description: `运行根 package.json 的 ${name} 脚本。`,
+      description: localize(`Run the ${name} script from the root package.json.`, `运行根 package.json 的 ${name} 脚本。`),
       available: true,
     }))
 

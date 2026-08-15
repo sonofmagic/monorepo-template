@@ -1,21 +1,19 @@
-# 模板与创建
+# Templates
 
-repoctl 的模板由 `@icebreakers/monorepo-templates` 维护。CLI、脚手架和文档都复用同一份模板元数据。
+repoctl templates are maintained by `@icebreakers/monorepo-templates`. The CLI, scaffolder, and docs share the same template metadata.
 
-更偏维护者视角的模板元数据、健康检查和自定义模板说明见：[模板资产治理](./template-assets.md)。
+## Built-In Templates
 
-## 内置模板
+| Key           | Category | Default target     | Use case                |
+| ------------- | -------- | ------------------ | ----------------------- |
+| `tsdown`      | library  | `packages/tsdown`  | TypeScript library      |
+| `vue-lib`     | library  | `packages/vue-lib` | Vue 3 component library |
+| `vue-hono`    | app      | `apps/client`      | Vue 3 + Hono app        |
+| `hono-server` | service  | `apps/server`      | Hono API service        |
+| `vitepress`   | docs     | `apps/website`     | VitePress docs site     |
+| `cli`         | tool     | `apps/cli`         | TypeScript CLI          |
 
-| Key           | Category | 默认目录           | 适合场景                    |
-| ------------- | -------- | ------------------ | --------------------------- |
-| `tsdown`      | library  | `packages/tsdown`  | TypeScript 库包             |
-| `vue-lib`     | library  | `packages/vue-lib` | Vue 3 组件库                |
-| `vue-hono`    | app      | `apps/client`      | Vue 3 + Hono 前后端一体应用 |
-| `hono-server` | service  | `apps/server`      | Hono API 服务               |
-| `vitepress`   | docs     | `apps/website`     | VitePress 文档站            |
-| `cli`         | tool     | `apps/cli`         | TypeScript 命令行工具       |
-
-## 查看模板
+## Discover Templates
 
 ```bash
 repo templates
@@ -25,7 +23,7 @@ repo templates --json
 repo templates --markdown --out docs/templates.md
 ```
 
-## 创建模板
+## Create From A Template
 
 ```bash
 repo new sdk --template tsdown
@@ -35,72 +33,72 @@ repo new website --template vitepress
 repo new toolbox --template cli
 ```
 
-普通名字会自动放到模板约定的目录里，例如库包进入 `packages/`，应用进入 `apps/`。如果你传入带 `/` 的路径，例如 `packages/shared-utils`，repoctl 会尊重这个路径。
+Simple names are placed in the conventional target folder. Library templates go under `packages/`; app templates go under `apps/`. If you pass an explicit path such as `packages/shared-utils`, repoctl respects it.
 
-## 按目标选择模板
+## Choose By Goal
 
-### 要发布 npm 库
+### Publish an npm library
 
 ```bash
 repo new sdk --template tsdown
 ```
 
-生成后先检查：
+Check first:
 
-- `package.json` 的 `name`、`exports`、`types`。
-- `tsdown.config.ts` 是否符合产物格式。
-- 是否需要补 `tsd` 类型测试。
+- `package.json` `name`, `exports`, and `types`.
+- Whether `tsdown.config.ts` matches the desired output format.
+- Whether public types need `tsd` tests.
 
-### 要沉淀 Vue 组件
+### Build reusable Vue components
 
 ```bash
 repo new ui --template vue-lib
 ```
 
-生成后先检查：
+Check first:
 
-- 组件入口是否只导出稳定 API。
-- 样式是否能通过 Stylelint。
-- 文档站或示例应用是否需要同步创建。
+- Component entry points only expose stable APIs.
+- Styles pass Stylelint.
+- A docs site or example app should be created alongside it if needed.
 
-### 要创建应用或服务
+### Create an app or service
 
 ```bash
 repo new web --template vue-hono
 repo new api --template hono-server
 ```
 
-生成后先检查：
+Check first:
 
-- 运行时环境变量和部署平台约束。
-- `dev`、`build`、`typecheck` 脚本是否接入根任务。
-- 是否需要在 CI 里加入 E2E 或集成测试。
+- Runtime environment variables and deployment constraints.
+- `dev`, `build`, and `typecheck` scripts are part of root tasks.
+- CI needs integration or E2E tests.
 
-### 要创建文档站
+### Create a docs site
 
 ```bash
 repo new docs --template vitepress
 ```
 
-生成后先检查：
+Check first:
 
-- 导航和 sidebar 是否围绕产品或包名组织。
-- 是否需要中英文 locale。
-- 是否需要把 `repo templates --markdown` 输出写进文档。
+- Nav and sidebar are organized around the product or package.
+- A second locale is required.
+- `repo templates --markdown` output should be written into docs.
 
-### 要创建 CLI
+### Create a CLI
 
 ```bash
 repo new toolbox --template cli
 ```
 
-生成后先检查：
+Check first:
 
-- `bin` 字段是否符合最终命令名。
-- 参数解析、退出码和帮助信息是否可测试。
-- 是否需要把命令用法写入 README。
+- The `bin` field matches the final command name.
+- Argument parsing, exit codes, and help output are testable.
+- README documents command usage.
 
-## 创建前预览
+## Preview Creation
 
 ```bash
 repo new website --template vitepress --dry-run
@@ -108,52 +106,23 @@ repo new website --template vitepress --json
 repo new website --template vitepress --json --out plans/website.json
 ```
 
-`--dry-run` 不写入磁盘，只展示模板、源目录、目标目录、package name 和输出文件。
+`--dry-run` does not write files. It shows the template, source directory, target directory, package name, and output files.
 
-`--json` 输出同一份创建计划的结构化数据，隐含 `--dry-run`。
+`--json` emits the same plan as structured data and implies `--dry-run`.
 
-`--out <file>` 可以把文本或 JSON 预览写入文件，也隐含 `--dry-run`。
+`--out <file>` persists the preview and also implies `--dry-run`.
 
-## 固化默认模板
-
-```ts
-import { defineMonorepoConfig } from 'repoctl'
-
-export default defineMonorepoConfig({
-  commands: {
-    create: {
-      defaultTemplate: 'tsdown',
-    },
-  },
-})
-```
-
-之后：
-
-```bash
-repo new utils
-```
-
-会直接创建 `tsdown` 库包。
-
-## 检查模板健康状态
+## Check Template Health
 
 ```bash
 repo templates --check
 repo templates --check --json
 ```
 
-模板检查会确认：
+The check validates duplicate sources and targets, existing source directories, package metadata, categories, descriptions, and temporary files that would be filtered by the scaffolder.
 
-- 模板 source 和 target 没有重复。
-- 每个模板 source 目录都存在。
-- 每个模板根目录都有 `package.json`。
-- 每个模板都有 category 和 description。
-- 模板源目录里没有会被脚手架过滤掉的临时或生成文件。
+## Keep Reading
 
-## 继续阅读
-
-- [接入已有仓库](./adopt-existing.md)
-- [工作流与 CI](./workflows.md)
-- [配置文件](./config.md)
-- [模板资产治理](./template-assets.md)
+- [Adopt Existing Repositories](./adopt-existing.md)
+- [Workflows and CI](./workflows.md)
+- [Configuration](./config.md)

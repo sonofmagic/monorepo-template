@@ -3,6 +3,7 @@ import process from 'node:process'
 import { checkbox } from '@icebreakers/monorepo-templates'
 import pc from 'picocolors'
 import { logger } from '@/core/logger'
+import { localize } from '@/i18n'
 import fs from '@/utils/fs'
 import { isFileChanged } from '../../utils'
 
@@ -119,7 +120,7 @@ export async function flushPendingOverwrites(
 
   if (options.noOverwrite) {
     for (const item of pending) {
-      logger.info(`skip changed file: ${item.relPath}`)
+      logger.info(localize(`Skipped changed file: ${item.relPath}`, `跳过已变更文件：${item.relPath}`))
     }
     return
   }
@@ -133,13 +134,13 @@ export async function flushPendingOverwrites(
 
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     for (const item of pending) {
-      logger.info(`skip changed file in non-interactive mode: ${item.relPath}`)
+      logger.info(localize(`Skipped changed file in non-interactive mode: ${item.relPath}`, `非交互模式下跳过已变更文件：${item.relPath}`))
     }
     return
   }
 
   const selected = await checkbox({
-    message: '检测到以下文件内容与当前仓库不同，选择需要覆盖的文件',
+    message: localize('Select changed managed files to overwrite', '检测到以下文件内容与当前仓库不同，请选择要覆盖的文件'),
     choices: pending.map(item => ({
       name: pc.greenBright(item.relPath),
       value: item.targetPath,

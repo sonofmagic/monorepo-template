@@ -6,6 +6,7 @@ import path from 'pathe'
 import fs from '@/utils/fs'
 import { templatesDir as defaultTemplatesDir } from '../../constants'
 import { resolveCommandConfig } from '../../core/config'
+import { localize } from '../../i18n'
 
 /**
  * 内置模板映射表，source 指向 templates 根目录下的来源目录，target 为生成路径。
@@ -135,7 +136,7 @@ export async function resolveCreateNewProjectPlan(options?: CreateNewProjectOpti
   const templateDefinition = templateDefinitions[template]
 
   if (!templateDefinition) {
-    throw new Error(`未找到名为 ${template} 的模板，请检查 repoctl.config.ts`)
+    throw new Error(localize(`Template ${template} was not found; check repoctl.config.ts.`, `未找到名为 ${template} 的模板，请检查 repoctl.config.ts`))
   }
 
   const sourceDir = path.join(templatesRoot, templateDefinition.source)

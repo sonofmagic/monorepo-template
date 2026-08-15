@@ -2,10 +2,74 @@ import type { Command } from '@icebreakers/monorepo-templates'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 afterEach(async () => {
+  delete process.env['REPOCTL_LANG']
   await vi.resetModules()
 })
 
 describe('program help surface', () => {
+  it('uses Simplified Chinese help when REPOCTL_LANG is set', async () => {
+    process.env['REPOCTL_LANG'] = 'zh-CN'
+    const { default: program } = await import('@/cli/program')
+
+    let rootHelp = ''
+    program.configureOutput({
+      writeOut: (value) => {
+        rootHelp += value
+      },
+    })
+    program.outputHelp()
+    expect(rootHelp).toContain('用法： repo')
+    expect(rootHelp).toContain('选项：')
+    expect(rootHelp).toContain('命令：')
+    expect(rootHelp).toContain('显示命令帮助')
+    expect(rootHelp).toContain('面向 pnpm 与 Turborepo 工作区')
+    expect(rootHelp).toContain('输出语言：en 或 zh-CN')
+    expect(rootHelp).toContain('快速开始：')
+    expect(program.commands.find((command: Command) => command.name() === 'doctor')?.description()).toContain('诊断当前仓库')
+  })
+
+  it('uses repoctl in help when invoked through the repoctl bin', async () => {
+    const entry = process.argv[1]
+    process.argv[1] = '/workspace/bin/repoctl.js'
+    try {
+      await vi.resetModules()
+      const { default: program } = await import('@/cli/program')
+      let renderedHelp = ''
+      program.configureOutput({
+        writeOut: (value) => {
+          renderedHelp += value
+        },
+      })
+      program.outputHelp()
+      expect(program.name()).toBe('repoctl')
+      expect(renderedHelp).toContain('Usage: repoctl')
+      expect(renderedHelp).toContain('$ repoctl doctor')
+    }
+    finally {
+      if (entry === undefined) {
+        process.argv.splice(1, 1)
+      }
+      else {
+        process.argv[1] = entry
+      }
+    }
+  })
+
+  it('localizes Commander errors in Simplified Chinese', async () => {
+    process.env['REPOCTL_LANG'] = 'zh-CN'
+    const { default: program } = await import('@/cli/program')
+    let errorOutput = ''
+    program.exitOverride()
+    program.configureOutput({
+      writeErr: (value) => {
+        errorOutput += value
+      },
+    })
+
+    await expect(program.parseAsync(['node', 'repo', 'missing-command'])).rejects.toThrow()
+    expect(errorOutput).toContain('错误： 未知命令 \'missing-command\'')
+  })
+
   it('exposes grouped commands and short aliases in help output', async () => {
     const { default: program } = await import('@/cli/program')
 

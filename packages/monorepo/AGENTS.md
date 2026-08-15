@@ -5,7 +5,7 @@ This file adds package-local guidance. Global rules are defined in the repositor
 ## Scope
 
 - Package path: `packages/monorepo`
-- Purpose: monorepo CLI implementation (`monorepo up`, `create`, `sync`, `clean`, `skills`, `ai`)
+- Purpose: core engine and programmatic API behind the `repo` and `repoctl` CLIs
 
 ## Structure
 

@@ -85,7 +85,7 @@ describe('init helpers coverage', () => {
       'blank_issues_enabled: false',
       'contact_links:',
       '  - name: Feature Request',
-      '    url: https://github.com/sonofmagic/monorepo-template/discussions',
+      '    url: https://github.com/sonofmagic/repoctl/discussions',
       '    about: Suggest new features for consideration',
       '',
     ].join('\n'))

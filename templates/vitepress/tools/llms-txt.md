@@ -1,9 +1,7 @@
----
-description: llms.txt 说明页已移动到独立的 AI 文档栏目。
----
+# llms.txt
 
-# llms.txt 已移动
+`llms.txt` is a convention for publishing a compact, AI-readable map of a documentation site.
 
-llms.txt 现在放在独立的 AI 文档栏目中维护。
+This site generates an English-default `/llms.txt` and a larger `/llms-full.txt`. Simplified Chinese content is namespaced under `/zh/`, and historical or internal files are excluded from the index.
 
-请阅读：[AI 文档入口：llms.txt](../ai/llms-txt.md)。
+See the [repoctl AI documentation](../ai/llms-txt.md) for URLs and maintenance rules.

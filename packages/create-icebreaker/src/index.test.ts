@@ -1,20 +1,13 @@
-import path from 'node:path'
-import process from 'node:process'
 import { describe, expect, it } from 'vitest'
-import { formatNextSteps } from './next-steps'
+import packageJson from '../package.json' with { type: 'json' }
 
-describe('formatNextSteps', () => {
-  it('guides users to the repoctl onboarding flow after scaffolding', () => {
-    const targetDir = path.join(process.cwd(), 'icebreaker-monorepo')
-
-    const output = formatNextSteps(targetDir)
-
-    expect(output).toContain('All set! Next steps:')
-    expect(output).toContain('cd icebreaker-monorepo')
-    expect(output).toContain('pnpm install')
-    expect(output).toContain('pnpm setup')
-    expect(output).toContain('pnpm new my-package')
-    expect(output).toContain('pnpm check')
-    expect(output).not.toContain('pnpm dev')
+describe('create-icebreaker compatibility package', () => {
+  it('keeps the compatibility bin and delegates to create-repoctl', () => {
+    expect(packageJson.bin).toEqual({
+      'create-icebreaker': 'bin/create-icebreaker.js',
+    })
+    expect(packageJson.dependencies).toEqual({
+      'create-repoctl': 'workspace:*',
+    })
   })
 })

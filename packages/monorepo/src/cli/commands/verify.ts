@@ -1,10 +1,11 @@
 import type { Command } from '@icebreakers/monorepo-templates'
+import { localize } from '../../i18n'
 
 export function registerVerifyCommands(program: Command, cwd: string) {
-  const verifyCommand = program.command('verify').alias('v').description('本地校验工具集')
+  const verifyCommand = program.command('verify').alias('v').description(localize('Local verification commands', '本地校验工具集'))
 
   verifyCommand.command('pre-push')
-    .description('按推送变更范围执行 build/test/tsd 校验')
+    .description(localize('Run build, test, and tsd checks for pushed changes', '按推送变更范围执行 build/test/tsd 校验'))
     .alias('push')
     .action(async () => {
       const { verifyPrePush } = await import('@/commands')
@@ -12,7 +13,7 @@ export function registerVerifyCommands(program: Command, cwd: string) {
     })
 
   verifyCommand.command('pre-commit')
-    .description('执行 lint-staged 校验')
+    .description(localize('Run lint-staged verification', '执行 lint-staged 校验'))
     .alias('commit')
     .action(async () => {
       const { verifyPreCommit } = await import('@/commands')
@@ -20,7 +21,7 @@ export function registerVerifyCommands(program: Command, cwd: string) {
     })
 
   verifyCommand.command('commit-msg')
-    .description('执行 commitlint 校验')
+    .description(localize('Run commitlint verification', '执行 commitlint 校验'))
     .alias('msg')
     .argument('<edit-file>')
     .action(async (editFile: string) => {
@@ -29,7 +30,7 @@ export function registerVerifyCommands(program: Command, cwd: string) {
     })
 
   verifyCommand.command('staged-typecheck')
-    .description('按暂存文件所在 workspace 执行 typecheck')
+    .description(localize('Run typecheck in workspaces containing staged files', '按暂存文件所在 workspace 执行 typecheck'))
     .alias('tc')
     .argument('[files...]')
     .action(async (files: string[] = []) => {

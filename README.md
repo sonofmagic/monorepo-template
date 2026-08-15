@@ -1,135 +1,96 @@
-# monorepo-template
+# repoctl
 
-[![codecov](https://codecov.io/gh/sonofmagic/monorepo-template/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/monorepo-template)
+[![codecov](https://codecov.io/gh/sonofmagic/repoctl/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/repoctl)
 
-English | [中文版本](README.zh-CN.md)
+English | [简体中文](README.zh-CN.md)
 
-> A modern pnpm + Turbo Repo starter with native pnpm versioning for production-ready monorepos.
+repoctl is a task-first CLI for initializing, maintaining, validating, and releasing pnpm and Turborepo monorepos. It works with existing workspaces and also ships optional templates for creating new packages and applications.
 
-## Overview
+## What repoctl manages
 
-monorepo-template is a production-oriented pnpm + Turbo monorepo template. It ships with unified build, test, release, linting, and commit conventions, making it ideal for teams maintaining multiple deployable apps alongside reusable packages.
+- Workspace initialization and health checks with `repo init` and `repo doctor`.
+- Package and application creation with `repo templates` and `repo new`.
+- Repeatable local verification with `repo check` and the `repo verify` command group.
+- Managed tooling configuration through `repoctl/tooling`.
+- Workspace upgrades that preserve unowned project files by default.
+- Stable and prerelease publishing based on pnpm change intents.
+- Machine-readable JSON and Markdown reports for CI, editors, and support workflows.
 
-## Key Features
+## Install
 
-- **Modular Architecture**: Template sources live under `templates/` while reusable tooling lives in `packages/`, keeping responsibilities clear.
-- **Centralized Scaffolding Assets**: `@icebreakers/monorepo-templates` packages templates and assets for both `monorepo` and `create-icebreaker`.
-- **Unified Toolchain**: pnpm workspaces and versioning, Turbo task pipelines, and Vitest streamline the entire lifecycle from development to release.
-- **Engineering Standards**: ESLint, Stylelint, Husky, and Commitlint keep code quality high and commit messages consistent.
-- **Extensible Template**: `repoctl` owns setup, sync, cleanup, package creation, checks, and release helpers. `repo` is the primary command, while `repoctl`, `rc`, and `@icebreakers/monorepo` remain compatibility entrypoints.
-- **CI/CD Ready**: A minimal GitHub Actions entrypoint delegates release orchestration, provenance publishing, and GitHub metadata to `repoctl`.
-
-## Quick Start
-
-1. **Prepare environment**: Ensure Node.js >= 20 and run `corepack enable` so pnpm is available.
-2. **Install dependencies**: Run `pnpm install` to fetch every workspace dependency.
-3. **Bootstrap repo defaults**: Run `pnpm setup` to apply the recommended workspace metadata and tooling setup.
-4. **Create the next package or app**: Run `pnpm new my-package` for the guided flow.
-5. **Local development**: Use `pnpm dev` to launch Turbo parallel dev scripts and iterate within each app.
-6. **Build and verify**: Run `pnpm check`, `pnpm build`, `pnpm test`, and `pnpm lint`.
-7. **Template cleanup (optional)**: Use `pnpm clean:repo` to prune sample packages when personalising the template.
-
-### Bootstrap shortcuts
-
-- Guided repo setup:
-  - `pnpm setup`
-  - `pnpm new my-package`
-  - `pnpm check`
-- Direct CLI equivalents:
-  - `pnpm exec repo setup`
-  - `pnpm exec repo new my-package`
-  - `pnpm exec repo check`
-- Zero-install cleanup on a fresh clone: `pnpm dlx repo@latest clean --yes` (add `--include-private` to keep private packages in scope).
-  `repoctl` is still supported, but `repo` is now the primary recommendation. `rc` is intentionally not the primary recommendation because short global commands are easier to collide with other CLIs.
-- One-liner scaffold: `pnpm create icebreaker` or `npm create icebreaker@latest` enters interactive mode, asks for the target directory, and lets you select which templates to keep. Use `--templates tsdown,vue-hono` or `--templates 1,3` to preselect.
-
-## Repository Layout
-
-```text
-templates/
-  cli/          # CLI application scaffold
-  client/       # Web client (e.g., Vue/React)
-  server/       # Server or API layer
-  vitepress/    # Static site or documentation portal
-  tsdown/       # Library template powered by tsdown
-  vue-lib/      # Vue component library template
-packages/
-  monorepo/           # @icebreakers/monorepo compatibility package
-  repoctl/            # package name, exports the recommended `repo` command
-  create-icebreaker/  # npm create flow
-  monorepo-templates/ # template and asset bundle for npm
-```
-
-- `templates/cli`: Sample CLI app scaffold.
-- `templates/client`: Sample rich web client application.
-- `templates/server`: Entry point for server or API services.
-- `templates/vitepress`: Static marketing or documentation site starter.
-- `templates/tsdown`: Library template powered by tsdown.
-- `templates/vue-lib`: Vue component library template.
-- `packages/*`: Reusable packages and scaffolding shared across apps.
-- Root configuration files (`turbo.json`, `tsconfig.json`, `eslint.config.js`, etc.) enforce consistent settings across the monorepo.
-
-## Common Scripts
-
-| Command                       | Description                                                          |
-| ----------------------------- | -------------------------------------------------------------------- |
-| `pnpm install`                | Install workspace dependencies.                                      |
-| `pnpm dev`                    | Run every workspace exposing a `dev` script in parallel.             |
-| `pnpm build`                  | Execute a repository-wide build through Turbo.                       |
-| `pnpm test` / `pnpm test:dev` | Run Vitest once or in watch mode.                                    |
-| `pnpm lint`                   | Apply ESLint and Stylelint checks across the monorepo.               |
-| `pnpm change`                 | Record a native pnpm change intent.                                  |
-| `pnpm change status`          | Preview the pending release plan.                                    |
-| `pnpm exec repo release ci`   | Run the CI release orchestrator.                                     |
-| `pnpm publish-packages`       | Run the stable pnpm publish flow.                                    |
-| `pnpm exec repo release pre`  | Manage prerelease enter, exit, and publish flows.                    |
-| `pnpm setup`                  | Bootstrap recommended workspace metadata and tooling.                |
-| `pnpm new <name>`             | Create a new package or app with the guided flow.                    |
-| `pnpm check`                  | Run recommended local verification.                                  |
-| `pnpm exec repo setup`        | Direct CLI equivalent of `pnpm setup`.                               |
-| `pnpm exec repo new`          | CLI entrypoint for package/app creation.                             |
-| `pnpm exec repo check`        | CLI entrypoint for local verification.                               |
-| `pnpm script:init`            | Initialise template settings via the `repoctl` compatibility script. |
-| `pnpm script:sync`            | Synchronise repo assets via `repoctl`.                               |
-| `pnpm script:clean`           | Remove sample packages and generated artifacts.                      |
-| `pnpm script:mirror`          | Apply the VS Code binary mirror compatibility shortcut.              |
-
-## Template Workflow
-
-- Use `pnpm create icebreaker` to scaffold a trimmed workspace in a new directory.
-- In an existing workspace, use `pnpm setup`, `pnpm new`, and `pnpm check` as the default maintenance path.
-- Install dependencies and start development with `pnpm install` and `pnpm dev`.
-- Add or remove apps/packages as your workspace evolves.
-
-## Release & Versioning
-
-Use pnpm's native versioning and the thin `repoctl` GitHub Actions entrypoint for automated releases:
-
-1. Capture changes with `pnpm change`, then review the result with `pnpm change status`.
-2. `pnpm exec repo release ci` consumes intents, versions packages, and upserts the Release PR through the GitHub API.
-3. After the Release PR is merged, the same command publishes unpublished versions from `main`, creates package tags, and upserts GitHub Releases.
-4. Use `pnpm exec repo release pre enter <lane>` and `pnpm exec repo release pre publish` for alpha, beta, rc, or next lanes.
-5. Keep npm OIDC publishing enabled with the workflow's `id-token` permission.
-
-Existing projects can migrate their release contract with one bootstrap command:
+repoctl requires Node.js 22.12 or newer.
 
 ```bash
-pnpm dlx repoctl@latest upgrade --yes
+pnpm add -D repoctl
 ```
 
-After that, regular upgrades use `pnpm exec repo upgrade --yes`. Unmarked custom release workflows are preserved; use `repo upgrade --overwrite-release` only after reviewing the replacement.
+The package name is `repoctl`; the recommended command is `repo`.
 
-## Quality Assurance
+```bash
+pnpm exec repo init
+pnpm exec repo doctor
+pnpm exec repo templates
+pnpm exec repo new my-package
+pnpm exec repo check
+```
 
-- **Code style**: `.editorconfig` enforces two-space indentation and LF line endings, while ESLint and Stylelint maintain consistency across packages.
-- **Commit hooks**: Husky and lint-staged run staged-file ESLint/Stylelint autofixes before commits.
-- **Testing & coverage**: Run `pnpm test -- --coverage` to export coverage reports into the `coverage/` directory.
-- **Staying current**: Use `npx repo@latest` to upgrade this template when new features ship. `npx repoctl@latest` remains supported for compatibility.
+Use `repoctl` when a longer, explicit executable name is preferable. Both bins expose the same commands.
 
-## More Resources
+## Create a workspace
 
-- Documentation: https://repo.icebreaker.top/
-- Contributing guide: See `CONTRIBUTING.md` for workflow details.
-- Code of Conduct: Review `CODE_OF_CONDUCT.md` to understand community expectations.
-- Security policy: Follow `SECURITY.md` to report security issues.
-- License: Refer to `LICENSE` for the full open-source license text.
+```bash
+npm create repoctl@latest
+# or
+pnpm create repoctl
+```
+
+The create command lets you select the built-in templates to include, then prepares the workspace for the normal `repo init`, `repo doctor`, `repo new`, and `repo check` workflow.
+
+## Internationalization
+
+CLI output is English by default. Select Simplified Chinese explicitly with either interface:
+
+```bash
+pnpm exec repo --lang zh-CN doctor
+REPOCTL_LANG=zh-CN pnpm exec repo doctor
+```
+
+Supported locales are `en` and `zh-CN`. Machine-readable field names, check IDs, statuses, and command names remain stable in every locale.
+
+## Packages
+
+| Package                                                          | Role                                                |
+| ---------------------------------------------------------------- | --------------------------------------------------- |
+| [`repoctl`](packages/repoctl)                                    | Recommended CLI and public API entrypoint           |
+| [`@icebreakers/monorepo`](packages/monorepo)                     | Core engine and advanced programmatic APIs          |
+| [`@icebreakers/monorepo-templates`](packages/monorepo-templates) | Built-in templates and managed workspace assets     |
+| [`create-repoctl`](packages/create-repoctl)                      | Recommended `npm create` / `pnpm create` entrypoint |
+| [`create-icebreaker`](packages/create-icebreaker)                | Compatibility create entrypoint                     |
+
+The workspaces under `templates/` are private source assets. They are shipped through `@icebreakers/monorepo-templates`; they are not independently published packages.
+
+## Development
+
+```bash
+corepack enable
+pnpm install
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm tsd
+pnpm test
+```
+
+Use `pnpm change` for changes that affect a publishable package and inspect the release plan with `pnpm change status`.
+
+## Documentation
+
+- Documentation: https://repo.icebreaker.top
+- GitHub: https://github.com/sonofmagic/repoctl
+- Issues: https://github.com/sonofmagic/repoctl/issues
+- Security: [SECURITY.md](SECURITY.md)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## License
+
+[MIT](LICENSE)

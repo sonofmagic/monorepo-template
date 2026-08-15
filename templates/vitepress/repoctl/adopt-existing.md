@@ -1,17 +1,17 @@
-# 接入已有仓库
+# Adopt Existing Repositories
 
-repoctl 不只适合新模板仓库。它也可以渐进接入已有 pnpm workspace，用诊断报告和非覆盖同步把风险降下来。
+repoctl is not only for newly generated repositories. It can be adopted gradually in existing pnpm workspaces by using diagnostics and conservative asset syncs.
 
-## 适合接入的仓库
+## Good Candidates
 
-优先满足这些条件：
+A repository is a good fit when:
 
-- 已经使用 pnpm 或准备迁移到 pnpm。
-- 有根 `package.json`。
-- 能接受 `apps/*`、`packages/*`、`examples/*` 这类 workspace 目录约定。
-- 希望统一 `repo:init`、`repo:doctor`、`repo:new`、`repo:check` 这类日常入口。
+- It already uses pnpm, or is ready to move to pnpm.
+- It has a root `package.json`.
+- It can use workspace folders such as `apps/*`, `packages/*`, or `examples/*`.
+- The team wants stable daily entries such as `repo:init`, `repo:doctor`, `repo:new`, and `repo:check`.
 
-如果仓库还不是 pnpm workspace，先补最小 `pnpm-workspace.yaml`：
+If the repository is not yet a pnpm workspace, start with a minimal `pnpm-workspace.yaml`:
 
 ```yaml
 packages:
@@ -19,47 +19,47 @@ packages:
   - packages/*
 ```
 
-## 第一步：安装并初始化
+## Step 1: Install And Setup
 
 ```bash
 pnpm add -D repoctl
 pnpm exec repo init --yes
 ```
 
-`repo init --yes` 会使用安全默认值。它会补齐推荐脚本和 workspace patterns，但不会无条件覆盖已有 README、package.json、pnpm-workspace.yaml 或 tooling 配置。
+`repo init --yes` uses safe defaults. It adds recommended scripts and workspace patterns, but it does not blindly overwrite existing README, package.json, pnpm-workspace.yaml, or tooling files.
 
-## 第二步：保存第一次诊断
+## Step 2: Save The First Diagnostic Report
 
 ```bash
 pnpm exec repo doctor --markdown --redact --out reports/doctor-before.md
 pnpm exec repo doctor --json --out reports/doctor-before.json
 ```
 
-建议把第一次报告提交到 PR 评论或 artifact，而不是只看终端输出。
+Prefer saving the first report as a PR comment or CI artifact instead of relying only on terminal output.
 
-重点看这些项：
+Watch these checks:
 
-| 检查项                       | 常见问题                                         |
-| ---------------------------- | ------------------------------------------------ |
-| `package-json`               | 当前目录不是仓库根目录                           |
-| `workspace-manifest`         | 缺少 `pnpm-workspace.yaml`                       |
-| `node-version`               | 根 package 没声明 `engines.node` 或版本不匹配    |
-| `tool-package`               | 没安装 `repoctl`                                 |
-| `root-scripts`               | 缺少 `repo:init/repo:new/repo:check/repo:doctor` |
-| `config-file`                | 残留已废弃的 `monorepo.config.ts`                |
-| `commit-hooks`               | Husky 和 lint-staged 只接了一半                  |
-| `workspace-package-coverage` | package.json 没被 workspace patterns 覆盖        |
+| Check                        | Common Issue                                                      |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `package-json`               | Current directory is not the repository root                      |
+| `workspace-manifest`         | `pnpm-workspace.yaml` is missing                                  |
+| `node-version`               | Root package has no `engines.node`, or the version does not match |
+| `tool-package`               | `repoctl` is not installed                                        |
+| `root-scripts`               | `repo:init/repo:new/repo:check/repo:doctor` scripts are missing   |
+| `config-file`                | A stale `monorepo.config.ts` file is still present                |
+| `commit-hooks`               | Husky and lint-staged are only partially configured               |
+| `workspace-package-coverage` | Some package.json files are not covered by workspace patterns     |
 
-## 第三步：保守同步标准资产
+## Step 3: Sync Conservatively
 
 ```bash
 pnpm exec repo upgrade --no-overwrite
 pnpm exec repo doctor --markdown --redact --out reports/doctor-after.md
 ```
 
-`--no-overwrite` 适合第一次接入：它同步缺失资产，但保留已有 drifted 文件。你可以在 PR diff 里逐项看哪些配置要进一步迁移。
+Use `--no-overwrite` for the first adoption pass. It syncs missing assets while preserving changed managed files.
 
-## 第四步：预览校验计划
+## Step 4: Preview Verification
 
 ```bash
 pnpm exec repo check --dry-run
@@ -67,11 +67,11 @@ pnpm exec repo check --json --out reports/check-plan.json
 pnpm exec repo check --markdown --redact --out reports/check-plan.md
 ```
 
-先看 plan，再决定要不要接入 hook 或 CI。
+Review the plan before wiring hooks or CI.
 
-## 第五步：接入根脚本
+## Step 5: Use Root Scripts
 
-如果 `repo init` 已补齐根脚本，团队日常文档优先改成：
+After `repo init`, team docs can use:
 
 ```bash
 pnpm run repo:doctor
@@ -79,57 +79,55 @@ pnpm run repo:new -- sdk
 pnpm run repo:check
 ```
 
-CI 和自动化脚本仍建议写完整 CLI：
+CI and automation should still prefer explicit commands:
 
 ```bash
 pnpm exec repo doctor --strict
 pnpm exec repo check --full
 ```
 
-## 第六步：处理遗留配置
+## Step 6: Resolve Legacy Config
 
-### 遗留配置文件
+### Config Conflicts
 
-只保留：
+Keep only:
 
 ```txt
 repoctl.config.ts
 ```
 
-`monorepo.config.ts` 已不再加载；请改名为 `repoctl.config.ts`。
+`monorepo.config.ts` is no longer loaded at runtime; rename it to `repoctl.config.ts`.
 
-### 本地 tooling loader
+### Local Tooling Loader
 
-如果 `doctor` 提示 tooling 配置引用了本地源码 loader，使用：
+If `doctor` reports local source tooling loaders, migrate with:
 
 ```bash
 pnpm exec repo upgrade --yes
 ```
 
-这个命令会迁移到 `repoctl/tooling` 入口。简单的 `@icebreakers/commitlint-config`、`@icebreakers/eslint-config`、`@icebreakers/stylelint-config` wrapper 也会被保守转换为 `repoctl/tooling`，复杂 ESLint 配置会保留原有 rules、ignores、overrides 和额外 flat config 语义。
+The same migration also converts simple wrappers from `@icebreakers/commitlint-config`, `@icebreakers/eslint-config`, and `@icebreakers/stylelint-config` to `repoctl/tooling`. Complex ESLint configs keep their rules, ignores, overrides, and extra flat config semantics.
 
-### workspace patterns 不覆盖包
+### Workspace Pattern Gaps
 
-运行：
+Run:
 
 ```bash
 pnpm exec repo init --yes
 ```
 
-或手动扩展 `pnpm-workspace.yaml`。
+or manually extend `pnpm-workspace.yaml`.
 
-## 推荐 PR 结构
+## Recommended PR Shape
 
-存量仓库接入建议拆成小 PR：
+1. Install `repoctl` and add root scripts.
+2. Attach `doctor-before` and `doctor-after` reports.
+3. Sync or migrate tooling config.
+4. Wire hooks and CI.
+5. Verify scaffolding paths with `repo new --dry-run`.
 
-1. 安装 `repoctl`，补 `init/doctor/new/check` 根脚本。
-2. 提交 `doctor-before` 和 `doctor-after` 报告。
-3. 同步或迁移 tooling 配置。
-4. 接入 hook 和 CI。
-5. 用 `repo new --dry-run` 验证模板创建路径。
+## Keep Reading
 
-## 下一步
-
-- [工作流与 CI](./workflows.md)
-- [排障与报告](./troubleshooting.md)
-- [配置文件](./config.md)
+- [Workflows and CI](./workflows.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Configuration](./config.md)

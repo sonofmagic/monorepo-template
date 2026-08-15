@@ -92,15 +92,19 @@ importers:
 
   packages/create-icebreaker:
     dependencies:
-      '@icebreakers/monorepo-templates':
+      create-repoctl:
         specifier: workspace:*
-        version: link:../monorepo-templates
+        version: link:../create-repoctl
 
   packages/create-repoctl:
     dependencies:
-      create-icebreaker:
+      '@icebreakers/monorepo-templates':
         specifier: workspace:*
-        version: link:../create-icebreaker
+        version: link:../monorepo-templates
+    devDependencies:
+      tsd:
+        specifier: ^0.33.0
+        version: 0.33.0
 
   packages/monorepo:
     dependencies:

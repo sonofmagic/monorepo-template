@@ -1,13 +1,29 @@
 # create-repoctl
 
-`create-repoctl` 是 `create-icebreaker` 的 repoctl 品牌入口，方便用户用不同包管理器的 create 语法快速创建项目。
+English | [简体中文](README.zh-CN.md)
 
-## 使用方式
+The recommended create command for starting a repoctl-managed pnpm and Turborepo workspace.
 
-```sh
+```bash
 npm create repoctl@latest
 pnpm create repoctl
 yarn create repoctl
 ```
 
-这些命令会进入和 `create-icebreaker` 相同的脚手架流程：选择目标目录、选择保留模板，并在完成后提示 `pnpm setup` / `pnpm new` / `pnpm check` 等 repoctl onboarding 步骤。
+The interactive flow selects a target directory and any built-in templates to include. After creation:
+
+```bash
+cd <project>
+pnpm install
+pnpm exec repo init
+pnpm exec repo doctor
+pnpm exec repo check
+```
+
+Output is English by default. Pass `--lang zh-CN` or set `REPOCTL_LANG=zh-CN` for Simplified Chinese.
+
+```bash
+pnpm create repoctl -- --lang zh-CN
+```
+
+Documentation: https://repo.icebreaker.top

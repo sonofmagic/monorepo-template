@@ -2,18 +2,25 @@
   "name": "@icebreakers/server",
   "type": "module",
   "version": "0.0.1",
-  "description": "tsdown build package template",
+  "private": true,
+  "description": "Internal server package template shipped with repoctl",
   "author": "ice breaker <hi@sonofmagic.top>",
   "license": "MIT",
+  "homepage": "https://repo.icebreaker.top",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sonofmagic/monorepo-template.git",
+    "url": "git+https://github.com/sonofmagic/repoctl.git",
     "directory": "templates/server"
   },
   "bugs": {
-    "url": "https://github.com/sonofmagic/monorepo-template/issues"
+    "url": "https://github.com/sonofmagic/repoctl/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "repoctl",
+    "server",
+    "hono",
+    "template"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",

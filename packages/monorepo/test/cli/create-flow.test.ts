@@ -194,7 +194,7 @@ describe('runCreateFlow', () => {
       type: 'tsdown',
     })
     expect(logMock).toHaveBeenCalledWith('Create preview:')
-    expect(infoMock).toHaveBeenCalledWith('dry run only; no files were written')
+    expect(infoMock).toHaveBeenCalledWith('Dry run only; no files were written.')
   })
 
   it('prints a create preview as json without writing files', async () => {
@@ -209,7 +209,7 @@ describe('runCreateFlow', () => {
       type: 'tsdown',
     })
     expect(logMock).toHaveBeenCalledWith(expect.stringContaining('"template": "tsdown"'))
-    expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+    expect(infoMock).not.toHaveBeenCalledWith('Dry run only; no files were written.')
   })
 
   it('writes a create preview as json when out is set', async () => {
@@ -225,9 +225,9 @@ describe('runCreateFlow', () => {
         template: 'tsdown',
         targetName: 'packages/demo',
       }))
-      expect(successMock).toHaveBeenCalledWith('wrote plans/create.json')
+      expect(successMock).toHaveBeenCalledWith('Wrote plans/create.json')
       expect(logMock).not.toHaveBeenCalledWith(expect.stringContaining('"template": "tsdown"'))
-      expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+      expect(infoMock).not.toHaveBeenCalledWith('Dry run only; no files were written.')
     }
     finally {
       await rm(cwd, { recursive: true, force: true })
@@ -243,8 +243,8 @@ describe('runCreateFlow', () => {
 
       expect(result).toEqual({ dryRun: true })
       expect(await readFile(path.join(cwd, 'plans/create.txt'), 'utf8')).toContain('Create preview:')
-      expect(successMock).toHaveBeenCalledWith('wrote plans/create.txt')
-      expect(infoMock).not.toHaveBeenCalledWith('dry run only; no files were written')
+      expect(successMock).toHaveBeenCalledWith('Wrote plans/create.txt')
+      expect(infoMock).not.toHaveBeenCalledWith('Dry run only; no files were written.')
     }
     finally {
       await rm(cwd, { recursive: true, force: true })

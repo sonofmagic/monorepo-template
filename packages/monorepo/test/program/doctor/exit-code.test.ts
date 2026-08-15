@@ -39,7 +39,7 @@ describe('commander program doctor exit code', () => {
     await program.parseAsync(['node', 'repo', 'doctor'])
 
     expect(process.exitCode).toBe(1)
-    expect(errorMock).toHaveBeenCalledWith('doctor found 1 blocking issue(s).')
+    expect(errorMock).toHaveBeenCalledWith('Doctor found 1 blocking issue(s).')
 
     process.exitCode = previousExitCode
   })
@@ -77,7 +77,7 @@ describe('commander program doctor exit code', () => {
     await program.parseAsync(['node', 'repo', 'doctor', '--strict'])
 
     expect(process.exitCode).toBe(1)
-    expect(errorMock).toHaveBeenCalledWith('doctor found 2 warning(s) in strict mode.')
+    expect(errorMock).toHaveBeenCalledWith('Doctor found 2 warning(s) in strict mode.')
     expect(warnMock).not.toHaveBeenCalled()
 
     process.exitCode = previousExitCode

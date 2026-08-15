@@ -4,6 +4,7 @@ import os from 'node:os'
 import process from 'node:process'
 import path from 'pathe'
 import { logger } from '../../core/logger'
+import { localize } from '../../i18n'
 import fs from '../../utils/fs'
 import { normalizeCleanOptions, normalizeCliOpts } from '../utils'
 
@@ -29,13 +30,13 @@ function collectValues(value: string, previous: string[] = []) {
 
 function formatWorkspaceList(result: WorkspacePackageSummaryData) {
   const lines = [
-    `workspace: ${result.workspaceDir}`,
-    `packages: ${result.packages.length}`,
+    localize(`workspace: ${result.workspaceDir}`, `工作区：${result.workspaceDir}`),
+    localize(`packages: ${result.packages.length}`, `包数量：${result.packages.length}`),
   ]
 
   for (const pkg of result.packages) {
-    const name = pkg.name ?? '(unnamed)'
-    const privateMark = pkg.private ? ' private' : ''
+    const name = pkg.name ?? localize('(unnamed)', '（未命名）')
+    const privateMark = pkg.private ? localize(' private', ' 私有') : ''
     lines.push(`- ${name} ${pkg.relativeDir}${privateMark}`)
   }
 
@@ -52,7 +53,7 @@ function formatMarkdownCell(value: string | number | boolean | undefined) {
 
 function formatMarkdownTable(rows: Array<[string, string | number | boolean | undefined]>) {
   return [
-    '| Field | Value |',
+    localize('| Field | Value |', '| 字段 | 值 |'),
     '| --- | --- |',
     ...rows.map(([label, value]) => `| ${label} | ${formatMarkdownCell(value)} |`),
   ].join('\n')
@@ -60,7 +61,7 @@ function formatMarkdownTable(rows: Array<[string, string | number | boolean | un
 
 function formatWorkspaceListMarkdown(result: WorkspacePackageSummaryData) {
   return [
-    '# Repo workspaces',
+    localize('# Repo workspaces', '# Repo 工作区'),
     '',
     formatMarkdownTable([
       ['cwd', result.cwd],
@@ -68,14 +69,14 @@ function formatWorkspaceListMarkdown(result: WorkspacePackageSummaryData) {
       ['packages', result.packages.length],
     ]),
     '',
-    '## Packages',
+    localize('## Packages', '## 包'),
     '',
-    '| Name | Path | Private | Description |',
+    localize('| Name | Path | Private | Description |', '| 名称 | 路径 | 私有 | 说明 |'),
     '| --- | --- | --- | --- |',
     ...result.packages.map((pkg) => {
-      const name = pkg.name ?? '(unnamed)'
+      const name = pkg.name ?? localize('(unnamed)', '（未命名）')
       const description = pkg.description ?? '-'
-      return `| ${formatMarkdownCell(name)} | ${formatMarkdownCell(pkg.relativeDir)} | ${pkg.private ? 'yes' : 'no'} | ${formatMarkdownCell(description)} |`
+      return `| ${formatMarkdownCell(name)} | ${formatMarkdownCell(pkg.relativeDir)} | ${pkg.private ? localize('yes', '是') : localize('no', '否')} | ${formatMarkdownCell(description)} |`
     }),
   ].join('\n')
 }
@@ -127,48 +128,48 @@ async function emitWorkspaceList(result: WorkspacePackageSummaryData, opts: Work
 
   const outFile = path.resolve(process.cwd(), opts.out)
   await fs.outputFile(outFile, `${content}\n`, 'utf8')
-  logger.success(`wrote ${path.relative(process.cwd(), outFile)}`)
+  logger.success(localize(`Wrote ${path.relative(process.cwd(), outFile)}`, `已写入 ${path.relative(process.cwd(), outFile)}`))
 }
 
 export function registerWorkspaceCommands(program: Command, cwd: string) {
-  const workspaceCommand = program.command('workspace').alias('ws').description('工作区命令')
+  const workspaceCommand = program.command('workspace').alias('ws').description(localize('Workspace commands', '工作区命令'))
 
   workspaceCommand.command('upgrade')
-    .description('升级/同步 monorepo 相关包')
+    .description(localize('Upgrade or synchronize monorepo packages', '升级/同步 monorepo 相关包'))
     .alias('up')
-    .option('-i,--interactive')
-    .option('-c,--core', '仅同步核心配置，跳过 GitHub 相关资产')
-    .option('--outDir <dir>', 'Output directory')
-    .option('-s,--skip-overwrite', 'skip overwrite')
-    .option('-y, --yes', '跳过交互并覆盖 drifted 标准资产')
-    .option('--overwrite', '覆盖 drifted 标准资产')
-    .option('--no-overwrite', '不覆盖 drifted 标准资产')
-    .option('--overwrite-release', '覆盖未标记的自定义 release workflow')
+    .option('-i,--interactive', localize('Select managed files interactively', '交互式选择受管文件'))
+    .option('-c,--core', localize('Synchronize core configuration without GitHub assets', '仅同步核心配置，跳过 GitHub 相关资产'))
+    .option('--outDir <dir>', localize('Output directory', '输出目录'))
+    .option('-s,--skip-overwrite', localize('Preserve existing files', '保留已存在文件'))
+    .option('-y, --yes', localize('Skip prompts and overwrite drifted managed assets', '跳过交互并覆盖 drifted 标准资产'))
+    .option('--overwrite', localize('Overwrite drifted managed assets', '覆盖 drifted 标准资产'))
+    .option('--no-overwrite', localize('Preserve drifted managed assets', '不覆盖 drifted 标准资产'))
+    .option('--overwrite-release', localize('Overwrite an unmarked custom release workflow', '覆盖未标记的自定义 release workflow'))
     .action(async (opts: CliOpts) => {
       const { upgradeMonorepo } = await import('@/commands')
       await upgradeMonorepo(normalizeCliOpts(cwd, opts))
-      logger.success('workspace upgrade finished!')
+      logger.success(localize('Workspace upgrade finished.', 'Workspace 升级完成。'))
     })
 
   workspaceCommand.command('init')
-    .description('初始化工作区元信息（README、package.json、pnpm intent、issue template）')
+    .description(localize('Initialize workspace metadata and repository files', '初始化工作区元信息（README、package.json、pnpm intent、issue template）'))
     .alias('i')
     .action(async () => {
       const { initMetadata } = await import('@/commands')
       await initMetadata(cwd)
-      logger.success('workspace init finished!')
+      logger.success(localize('Workspace initialization finished.', 'Workspace 初始化完成。'))
     })
 
   workspaceCommand.command('list')
-    .description('列出 workspace 包')
+    .description(localize('List workspace packages', '列出 workspace 包'))
     .alias('ls')
-    .option('--json', '输出 JSON')
-    .option('--markdown', '输出 Markdown，方便粘贴到 issue 或 PR')
-    .option('--redact', '脱敏 workspace/cwd/home 绝对路径后再输出')
-    .option('--include-private', '包含 private 包')
-    .option('--include-root', '包含 workspace 根包')
-    .option('-p, --pattern <glob>', '追加自定义 workspace glob，可重复', collectValues)
-    .option('--out <file>', '把当前列表输出写入文件')
+    .option('--json', localize('Output JSON', '输出 JSON'))
+    .option('--markdown', localize('Output Markdown', '输出 Markdown，方便粘贴到 issue 或 PR'))
+    .option('--redact', localize('Redact workspace, cwd, and home paths', '脱敏 workspace/cwd/home 绝对路径后再输出'))
+    .option('--include-private', localize('Include private packages', '包含 private 包'))
+    .option('--include-root', localize('Include the workspace root package', '包含 workspace 根包'))
+    .option('-p, --pattern <glob>', localize('Append a workspace glob; repeatable', '追加自定义 workspace glob，可重复'), collectValues)
+    .option('--out <file>', localize('Write the package list to a file', '把当前列表输出写入文件'))
     .action(async (opts: WorkspaceListCliOptions) => {
       const { getWorkspacePackageSummaries } = await import('@/core/workspace')
       const result = await getWorkspacePackageSummaries(cwd, {
@@ -181,14 +182,14 @@ export function registerWorkspaceCommands(program: Command, cwd: string) {
     })
 
   workspaceCommand.command('clean')
-    .description('清除选中的包')
+    .description(localize('Remove selected workspace packages', '清除选中的包'))
     .alias('rm')
-    .option('-y, --yes', '跳过交互直接清理（等价 autoConfirm）')
-    .option('--include-private', '包含 private 包')
-    .option('--pinned-version <version>', '覆盖写入的 repoctl 版本')
+    .option('-y, --yes', localize('Skip prompts and clean immediately', '跳过交互直接清理（等价 autoConfirm）'))
+    .option('--include-private', localize('Include private packages', '包含 private 包'))
+    .option('--pinned-version <version>', localize('Override the repoctl version written to the root package', '覆盖写入的 repoctl 版本'))
     .action(async (opts: WorkspaceCleanCliOptions) => {
       const { cleanProjects } = await import('@/commands')
       await cleanProjects(cwd, normalizeCleanOptions(opts))
-      logger.success('workspace clean finished!')
+      logger.success(localize('Workspace cleanup finished.', 'Workspace 清理完成。'))
     })
 }

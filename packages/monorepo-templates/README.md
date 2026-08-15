@@ -1,20 +1,24 @@
 # @icebreakers/monorepo-templates
 
-Template assets and metadata used by `create-icebreaker` and `@icebreakers/monorepo`.
+English | [简体中文](README.zh-CN.md)
 
-This package ships:
+Built-in project templates and managed workspace assets for repoctl.
 
-- `templates/`: app and package templates
-- `assets/`: root workspace config files and upgrade assets for `monorepo`
-- template metadata helpers such as `getTemplateChoices()`, `getTemplateChoice()`, and `getTemplateDefinition()`
+This package is an implementation dependency of `repoctl` and `create-repoctl`. It publishes:
 
-## Template Discovery
+- app, service, library, documentation, and CLI templates;
+- managed root tooling and workflow assets;
+- template metadata and health-check helpers;
+- workspace and individual-template scaffold APIs.
 
 ```ts
-import { getTemplateChoices, getTemplateDefinition } from '@icebreakers/monorepo-templates'
+import {
+  getTemplateChoices,
+  getTemplateDefinition,
+} from '@icebreakers/monorepo-templates'
 
 const libraries = getTemplateChoices({ category: 'library' })
 const vitepress = getTemplateDefinition('vitepress')
 ```
 
-The returned metadata is a cloned snapshot, so callers can safely format it for CLI help, docs, or scaffold previews without mutating the package registry.
+The source workspaces under the repository's `templates/` directory are private. This package is their supported distribution boundary.

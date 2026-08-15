@@ -1,50 +1,18 @@
 # create-icebreaker
 
-Interactive bootstrapper for the icebreaker monorepo template. It scaffolds from the npm package and trims templates based on your selections.
+English | [简体中文](README.zh-CN.md)
 
-## Usage
+Compatibility create command for repoctl-managed workspaces.
 
-- `pnpm create icebreaker`
-- `npm create icebreaker@latest`
+Existing automation may continue to use:
 
-By default this:
-
-- uses npm templates by default (no GitHub needed)
-- asks for the project directory (defaults to `icebreaker-monorepo`)
-- asks which templates to keep (default keeps none)
-- updates the root `package.json` name
-
-## Next Steps
-
-After scaffolding finishes:
-
-```sh
-cd <your-project>
-pnpm install
-pnpm setup
-pnpm new my-package
-pnpm check
+```bash
+npm create icebreaker@latest
+pnpm create icebreaker
 ```
 
-Recommended maintenance flow inside the generated workspace:
+New projects should prefer `npm create repoctl@latest` or `pnpm create repoctl`. Both entrypoints use the same maintained scaffold engine and lead into the `repo init`, `repo doctor`, `repo new`, and `repo check` workflow.
 
-- `pnpm setup`: bootstrap recommended workspace metadata and tooling
-- `pnpm new`: create the next package or app through the guided flow
-- `pnpm check`: run recommended local verification
-- `pnpm dlx repo@latest clean --yes`: optional zero-install cleanup on a fresh clone
+Output is English by default. Pass `--lang zh-CN` or set `REPOCTL_LANG=zh-CN` for Simplified Chinese.
 
-## Templates
-
-Available template keys:
-
-- `tsdown`
-- `vue-lib`
-- `vue-hono`
-- `hono-server`
-- `vitepress`
-- `cli`
-
-## Flags
-
-- `--templates <list>`: comma-separated template keys or indexes to keep (e.g. `tsdown,vue-hono` or `1,4`)
-- `--force`: overwrite a non-empty target directory
+Documentation: https://repo.icebreaker.top

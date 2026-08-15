@@ -341,7 +341,7 @@ export async function verifyPrePush(options: PrePushVerifyOptions = {}) {
 export function verifyStagedTypecheck(stagedFiles: string[], options: StagedTypecheckOptions = {}) {
   const cwd = options.cwd ?? process.cwd()
   const spawn = options.spawn ?? spawnSync
-  const workspaceDirs = [...new Set(
+  let workspaceDirs = [...new Set(
     stagedFiles
       .filter((file) => {
         const basename = path.basename(file)
@@ -352,6 +352,10 @@ export function verifyStagedTypecheck(stagedFiles: string[], options: StagedType
 
   if (workspaceDirs.length === 0) {
     return
+  }
+
+  if (workspaceDirs.includes(cwd)) {
+    workspaceDirs = [cwd]
   }
 
   for (const workspaceDir of workspaceDirs) {

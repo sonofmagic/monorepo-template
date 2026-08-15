@@ -1,3 +1,4 @@
+export type { RepoctlLocale } from '../i18n/types'
 export * from './cli'
 export * from './config'
 export * from './package-json'

@@ -1,10 +1,10 @@
-# 命令别名
+# Command Aliases
 
-repoctl 保留了一组短别名，方便熟悉后在终端里少打字。团队文档仍建议优先写完整命令，减少新人理解成本。
+repoctl keeps several aliases for terminal convenience. Team docs should still prefer full commands because they are easier for new users to read.
 
-## 包入口别名
+## Binary Aliases
 
-`repoctl` 包提供多个 bin：
+The `repoctl` package exposes these bins:
 
 ```bash
 repo
@@ -14,9 +14,9 @@ rc
 mo
 ```
 
-文档统一推荐 `repo`。
+The docs recommend `repo`.
 
-这些 bin 都进入同一套命令实现：
+These bins all enter the same command implementation:
 
 ```bash
 repoctl doctor
@@ -25,16 +25,16 @@ rc doctor
 mo doctor
 ```
 
-## 顶层命令别名
+## Top-Level Aliases
 
-| 推荐写法         | 短写        | 说明             |
-| ---------------- | ----------- | ---------------- |
-| `repo init`      | `repo init` | 初始化仓库默认值 |
-| `repo templates` | `repo tpl`  | 查看或检查模板   |
+| Recommended      | Alias       | Purpose                       |
+| ---------------- | ----------- | ----------------------------- |
+| `repo init`      | `repo init` | Initialize workspace defaults |
+| `repo templates` | `repo tpl`  | Inspect or check templates    |
 
-## 分组命令别名
+## Group Aliases
 
-| 完整命令                       | 短写            |
+| Full Command                   | Alias           |
 | ------------------------------ | --------------- |
 | `repo workspace`               | `repo ws`       |
 | `repo workspace upgrade`       | `repo ws up`    |
@@ -62,9 +62,9 @@ mo doctor
 | `repo ai prompt`               | `repo ai p`     |
 | `repo ai prompt create`        | `repo ai p new` |
 
-## 推荐使用原则
+## Recommendation
 
-- 新手教程写完整命令，例如 `pnpm exec repo doctor`。
-- 团队 README 写根脚本，例如 `pnpm run repo:doctor`。
-- 维护者脚本可以写短别名，但要在注释或文档里说明用途。
-- CI 里优先写完整命令，方便日志搜索。
+- Use full commands in onboarding docs.
+- Use `repo:*` root scripts in project README files, for example `pnpm run repo:doctor`.
+- Use short aliases in maintainer scripts only when the surrounding docs explain them.
+- Prefer full commands in CI logs.

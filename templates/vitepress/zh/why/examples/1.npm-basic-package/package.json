@@ -1,0 +1,19 @@
+{
+  "name": "icebreaker-npm-basic-package-multiple-exports",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    }
+  },
+  "scripts": {
+    "start:cjs": "node ./index.cjs",
+    "start:esm": "node ./index.js"
+  }
+}
