@@ -1,6 +1,7 @@
 import type { Dirent } from 'node:fs'
 import fs from 'node:fs/promises'
 import * as path from 'node:path'
+import YAML from 'yaml'
 import { assetTargets } from '../assets-data.mjs'
 import { templateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, templatesDir } from './paths'
@@ -8,6 +9,7 @@ import { toPublishGitignorePath } from './utils/gitignore'
 import { shouldSkipTemplatePath } from './utils/template-filter'
 
 const huskySkippedEntryPattern = /[\\/]_$/
+const changesetRuntimeFileNames = new Set(['ledger.yaml'])
 const publishedToolingConfigs = {
   'commitlint.config.ts': [
     `import { defineCommitlintConfig } from 'repoctl/tooling'`,
@@ -50,6 +52,30 @@ export interface PrepareAssetsOptions {
 
 export function removeSourceRepoReleaseToolingBuildStepContent(content: string) {
   return content.replaceAll(sourceRepoReleaseToolingBuildStepPattern, '\n')
+}
+
+export function sanitizePublishedWorkspaceContent(content: string) {
+  const workspace = YAML.parse(content) as {
+    versioning?: Record<string, unknown>
+  } | null
+  if (!workspace?.versioning || typeof workspace.versioning !== 'object') {
+    return content
+  }
+
+  delete workspace.versioning['fixed']
+  delete workspace.versioning['ignore']
+  delete workspace.versioning['lanes']
+  return YAML.stringify(workspace)
+}
+
+export function shouldCopyPublishedAssetPath(target: string, sourcePath: string) {
+  if (target === '.husky' && huskySkippedEntryPattern.test(sourcePath)) {
+    return false
+  }
+  if (target === '.changeset' && changesetRuntimeFileNames.has(path.basename(sourcePath))) {
+    return false
+  }
+  return true
 }
 
 async function pathExists(targetPath: string) {
@@ -143,8 +169,8 @@ async function copyAssets(repoRoot: string, overwriteExisting: boolean) {
     }
     const to = path.join(assetsDir, toPublishGitignorePath(target))
     const stats = await fs.stat(from)
-    const filter = target === '.husky'
-      ? (src: string) => !huskySkippedEntryPattern.test(src)
+    const filter = target === '.husky' || target === '.changeset'
+      ? (src: string) => shouldCopyPublishedAssetPath(target, src)
       : undefined
     await copyEntry(from, to, overwriteExisting, filter)
     if (target === 'tsconfig.json') {
@@ -166,6 +192,16 @@ async function writePublishedToolingConfigs() {
       await fs.writeFile(targetPath, content)
     }
   }))
+}
+
+async function sanitizePublishedWorkspace() {
+  const workspacePath = path.join(assetsDir, 'pnpm-workspace.yaml')
+  if (!await pathExists(workspacePath)) {
+    return
+  }
+
+  const content = await fs.readFile(workspacePath, 'utf8')
+  await fs.writeFile(workspacePath, sanitizePublishedWorkspaceContent(content), 'utf8')
 }
 
 async function removeSourceRepoReleaseToolingBuildStep() {
@@ -203,6 +239,7 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   await resetDir(assetsDir, overwriteExisting)
   await resetDir(templatesDir, overwriteExisting)
   await copyAssets(repoRoot, overwriteExisting)
+  await sanitizePublishedWorkspace()
   await writePublishedToolingConfigs()
   await removeSourceRepoReleaseToolingBuildStep()
   await copyTemplates(repoRoot, overwriteExisting)

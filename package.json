@@ -29,6 +29,7 @@
     "tooling:build": "turbo run build --filter=@icebreakers/monorepo --filter=repoctl",
     "dev": "turbo run dev --parallel",
     "test": "vitest run",
+    "test:packaged-doctor": "node scripts/smoke-packaged-doctor.mjs",
     "test:dev": "vitest",
     "lint": "pnpm run tooling:build && turbo run lint",
     "tsd": "turbo run tsd",
