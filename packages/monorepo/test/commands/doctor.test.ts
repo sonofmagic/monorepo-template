@@ -58,6 +58,56 @@ describe('runDoctor', () => {
     await fs.remove(workspaceDir)
   })
 
+  it('accepts independent versioning without fixed groups', async () => {
+    const workspaceDir = await createTempWorkspace('monorepo-doctor-independent-versioning-')
+    await fs.ensureDir(path.join(workspaceDir, '.github/workflows'))
+    await fs.writeFile(path.join(workspaceDir, 'pnpm-workspace.yaml'), [
+      'packages:',
+      '  - packages/*',
+      'versioning:',
+      '  changelog:',
+      '    storage: repository',
+    ].join('\n'))
+    await fs.writeJSON(path.join(workspaceDir, 'package.json'), {
+      name: 'release-workspace',
+      devDependencies: { repoctl: '^5.1.0' },
+    })
+    await fs.writeFile(path.join(workspaceDir, '.github/workflows/release.yml'), '# repoctl-managed: release/v2\nname: Release\n')
+
+    const { runDoctor } = await import('@/commands/doctor')
+    const report = await runDoctor(workspaceDir)
+
+    expect(report.checks.find(check => check.id === 'release-versioning-config')?.status).toBe('pass')
+
+    await fs.remove(workspaceDir)
+  })
+
+  it('warns when fixed groups are malformed', async () => {
+    const workspaceDir = await createTempWorkspace('monorepo-doctor-invalid-fixed-')
+    await fs.ensureDir(path.join(workspaceDir, '.github/workflows'))
+    await fs.writeFile(path.join(workspaceDir, 'pnpm-workspace.yaml'), [
+      'packages:',
+      '  - packages/*',
+      'versioning:',
+      '  fixed:',
+      '    - []',
+      '  changelog:',
+      '    storage: repository',
+    ].join('\n'))
+    await fs.writeJSON(path.join(workspaceDir, 'package.json'), {
+      name: 'release-workspace',
+      devDependencies: { repoctl: '^5.1.0' },
+    })
+    await fs.writeFile(path.join(workspaceDir, '.github/workflows/release.yml'), '# repoctl-managed: release/v2\nname: Release\n')
+
+    const { runDoctor } = await import('@/commands/doctor')
+    const report = await runDoctor(workspaceDir)
+
+    expect(report.checks.find(check => check.id === 'release-versioning-config')?.status).toBe('warn')
+
+    await fs.remove(workspaceDir)
+  })
+
   it('reports a healthy workspace with the recommended quick scripts', async () => {
     const workspaceDir = await createTempWorkspace('monorepo-doctor-pass-')
     const pkgDir = path.join(workspaceDir, 'packages/demo')

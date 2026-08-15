@@ -192,7 +192,7 @@ export function buildGitHubReleaseBodyFromChangelog(
 ) {
   const section = readVersionSection(changelog, packageVersion)
   if (!section?.content) {
-    return 'No significant changes.'
+    return renderGitHubRelease({ packages: [], entries: [], contributors: [], compareUrls: [] }, metadata)
   }
   const release: PackageRelease = {
     name: packageName,

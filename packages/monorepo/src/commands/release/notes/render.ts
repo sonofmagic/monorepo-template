@@ -1,5 +1,14 @@
 import type { ReleaseBodyMetadata, ReleaseCategory, ReleaseNoteDocument, ReleaseNoteEntry } from './model'
-import { categoryOrder, categoryTitles, isAutomationContributor } from './model'
+import { resolveRepoctlLocale } from '../../../i18n'
+import { categoryOrder, categoryTitles, isAutomationContributor, zhCNCategoryTitles } from './model'
+
+function isChinese(metadata: ReleaseBodyMetadata) {
+  return (metadata.locale ?? resolveRepoctlLocale()) === 'zh-CN'
+}
+
+function localized(metadata: ReleaseBodyMetadata, english: string, simplifiedChinese: string) {
+  return isChinese(metadata) ? simplifiedChinese : english
+}
 
 function formatReferenceLinks(entry: ReleaseNoteEntry, metadata: ReleaseBodyMetadata) {
   const repository = metadata.repository && /^[^/]+\/[^/]+$/.test(metadata.repository) ? metadata.repository : undefined
@@ -38,7 +47,7 @@ function formatCategoryEntries(
     return []
   }
   return [
-    `${'#'.repeat(headingLevel)} ${categoryTitles[category]}`,
+    `${'#'.repeat(headingLevel)} ${isChinese(metadata) ? zhCNCategoryTitles[category] : categoryTitles[category]}`,
     '',
     ...matching.map(entry => formatEntry(entry, metadata, linkNpmVersion)),
   ]
@@ -51,10 +60,10 @@ function formatContributor(value: string) {
   return /^[\w-]+$/.test(value) ? `@${value}` : value
 }
 
-function formatContributors(contributors: string[]) {
+function formatContributors(contributors: string[], metadata: ReleaseBodyMetadata) {
   const unique = [...new Set(contributors.map(value => value.trim()).filter(value => value && !isAutomationContributor(value)))].sort((a, b) => a.localeCompare(b))
   return unique.length
-    ? ['## ❤️ Contributors', '', `Thanks to ${unique.map(formatContributor).join(' · ')}`]
+    ? [`## ❤️ ${localized(metadata, 'Contributors', '贡献者')}`, '', `${localized(metadata, 'Thanks to', '感谢')} ${unique.map(formatContributor).join(' · ')}`]
     : []
 }
 
@@ -62,14 +71,14 @@ function formatVersion(version: string, npmUrl?: string) {
   return npmUrl ? `[\`${version}\`](${npmUrl})` : `\`${version}\``
 }
 
-function formatPackages(packages: ReleaseNoteDocument['packages'], linkNpmVersion: boolean) {
+function formatPackages(packages: ReleaseNoteDocument['packages'], linkNpmVersion: boolean, metadata: ReleaseBodyMetadata) {
   if (!packages.length) {
     return []
   }
   return [
-    '## Packages',
+    `## ${localized(metadata, 'Packages', '包')}`,
     '',
-    '| Package | From | To |',
+    `| ${localized(metadata, 'Package', '包')} | ${localized(metadata, 'From', '原版本')} | ${localized(metadata, 'To', '新版本')} |`,
     '| --- | --- | --- |',
     ...packages.map((pkg) => {
       const previous = pkg.previousVersion ? formatVersion(pkg.previousVersion, pkg.previousNpmUrl) : '—'
@@ -80,9 +89,13 @@ function formatPackages(packages: ReleaseNoteDocument['packages'], linkNpmVersio
 }
 
 export function renderReleasePullRequest(document: ReleaseNoteDocument, metadata: ReleaseBodyMetadata = {}) {
-  const packageWord = `${document.packages.length} package${document.packages.length === 1 ? '' : 's'}`
-  const changeWord = `${document.entries.length} change${document.entries.length === 1 ? '' : 's'}`
-  const sections = ['# Release Notes', '', `> ${packageWord} updated · ${changeWord}`]
+  const packageWord = isChinese(metadata)
+    ? `${document.packages.length} 个包更新`
+    : `${document.packages.length} package${document.packages.length === 1 ? '' : 's'} updated`
+  const changeWord = isChinese(metadata)
+    ? `${document.entries.length} 项变更`
+    : `${document.entries.length} change${document.entries.length === 1 ? '' : 's'}`
+  const sections = [`# ${localized(metadata, 'Release Notes', '发布说明')}`, '', `> ${packageWord} · ${changeWord}`]
 
   for (const category of categoryOrder.filter(category => category !== 'maintenance')) {
     const section = formatCategoryEntries(document.entries, category, metadata, 2, false)
@@ -93,17 +106,17 @@ export function renderReleasePullRequest(document: ReleaseNoteDocument, metadata
 
   const maintenance = formatCategoryEntries(document.entries, 'maintenance', metadata, 2, false)
   if (maintenance.length) {
-    sections.push('', '', '<details>', '<summary>🧰 Maintenance</summary>', '', ...maintenance.slice(2), '', '</details>')
+    sections.push('', '', '<details>', `<summary>${localized(metadata, '🧰 Maintenance', '🧰 维护')}</summary>`, '', ...maintenance.slice(2), '', '</details>')
   }
 
-  sections.push('', '', ...formatPackages(document.packages, false))
-  sections.push('', '', ...formatContributors(document.contributors))
+  sections.push('', '', ...formatPackages(document.packages, false, metadata))
+  sections.push('', '', ...formatContributors(document.contributors, metadata))
   return sections.join('\n').replace(/\n{3,}/g, '\n\n').trim()
 }
 
 export function renderGitHubRelease(document: ReleaseNoteDocument, metadata: ReleaseBodyMetadata = {}) {
   if (!document.entries.length) {
-    return 'No significant changes.'
+    return localized(metadata, 'No significant changes.', '没有显著变更。')
   }
 
   const sections: string[] = []
@@ -116,10 +129,10 @@ export function renderGitHubRelease(document: ReleaseNoteDocument, metadata: Rel
 
   const contributors = [...new Set(document.contributors)].filter(value => !isAutomationContributor(value)).sort((a, b) => a.localeCompare(b))
   if (contributors.length) {
-    sections.push('', '### ❤️ Contributors', '', `Thanks to ${contributors.map(formatContributor).join(' · ')}`)
+    sections.push('', `### ❤️ ${localized(metadata, 'Contributors', '贡献者')}`, '', `${localized(metadata, 'Thanks to', '感谢')} ${contributors.map(formatContributor).join(' · ')}`)
   }
   if (document.compareUrls.length) {
-    sections.push('', `##### [View changes on GitHub](${document.compareUrls[0]})`)
+    sections.push('', `##### [${localized(metadata, 'View changes on GitHub', '在 GitHub 查看变更')}](${document.compareUrls[0]})`)
   }
   return sections.join('\n')
 }

@@ -1,6 +1,7 @@
 import type { Dirent } from 'node:fs'
 import fs from 'node:fs/promises'
 import * as path from 'node:path'
+import YAML from 'yaml'
 import { assetTargets } from '../assets-data.mjs'
 import { templateChoices } from '../template-data.mjs'
 import { assetsDir, packageDir, templatesDir } from './paths'
@@ -50,6 +51,20 @@ export interface PrepareAssetsOptions {
 
 export function removeSourceRepoReleaseToolingBuildStepContent(content: string) {
   return content.replaceAll(sourceRepoReleaseToolingBuildStepPattern, '\n')
+}
+
+export function sanitizePublishedWorkspaceContent(content: string) {
+  const workspace = YAML.parse(content) as {
+    versioning?: Record<string, unknown>
+  } | null
+  if (!workspace?.versioning || typeof workspace.versioning !== 'object') {
+    return content
+  }
+
+  delete workspace.versioning['fixed']
+  delete workspace.versioning['ignore']
+  delete workspace.versioning['lanes']
+  return YAML.stringify(workspace)
 }
 
 async function pathExists(targetPath: string) {
@@ -168,6 +183,20 @@ async function writePublishedToolingConfigs() {
   }))
 }
 
+async function sanitizePublishedWorkspace() {
+  const workspacePath = path.join(assetsDir, 'pnpm-workspace.yaml')
+  if (!await pathExists(workspacePath)) {
+    return
+  }
+
+  const content = await fs.readFile(workspacePath, 'utf8')
+  await fs.writeFile(workspacePath, sanitizePublishedWorkspaceContent(content), 'utf8')
+}
+
+async function removePublishedReleaseState() {
+  await fs.rm(path.join(assetsDir, '.changeset', 'ledger.yaml'), { force: true })
+}
+
 async function removeSourceRepoReleaseToolingBuildStep() {
   const releaseWorkflowPath = path.join(assetsDir, '.github/workflows/release.yml')
   if (!await pathExists(releaseWorkflowPath)) {
@@ -203,6 +232,8 @@ export async function prepareAssets(options: PrepareAssetsOptions = {}) {
   await resetDir(assetsDir, overwriteExisting)
   await resetDir(templatesDir, overwriteExisting)
   await copyAssets(repoRoot, overwriteExisting)
+  await sanitizePublishedWorkspace()
+  await removePublishedReleaseState()
   await writePublishedToolingConfigs()
   await removeSourceRepoReleaseToolingBuildStep()
   await copyTemplates(repoRoot, overwriteExisting)
