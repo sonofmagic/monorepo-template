@@ -145,6 +145,10 @@ export function uniqueCommits(commits: ReleaseCommit[]) {
   return [...merged.values()]
 }
 
+export function isAutomationContributor(value: string) {
+  return /github-actions|dependabot|renovate|\[bot\]$/i.test(value)
+}
+
 export function buildPackageCompareUrl(release: PackageReleaseSource, metadata: ReleaseBodyMetadata) {
   if (!release.previousVersion || !metadata.repository || !/^[^/]+\/[^/]+$/.test(metadata.repository)) {
     return undefined

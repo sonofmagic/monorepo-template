@@ -1,5 +1,5 @@
 import type { ReleaseBodyMetadata, ReleaseCategory, ReleaseNoteDocument, ReleaseNoteEntry } from './model'
-import { categoryOrder, categoryTitles } from './model'
+import { categoryOrder, categoryTitles, isAutomationContributor } from './model'
 
 function formatReferenceLinks(entry: ReleaseNoteEntry, metadata: ReleaseBodyMetadata) {
   const repository = metadata.repository && /^[^/]+\/[^/]+$/.test(metadata.repository) ? metadata.repository : undefined
@@ -52,7 +52,7 @@ function formatContributor(value: string) {
 }
 
 function formatContributors(contributors: string[]) {
-  const unique = [...new Set(contributors.map(value => value.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b))
+  const unique = [...new Set(contributors.map(value => value.trim()).filter(value => value && !isAutomationContributor(value)))].sort((a, b) => a.localeCompare(b))
   return unique.length
     ? ['## ❤️ Contributors', '', `Thanks to ${unique.map(formatContributor).join(' · ')}`]
     : []
@@ -114,7 +114,7 @@ export function renderGitHubRelease(document: ReleaseNoteDocument, metadata: Rel
     }
   }
 
-  const contributors = [...new Set(document.contributors)].sort((a, b) => a.localeCompare(b))
+  const contributors = [...new Set(document.contributors)].filter(value => !isAutomationContributor(value)).sort((a, b) => a.localeCompare(b))
   if (contributors.length) {
     sections.push('', '### ❤️ Contributors', '', `Thanks to ${contributors.map(formatContributor).join(' · ')}`)
   }

@@ -2,6 +2,7 @@ import type { ReleaseNoteDocument } from './notes/model'
 import process from 'node:process'
 import { logger } from '../../core/logger'
 import { ReleaseCommandError } from './errors'
+import { isAutomationContributor } from './notes/model'
 
 interface GitHubPullRequest {
   number: number
@@ -12,10 +13,14 @@ interface GitHubPullRequest {
   head?: { ref?: string }
 }
 
-interface GitHubRelease {
+export interface GitHubRelease {
   id: number
   html_url: string
   tag_name: string
+  name?: string
+  body?: string | null
+  draft?: boolean
+  prerelease?: boolean
 }
 
 interface GitHubCommit {
@@ -59,12 +64,20 @@ export interface EnsureTagOptions {
   target: string
 }
 
+export interface UpdateReleaseOptions {
+  id: number
+  name: string
+  body: string
+}
+
 export interface GitHubOperations {
   ensurePullRequest: (options: EnsurePullRequestOptions) => Promise<GitHubPullRequest>
   closeLegacyReleasePullRequests?: (options: CloseLegacyPullRequestsOptions) => Promise<void>
   ensureRelease: (options: EnsureReleaseOptions) => Promise<GitHubRelease>
   ensureTag?: (options: EnsureTagOptions) => Promise<void>
   enrichReleaseNote?: (document: ReleaseNoteDocument) => Promise<ReleaseNoteDocument>
+  listReleases?: () => Promise<GitHubRelease[]>
+  updateRelease?: (options: UpdateReleaseOptions) => Promise<GitHubRelease>
 }
 
 export class GitHubApiError extends ReleaseCommandError {
@@ -225,6 +238,30 @@ export class GitHubClient implements GitHubOperations {
     }
   }
 
+  async listReleases() {
+    const releases: GitHubRelease[] = []
+    for (let page = 1; ; page++) {
+      const response = await this.request<GitHubRelease[]>('GET', `/releases?per_page=100&page=${page}`)
+      const pageReleases = response.data ?? []
+      releases.push(...pageReleases)
+      if (pageReleases.length < 100) {
+        break
+      }
+    }
+    return releases
+  }
+
+  async updateRelease(options: UpdateReleaseOptions) {
+    const response = await this.request<GitHubRelease>('PATCH', `/releases/${options.id}`, {
+      name: options.name,
+      body: options.body,
+    })
+    if (!response.data) {
+      throw new GitHubApiError(`GitHub did not return release ${options.id} after update`, response.status)
+    }
+    return response.data
+  }
+
   async enrichReleaseNote(document: ReleaseNoteDocument) {
     try {
       const commitAuthors = new Map<string, string>()
@@ -249,7 +286,11 @@ export class GitHubClient implements GitHubOperations {
         const authors = [...new Set([...entry.authors, ...entry.commits.map(commit => commitAuthors.get(commit.sha)).filter((author): author is string => Boolean(author))])]
         return authors.length ? { ...entry, authors } : entry
       })
-      return { ...document, entries, contributors: [...new Set([...document.contributors, ...commitAuthors.values(), ...referenceAuthors])] }
+      return {
+        ...document,
+        entries,
+        contributors: [...new Set([...document.contributors, ...commitAuthors.values(), ...referenceAuthors])].filter(value => !isAutomationContributor(value)),
+      }
     }
     catch (error) {
       const message = error instanceof Error ? error.message : String(error)
