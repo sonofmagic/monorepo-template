@@ -110,6 +110,41 @@ repo ws ls --json --out reports/workspaces.json
 | 输出给脚本         | `--json --out <file>`                              |
 | 输出给人看并脱敏   | `--markdown --redact --out <file>`                 |
 
+## 文档 Worker
+
+repoctl 文档通过名为 `repoctl-docs` 的 Cloudflare Worker 部署。VitePress 只生成静态资产，Workers Static Assets 直接提供这些文件，因此不需要应用 handler，也不声明 `ASSETS` binding。
+
+### Workers Builds 配置
+
+| 配置项     | 值                                                      |
+| ---------- | ------------------------------------------------------- |
+| 仓库根目录 | 仓库根目录                                              |
+| 生产分支   | `main`                                                  |
+| 构建命令   | `pnpm --filter @icebreakers/website build`              |
+| 生产部署   | `pnpm --filter @icebreakers/website run deploy`         |
+| 非生产部署 | `pnpm --filter @icebreakers/website run deploy:preview` |
+
+构建命令会先校验双语页面，再由 VitePress 生成 `.vitepress/dist`。Worker 配置会为不存在的路由返回生成后的 `404.html`，并继续读取 `public/_redirects`，兼容旧的 `/en/*` 链接。
+
+### 预览、发布与回滚
+
+修改生产部署前，先完成本地验证：
+
+```bash
+pnpm --filter @icebreakers/website build
+pnpm --filter @icebreakers/website run deploy:dry-run
+pnpm --filter @icebreakers/website exec wrangler dev
+```
+
+非生产 Workers Builds 上传预览版本。验证通过后再执行生产部署。需要回滚时，先查看版本历史，再选择最近的稳定版本：
+
+```bash
+pnpm --filter @icebreakers/website exec wrangler versions list
+pnpm --filter @icebreakers/website exec wrangler rollback <VERSION_ID>
+```
+
+`repoctl.icebreaker.top` 是唯一 canonical custom domain。Cloudflare Redirect Rules 把 `repo.icebreaker.top/*` 和 `monorepo.icebreaker.top/*` 永久跳转到主域名，同时保留路径和查询参数。
+
 ## 下一步
 
 - 查所有参数：[命令速查](./commands.md)

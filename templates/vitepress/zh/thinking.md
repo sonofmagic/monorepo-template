@@ -69,17 +69,20 @@
 
 此外，模板里还有许多为 `GitHub` 显示优化的 `md` 文档。
 
-## 部署
+## 文档部署
 
-文档网站通过 `netlify.toml` 配置部署在 `Netlify` 上。最初我使用的是 `Vercel`，但由于**国内**访问速度的原因，最终迁移到了 `Netlify`。
+文档是一个 VitePress 静态站点，以名为 `repoctl-docs` 的 Cloudflare Worker 发布。Workers Static Assets 直接托管 `.vitepress/dist`，同时处理自定义 404 页面和 `_redirects` 兼容规则。站点没有动态请求逻辑，因此不额外编写 Worker handler，也不声明 `ASSETS` binding。
 
-而且由于我是开源项目贡献者的原因，`Netlify` 为我 `免费` 提供了 `Pro` 版本的计划 (通常这需要 `$19/per member/month`)
+Cloudflare Workers Builds 从仓库根目录执行：
 
-感谢 `Netlify`! 爱你❤️😍。
+```bash
+pnpm --filter @icebreakers/website build
+pnpm --filter @icebreakers/website run deploy
+```
 
-如果看到这里的哥们，你也有一定影响力的开源项目，也可以通过下方的链接申请。
+非生产分支使用 `pnpm --filter @icebreakers/website run deploy:preview` 上传预览版本。生产发布前运行 `pnpm --filter @icebreakers/website run deploy:dry-run`，校验静态资产清单和 Wrangler 配置。需要回滚时，先用 `wrangler versions list` 确认版本，再执行 `wrangler rollback <VERSION_ID>`。
 
-https://www.netlify.com/legal/open-source-policy/
+唯一主域名是 `https://repoctl.icebreaker.top`。`repo.icebreaker.top` 和 `monorepo.icebreaker.top` 只作为兼容入口，由 Cloudflare 301 跳转到主域名，并保留原路径与查询参数。
 
 ## 总结
 

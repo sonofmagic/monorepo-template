@@ -15,4 +15,4 @@ New projects should prefer `npm create repoctl@latest` or `pnpm create repoctl`.
 
 Output is English by default. Pass `--lang zh-CN` or set `REPOCTL_LANG=zh-CN` for Simplified Chinese.
 
-Documentation: https://repo.icebreaker.top
+Documentation: https://repoctl.icebreaker.top

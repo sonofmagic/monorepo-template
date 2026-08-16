@@ -85,7 +85,7 @@ Use `pnpm change` for changes that affect a publishable package and inspect the 
 
 ## Documentation
 
-- Documentation: https://repo.icebreaker.top
+- Documentation: https://repoctl.icebreaker.top
 - GitHub: https://github.com/sonofmagic/repoctl
 - Issues: https://github.com/sonofmagic/repoctl/issues
 - Security: [SECURITY.md](SECURITY.md)

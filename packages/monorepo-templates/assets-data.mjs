@@ -36,7 +36,6 @@ const extraAssetTargets = [
   'SECURITY.md',
   'CODE_OF_CONDUCT.md',
   'CONTRIBUTING.md',
-  'netlify.toml',
 ]
 
 export const assetTargets = [...coreAssetTargets, ...extraAssetTargets]

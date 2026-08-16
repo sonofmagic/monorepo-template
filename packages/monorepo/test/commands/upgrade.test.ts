@@ -69,7 +69,7 @@ describe('upgradeMonorepo overwrite logic', () => {
     })
     const { upgradeMonorepo } = await import('@/commands/upgrade')
     await upgradeMonorepo({ outDir, overwrite: true })
-    const targetFile = path.join(outDir, 'netlify.toml')
+    const targetFile = path.join(outDir, 'Dockerfile')
     await fs.writeFile(targetFile, '# custom configuration\n')
     await upgradeMonorepo({ outDir, skipOverwrite: true })
     const content = await fs.readFile(targetFile, 'utf8')
@@ -81,7 +81,7 @@ describe('upgradeMonorepo overwrite logic', () => {
 
   it.skipIf(CI.isCI)('prompts when contents differ and rewrites selected files', async () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-rewrite-')
-    const targetFile = path.join(outDir, 'netlify.toml')
+    const targetFile = path.join(outDir, 'Dockerfile')
     const checkboxMock = vi.fn(async (options: { choices?: Array<{ value: string }> }) => {
       const choices = Array.isArray(options?.choices) ? options.choices : []
       const match = choices.find(item => item.value === targetFile)
@@ -97,7 +97,7 @@ describe('upgradeMonorepo overwrite logic', () => {
       }
     })
     const { assetsDir } = await import('@/constants')
-    const reference = await fs.readFile(path.join(assetsDir, 'netlify.toml'), 'utf8')
+    const reference = await fs.readFile(path.join(assetsDir, 'Dockerfile'), 'utf8')
     const { upgradeMonorepo } = await import('@/commands/upgrade')
 
     await upgradeMonorepo({ outDir })

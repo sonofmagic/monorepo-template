@@ -20,4 +20,4 @@ const report = await runDoctor(workspace.workspaceDir)
 
 本包为已有安装保留 `repo` 和 `repoctl` bin。新用户文档统一推荐 `repoctl` 包。
 
-文档：https://repo.icebreaker.top
+文档：https://repoctl.icebreaker.top

@@ -5,7 +5,7 @@
   "private": true,
   "description": "Documentation website for repoctl",
   "author": "ice breaker <hi@sonofmagic.top>",
-  "homepage": "https://repo.icebreaker.top",
+  "homepage": "https://repoctl.icebreaker.top",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sonofmagic/repoctl.git",
@@ -22,11 +22,15 @@
   ],
   "scripts": {
     "dev": "vitepress dev",
-    "build": "vitepress build",
+    "check:locales": "tsx scripts/check-locales.ts",
+    "build": "pnpm run check:locales && vitepress build",
     "preview": "vitepress preview",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler versions upload",
+    "deploy:dry-run": "wrangler deploy --dry-run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "vue": "^3.5.41"
@@ -40,8 +44,11 @@
     "debug": "^4.4.3",
     "mermaid": "^11.16.1",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.12",
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.13.5",
-    "vitepress-plugin-mermaid": "^2.0.17"
+    "vitepress-plugin-mermaid": "^2.0.17",
+    "vue-tsc": "^3.3.10",
+    "wrangler": "^4.123.0"
   }
 }

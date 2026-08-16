@@ -1,9 +1,39 @@
-# Reusing JavaScript Code
+# Reusing JavaScript
 
-JavaScript code can be shared through source modules, workspace packages, or published npm packages. The right boundary depends on ownership and consumers.
+Reuse source code through an explicit package boundary. Copying files between applications is fast once and expensive every time the shared behavior changes; a local workspace package makes ownership, versioning, and tests visible.
 
-- Use a local module for code owned by one package.
-- Use a workspace package when multiple projects in the same repository share versioned behavior.
-- Publish an npm package when external repositories need a stable public API.
+## Start with a workspace package
 
-In a pnpm workspace, declare internal dependencies with the `workspace:` protocol and let the package build produce explicit runtime and type entrypoints.
+```json
+{
+  "dependencies": {
+    "@example/shared": "workspace:*"
+  }
+}
+```
+
+The workspace protocol uses the local package during development and protects the repository from accidentally resolving an unrelated registry version.
+
+## Export a narrow API
+
+```ts
+export function normalizeName(value: string) {
+  return value.trim().toLowerCase()
+}
+```
+
+Keep the public entry point small. A shared package should expose behavior that has a real consumer, not a collection of unrelated helpers that happen to be nearby.
+
+## Choose the right reuse level
+
+| Need                         | Better boundary                        |
+| ---------------------------- | -------------------------------------- |
+| Shared runtime behavior      | A versioned package                    |
+| Shared build and lint policy | A preset package or managed asset      |
+| Shared application feature   | A feature package with clear ownership |
+| One-off project setup        | A template, not a dependency           |
+
+## Keep Reading
+
+- [What Is An npm Package?](./what-is-npm-package.md)
+- [Template Systems](../monorepo/templates.md)

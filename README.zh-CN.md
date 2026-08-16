@@ -85,7 +85,7 @@ pnpm test
 
 ## 相关链接
 
-- 文档：https://repo.icebreaker.top
+- 文档：https://repoctl.icebreaker.top
 - GitHub：https://github.com/sonofmagic/repoctl
 - Issues：https://github.com/sonofmagic/repoctl/issues
 - 安全策略：[SECURITY.md](SECURITY.md)

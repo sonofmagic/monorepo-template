@@ -82,6 +82,41 @@ repo verify pre-push
 | Output for scripts                    | `--json --out <file>`                              |
 | Share a redacted report               | `--markdown --redact --out <file>`                 |
 
+## Documentation Worker
+
+The repoctl documentation is deployed as the `repoctl-docs` Cloudflare Worker. VitePress produces static assets, and Workers Static Assets serves them without an application handler or an `ASSETS` binding.
+
+### Workers Builds settings
+
+| Setting               | Value                                                   |
+| --------------------- | ------------------------------------------------------- |
+| Repository root       | Repository root                                         |
+| Production branch     | `main`                                                  |
+| Build command         | `pnpm --filter @icebreakers/website build`              |
+| Production deploy     | `pnpm --filter @icebreakers/website run deploy`         |
+| Non-production deploy | `pnpm --filter @icebreakers/website run deploy:preview` |
+
+The build command checks locale parity before VitePress generates `.vitepress/dist`. The Worker config serves the generated `404.html` for missing routes and keeps `public/_redirects` active for legacy `/en/*` links.
+
+### Preview, release, and rollback
+
+Run a local validation before changing production:
+
+```bash
+pnpm --filter @icebreakers/website build
+pnpm --filter @icebreakers/website run deploy:dry-run
+pnpm --filter @icebreakers/website exec wrangler dev
+```
+
+Non-production Workers Builds upload a preview version. Promote a validated build through the production deploy command. To roll back, inspect the version history and select the last known-good version:
+
+```bash
+pnpm --filter @icebreakers/website exec wrangler versions list
+pnpm --filter @icebreakers/website exec wrangler rollback <VERSION_ID>
+```
+
+`repoctl.icebreaker.top` is the canonical custom domain. Cloudflare Redirect Rules send `repo.icebreaker.top/*` and `monorepo.icebreaker.top/*` to the canonical host with a permanent redirect while preserving the path and query string.
+
 ## Keep Reading
 
 - [Command Reference](./commands.md)

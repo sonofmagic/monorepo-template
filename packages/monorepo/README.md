@@ -29,4 +29,4 @@ Tooling wrappers are available from either `@icebreakers/monorepo/tooling` or th
 
 This package retains the `repo` and `repoctl` bins for existing installations. New user documentation recommends the `repoctl` package; the command surface is shared.
 
-Documentation: https://repo.icebreaker.top
+Documentation: https://repoctl.icebreaker.top

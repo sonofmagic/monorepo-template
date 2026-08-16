@@ -1,0 +1,49 @@
+@media (max-width: 900px) {
+  .repoctl-home__hero,
+  .repoctl-home__quickstart {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 42px;
+  }
+
+  .repoctl-home__quickstart .repoctl-home__button {
+    grid-column: auto;
+  }
+
+  .repoctl-home__lifecycle ol {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .repoctl-home {
+    padding: 16px 20px 68px;
+  }
+
+  .repoctl-home__hero h1 {
+    font-size: 42px;
+  }
+
+  .repoctl-home__section {
+    padding-top: 64px;
+  }
+
+  .repoctl-home__lifecycle ol,
+  .repoctl-home__path-grid,
+  .repoctl-home__automation,
+  .repoctl-home__commands dl,
+  .repoctl-home__docs > div,
+  .repoctl-home__capability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repoctl-home__automation {
+    padding: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repoctl-home__button {
+    transition: none;
+  }
+}

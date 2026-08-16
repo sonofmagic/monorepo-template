@@ -1,7 +1,48 @@
 # Type Declarations
 
-Type declarations are part of a TypeScript package's public API.
+Type declarations describe the public TypeScript contract of a JavaScript package. They must be generated from the same source and exported through the same public entry points as the runtime code.
 
-Generate `.d.ts` files from the same source revision as runtime output, point `types` and export conditions at files included in the tarball, and use `tsd` tests for important inference and error behavior.
+## Emit declarations
 
-Declaration bundling can simplify public output, but it must preserve module augmentation, generics, and referenced types. Always inspect the packed artifact rather than testing source imports alone.
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "outDir": "./dist"
+  }
+}
+```
+
+Bundlers such as tsdown can emit declaration files alongside runtime output. The important rule is that declaration paths are stable and match the package exports map.
+
+## Link types to exports
+
+```json
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  }
+}
+```
+
+The top-level `types` field is useful for simple packages. Per-entry `types` declarations are necessary when a package exposes subpaths or format-specific output.
+
+## Test the public contract
+
+```bash
+pnpm tsd
+pnpm pack --dry-run
+```
+
+Type tests should import from the package name, not a source file. That proves the declarations consumers receive are compatible with the documented API.
+
+## Keep Reading
+
+- [Package Entry Points](./package-entry-points.md)
+- [TypeScript](./typescript.md)

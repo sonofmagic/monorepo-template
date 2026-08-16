@@ -59,4 +59,4 @@ import { defineEslintConfig } from 'repoctl/tooling'
 export default await defineEslintConfig()
 ```
 
-Documentation: https://repo.icebreaker.top
+Documentation: https://repoctl.icebreaker.top

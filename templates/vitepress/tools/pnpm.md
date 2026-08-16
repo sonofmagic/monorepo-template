@@ -1,15 +1,47 @@
 # pnpm
 
-pnpm owns workspace discovery, dependency installation, script execution, and versioning configuration.
+pnpm is the package manager used by repoctl workspaces. Its workspace protocol, content-addressable store, and filter syntax make it a practical fit for repositories with several packages and applications.
+
+## Install dependencies
 
 ```bash
 pnpm install
-pnpm --filter <package> build
-pnpm -r test
-pnpm change
-pnpm change status
+pnpm install --frozen-lockfile
 ```
 
-`pnpm-workspace.yaml` is the source of truth for package patterns and release groups. repoctl can diagnose missing patterns and synchronize recommended defaults, but pnpm remains the package manager.
+Use the frozen form in CI. It proves that `package.json` files and the lockfile describe the same dependency graph.
 
-Prefer exact workspace filters in automation and keep `packageManager` plus `engines.node` declared at the repository root.
+## Work with one workspace
+
+```bash
+pnpm --filter repoctl build
+pnpm --filter @icebreakers/monorepo test
+pnpm --filter './packages/*' lint
+```
+
+Filters are a routing tool, not a replacement for repository scripts. Prefer an existing package script over an ad hoc command when a task should be repeatable.
+
+## Link local packages
+
+```json
+{
+  "dependencies": {
+    "@icebreakers/monorepo": "workspace:*"
+  }
+}
+```
+
+The `workspace:` protocol prevents accidentally resolving a local package from the public registry during development.
+
+## Operational guidance
+
+- Pin the package manager in the root `package.json`.
+- Commit `pnpm-lock.yaml` for applications and monorepos.
+- Use `pnpm exec` for binaries supplied by the current workspace.
+- Use `pnpm --filter` for a scoped package command and Turbo for graph-wide task orchestration.
+
+## Keep Reading
+
+- [Turborepo](./turborepo.md)
+- [Managing A Monorepo](../monorepo/manage.md)
+- [repoctl Commands](../repoctl/commands.md)

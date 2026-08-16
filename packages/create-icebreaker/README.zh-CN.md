@@ -15,4 +15,4 @@ pnpm create icebreaker
 
 默认输出英文。传入 `--lang zh-CN` 或设置 `REPOCTL_LANG=zh-CN` 可切换为简体中文。
 
-文档：https://repo.icebreaker.top
+文档：https://repoctl.icebreaker.top

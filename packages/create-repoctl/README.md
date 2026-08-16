@@ -26,4 +26,4 @@ Output is English by default. Pass `--lang zh-CN` or set `REPOCTL_LANG=zh-CN` fo
 pnpm create repoctl -- --lang zh-CN
 ```
 
-Documentation: https://repo.icebreaker.top
+Documentation: https://repoctl.icebreaker.top
