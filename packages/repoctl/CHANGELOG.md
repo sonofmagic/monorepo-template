@@ -1,5 +1,16 @@
 # repoctl
 
+## 5.4.1
+
+### Patch Changes
+
+- 统一 Release workflow 的触发检测，并在质量门禁前校验 workspace 依赖协议。
+
+- Update package homepage metadata and documentation links to the repoctl domain.
+
+- Updated dependencies:
+  - @icebreakers/monorepo@5.4.1
+
 ## 5.4.0
 
 ### Minor Changes
