@@ -10,6 +10,7 @@ import { runAfterPublishHooks, runQualityScripts, runReleaseHooks } from './hook
 import { releasePrerelease } from './prerelease'
 import { capture, clearPublishSummary, getReleaseEnv, hasPendingIntents, readPublishSummary, resolveBranch, run } from './shared'
 import { prepareStable, publishStable } from './stable'
+import { readReleaseTriggerContext, shouldRunRelease } from './trigger'
 import { prereleaseBranches } from './types'
 
 const releaseBranch = 'release/pnpm-version'
@@ -195,6 +196,17 @@ export async function releaseCi(options: ReleaseCiOptions) {
   }
   if (mode !== 'auto') {
     throw new ReleaseCommandError(`unknown release CI mode ${mode}; expected auto, prepare, publish, or publish-unpublished`)
+  }
+
+  // GitHub push events use the same trigger contract as Changesets. Local and
+  // programmatic calls without a GitHub event keep the historical auto behavior.
+  const eventName = getReleaseEnv(options)['GITHUB_EVENT_NAME']?.trim()
+  if (eventName && eventName !== 'workflow_dispatch') {
+    const trigger = await readReleaseTriggerContext(options)
+    if (!shouldRunRelease(trigger)) {
+      logger.info('No release trigger detected; skipping release CI.')
+      return
+    }
   }
 
   const branch = resolveBranch(options)

@@ -12,6 +12,76 @@ afterEach(async () => {
 })
 
 describe('release commands', () => {
+  it('skips an ordinary GitHub push before quality scripts', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await releaseCi({
+      branch: 'main',
+      cwd,
+      env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF_NAME: 'main' },
+      spawn: spawn as never,
+    })
+
+    expect(calls).toEqual([
+      { command: 'git', args: ['diff', '--name-only', 'HEAD^', 'HEAD'] },
+      { command: 'git', args: ['log', '-1', '--format=%s', 'HEAD'] },
+    ])
+  })
+
+  it('prepares a GitHub push with a pending intent', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock({ diffStatus: 1 })
+    const github = {
+      ensurePullRequest: vi.fn(),
+      closeLegacyReleasePullRequests: vi.fn(),
+      ensureRelease: vi.fn(),
+      ensureTag: vi.fn(),
+    }
+
+    await releaseCi({
+      branch: 'main',
+      cwd,
+      env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF_NAME: 'main' },
+      github,
+      spawn: spawn as never,
+    })
+
+    expect(calls).toContainEqual({ command: 'pnpm', args: ['version', '-r', '--no-git-checks'] })
+    expect(github.ensurePullRequest).toHaveBeenCalledOnce()
+  })
+
+  it('publishes a GitHub release commit without pending intents', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock({ stdout: {
+      'git log -1 --format=%s HEAD': 'chore(release): version packages',
+    } })
+
+    await releaseCi({
+      branch: 'main',
+      cwd,
+      env: { GITHUB_EVENT_NAME: 'push', GITHUB_REF_NAME: 'main' },
+      spawn: spawn as never,
+    })
+
+    expect(calls).toContainEqual({ command: 'pnpm', args: ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'] })
+  })
+
+  it('lets workflow dispatch bypass the automatic trigger probe', async () => {
+    const cwd = await createTempWorkspace('main')
+    const { calls, spawn } = createSpawnMock()
+
+    await releaseCi({
+      branch: 'main',
+      cwd,
+      env: { GITHUB_EVENT_NAME: 'workflow_dispatch', GITHUB_REF_NAME: 'main' },
+      spawn: spawn as never,
+    })
+
+    expect(calls[0]).toEqual({ command: 'pnpm', args: ['run', 'build'] })
+  })
+
   it('auto mode publishes stable packages when main has no pending intents', async () => {
     const cwd = await createTempWorkspace('main')
     const { calls, spawn } = createSpawnMock()

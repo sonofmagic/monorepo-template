@@ -4,7 +4,7 @@ import {
   hasReleaseArtifactPair,
   isReleaseCommitMessage,
   shouldRunRelease,
-} from './release-trigger'
+} from '@/commands/release'
 
 const baseContext = {
   eventName: 'push',
@@ -63,11 +63,11 @@ describe('release trigger', () => {
   })
 
   it('always runs workflow dispatch', () => {
-    for (const eventName of ['auto', 'prepare', 'publish', 'publish-unpublished']) {
+    for (const mode of ['auto', 'prepare', 'publish', 'publish-unpublished']) {
       assert.equal(shouldRunRelease({
         ...baseContext,
         eventName: 'workflow_dispatch',
-        commitMessage: eventName,
+        commitMessage: mode,
       }), true)
     }
   })

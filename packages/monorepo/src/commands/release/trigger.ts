@@ -1,17 +1,16 @@
-import { execFile } from 'node:child_process'
-import fs from 'node:fs/promises'
-import process from 'node:process'
-import { promisify } from 'node:util'
+import type { ReleaseOptions } from './types'
+import { readdir, readFile } from 'node:fs/promises'
+import path from 'pathe'
+import { capture, getReleaseEnv } from './shared'
 
-const execFileAsync = promisify(execFile)
-const RELEASE_BRANCHES = new Set(['main', 'alpha', 'beta', 'rc', 'next'])
-const PRERELEASE_BRANCHES = new Set(['alpha', 'beta', 'rc', 'next'])
+const releaseBranches = new Set(['main', 'alpha', 'beta', 'rc', 'next'])
+const prereleaseBranches = new Set(['alpha', 'beta', 'rc', 'next'])
 
 export interface ReleaseTriggerContext {
-  eventName: 'push' | 'workflow_dispatch' | string
+  eventName: string
   branch: string
-  pendingChangesetFiles: string[]
-  changedFiles: string[]
+  pendingChangesetFiles: readonly string[]
+  changedFiles: readonly string[]
   commitMessage?: string
 }
 
@@ -19,7 +18,7 @@ function normalizePath(file: string) {
   return file.replaceAll('\\', '/').replace(/^\.\//, '')
 }
 
-export function hasPendingChangeset(files: string[]) {
+export function hasPendingChangeset(files: readonly string[]) {
   return files.some((file) => {
     const normalized = normalizePath(file)
     return normalized.startsWith('.changeset/')
@@ -34,7 +33,7 @@ export function isReleaseCommitMessage(message = '') {
     || /^version packages(?:\s|$)/i.test(subject)
 }
 
-export function hasReleaseArtifactPair(files: string[]) {
+export function hasReleaseArtifactPair(files: readonly string[]) {
   const artifactsByDirectory = new Map<string, Set<string>>()
 
   for (const file of files) {
@@ -64,16 +63,15 @@ export function shouldRunRelease(context: ReleaseTriggerContext) {
     return true
   }
 
-  if (context.eventName !== 'push' || !RELEASE_BRANCHES.has(context.branch)) {
+  if (context.eventName !== 'push' || !releaseBranches.has(context.branch)) {
     return false
   }
 
-  const pendingIntent = hasPendingChangeset(context.pendingChangesetFiles)
-  if (pendingIntent) {
+  if (hasPendingChangeset(context.pendingChangesetFiles)) {
     return true
   }
 
-  if (PRERELEASE_BRANCHES.has(context.branch)) {
+  if (prereleaseBranches.has(context.branch)) {
     return false
   }
 
@@ -81,9 +79,9 @@ export function shouldRunRelease(context: ReleaseTriggerContext) {
     || hasReleaseArtifactPair(context.changedFiles)
 }
 
-async function readPendingChangesetFiles() {
+async function readPendingChangesetFiles(cwd: string) {
   try {
-    const entries = await fs.readdir('.changeset', { withFileTypes: true })
+    const entries = await readdir(path.join(cwd, '.changeset'), { withFileTypes: true })
     return entries
       .filter(entry => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
       .map(entry => `.changeset/${entry.name}`)
@@ -93,25 +91,23 @@ async function readPendingChangesetFiles() {
   }
 }
 
-async function readGitOutput(args: string[]) {
+function readGitOutput(options: ReleaseOptions, args: string[]) {
   try {
-    const result = await execFileAsync('git', args, { encoding: 'utf8' })
-    return result.stdout.trim()
+    return capture('git', args, options)
   }
   catch {
     return ''
   }
 }
 
-async function readChangedFiles() {
-  const eventPath = process.env.GITHUB_EVENT_NAME === 'push'
-    ? process.env.GITHUB_EVENT_PATH
-    : undefined
+async function readChangedFiles(options: ReleaseOptions) {
+  const env = getReleaseEnv(options)
   let diffRange: string[] = []
+  const eventPath = env['GITHUB_EVENT_NAME'] === 'push' ? env['GITHUB_EVENT_PATH'] : undefined
 
   if (eventPath) {
     try {
-      const event = JSON.parse(await fs.readFile(eventPath, 'utf8')) as { before?: string, after?: string }
+      const event = JSON.parse(await readFile(eventPath, 'utf8')) as { before?: string, after?: string }
       if (event.before && event.after && !/^0+$/.test(event.before)) {
         diffRange = [event.before, event.after]
       }
@@ -124,27 +120,21 @@ async function readChangedFiles() {
   const args = diffRange.length > 0
     ? ['diff', '--name-only', ...diffRange]
     : ['diff', '--name-only', 'HEAD^', 'HEAD']
-  const output = await readGitOutput(args)
+  const output = readGitOutput(options, args)
   return output ? output.split(/\r?\n/).filter(Boolean) : []
 }
 
-async function main() {
-  const context: ReleaseTriggerContext = {
-    eventName: process.env.GITHUB_EVENT_NAME ?? 'push',
-    branch: process.env.GITHUB_REF_NAME ?? '',
-    pendingChangesetFiles: await readPendingChangesetFiles(),
-    changedFiles: await readChangedFiles(),
-    commitMessage: await readGitOutput(['log', '-1', '--format=%s', process.env.GITHUB_SHA ?? 'HEAD']),
-  }
-  const shouldRun = shouldRunRelease(context)
-  const output = `should_run=${shouldRun}`
+export async function readReleaseTriggerContext(options: ReleaseOptions): Promise<ReleaseTriggerContext> {
+  const env = getReleaseEnv(options)
+  const eventName = env['GITHUB_EVENT_NAME']?.trim() || 'push'
+  const branch = options.branch?.trim() || env['GITHUB_REF_NAME']?.trim() || ''
+  const sha = env['GITHUB_SHA']?.trim() || 'HEAD'
 
-  if (process.env.GITHUB_OUTPUT) {
-    await fs.appendFile(process.env.GITHUB_OUTPUT, `${output}\n`)
+  return {
+    eventName,
+    branch,
+    pendingChangesetFiles: await readPendingChangesetFiles(options.cwd),
+    changedFiles: await readChangedFiles(options),
+    commitMessage: readGitOutput(options, ['log', '-1', '--format=%s', sha]),
   }
-  console.log(JSON.stringify({ ...context, shouldRun }))
-}
-
-if (process.argv[1]?.endsWith('release-trigger.ts')) {
-  await main()
 }

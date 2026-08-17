@@ -101,7 +101,8 @@ describe('upgradeMonorepo overwrite logic', () => {
 
     const workflow = await fs.readFile(workflowPath, 'utf8')
     expect(workflow).toContain('# repoctl-managed: release/v2')
-    expect(workflow).toContain('detect-release-trigger:')
+    expect(workflow).not.toContain('detect-release-trigger:')
+    expect(workflow).toContain('run: pnpm exec repo release ci')
     await fs.remove(root)
   })
 

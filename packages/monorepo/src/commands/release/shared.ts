@@ -53,7 +53,7 @@ export function hasGitChanges(options: ReleaseOptions) {
 export async function hasPendingIntents(cwd: string) {
   try {
     const entries = await readdir(path.join(cwd, '.changeset'), { withFileTypes: true })
-    return entries.some(entry => entry.isFile() && entry.name.endsWith('.md'))
+    return entries.some(entry => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'README.md')
   }
   catch {
     return false
