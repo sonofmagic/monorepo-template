@@ -13,7 +13,7 @@ export async function prepareStable(options: ReleaseOptions) {
     return false
   }
   runReleaseHooks('beforeVersion', options)
-  runQualityScripts(options)
+  await runQualityScripts(options)
   run('pnpm', ['version', '-r', '--no-git-checks'], options)
   runReleaseHooks('afterVersion', options)
   return hasGitChanges(options)
@@ -28,7 +28,7 @@ export async function publishStable(options: ReleaseOptions) {
   if (await hasPendingIntents(options.cwd)) {
     throw new ReleaseCommandError('stable publish found unconsumed change intents; prepare and merge the Release PR before publishing')
   }
-  runQualityScripts(options)
+  await runQualityScripts(options)
   runReleaseHooks('beforePublish', options)
   await clearPublishSummary(options.cwd)
   run('pnpm', ['publish', '-r', '--report-summary', '--provenance', '--no-git-checks'], options)

@@ -5,6 +5,7 @@ import path from 'pathe'
 import { logger } from '../../core/logger'
 import { ReleaseCommandError } from './errors'
 import { run } from './shared'
+import { assertWorkspaceDependencyProtocols } from './workspace-protocol'
 
 const defaultQualityScripts = ['build', 'lint', 'test']
 
@@ -34,7 +35,8 @@ function runScripts(scripts: string[], options: ReleaseOptions, extraEnv?: NodeJ
   }
 }
 
-export function runQualityScripts(options: ReleaseOptions) {
+export async function runQualityScripts(options: ReleaseOptions) {
+  await assertWorkspaceDependencyProtocols(options.cwd)
   runScripts(options.config?.qualityScripts ?? defaultQualityScripts, options)
   runScripts(options.config?.hooks?.verify ?? [], options)
 }

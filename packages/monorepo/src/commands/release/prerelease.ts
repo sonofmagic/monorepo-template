@@ -16,7 +16,7 @@ export async function releasePrerelease(options: ReleaseOptions) {
   }
 
   runReleaseHooks('beforeVersion', options)
-  runQualityScripts(options)
+  await runQualityScripts(options)
   run('pnpm', ['version', '-r', '--no-git-checks'], options)
   runReleaseHooks('afterVersion', options)
   if (!hasGitChanges(options)) {

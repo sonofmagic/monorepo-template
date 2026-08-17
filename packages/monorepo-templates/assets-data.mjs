@@ -21,6 +21,7 @@ const coreAssetTargets = [
   'turbo.json',
   // vitest
   'vitest.config.ts',
+  'scripts/release-trigger.ts',
   // 'vitest.workspace.ts',
   // #region docker
   'Dockerfile',

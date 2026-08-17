@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises'
 import path from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prepareStable, publishStable, releaseCi } from '@/commands/release'
@@ -74,6 +75,28 @@ describe('release lifecycle configuration', () => {
       { command: 'pnpm', args: ['run', 'quality:release'] },
       { command: 'pnpm', args: ['run', 'release:verify'] },
     ])
+  })
+
+  it('fails before quality scripts when an internal peer dependency uses a semver range', async () => {
+    const cwd = await createTempWorkspace('main')
+    await writeFile(path.join(cwd, 'packages', 'repoctl', 'package.json'), JSON.stringify({
+      name: 'repoctl',
+      version: '1.0.0',
+      peerDependencies: {
+        'private-package': '>=1.0.0',
+      },
+    }), 'utf8')
+    await writePendingIntent(cwd)
+    const { calls, spawn } = createSpawnMock()
+
+    await expect(prepareStable({
+      branch: 'main',
+      cwd,
+      config: { qualityScripts: ['quality:release'] },
+      spawn: spawn as never,
+    })).rejects.toThrow('peerDependencies.private-package=>=1.0.0')
+
+    expect(calls).toEqual([])
   })
 
   it('rejects stable publish while change intents are pending', async () => {

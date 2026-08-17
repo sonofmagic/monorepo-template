@@ -244,10 +244,20 @@ export async function upgradeMonorepo(opts: CliOpts) {
         const migrated = migrateLegacyToolingReferences(textSource, 'repoctl/tooling')
         source = Buffer.from(migrated === textSource ? migrateLegacyToolingReferences(source.toString('utf8'), 'repoctl/tooling') : migrated)
       }
-      const intent = await evaluateWriteIntent(targetPath, buildWriteIntentOptions(source))
       const action = async () => {
         await fs.outputFile(targetPath, source)
         logger.success(targetPath)
+      }
+
+      const forceReleaseWorkflow = relPath === '.github/workflows/release.yml'
+        && merged.overwriteRelease === true
+      const intent = await evaluateWriteIntent(
+        targetPath,
+        forceReleaseWorkflow ? { source } : buildWriteIntentOptions(source),
+      )
+      if (forceReleaseWorkflow && intent.type !== 'skip') {
+        await action()
+        continue
       }
       await scheduleOverwrite(intent, {
         relPath,

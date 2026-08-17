@@ -79,6 +79,32 @@ describe('upgradeMonorepo overwrite logic', () => {
     await fs.remove(root)
   })
 
+  it('force-overwrites a custom release workflow without changing other no-overwrite assets', async () => {
+    const { root, outDir } = await createTempOutDir('monorepo-upgrade-release-')
+    const workflowPath = path.join(outDir, '.github/workflows/release.yml')
+    const configPath = path.join(outDir, 'repoctl.config.ts')
+
+    await vi.resetModules()
+    const { upgradeMonorepo } = await import('@/commands/upgrade')
+    await upgradeMonorepo({ outDir, overwrite: true })
+
+    await fs.writeFile(configPath, [
+      'export default {',
+      '  commands: {',
+      '    upgrade: { noOverwrite: true },',
+      '  },',
+      '}\n',
+    ].join('\n'), 'utf8')
+    await fs.writeFile(workflowPath, 'name: custom\njobs: {}\n', 'utf8')
+
+    await upgradeMonorepo({ outDir, yes: true, overwriteRelease: true })
+
+    const workflow = await fs.readFile(workflowPath, 'utf8')
+    expect(workflow).toContain('# repoctl-managed: release/v2')
+    expect(workflow).toContain('detect-release-trigger:')
+    await fs.remove(root)
+  })
+
   it.skipIf(CI.isCI)('prompts when contents differ and rewrites selected files', async () => {
     const { root, outDir } = await createTempOutDir('monorepo-upgrade-rewrite-')
     const targetFile = path.join(outDir, 'Dockerfile')

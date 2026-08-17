@@ -156,7 +156,7 @@ async function recoverUnpublished(options: ReleaseCiOptions) {
     throw new ReleaseCommandError(`expected ${packageName}@${packageVersion} in the workspace, found ${actualVersion}`)
   }
 
-  runQualityScripts(options)
+  await runQualityScripts(options)
   runReleaseHooks('beforePublish', options)
   await clearPublishSummary(options.cwd)
   run('pnpm', ['publish', '-r', '--filter', packageName, '--report-summary', '--provenance', '--no-git-checks'], options)
