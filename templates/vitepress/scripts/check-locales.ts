@@ -7,6 +7,14 @@ const root = process.cwd()
 const ignoredDirectories = new Set(['.vitepress', 'node_modules'])
 const ignoredFiles = new Set(['CHANGELOG.md'])
 
+function toPosixPath(value: string) {
+  return value.replaceAll('\\', '/')
+}
+
+function relativePath(file: string) {
+  return toPosixPath(path.relative(root, file))
+}
+
 async function markdownFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory)
   const files = await Promise.all(entries.map(async (entry) => {
@@ -24,7 +32,7 @@ async function markdownFiles(directory: string): Promise<string[]> {
 }
 
 function normalizeRoute(route: string) {
-  const withoutHash = route.split('#', 1)[0]!.split('?', 1)[0]!
+  const withoutHash = toPosixPath(route).split('#', 1)[0]!.split('?', 1)[0]!
   const withoutLocale = withoutHash.replace(/^\/zh(?=\/|$)/, '')
   return withoutLocale.replace(/\/index(?:\.md)?$/, '/').replace(/\.md$/, '').replace(/\/$/, '') || '/'
 }
@@ -101,10 +109,10 @@ function validateDocument(relativePath: string, markdown: string) {
 }
 
 const files = await markdownFiles(root)
-const englishFiles = files.filter(file => !path.relative(root, file).startsWith('zh/'))
-const chineseFiles = files.filter(file => path.relative(root, file).startsWith('zh/'))
-const englishPaths = new Set(englishFiles.map(file => path.relative(root, file)))
-const chinesePaths = new Set(chineseFiles.map(file => path.relative(root, file).replace(/^zh\//, '')))
+const englishFiles = files.filter(file => !relativePath(file).startsWith('zh/'))
+const chineseFiles = files.filter(file => relativePath(file).startsWith('zh/'))
+const englishPaths = new Set(englishFiles.map(relativePath))
+const chinesePaths = new Set(chineseFiles.map(file => relativePath(file).replace(/^zh\//, '')))
 const errors: string[] = []
 
 for (const relativePath of englishPaths) {
@@ -119,24 +127,24 @@ for (const relativePath of chinesePaths) {
 }
 
 for (const file of files) {
-  const relativePath = path.relative(root, file)
+  const relative = relativePath(file)
   const markdown = await readFile(file, 'utf8')
-  errors.push(...validateDocument(relativePath, markdown))
+  errors.push(...validateDocument(relative, markdown))
   const links = localLinks(markdown)
   for (const href of links) {
     if (!await existsAtLocale(file, href)) {
-      errors.push(`${relativePath}: unresolved internal link ${href}`)
+      errors.push(`${relative}: unresolved internal link ${href}`)
     }
   }
 
-  const counterpart = relativePath.startsWith('zh/')
-    ? path.join(root, relativePath.slice(3))
-    : path.join(root, 'zh', relativePath)
-  const counterpartRoute = `/${normalizeRoute(path.relative(root, counterpart))}`
+  const counterpart = relative.startsWith('zh/')
+    ? path.join(root, relative.slice(3))
+    : path.join(root, 'zh', relative)
+  const counterpartRoute = `/${normalizeRoute(relativePath(counterpart))}`
   if (await existsAtLocale(file, counterpartRoute === '/' ? '/' : counterpartRoute)) {
     continue
   }
-  errors.push(`${relativePath}: counterpart route cannot be resolved`)
+  errors.push(`${relative}: counterpart route cannot be resolved`)
 }
 
 const englishKeys = contentKeys(homeContent.en).sort()
