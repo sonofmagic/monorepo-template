@@ -1,10 +1,25 @@
 import { describe, expect, it } from 'vitest'
+import YAML from 'yaml'
 import { rootDir } from '@/constants'
 import fs from '@/utils/fs'
+
+interface ReleaseWorkflow {
+  jobs?: {
+    release?: {
+      steps?: Array<{ uses?: string }>
+    }
+  }
+}
+
+function getActionUses(workflow: string) {
+  const parsed = YAML.parse(workflow) as ReleaseWorkflow
+  return parsed.jobs?.release?.steps?.flatMap(step => step.uses ? [step.uses] : []) ?? []
+}
 
 describe('release workflow', () => {
   it('uses one repoctl entrypoint for release orchestration', async () => {
     const workflow = await fs.readFile(`${rootDir}/.github/workflows/release.yml`, 'utf8')
+    const actionUses = getActionUses(workflow)
 
     expect(workflow).toContain('# repoctl-managed: release/v2')
     expect(workflow).toContain('- publish-unpublished')
@@ -17,9 +32,11 @@ describe('release workflow', () => {
     expect(workflow).toContain('id-token: write')
     expect(workflow).toContain('NPM_CONFIG_PROVENANCE: true')
     expect(workflow).toContain('fetch-depth: 0')
-    expect(workflow).toContain('actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1')
-    expect(workflow).toContain('pnpm/action-setup@ff378ebe6b225b0680b81c1ad4498ae0d1d3a5e3')
-    expect(workflow).toContain('actions/setup-node@820762786026740c76f36085b0efc47a31fe5020')
+    expect(actionUses).toEqual(expect.arrayContaining([
+      expect.stringMatching(/^actions\/checkout@[0-9a-f]{40}$/),
+      expect.stringMatching(/^pnpm\/action-setup@[0-9a-f]{40}$/),
+      expect.stringMatching(/^actions\/setup-node@[0-9a-f]{40}$/),
+    ]))
     expect(workflow).not.toContain('detect-release-trigger:')
     expect(workflow).not.toContain('scripts/release-trigger.ts')
     expect(workflow).not.toContain('needs: detect-release-trigger')

@@ -1,4 +1,5 @@
 import { open, rm } from 'node:fs/promises'
+import process from 'node:process'
 import { assetsDir, prepareAssets } from '@icebreakers/monorepo-templates'
 import path from 'pathe'
 import fs from '@/utils/fs'
@@ -6,6 +7,12 @@ import fs from '@/utils/fs'
 const lockFileName = '.prepare-assets.lock'
 const lockPollIntervalMs = 200
 const lockTimeoutMs = 30_000
+
+// GitHub runner metadata must not silently change tests that exercise local
+// release behavior. Tests for GitHub events provide their own explicit env.
+for (const variable of ['GITHUB_EVENT_NAME', 'GITHUB_EVENT_PATH', 'GITHUB_REF_NAME', 'GITHUB_SHA']) {
+  delete process.env[variable]
+}
 
 async function acquirePrepareLock(lockPath: string) {
   try {
