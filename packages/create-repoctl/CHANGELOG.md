@@ -1,5 +1,14 @@
 # create-repoctl
 
+## 0.1.2
+
+### Patch Changes
+
+- Update package homepage metadata and documentation links to the repoctl domain.
+
+- Updated dependencies:
+  - @icebreakers/monorepo-templates@1.3.0
+
 ## 0.1.1
 
 ### Patch Changes

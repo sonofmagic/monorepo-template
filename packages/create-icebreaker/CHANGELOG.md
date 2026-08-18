@@ -1,5 +1,14 @@
 # create-icebreaker
 
+## 1.1.3
+
+### Patch Changes
+
+- Update package homepage metadata and documentation links to the repoctl domain.
+
+- Updated dependencies:
+  - create-repoctl@0.1.2
+
 ## 1.1.2
 
 ### Patch Changes

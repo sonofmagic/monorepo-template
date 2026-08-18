@@ -1,5 +1,16 @@
 # @icebreakers/monorepo
 
+## 5.4.1
+
+### Patch Changes
+
+- Update package homepage metadata to the repoctl documentation domain.
+
+- 统一 Release workflow 的触发检测，并在质量门禁前校验 workspace 依赖协议。
+
+- Updated dependencies:
+  - @icebreakers/monorepo-templates@1.3.0
+
 ## 5.4.0
 
 ## 5.3.0

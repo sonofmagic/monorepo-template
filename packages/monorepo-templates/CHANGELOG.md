@@ -1,5 +1,15 @@
 # @icebreakers/monorepo-templates
 
+## 1.3.0
+
+### Minor Changes
+
+- Remove the retired Netlify deployment asset from managed workspace templates.
+
+### Patch Changes
+
+- 统一 Release workflow 的触发检测，并在质量门禁前校验 workspace 依赖协议。
+
 ## 1.2.1
 
 ### Patch Changes
