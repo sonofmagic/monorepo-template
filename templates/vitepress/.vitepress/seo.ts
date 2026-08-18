@@ -22,8 +22,13 @@ function localeRoutes(page: string) {
 
 export function createPageHead({ page, title, description }: TransformContext): HeadConfig[] {
   const { english, chinese } = localeRoutes(page)
-  const current = page.startsWith('zh/') ? chinese : english
+  const isChinese = page.startsWith('zh/')
+  const current = isChinese ? chinese : english
   const canonical = `${siteOrigin}${current}`
+  const socialImage = `${siteOrigin}/brand/repoctl-social-${isChinese ? 'zh' : 'en'}.png`
+  const socialImageAlt = isChinese
+    ? 'repoctl：面向 pnpm 与 Turborepo monorepo 的任务型 CLI'
+    : 'repoctl: task-first CLI for pnpm and Turborepo monorepos'
 
   return [
     ['link', { rel: 'canonical', href: canonical }],
@@ -35,12 +40,15 @@ export function createPageHead({ page, title, description }: TransformContext): 
     ['meta', { property: 'og:title', content: title }],
     ['meta', { property: 'og:description', content: description }],
     ['meta', { property: 'og:url', content: canonical }],
-    ['meta', { property: 'og:locale', content: page.startsWith('zh/') ? 'zh_CN' : 'en_US' }],
-    ['meta', { property: 'og:image', content: `${siteOrigin}/repoctl-doctor.png` }],
-    ['meta', { property: 'og:image:alt', content: 'repoctl doctor report' }],
+    ['meta', { property: 'og:locale', content: isChinese ? 'zh_CN' : 'en_US' }],
+    ['meta', { property: 'og:image', content: socialImage }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: socialImageAlt }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: title }],
     ['meta', { name: 'twitter:description', content: description }],
-    ['meta', { name: 'twitter:image', content: `${siteOrigin}/repoctl-doctor.png` }],
+    ['meta', { name: 'twitter:image', content: socialImage }],
+    ['meta', { name: 'twitter:image:alt', content: socialImageAlt }],
   ]
 }

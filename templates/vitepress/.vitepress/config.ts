@@ -14,9 +14,18 @@ export default withMermaid(defineConfig({
   cleanUrls: true,
   sitemap: { hostname: siteOrigin },
   transformHead: createPageHead,
-  head: [['link', { rel: 'icon', href: '/logo.jpg' }]],
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand/repoctl-mark.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand/repoctl-mark-dark.svg', media: '(prefers-color-scheme: dark)' }],
+    ['link', { rel: 'alternate icon', type: 'image/x-icon', href: '/brand/favicon.ico' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/brand/apple-touch-icon.png' }],
+  ],
   themeConfig: {
-    logo: '/logo.jpg',
+    logo: {
+      light: '/brand/repoctl-mark.svg',
+      dark: '/brand/repoctl-mark-dark.svg',
+      alt: 'repoctl',
+    },
     search: { provider: 'local' },
     socialLinks: [{ icon: 'github', link: 'https://github.com/sonofmagic/repoctl' }],
   },

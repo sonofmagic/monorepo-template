@@ -1,5 +1,11 @@
 # repoctl
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./brand/svg/repoctl-lockup-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./brand/svg/repoctl-lockup-primary.svg">
+  <img alt="repoctl" src="./brand/svg/repoctl-lockup-primary.svg" width="300" height="64">
+</picture>
+
 [![codecov](https://codecov.io/gh/sonofmagic/repoctl/branch/main/graph/badge.svg?token=mWA3D53rSl)](https://codecov.io/gh/sonofmagic/repoctl)
 
 English | [简体中文](README.zh-CN.md)
