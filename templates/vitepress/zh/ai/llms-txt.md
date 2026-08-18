@@ -34,9 +34,9 @@ description: 说明这个页面解决的问题和适用场景。
 
 AI 入口应该保持显眼，但不要替代正常文档结构：
 
-| 页面类型                               | 推荐位置                             |
-| -------------------------------------- | ------------------------------------ |
-| repoctl 命令、校验、诊断、报告         | `/repoctl/`                          |
-| monorepo 和 npm 包基础知识             | `/knowledge/`、`/monorepo/`、`/why/` |
-| pnpm、Turborepo、versioning 等工具专题 | `/tools/`                            |
-| llms.txt 和 AI 工具读取约定            | `/ai/`                               |
+| 页面类型                               | 推荐位置                                          |
+| -------------------------------------- | ------------------------------------------------- |
+| repoctl 命令、校验、诊断、报告         | `/start/`                                         |
+| monorepo 和 npm 包基础知识             | `/learn/`、`/learn/monorepo/`、`/learn/packages/` |
+| pnpm、Turborepo、versioning 等工具专题 | `/learn/tools/`                                   |
+| llms.txt 和 AI 工具读取约定            | `/ai/`                                            |

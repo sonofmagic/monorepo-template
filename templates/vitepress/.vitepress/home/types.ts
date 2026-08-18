@@ -3,63 +3,45 @@ export interface HomeLink {
   href: string
 }
 
-export interface HomeStep {
-  title: string
-  body: string
-  command: string
-}
-
 export interface HomeContent {
   hero: {
     label: string
     title: string
     description: string
-    primary: HomeLink
-    secondary: HomeLink
-    imageAlt: string
   }
-  proof: string[]
-  lifecycle: {
-    title: string
-    description: string
-    steps: HomeStep[]
-  }
-  paths: {
+  tasks: {
     title: string
     description: string
     items: Array<{
       title: string
       body: string
-      commands: string[]
-      href: string
-      linkLabel: string
+      command: string
+      link: HomeLink
     }>
   }
-  capabilities: {
+  firstRun: {
     title: string
     description: string
-    items: Array<{ title: string, body: string }>
+    steps: Array<{
+      title: string
+      command: string
+      body: string
+    }>
   }
-  commands: {
+  evidence: {
     title: string
     description: string
-    items: Array<{ command: string, purpose: string }>
-  }
-  automation: {
-    title: string
-    description: string
-    formats: string[]
-    code: string
-  }
-  quickstart: {
-    title: string
-    description: string
+    imageAlt: string
     code: string
     link: HomeLink
   }
-  docs: {
+  layers: {
     title: string
     description: string
-    items: Array<HomeLink & { body: string }>
+    items: Array<{
+      title: string
+      body: string
+      link: HomeLink
+    }>
   }
 }

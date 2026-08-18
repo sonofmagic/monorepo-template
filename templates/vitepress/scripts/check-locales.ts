@@ -1,7 +1,9 @@
+import type { DocsLocale } from '../.vitepress/navigation/routes'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { homeContent } from '../.vitepress/home/content'
+import { routePath, routeSections } from '../.vitepress/navigation/routes'
 
 const root = process.cwd()
 const ignoredDirectories = new Set(['.vitepress', 'node_modules'])
@@ -83,7 +85,7 @@ async function existsAtLocale(sourceFile: string, href: string) {
 function validateDocument(relativePath: string, markdown: string) {
   const errors: string[] = []
   const isHome = relativePath === 'index.md' || relativePath === 'zh/index.md'
-  const isExampleReadme = /(?:^|\/)why\/examples\/.*\/README\.md$/.test(relativePath)
+  const isExampleReadme = /(?:^|\/)learn\/packages\/examples\/.*\/README\.md$/.test(relativePath)
   if (isHome || isExampleReadme) {
     return errors
   }
@@ -115,6 +117,35 @@ const englishPaths = new Set(englishFiles.map(relativePath))
 const chinesePaths = new Set(chineseFiles.map(file => relativePath(file).replace(/^zh\//, '')))
 const errors: string[] = []
 
+function routeToRelativeFile(route: string) {
+  const clean = route.replace(/^\//, '')
+  return clean.endsWith('/') ? `${clean}index.md` : `${clean}.md`
+}
+
+for (const locale of ['en', 'zh'] as const satisfies readonly DocsLocale[]) {
+  const prefix = locale === 'zh' ? '/zh' : ''
+  for (const section of routeSections) {
+    for (const item of section.items) {
+      const route = routePath(section.id, item.slug, locale)
+      const relative = routeToRelativeFile(route)
+      try {
+        if (!(await stat(path.join(root, relative))).isFile()) {
+          errors.push(`${locale}: route ${route} is not backed by a Markdown file`)
+        }
+      }
+      catch {
+        errors.push(`${locale}: route ${route} is not backed by a Markdown file`)
+      }
+    }
+  }
+  if (prefix) {
+    const englishRouteCount = routeSections.reduce((count, section) => count + section.items.length, 0)
+    if (englishRouteCount === 0) {
+      errors.push('route manifest is empty')
+    }
+  }
+}
+
 for (const relativePath of englishPaths) {
   if (!chinesePaths.has(relativePath)) {
     errors.push(`missing Chinese counterpart: zh/${relativePath}`)
@@ -132,6 +163,9 @@ for (const file of files) {
   errors.push(...validateDocument(relative, markdown))
   const links = localLinks(markdown)
   for (const href of links) {
+    if (/^(?:\/|\.\.\/)(?:repoctl|knowledge|monorepo|why|tools)(?:\/|$)/.test(href)) {
+      errors.push(`${relativePath}: link uses a retired route ${href}`)
+    }
     if (!await existsAtLocale(file, href)) {
       errors.push(`${relative}: unresolved internal link ${href}`)
     }

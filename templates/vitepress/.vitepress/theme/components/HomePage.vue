@@ -9,124 +9,88 @@ const content = computed(() => homeContent[props.locale])
 
 <template>
   <main class="repoctl-home">
-    <section class="repoctl-home__hero">
+    <section class="repoctl-home__hero" aria-labelledby="repoctl-home-title">
       <div class="repoctl-home__hero-copy">
         <p class="repoctl-home__eyebrow">
           {{ content.hero.label }}
         </p>
-        <h1>{{ content.hero.title }}</h1>
+        <h1 id="repoctl-home-title">
+          {{ content.hero.title }}
+        </h1>
         <p class="repoctl-home__lede">
           {{ content.hero.description }}
         </p>
-        <div class="repoctl-home__actions">
-          <a class="repoctl-home__button repoctl-home__button--primary" :href="content.hero.primary.href">
-            {{ content.hero.primary.label }}
-          </a>
-          <a class="repoctl-home__button" :href="content.hero.secondary.href">
-            {{ content.hero.secondary.label }}
-          </a>
-        </div>
       </div>
-      <figure class="repoctl-home__capture">
-        <img src="/repoctl-doctor.png" :alt="content.hero.imageAlt" width="1440" height="990">
-      </figure>
+      <div class="repoctl-home__hero-command" aria-label="repoctl first command">
+        <span class="repoctl-home__prompt">$</span>
+        <code>pnpm exec repo doctor</code>
+      </div>
     </section>
 
-    <section class="repoctl-home__proof" :aria-label="locale === 'en' ? 'repoctl capabilities' : 'repoctl 能力'">
-      <span v-for="item in content.proof" :key="item">{{ item }}</span>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__lifecycle">
+    <section class="repoctl-home__section repoctl-home__tasks" aria-labelledby="repoctl-tasks-title">
       <div class="repoctl-home__section-heading">
-        <h2>{{ content.lifecycle.title }}</h2>
-        <p>{{ content.lifecycle.description }}</p>
+        <h2 id="repoctl-tasks-title">
+          {{ content.tasks.title }}
+        </h2>
+        <p>{{ content.tasks.description }}</p>
       </div>
-      <ol>
-        <li v-for="step in content.lifecycle.steps" :key="step.command">
-          <code>{{ step.command }}</code>
-          <h3>{{ step.title }}</h3>
-          <p>{{ step.body }}</p>
+      <div class="repoctl-home__task-list">
+        <a v-for="task in content.tasks.items" :key="task.link.href" class="repoctl-home__task" :href="task.link.href">
+          <div class="repoctl-home__task-copy">
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.body }}</p>
+          </div>
+          <code>{{ task.command }}</code>
+          <span class="repoctl-home__task-link">{{ task.link.label }} <span aria-hidden="true">-&gt;</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="repoctl-home__section repoctl-home__first-run" aria-labelledby="repoctl-first-run-title">
+      <div class="repoctl-home__section-heading">
+        <h2 id="repoctl-first-run-title">
+          {{ content.firstRun.title }}
+        </h2>
+        <p>{{ content.firstRun.description }}</p>
+      </div>
+      <ol class="repoctl-home__steps">
+        <li v-for="step in content.firstRun.steps" :key="step.command">
+          <span class="repoctl-home__step-number" aria-hidden="true">{{ String(content.firstRun.steps.indexOf(step) + 1).padStart(2, '0') }}</span>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <code>{{ step.command }}</code>
+            <p>{{ step.body }}</p>
+          </div>
         </li>
       </ol>
     </section>
 
-    <section class="repoctl-home__section repoctl-home__paths">
-      <div class="repoctl-home__section-heading">
-        <h2>{{ content.paths.title }}</h2>
-        <p>{{ content.paths.description }}</p>
+    <section class="repoctl-home__section repoctl-home__evidence" aria-labelledby="repoctl-evidence-title">
+      <div class="repoctl-home__evidence-copy">
+        <h2 id="repoctl-evidence-title">
+          {{ content.evidence.title }}
+        </h2>
+        <p>{{ content.evidence.description }}</p>
+        <pre><code>{{ content.evidence.code }}</code></pre>
+        <a class="repoctl-home__text-link" :href="content.evidence.link.href">{{ content.evidence.link.label }} <span aria-hidden="true">-&gt;</span></a>
       </div>
-      <div class="repoctl-home__path-grid">
-        <article v-for="item in content.paths.items" :key="item.href">
+      <figure class="repoctl-home__capture">
+        <img src="/repoctl-doctor.png" :alt="content.evidence.imageAlt" width="1440" height="990" loading="lazy">
+      </figure>
+    </section>
+
+    <section class="repoctl-home__section repoctl-home__layers" aria-labelledby="repoctl-layers-title">
+      <div class="repoctl-home__section-heading">
+        <h2 id="repoctl-layers-title">
+          {{ content.layers.title }}
+        </h2>
+        <p>{{ content.layers.description }}</p>
+      </div>
+      <div class="repoctl-home__layer-list">
+        <a v-for="item in content.layers.items" :key="item.link.href" class="repoctl-home__layer" :href="item.link.href">
           <h3>{{ item.title }}</h3>
           <p>{{ item.body }}</p>
-          <pre><code>{{ item.commands.join('\n') }}</code></pre>
-          <a :href="item.href">{{ item.linkLabel }}</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__capabilities">
-      <div class="repoctl-home__section-heading">
-        <p class="repoctl-home__eyebrow">
-          repoctl
-        </p>
-        <h2>{{ content.capabilities.title }}</h2>
-        <p>{{ content.capabilities.description }}</p>
-      </div>
-      <div class="repoctl-home__capability-grid">
-        <article v-for="item in content.capabilities.items" :key="item.title">
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.body }}</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__commands">
-      <div class="repoctl-home__section-heading">
-        <h2>{{ content.commands.title }}</h2>
-        <p>{{ content.commands.description }}</p>
-      </div>
-      <dl>
-        <div v-for="item in content.commands.items" :key="item.command">
-          <dt><code>{{ item.command }}</code></dt>
-          <dd>{{ item.purpose }}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__automation">
-      <div>
-        <h2>{{ content.automation.title }}</h2>
-        <p>{{ content.automation.description }}</p>
-        <ul>
-          <li v-for="format in content.automation.formats" :key="format">
-            {{ format }}
-          </li>
-        </ul>
-      </div>
-      <pre><code>{{ content.automation.code }}</code></pre>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__quickstart">
-      <div class="repoctl-home__section-heading">
-        <h2>{{ content.quickstart.title }}</h2>
-        <p>{{ content.quickstart.description }}</p>
-      </div>
-      <pre><code>{{ content.quickstart.code }}</code></pre>
-      <a class="repoctl-home__button repoctl-home__button--primary" :href="content.quickstart.link.href">
-        {{ content.quickstart.link.label }}
-      </a>
-    </section>
-
-    <section class="repoctl-home__section repoctl-home__docs">
-      <div class="repoctl-home__section-heading">
-        <h2>{{ content.docs.title }}</h2>
-        <p>{{ content.docs.description }}</p>
-      </div>
-      <div>
-        <a v-for="item in content.docs.items" :key="item.href" :href="item.href">
-          <strong>{{ item.label }}</strong>
-          <span>{{ item.body }}</span>
+          <span class="repoctl-home__text-link">{{ item.link.label }} <span aria-hidden="true">-&gt;</span></span>
         </a>
       </div>
     </section>

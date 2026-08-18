@@ -1,23 +1,26 @@
 @media (max-width: 900px) {
   .repoctl-home__hero,
-  .repoctl-home__quickstart {
+  .repoctl-home__evidence {
     grid-template-columns: 1fr;
+  }
+
+  .repoctl-home__hero {
     min-height: auto;
-    padding-top: 42px;
   }
 
-  .repoctl-home__quickstart .repoctl-home__button {
-    grid-column: auto;
-  }
-
-  .repoctl-home__lifecycle ol {
-    grid-template-columns: repeat(2, 1fr);
+  .repoctl-home__evidence {
+    gap: 28px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .repoctl-home {
     padding: 16px 20px 68px;
+  }
+
+  .repoctl-home__hero {
+    gap: 28px;
+    padding: 28px 0 48px;
   }
 
   .repoctl-home__hero h1 {
@@ -28,22 +31,37 @@
     padding-top: 64px;
   }
 
-  .repoctl-home__lifecycle ol,
-  .repoctl-home__path-grid,
-  .repoctl-home__automation,
-  .repoctl-home__commands dl,
-  .repoctl-home__docs > div,
-  .repoctl-home__capability-grid {
+  .repoctl-home__task,
+  .repoctl-home__layer {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .repoctl-home__task-link,
+  .repoctl-home__text-link {
+    justify-self: start;
+  }
+
+  .repoctl-home__steps {
     grid-template-columns: 1fr;
   }
 
-  .repoctl-home__automation {
-    padding: 24px;
+  .repoctl-home__steps li,
+  .repoctl-home__steps li + li {
+    min-height: auto;
+    padding: 22px 0;
+    border-left: 0;
+  }
+
+  .repoctl-home__steps li + li {
+    border-top: 1px solid var(--repoctl-line);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .repoctl-home__button {
+  .repoctl-home__task,
+  .repoctl-home__layer {
     transition: none;
   }
 }

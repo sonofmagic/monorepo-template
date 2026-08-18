@@ -36,5 +36,11 @@ export function createPageHead({ page, title, description }: TransformContext): 
     ['meta', { property: 'og:description', content: description }],
     ['meta', { property: 'og:url', content: canonical }],
     ['meta', { property: 'og:locale', content: page.startsWith('zh/') ? 'zh_CN' : 'en_US' }],
+    ['meta', { property: 'og:image', content: `${siteOrigin}/repoctl-doctor.png` }],
+    ['meta', { property: 'og:image:alt', content: 'repoctl doctor report' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: title }],
+    ['meta', { name: 'twitter:description', content: description }],
+    ['meta', { name: 'twitter:image', content: `${siteOrigin}/repoctl-doctor.png` }],
   ]
 }

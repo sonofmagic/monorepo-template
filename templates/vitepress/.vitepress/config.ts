@@ -7,8 +7,9 @@ import { createPageHead, siteOrigin } from './seo'
 
 export default withMermaid(defineConfig({
   outDir: '.vitepress/dist',
+  srcExclude: ['CHANGELOG.md', 'learn/packages/examples/**', 'zh/learn/packages/examples/**'],
   title: 'repoctl',
-  description: 'Task-first CLI for initializing, maintaining, validating, and releasing pnpm and Turborepo monorepos.',
+  description: 'A practical CLI guide for setting up, checking, and maintaining pnpm and Turborepo monorepos.',
   lastUpdated: true,
   cleanUrls: true,
   sitemap: { hostname: siteOrigin },
@@ -24,7 +25,7 @@ export default withMermaid(defineConfig({
       label: 'English',
       lang: 'en-US',
       title: 'repoctl',
-      description: 'Task-first CLI for practical pnpm and Turborepo monorepos.',
+      description: 'A practical CLI guide for setting up, checking, and maintaining pnpm and Turborepo monorepos.',
       themeConfig: {
         nav: createNav('en'),
         outline: { label: 'On This Page', level: [2, 3] },
@@ -42,7 +43,7 @@ export default withMermaid(defineConfig({
       lang: 'zh-CN',
       link: '/zh/',
       title: 'repoctl',
-      description: '面向 pnpm 与 Turborepo monorepo 的任务型 CLI。',
+      description: '面向 pnpm 与 Turborepo monorepo 的实用 CLI 文档。',
       themeConfig: {
         nav: createNav('zh'),
         outline: { label: '目录', level: [2, 3] },
@@ -62,14 +63,14 @@ export default withMermaid(defineConfig({
       Tailwindcss(),
       llmstxt({
         title: 'repoctl',
-        description: 'Task-first CLI for pnpm and Turborepo monorepos. Simplified Chinese documentation is available under /zh/.',
+        description: 'Practical documentation for setting up, checking, and maintaining pnpm and Turborepo monorepos. Chinese documentation is available under /zh/.',
         domain: siteOrigin,
         ignoreFiles: [
           'zh/**',
           'en/**',
           'CHANGELOG.md',
           'thinking.md',
-          'why/examples/**',
+          'learn/packages/examples/**',
           '.vitepress/**',
           '**/node_modules/**',
           '**/internal/**',
