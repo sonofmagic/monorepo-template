@@ -1,3 +1,79 @@
+.repoctl-home__task-list {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.repoctl-home__task {
+  display: flex;
+  flex-direction: column;
+  grid-column: span 5;
+  min-height: 210px;
+  padding: 28px;
+  text-decoration: none !important;
+  background: var(--repoctl-surface);
+  border: 1px solid var(--repoctl-line);
+  border-radius: 8px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.repoctl-home__task:nth-child(4n + 1),
+.repoctl-home__task:nth-child(4n) {
+  grid-column: span 7;
+}
+
+.repoctl-home__task:first-child {
+  background: var(--repoctl-accent-soft);
+}
+
+.repoctl-home__task:nth-child(3) {
+  background: var(--repoctl-soft);
+}
+
+.repoctl-home__task:hover {
+  border-color: var(--repoctl-accent);
+  transform: translateY(-2px);
+}
+
+.repoctl-home__task:active {
+  transform: translateY(1px);
+}
+
+.repoctl-home__task > code {
+  align-self: flex-start;
+  color: var(--repoctl-accent);
+}
+
+.repoctl-home__task-copy {
+  margin-top: 28px;
+}
+
+.repoctl-home__task h3 {
+  font-size: 21px;
+}
+
+.repoctl-home__task p {
+  max-width: 48ch;
+  margin-top: 8px !important;
+  font-size: 14px;
+}
+
+.repoctl-home__task-link,
+.repoctl-home__text-link {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--repoctl-accent);
+  white-space: nowrap;
+}
+
+.repoctl-home__task-link {
+  padding-top: 28px;
+  margin-top: auto;
+}
+
 .repoctl-home__steps {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5,37 +81,38 @@
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--repoctl-line);
+  border-bottom: 1px solid var(--repoctl-line);
 }
 
 .repoctl-home__steps li {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 18px;
-  min-height: 220px;
-  padding: 24px 24px 24px 0;
-  border-bottom: 1px solid var(--repoctl-line);
+  min-height: 238px;
+  padding: 30px 30px 30px 0;
 }
 
 .repoctl-home__steps li + li {
-  padding-left: 24px;
+  padding-left: 30px;
   border-left: 1px solid var(--repoctl-line);
 }
 
 .repoctl-home__step-number {
+  padding-top: 3px;
   font-family: var(--vp-font-family-mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--repoctl-cobalt);
+  color: var(--repoctl-accent);
 }
 
 .repoctl-home__steps h3 {
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .repoctl-home__steps code {
   display: block;
-  margin-top: 14px;
-  color: var(--repoctl-cobalt);
+  margin-top: 18px;
+  color: var(--repoctl-accent);
   overflow-wrap: anywhere;
   white-space: normal;
 }
@@ -47,53 +124,109 @@
 
 .repoctl-home__evidence {
   display: grid;
-  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-  gap: 48px;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: 64px;
   align-items: center;
-}
-
-.repoctl-home__evidence-copy > p {
-  margin-top: 14px !important;
-}
-
-.repoctl-home__evidence pre {
-  max-width: 460px;
-  padding: 18px 20px;
-  margin-top: 24px !important;
-  overflow-x: auto;
-  background: var(--repoctl-soft);
-  border: 1px solid var(--repoctl-line);
-  border-radius: 8px;
 }
 
 .repoctl-home__evidence .repoctl-home__text-link {
   display: inline-block;
-  margin-top: 18px;
+  margin-top: 24px;
 }
 
-.repoctl-home__capture {
-  overflow: hidden;
-  background: #161b22;
+.repoctl-home__workflow {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  min-height: 310px;
+  padding: 34px;
+  color: var(--repoctl-code-text);
+  background: var(--repoctl-code);
   border: 1px solid var(--repoctl-line);
   border-radius: 8px;
+  box-shadow: var(--repoctl-shadow);
 }
 
-.repoctl-home__capture img {
+.repoctl-home__workflow-prompt {
+  font-family: var(--vp-font-family-mono);
+  font-weight: 800;
+  color: #70d7ff;
+}
+
+.repoctl-home__workflow pre {
+  min-width: 0;
+  padding: 0;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 2.15;
+  color: inherit;
+  background: transparent;
+}
+
+.repoctl-home__workflow code {
   display: block;
-  width: 100%;
-  height: auto;
+  color: inherit;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.repoctl-home__layer-list {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 16px;
 }
 
 .repoctl-home__layer {
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr) 130px;
+  display: flex;
+  flex-direction: column;
+  min-height: 156px;
+  padding: 26px;
+  text-decoration: none !important;
+  background: var(--repoctl-surface);
+  border: 1px solid var(--repoctl-line);
+  border-radius: 8px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.repoctl-home__layer:first-child {
+  grid-row: 1 / 3;
+  min-height: 328px;
+  padding: 34px;
+  background: var(--repoctl-accent-soft);
+}
+
+.repoctl-home__layer:hover {
+  border-color: var(--repoctl-accent);
+  transform: translateY(-2px);
+}
+
+.repoctl-home__layer:active {
+  transform: translateY(1px);
 }
 
 .repoctl-home__layer h3 {
-  color: var(--repoctl-cobalt);
+  max-width: 18ch;
+  font-size: 22px;
+  color: var(--repoctl-accent);
 }
 
-.dark .repoctl-home__layer h3,
-.dark .repoctl-home__step-number,
-.dark .repoctl-home__steps code {
-  color: var(--repoctl-cobalt-dark);
+.repoctl-home__layer:first-child h3 {
+  font-size: 30px;
+}
+
+.repoctl-home__layer p {
+  max-width: 48ch;
+  margin-top: 10px !important;
+  font-size: 14px;
+}
+
+.repoctl-home__layer .repoctl-home__text-link {
+  padding-top: 24px;
+  margin-top: auto;
 }

@@ -1,46 +1,92 @@
-@media (max-width: 900px) {
-  .repoctl-home__hero,
-  .repoctl-home__evidence {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 1023px) {
   .repoctl-home__hero {
+    grid-template-columns: 1fr;
+    gap: 44px;
     min-height: auto;
   }
 
+  .repoctl-home__hero-copy {
+    max-width: 760px;
+  }
+
+  .repoctl-home__hero-visual {
+    width: min(100%, 760px);
+    aspect-ratio: 1.65;
+  }
+
+  .repoctl-home__hero-visual img {
+    width: 112%;
+  }
+
   .repoctl-home__evidence {
-    gap: 28px;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .repoctl-home__workflow {
+    min-height: 260px;
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .repoctl-home {
-    padding: 16px 20px 68px;
+    padding: 16px 20px 76px;
   }
 
   .repoctl-home__hero {
-    gap: 28px;
-    padding: 28px 0 48px;
+    gap: 32px;
+    padding: 36px 0 52px;
   }
 
   .repoctl-home__hero h1 {
-    font-size: 42px;
+    font-size: clamp(38px, 11.5vw, 48px);
+    line-height: 1.04;
+  }
+
+  .repoctl-home__lede {
+    margin-top: 20px !important;
+    font-size: 16px;
+  }
+
+  .repoctl-home__hero-actions {
+    margin-top: 28px;
+  }
+
+  .repoctl-home__button {
+    flex: 1 1 140px;
+  }
+
+  .repoctl-home__hero-visual {
+    aspect-ratio: 1.18;
+  }
+
+  .repoctl-home__hero-visual img {
+    width: 150%;
   }
 
   .repoctl-home__section {
-    padding-top: 64px;
+    padding-top: 76px;
+  }
+
+  .repoctl-home__section-heading {
+    margin-bottom: 28px;
+  }
+
+  .repoctl-home__task-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .repoctl-home__task,
-  .repoctl-home__layer {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 20px;
+  .repoctl-home__task:nth-child(4n + 1),
+  .repoctl-home__task:nth-child(4n) {
+    grid-column: auto;
+    min-height: 196px;
+    padding: 24px;
   }
 
-  .repoctl-home__task-link,
-  .repoctl-home__text-link {
-    justify-self: start;
+  .repoctl-home__task-copy {
+    margin-top: 22px;
   }
 
   .repoctl-home__steps {
@@ -50,16 +96,45 @@
   .repoctl-home__steps li,
   .repoctl-home__steps li + li {
     min-height: auto;
-    padding: 22px 0;
+    padding: 24px 0;
     border-left: 0;
   }
 
   .repoctl-home__steps li + li {
     border-top: 1px solid var(--repoctl-line);
   }
+
+  .repoctl-home__workflow {
+    gap: 10px;
+    min-height: 250px;
+    padding: 24px 20px;
+  }
+
+  .repoctl-home__workflow pre {
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .repoctl-home__layer-list {
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .repoctl-home__layer,
+  .repoctl-home__layer:first-child {
+    grid-row: auto;
+    min-height: 190px;
+    padding: 24px;
+  }
+
+  .repoctl-home__layer:first-child h3 {
+    font-size: 24px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .repoctl-home__button,
   .repoctl-home__task,
   .repoctl-home__layer {
     transition: none;

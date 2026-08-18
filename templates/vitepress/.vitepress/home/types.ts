@@ -8,6 +8,9 @@ export interface HomeContent {
     label: string
     title: string
     description: string
+    primaryAction: HomeLink
+    secondaryAction: HomeLink
+    imageAlt: string
   }
   tasks: {
     title: string
@@ -31,7 +34,6 @@ export interface HomeContent {
   evidence: {
     title: string
     description: string
-    imageAlt: string
     code: string
     link: HomeLink
   }

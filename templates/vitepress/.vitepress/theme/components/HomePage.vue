@@ -20,11 +20,25 @@ const content = computed(() => homeContent[props.locale])
         <p class="repoctl-home__lede">
           {{ content.hero.description }}
         </p>
+        <div class="repoctl-home__hero-actions">
+          <a class="repoctl-home__button repoctl-home__button--primary" :href="content.hero.primaryAction.href">
+            {{ content.hero.primaryAction.label }}
+          </a>
+          <a class="repoctl-home__button repoctl-home__button--secondary" :href="content.hero.secondaryAction.href">
+            {{ content.hero.secondaryAction.label }}
+          </a>
+        </div>
       </div>
-      <div class="repoctl-home__hero-command" aria-label="repoctl first command">
-        <span class="repoctl-home__prompt">$</span>
-        <code>pnpm exec repo doctor</code>
-      </div>
+      <figure class="repoctl-home__hero-visual">
+        <img
+          src="/repoctl-doctor.png"
+          :alt="content.hero.imageAlt"
+          width="1440"
+          height="990"
+          decoding="async"
+          fetchpriority="high"
+        >
+      </figure>
     </section>
 
     <section class="repoctl-home__section repoctl-home__tasks" aria-labelledby="repoctl-tasks-title">
@@ -36,11 +50,11 @@ const content = computed(() => homeContent[props.locale])
       </div>
       <div class="repoctl-home__task-list">
         <a v-for="task in content.tasks.items" :key="task.link.href" class="repoctl-home__task" :href="task.link.href">
+          <code>{{ task.command }}</code>
           <div class="repoctl-home__task-copy">
             <h3>{{ task.title }}</h3>
             <p>{{ task.body }}</p>
           </div>
-          <code>{{ task.command }}</code>
           <span class="repoctl-home__task-link">{{ task.link.label }} <span aria-hidden="true">-&gt;</span></span>
         </a>
       </div>
@@ -54,8 +68,8 @@ const content = computed(() => homeContent[props.locale])
         <p>{{ content.firstRun.description }}</p>
       </div>
       <ol class="repoctl-home__steps">
-        <li v-for="step in content.firstRun.steps" :key="step.command">
-          <span class="repoctl-home__step-number" aria-hidden="true">{{ String(content.firstRun.steps.indexOf(step) + 1).padStart(2, '0') }}</span>
+        <li v-for="(step, index) in content.firstRun.steps" :key="step.command">
+          <span class="repoctl-home__step-number" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
           <div>
             <h3>{{ step.title }}</h3>
             <code>{{ step.command }}</code>
@@ -71,12 +85,12 @@ const content = computed(() => homeContent[props.locale])
           {{ content.evidence.title }}
         </h2>
         <p>{{ content.evidence.description }}</p>
-        <pre><code>{{ content.evidence.code }}</code></pre>
         <a class="repoctl-home__text-link" :href="content.evidence.link.href">{{ content.evidence.link.label }} <span aria-hidden="true">-&gt;</span></a>
       </div>
-      <figure class="repoctl-home__capture">
-        <img src="/repoctl-doctor.png" :alt="content.evidence.imageAlt" width="1440" height="990" loading="lazy">
-      </figure>
+      <div class="repoctl-home__workflow">
+        <span class="repoctl-home__workflow-prompt" aria-hidden="true">$</span>
+        <pre><code>{{ content.evidence.code }}</code></pre>
+      </div>
     </section>
 
     <section class="repoctl-home__section repoctl-home__layers" aria-labelledby="repoctl-layers-title">
